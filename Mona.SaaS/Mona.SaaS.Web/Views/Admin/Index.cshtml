@@ -1,0 +1,269 @@
+﻿@model AdminPageModel
+
+@using Microsoft.AspNetCore.Mvc.Localization
+@using Mona.AutoIntegration.Interrogators
+@using Mona.SaaS.Core.Constants
+
+@inject IViewLocalizer Localizer
+
+@{
+    Layout = null;
+
+    string GetLogicAppStatusIconPath(Mona.AutoIntegration.PluginStatus pluginStatus)
+    {
+        switch (pluginStatus)
+        {
+            case Mona.AutoIntegration.PluginStatus.Enabled: return "/img/check-circle-fill.svg";
+            case Mona.AutoIntegration.PluginStatus.Disabled: return "/img/x-circle-fill.svg";
+            default: return "/img/question-circle-fill.svg";
+        }
+    }
+
+    LocalizedHtmlString GetLogicAppStatusName(Mona.AutoIntegration.PluginStatus pluginStatus)
+    {
+        switch (pluginStatus)
+        {
+            case Mona.AutoIntegration.PluginStatus.Enabled: return Localizer["Enabled"];
+            case Mona.AutoIntegration.PluginStatus.Disabled: return Localizer["Disabled"];
+            default: return Localizer["Not Found"];
+        }
+    }
+
+    LocalizedHtmlString GetLogicAppStatusIconAltText(Mona.AutoIntegration.PluginStatus pluginStatus)
+    {
+        switch (pluginStatus)
+        {
+            case Mona.AutoIntegration.PluginStatus.Enabled: return Localizer["Checkmark Enabled"];
+            case Mona.AutoIntegration.PluginStatus.Disabled: return Localizer["X mark Disabled"];
+            default: return Localizer["question mark Not Found"];
+        }
+    }
+
+    LocalizedHtmlString GetSubscriptionEventTitle(Mona.SaaS.Web.Models.Admin.PluginModel pluginModel)
+    {
+        switch (pluginModel.TriggerEventType)
+        {
+            case CoreEventTypes.SubscriptionCancelled: return Localizer["On subscription cancelled"];
+            case CoreEventTypes.SubscriptionPlanChanged: return Localizer["On subscription plan changed"];
+            case CoreEventTypes.SubscriptionPurchased: return Localizer["On subscription purchased"];
+            case CoreEventTypes.SubscriptionReinstated: return Localizer["On subscription reinstated"];
+            case CoreEventTypes.SubscriptionSeatQuantityChanged: return Localizer["On subscription seat quantity changed"];
+            case CoreEventTypes.SubscriptionSuspended: return Localizer["On subscription suspended"];
+            default: return null;
+        }
+    }
+
+    LocalizedHtmlString GetPluginTypeName(Mona.SaaS.Web.Models.Admin.PluginModel pluginModel)
+    {
+        switch (pluginModel.PluginType)
+        {
+            case "Microsoft.Logic/workflows": return Localizer["Logic App"];
+            default: return Localizer["Unknown"];
+        }
+    }
+}
+
+<html lang="@Localizer["en"]">
+<head>
+    <link href="~/lib/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <title>@Localizer["Mona admin center"]</title>
+    <style>
+        div.admin-section {
+            margin-bottom: 30px;
+            margin-top: 30px;
+        }
+    </style>
+</head>
+<body style="display: flex; align-items: center; height: 100%; padding-top: 40px; padding-bottom: 40px">
+    <main style="width: 100%; max-width: 960px; padding: 15px; margin: auto">
+        <div class="container">
+            <h5 class="display-4">@Localizer["Mona admin center"]</h5>
+            <div class="admin-section" id="pc-tech-details-section">
+                <h5 class="display-5">@Localizer["Partner center technical details"]</h5><hr />
+                <p>
+                    @Localizer[
+                    "You'll need these technical details when you <a href=\"{0}\">publish your SaaS offer through the Partner Center</a>.",
+                    "https://docs.microsoft.com/azure/marketplace/create-new-saas-offer-technical"]
+                </p>
+                <table class="table table-bordered table-striped">
+                    <tbody>
+                        <tr>
+                            <th scope="row" style="width: 50%">@Localizer["Landing Page URL"]</th>
+                            <td style="width: 50%">@Model.PartnerCenterTechnicalDetails.LandingPageUrl</td>
+                        </tr>
+                        <tr>
+                            <th scope="row" style="width: 50%">@Localizer["Connection Webhook URL"]</th>
+                            <td style="width: 50%">@Model.PartnerCenterTechnicalDetails.WebhookUrl</td>
+                        </tr>
+                        <tr>
+                            <th scope="row" style="width: 50%">@Localizer["Azure Active Directory Tenant ID"]</th>
+                            <td style="width: 50%">@Model.PartnerCenterTechnicalDetails.AadTenantId</td>
+                        </tr>
+                        <tr>
+                            <th scope="row" style="width: 50%">@Localizer["Azure Active Directory Application ID"]</th>
+                            <td style="width: 50%">@Model.PartnerCenterTechnicalDetails.AadApplicationId</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="admin-section">
+                <h5 class="display-5">@Localizer["Testing"]</h5><hr />
+                @if (Model.IsTestModeEnabled)
+                {
+                    <div class="alert alert-primary">@Localizer["Mona test endpoints are currently enabled. To disable them, see <a class=\"alert-link\" href=\"#\">the Mona docs</a>."]</div>
+                    <p>
+                        @Localizer["These endpoints make it easy to test your SaaS subscription workflows before going live."]
+                    </p>
+                    <p>
+                        @Localizer[
+                    "The behavior of these endpoints is identical to that of the live endpoints (defined in the technical details section above) " +
+                    "with the exception that subscriptions created/updated through these endpoints are only cached locally. AppSource/Azure Marketplace " +
+                    "is not aware of subscriptions created through these test endpoints."]
+                    </p>
+                    <table class="table table-bordered table-striped">
+                        <tbody>
+                            <tr>
+                                <th scope="row" style="width: 50%">@Localizer["Test Landing Page URL"]</th>
+                                <td style="width: 50%">@Model.TestLandingPageUrl</td>
+                            </tr>
+                            <tr>
+                                <th scope="row" style="width: 50%">@Localizer["Test Connection Webhook URL"]</th>
+                                <td style="width: 50%">@Model.TestWebhookUrl</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                }
+                else
+                {
+                    <div class="alert alert-secondary">@Localizer["Mona test endpoints are currently disabled. see <a class=\"alert-link\" href=\"#\">the Mona docs</a>."]</div>
+                }
+            </div>
+            <div class="admin-section" id="logic-apps-section">
+                <h5 class="display-5">@Localizer["Subscription event handlers"]</h5><hr />
+                <p>
+                    @Localizer[
+                    "These logic apps are automatically provisioned during the Mona setup process. Each logic app handles a " +
+                    "specific kind of subscription event (subscription purchased, cancelled, reinstated, etc.) From here, you can " +
+                    "see the state of each logic app, edit workflows, and manage other app resources."]
+                </p>
+                <div class="alert alert-primary">
+                    @Localizer[
+                    "New to logic apps? No problem! Check out <a class=\"alert-link\" href=\"{0}\">these docs</a> for more information on authoring your first workflows.",
+                    "https://docs.microsoft.com/en-us/azure/logic-apps/quickstart-create-first-logic-app-workflow"]
+
+                </div>
+                <div class="alert alert-primary">
+                    @Localizer[
+                    "Want to handle these events somewhere other than logic apps? Subscribe to <a class=\"alert-link\" href=\"{0}\" target=\"_blank\">this event grid topic</a> from anywhere — " +
+                    "<a class=\"alert-link\" href=\"{1}\">Azure Functions</a>, <a class=\"alert-link\" href=\"{2}\">Power Automate</a>, or even " +
+                    "<a class=\"alert-link\" href=\"{3}\">your own code</a>.",
+                    Model.EventGridTopicOverviewUrl,
+                    "https://docs.microsoft.com/azure/azure-functions/functions-bindings-event-grid-trigger",
+                    "https://flow.microsoft.com/connectors/shared_azureeventgrid/azure-event-grid/",
+                    "https://docs.microsoft.com/azure/event-grid/webhook-event-delivery"]
+                </div>
+                <table class="table">
+                    <tbody>
+                        @foreach (var plugin in Model.IntegrationPlugins.OrderBy(p => p.Status).ThenBy(p => p.DisplayName))
+                        {
+                            <tr>
+                                <td class="align-middle text-center">
+                                    <img src="@GetLogicAppStatusIconPath(plugin.Status)" alt="@GetLogicAppStatusIconAltText(plugin.Status)" width="32" height="32" class="mx-auto d-block" style="margin-bottom: 5px" />
+                                    <small><span class="badge bg-dark text-light">@GetPluginTypeName(plugin)</span><br />@GetLogicAppStatusName(plugin.Status)</small>
+                                </td>
+                                <td class="align-middle">
+                                    <small><span class="text-muted">@GetSubscriptionEventTitle(plugin)</span></small><br />
+                                    <b>@plugin.DisplayName</b>
+                                    <p>
+                                        @plugin.Description
+                                    </p>
+                                    <a class="btn btn-primary" href="@plugin.EditorUrl" target="_blank">@Localizer["Edit workflow »"]</a>
+                                    <a class="btn btn-secondary" href="@plugin.ManagementUrl" target="_blank">@Localizer["Manage »"]</a>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+            <div class="admin-section">
+                <h5 class="display-5">@Localizer["Logic app snippets"]</h5>
+                <p>
+                    @Localizer[
+                    "Logic apps are one of the most convenient tools to use when building out your Mona integrations. " +
+                    "For certain operations, the Marketplace requires confirmation that an operation has failed or succeeded. " +
+                    "The JSON snippets below can <a href=\"{0}\" target=\"_blank\">easily be added to the default Logic Apps</a> that ship with Mona SaaS " +
+                    "to handle some of the most common Marketplace callbacks.",
+                    "https://docs.microsoft.com/azure/logic-apps/logic-apps-author-definitions"
+                    ]
+                </p>
+                <div class="alert alert-warning" role="alert">
+                    Today, these snippets are designed to work only when using the default English (<code>en</code>) UI experience.
+                </div>
+                 <div class="alert alert-warning" role="alert">
+                    These snippets contain highly sensitive configuration information. Use carefully.
+                </div>
+                <table class="table">
+                    <tbody>
+                        <tr>
+                            <td class="align-middle">
+                                <a href="@Model.LogicAppSnippets.ActivationSnippetUrl" target="_blank"><b>@Localizer["On subscription activated"]</b></a>
+                                <p>
+                                    @Localizer[
+                                    "Use this snippet when you need to notify the Marketplace that a new subscription has been activated within a logic app. " +
+                                    "Necessary client authentication metadata is automatically included. For more information about this notification, see " +
+                                    "<a href=\"{0}\" target=\"_blank\">this article</a>.",
+                                    "https://docs.microsoft.com/azure/marketplace/partner-center-portal/pc-saas-fulfillment-api-v2#activate-a-subscription"
+                                    ]
+                                </p>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="align-middle">
+                                <a href="@Model.LogicAppSnippets.OperationSucceededUrl" target="_blank"><b>@Localizer["On subscription operation succeeded"]</b></a>
+                                <p>
+                                    @Localizer[
+                                    "Use this snippet when you need to notify the Marketplace that a new subscrption operation, originally requested by Microsoft, has succeeded. " +
+                                    "Necessary client authentication metadata is automatically included. For more information about this notification, see " +
+                                    "<a href=\"{0}\" target=\"_blank\">this article</a>.",
+                                    "https://docs.microsoft.com/azure/marketplace/partner-center-portal/pc-saas-fulfillment-api-v2#update-the-status-of-an-operation"
+                                    ]
+                                </p>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="align-middle">
+                                <a href="@Model.LogicAppSnippets.OperationFailedUrl" target="_blank"><b>@Localizer["On subscription operation failed"]</b></a>
+                                <p>
+                                    @Localizer[
+                                    "Use this snippet when you need to notify the Marketplace that a new subscrption operation, originally requested by Microsoft, has failed. " +
+                                    "Necessary client authentication metadata is automatically included. For more information about this notification, see " +
+                                    "<a href=\"{0}\" target=\"_blank\">this article</a>.",
+                                    "https://docs.microsoft.com/azure/marketplace/partner-center-portal/pc-saas-fulfillment-api-v2#update-the-status-of-an-operation"
+                                    ]
+                                </p>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="admin-section" id="config-settings-section">
+                <h5 class="display-5">@Localizer["Mona configuration settings"]</h5><hr />
+                <p>
+                    @Localizer[
+                    "These configuration settings control nearly every aspect of how this Mona deployment behaves. " +
+                    "Most of these settings are automatically configured during the initial Mona setup. " +
+                    "For more information on these settings, please <a href=\"{0}\">visit the Mona docs</a>.",
+                    "https://github.com/azure"]
+                </p>
+                <a role="button" class="btn btn-primary" href="@Model.ConfigurationSettingsEditorUrl" target="_blank">@Localizer["Manage configuration settings »"]</a>
+            </div>
+            <div class="admin-section" id="about-section">
+                <h5 class="display-5">About Mona</h5><hr />
+                <h3>Mona for SaaS <small class="text-muted">@Model.MonaVersion</small></h3>
+                Copyright © Microsoft Corporation @DateTime.UtcNow.Year<br />
+                Licensed under the <a href="https://choosealicense.com/licenses/mit/">MIT License</a>
+            </div>
+        </div>
+    </main>
+</body>
+</html>

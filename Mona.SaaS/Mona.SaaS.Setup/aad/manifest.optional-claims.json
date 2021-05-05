@@ -1,0 +1,12 @@
+{
+    "idToken": [
+        {
+            "name": "given_name",
+            "source": null,
+            "essential": false,
+            "additionalProperties": []
+        }
+    ],
+    "accessToken": [],
+    "saml2Token": []
+}

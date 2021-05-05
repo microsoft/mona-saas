@@ -1,0 +1,28 @@
+{
+  "iisSettings": {
+    "windowsAuthentication": false,
+    "anonymousAuthentication": true,
+    "iisExpress": {
+      "applicationUrl": "http://localhost:59361",
+      "sslPort": 44330
+    }
+  },
+  "profiles": {
+    "IIS Express": {
+      "commandName": "IISExpress",
+      "launchBrowser": true,
+      "environmentVariables": {
+        "APP_CONFIG_SERVICE_CONNECTION_STRING": "Endpoint=https://mona-config-monatest10.azconfig.io;Id=VWV4-l8-s0:QFkka8yWt9DXW9gJ8nAH;Secret=hBsA+cpUq6Sgr+5YjR3RegQtyXIFpcWrsZtKuptYpYY=",
+        "ASPNETCORE_ENVIRONMENT": "Development"
+      }
+    },
+    "Mona.SaaS.Web": {
+      "commandName": "Project",
+      "launchBrowser": true,
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development"
+      },
+      "applicationUrl": "https://localhost:5001;http://localhost:5000"
+    }
+  }
+}

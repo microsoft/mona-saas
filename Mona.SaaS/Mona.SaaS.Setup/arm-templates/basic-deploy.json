@@ -1,0 +1,1679 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "deploymentName": {
+            "type": "string",
+            "defaultValue": "",
+            "maxLength": 13,
+            "metadata": {
+                "description": "A unique, publisher-defined name that identifies this Mona deployment."
+            }
+        },
+        "aadTenantId": {
+            "type": "string",
+            "metadata": {
+                "description": "This Mona deployment's Azure Active Directory (AAD) tenant ID."
+            }
+        },
+        "aadClientId": {
+            "type": "string",
+            "metadata": {
+                "description": "This Mona deployment's Azure Active Directory (AAD) client ID."
+            }
+        },
+        "aadClientSecret": {
+            "type": "securestring",
+            "metadata": {
+                "description": "This Mona deployment's Azure Active Directory (AAD) client secret."
+            }
+        },
+        "language": {
+            "type": "string",
+            "defaultValue": "en",
+            "allowedValues": [
+                "en", // English
+                "es" // Spanish
+            ],
+            "metadata": {
+                "description": "The preferred UI language for this Mona deployment."
+            }
+        }
+    },
+    "variables": {
+        "deploymentName": "[if(empty(parameters('deploymentName')), uniqueString(resourceGroup().id), parameters('deploymentName'))]",
+        "appConfigName": "[concat('mona-config-', variables('deploymentName'))]",
+        "storageAccountName": "[concat('monastorage', toLower(variables('deploymentName')))]",
+        "blobServiceName": "default",
+        "subContainerName": "saas-subscriptions",
+        "eventGridTopicName": "[concat('mona-events-', variables('deploymentName'))]",
+        "integrationAccountName": "[concat('mona-integration-', variables('deploymentName'))]",
+        "appInsightsName": "[concat('mona-app-insights-', variables('deploymentName'))]",
+        "appPlanName": "[concat('mona-plan-', variables('deploymentName'))]",
+        "webAppName": "[concat('mona-web-', variables('deploymentName'))]",
+        "logicApps_prefixes": {
+            "onPurchased": "mona-on-subscription-purchased-",
+            "onCancelled": "mona-on-subscription-cancelled-",
+            "onPlanChanged": "mona-on-subscription-plan-changed-",
+            "onSeatQtyChanged": "mona-on-subscription-seat-qty-changed-",
+            "onSuspended": "mona-on-subscription-suspended-",
+            "onReinstated": "mona-on-subscription-reinstated-"
+        },
+        "logicApps_ui": {
+            "en": {
+                "eventGridConnectionDisplayName": "Mona Subscription Events",
+                "appNames": {
+                    "onCancelled": "On subscription cancelled",
+                    "onPurchased": "On subscription purchased",
+                    "onPlanChanged": "On subscription plan changed",
+                    "onSeatQtyChanged": "On subscription seat quantity changed",
+                    "onSuspended": "On subscription suspended",
+                    "onReinstated": "On subscription reinstated"
+                },
+                "appDescriptions": {
+                    "onCancelled": "This workflow is automatically triggered after Mona has been notified by the AppSource/Marketplace that a subscription has been cancelled.",
+                    "onPurchased": "This workflow is automatically triggered after a customer has confirmed their AppSource/Marketplace purchase through the Mona landing page.",
+                    "onPlanChanged": "This workflow is automatically triggered after Mona has been notified by the AppSource/Marketplace that a subscription plan has been changed.",
+                    "onSeatQtyChanged": "This workflow is automatically triggered after Mona has been notified by the AppSource/Marketplace that a subscription seat quantity has been changed.",
+                    "onSuspended": "This workflow is automatically triggered after Mona has been notified by the AppSource/Marketplace that a subscription has been suspended.",
+                    "onReinstated": "This workflow is automatically triggered after Mona has been notified by the AppSource/Marketplace that a subscription has been reinstated."
+                },
+                "triggerNames": {
+                    "onCancelled": "When_a_subscription_is_cancelled",
+                    "onPurchased": "When_a_subscription_is_purchased",
+                    "onPlanChanged": "When_a_subscription_plan_is_changed",
+                    "onSeatQtyChanged": "When_subscription_seats_are_changed",
+                    "onSuspended": "When_a_subscription_is_suspended",
+                    "onReinstated": "When_a_subscription_is_reinstated"
+                },
+                "actionNames": {
+                    "flattenAndTranslate1": "Flatten_and_translate_event_information_(1)",
+                    "flattenAndTranslate2": "Flatten_and_translate_event_information_(2)",
+                    "parseEventInfo1": "Parse_event_information_(1)",
+                    "parseEventInfo2": "Parse_event_information_(2)"
+                },
+                "variableNames": {
+                    "isFreeTrial": "Is Free Trial Subscription?",
+                    "isTest": "Is Test Subscription?",
+                    "newPlanId": "New Plan ID",
+                    "newSeatQty": "New Seat Quantity",
+                    "offerId": "Offer ID",
+                    "operationDateTimeUtc": "Operation Date/Time UTC",
+                    "operationId": "Operation ID",
+                    "planId": "Plan ID",
+                    "seatQty": "Seat Quantity",
+                    "subscriptionId": "Subscription ID",
+                    "subscriptionName": "Subscription Name",
+                    "beneficiary": {
+                        "aadObjectId": "Beneficiary AAD Object ID",
+                        "aadTenantId": "Beneficiary AAD Tenant ID",
+                        "email": "Beneficiary Email",
+                        "userId": "Beneficiary User ID"
+                    },
+                    "purchaser": {
+                        "aadObjectId": "Purchaser AAD Object ID",
+                        "aadTenantId": "Purchaser AAD Tenant ID",
+                        "email": "Purchaser Email",
+                        "userId": "Purchaser User ID"
+                    },
+                    "term": {
+                        "endDate": "Subscription End Date",
+                        "startDate": "Subscription Start Date",
+                        "unit": "Subscription Term Unit"
+                    }
+                }
+            },
+            "es": {
+                "eventGridConnectionDisplayName": "Eventos de Suscripción de Mona",
+                "appNames": {
+                    "onCancelled": "Suscripción cancelada",
+                    "onPurchased": "Suscripción comprada ",
+                    "onPlanChanged": "Plan de suscripción cambiado",
+                    "onSeatQtyChanged": "Cantidad de asientos de suscripción cambiada",
+                    "onSuspended": "Suscripción suspendida",
+                    "onReinstated": "Suscripción reestablecida"
+                },
+                "appDescriptions": {
+                    "onCancelled": "Este flujo de trabajo se activa automáticamente después de que AppSource/Marketplace notifique a Mona que se canceló una suscripción.",
+                    "onPurchased": "Este flujo de trabajo se activa automáticamente después de que un cliente haya confirmado su compra de AppSource/Marketplace a través de la página de destino de Mona.",
+                    "onPlanChanged": "Este flujo de trabajo se activa automáticamente después de que AppSource/Marketplace notifique a Mona que se ha cambiado un plan de una suscripción.",
+                    "onSeatQtyChanged": "Este flujo de trabajo se activa automáticamente después de que AppSource/Marketplace notifique a Mona que se ha cambiado la cantidad de asiestos de una suscripción.",
+                    "onSuspended": "Este flujo de trabajo se activa automáticamente después de que AppSource/Marketplace notifique a Mona que se ha suspendido una suscripción.",
+                    "onReinstated": "Este flujo de trabajo se activa automáticamente después de que AppSource/Marketplace notifique a Mona que se ha reestablecido una suscripción."
+                },
+                "triggerNames": {
+                    "onCancelled": "Cuando_una_suscripción_es_cancelada",
+                    "onPurchased": "Cuando_una_suscripción_es_comprada",
+                    "onPlanChanged": "Cuando_cambia_el_plan_de_una_suscripción",
+                    "onSeatQtyChanged": "Cuando_la_cantidad_de_asisentos_de_una_suscripción_cambian",
+                    "onSuspended": "Cuando_unaa_suscripción_es_suspendida",
+                    "onReinstated": "Cuando_una_suscripción_es_reestablecida"
+                },
+                "actionNames": {
+                    "flattenAndTranslate1": "Aplanar_y_traducir_información_de_evento_(1)",
+                    "flattenAndTranslate2": "Aplanar_y_traducir_información_de_evento_(2)",
+                    "parseEventInfo1": "Analizar_la_información_del_evento_(1)",
+                    "parseEventInfo2": "Analizar_la_información_del_evento_(2)"
+                },
+                "variableNames": {
+                    "isFreeTrial": "¿Es una suscripción de prueba gratuita?",
+                    "isTest": "¿Es una suscripción de test? ",
+                    "newPlanId": "ID del Nuevo Plan",
+                    "newSeatQty": "Cantidad de asientos nuevos",
+                    "offerId": "ID de la Oferta",
+                    "operationDateTimeUtc": "Operación Fecha/Hora UTC",
+                    "operationId": "ID de la Operación",
+                    "planId": "Plan ID",
+                    "seatQty": "Cantidad de asisestps",
+                    "subscriptionId": "ID de la suscripción",
+                    "subscriptionName": "Nombre de la suscripción",
+                    "beneficiary": {
+                        "aadObjectId": "AAD ID de objeto del beneficiario",
+                        "aadTenantId": "AAD Identificador de inquilino del beneficiario",
+                        "email": "Email del beneficiario",
+                        "userId": "User ID del beneficiario"
+                    },
+                    "purchaser": {
+                        "aadObjectId": "AAD ID de objeto del comprador",
+                        "aadTenantId": "AAD Identificador de inquilino del comprador",
+                        "email": "Email del comprador",
+                        "userId": "User ID del comprador"
+                    },
+                    "term": {
+                        "endDate": "Fecha de finalización de la suscripción ",
+                        "startDate": "Fecha de comienzo de la suscripción ",
+                        "unit": "Unidad de plazo de suscripción"
+                    }
+                }
+            }
+        },
+        "logicApps": {
+            "eventGridConnectionName": "[concat('mona-events-connection-', variables('deploymentName'))]",
+            "onPurchased": {
+                "name": "[concat(variables('logicApps_prefixes').onPurchased, variables('deploymentName'))]",
+                "triggerId": "[resourceId('Microsoft.Logic/workflows/triggers', concat(variables('logicApps_prefixes').onPurchased, variables('deploymentName')), variables('logicApps_ui')[parameters('language')].triggerNames.onPurchased)]",
+                "resourceId": "[resourceId('Microsoft.Logic/workflows', concat(variables('logicApps_prefixes').onPurchased, variables('deploymentName')))]",
+                "defaultState": "Enabled",
+                "triggerEventType": "Mona.SaaS.Marketplace.SubscriptionPurchased"
+            },
+            "onCancelled": {
+                "name": "[concat(variables('logicApps_prefixes').onCancelled, variables('deploymentName'))]",
+                "triggerId": "[resourceId('Microsoft.Logic/workflows/triggers', concat(variables('logicApps_prefixes').onCancelled, variables('deploymentName')), variables('logicApps_ui')[parameters('language')].triggerNames.onCancelled)]",
+                "resourceId": "[resourceId('Microsoft.Logic/workflows', concat(variables('logicApps_prefixes').onCancelled, variables('deploymentName')))]",
+                "defaultState": "Enabled",
+                "triggerEventType": "Mona.SaaS.Marketplace.SubscriptionCancelled"
+            },
+            "onPlanChanged": {
+                "name": "[concat(variables('logicApps_prefixes').onPlanChanged, variables('deploymentName'))]",
+                "triggerId": "[resourceId('Microsoft.Logic/workflows/triggers', concat(variables('logicApps_prefixes').onPlanChanged, variables('deploymentName')), variables('logicApps_ui')[parameters('language')].triggerNames.onPlanChanged)]",
+                "resourceId": "[resourceId('Microsoft.Logic/workflows', concat(variables('logicApps_prefixes').onPlanChanged, variables('deploymentName')))]",
+                "defaultState": "Enabled",
+                "triggerEventType": "Mona.SaaS.Marketplace.SubscriptionPlanChanged"
+            },
+            "onSeatQtyChanged": {
+                "name": "[concat(variables('logicApps_prefixes').onSeatQtyChanged, variables('deploymentName'))]",
+                "triggerId": "[resourceId('Microsoft.Logic/workflows/triggers', concat(variables('logicApps_prefixes').onSeatQtyChanged, variables('deploymentName')), variables('logicApps_ui')[parameters('language')].triggerNames.onSeatQtyChanged)]",
+                "resourceId": "[resourceId('Microsoft.Logic/workflows', concat(variables('logicApps_prefixes').onSeatQtyChanged, variables('deploymentName')))]",
+                "defaultState": "Enabled",
+                "triggerEventType": "Mona.SaaS.Marketplace.SubscriptionSeatQuantityChanged"
+            },
+            "onSuspended": {
+                "name": "[concat(variables('logicApps_prefixes').onSuspended, variables('deploymentName'))]",
+                "triggerId": "[resourceId('Microsoft.Logic/workflows/triggers', concat(variables('logicApps_prefixes').onSuspended, variables('deploymentName')), variables('logicApps_ui')[parameters('language')].triggerNames.onSuspended)]",
+                "resourceId": "[resourceId('Microsoft.Logic/workflows', concat(variables('logicApps_prefixes').onSuspended, variables('deploymentName')))]",
+                "defaultState": "Enabled",
+                "triggerEventType": "Mona.SaaS.Marketplace.SubscriptionSuspended"
+            },
+            "onReinstated": {
+                "name": "[concat(variables('logicApps_prefixes').onReinstated, variables('deploymentName'))]",
+                "triggerId": "[resourceId('Microsoft.Logic/workflows/triggers', concat(variables('logicApps_prefixes').onReinstated, variables('deploymentName')), variables('logicApps_ui')[parameters('language')].triggerNames.onReinstated)]",
+                "resourceId": "[resourceId('Microsoft.Logic/workflows', concat(variables('logicApps_prefixes').onReinstated, variables('deploymentName')))]",
+                "defaultState": "Enabled",
+                "triggerEventType": "Mona.SaaS.Marketplace.SubscriptionReinstated"
+            }
+        }
+    },
+    "resources": [
+        {
+            "type": "microsoft.insights/components",
+            "apiVersion": "2020-02-02-preview",
+            "name": "[variables('appInsightsName')]",
+            "location": "[resourceGroup().location]",
+            "kind": "web",
+            "properties": {
+                "Application_Type": "web",
+                "IngestionMode": "ApplicationInsights",
+                "publicNetworkAccessForIngestion": "Enabled",
+                "publicNetworkAccessForQuery": "Enabled"
+            }
+        },
+        {
+            "type": "Microsoft.AppConfiguration/configurationStores",
+            "apiVersion": "2020-06-01",
+            "name": "[variables('appConfigName')]",
+            "location": "[resourceGroup().location]",
+            "sku": {
+                "name": "free"
+            }
+        },
+        {
+            "type": "Microsoft.Storage/storageAccounts",
+            "apiVersion": "2021-01-01",
+            "name": "[variables('storageAccountName')]",
+            "location": "[resourceGroup().location]",
+            "sku": {
+                "name": "Standard_LRS"
+            },
+            "kind": "StorageV2",
+            "properties": {
+                "accessTier": "Hot"
+            }
+        },
+        {
+            "type": "Microsoft.Storage/storageAccounts/blobServices",
+            "apiVersion": "2021-01-01",
+            "name": "[concat(variables('storageAccountName'), '/', variables('blobServiceName'))]",
+            "dependsOn": [
+                "[variables('storageAccountName')]"
+            ],
+            "properties": {
+                "isVersioningEnabled": true
+            }
+        },
+        {
+            "type": "Microsoft.Storage/storageAccounts/blobServices/containers",
+            "apiVersion": "2021-01-01",
+            "name": "[concat(variables('storageAccountName'), '/', variables('blobServiceName'), '/', variables('subContainerName'))]",
+            "dependsOn": [
+                "[variables('storageAccountName')]",
+                "[resourceId('Microsoft.Storage/storageAccounts/blobServices', variables('storageAccountName'), variables('blobServiceName'))]"
+            ],
+            "properties": {
+                "publicAccess": "None"
+            }
+        },
+        {
+            "type": "Microsoft.EventGrid/topics",
+            "apiVersion": "2020-06-01",
+            "name": "[variables('eventGridTopicName')]",
+            "location": "[resourceGroup().location]",
+            "properties": {
+                "inputSchema": "EventGridSchema",
+                "publicNetworkAccess": "Enabled"
+            }
+        },
+        {
+            "type": "Microsoft.Logic/integrationAccounts",
+            "apiVersion": "2016-06-01",
+            "name": "[variables('integrationAccountName')]",
+            "location": "[resourceGroup().location]",
+            "sku": {
+                "name": "Free"
+            },
+            "properties": {
+                "state": "Enabled"
+            }
+        },
+        {
+            "type": "Microsoft.Web/serverfarms",
+            "apiVersion": "2018-02-01",
+            "name": "[variables('appPlanName')]",
+            "location": "[resourceGroup().location]",
+            "sku": {
+                "name": "S1",
+                "tier": "Standard",
+                "size": "S1",
+                "family": "S",
+                "capacity": 1
+            },
+            "kind": "app"
+        },
+        {
+            "type": "Microsoft.Web/sites",
+            "apiVersion": "2018-11-01",
+            "name": "[variables('webAppName')]",
+            "location": "[resourceGroup().location]",
+            "dependsOn": [
+                "[variables('appPlanName')]",
+                "[variables('appInsightsName')]"
+            ],
+            "kind": "app",
+            "properties": {
+                "serverFarmId": "[resourceId('Microsoft.Web/serverfarms', variables('appPlanName'))]"
+            }
+        },
+        {
+            "type": "Microsoft.Web/connections",
+            "apiVersion": "2016-06-01",
+            "name": "[variables('logicApps').eventGridConnectionName]",
+            "location": "[resourceGroup().location]",
+            "dependsOn": [
+                "[variables('eventGridTopicName')]"
+            ],
+            "kind": "V1",
+            "properties": {
+                "displayName": "[variables('logicApps_ui')[parameters('language')].eventGridConnectionDisplayName]",
+                "customParameterValues": { },
+                "parameterValues": {
+                    "token:clientId": "[parameters('aadClientId')]",
+                    "token:clientSecret": "[parameters('aadClientSecret')]",
+                    "token:TenantId": "[parameters('aadTenantId')]",
+                    "token:grantType": "client_credentials"
+                },
+                "api": {
+                    "id": "[concat(subscription().id, '/providers/Microsoft.Web/locations/', resourceGroup().location, '/managedApis/azureeventgrid')]"
+                }
+            }
+        },
+        {
+            "type": "Microsoft.Logic/workflows",
+            "apiVersion": "2017-07-01",
+            "name": "[variables('logicApps').onPurchased.name]",
+            "location": "[resourceGroup().location]",
+            "tags": {
+                "mona:name": "[variables('logicApps_ui')[parameters('language')].appNames.onPurchased]",
+                "mona:description": "[variables('logicApps_ui')[parameters('language')].appDescriptions.onPurchased]",
+                "mona:event-type": "[variables('logicApps').onPurchased.triggerEventType]"
+            },
+            "dependsOn": [
+                "[variables('integrationAccountName')]",
+                "[variables('eventGridTopicName')]",
+                "[variables('logicApps').eventGridConnectionName]"
+            ],
+            "properties": {
+                "state": "[variables('logicApps').onPurchased.defaultState]",
+                "integrationAccount": {
+                    "id": "[resourceId('Microsoft.Logic/integrationAccounts', variables('integrationAccountName'))]"
+                },
+                "definition": {
+                    "$schema": "https://schema.management.azure.com/providers/Microsoft.Logic/schemas/2016-06-01/workflowdefinition.json#",
+                    "contentVersion": "1.0.0.0",
+                    "parameters": {
+                        "$connections": {
+                            "defaultValue": {},
+                            "type": "Object"
+                        }
+                    },
+                    "triggers": {
+                        "[variables('logicApps_ui')[parameters('language')].triggerNames.onPurchased]": {
+                            "splitOn": "@triggerBody()",
+                            "type": "ApiConnectionWebhook",
+                            "inputs": {
+                                "body": {
+                                    "properties": {
+                                        "destination": {
+                                            "endpointType": "WebHook",
+                                            "properties": {
+                                                "endpointUrl": "@{listCallbackUrl()}"
+                                            }
+                                        },
+                                        "filter": {
+                                            "includedEventTypes": [
+                                                "[variables('logicApps').onPurchased.triggerEventType]"
+                                            ]
+                                        },
+                                        "topic": "[resourceId('Microsoft.EventGrid/topics', variables('eventGridTopicName'))]"
+                                    }
+                                },
+                                "host": {
+                                    "connection": {
+                                        "name": "@parameters('$connections')['eventGrid']['connectionId']"
+                                    }
+                                },
+                                "path": "[concat(subscription().id, '/providers/Microsoft.EventGrid.Topics/resource/eventSubscriptions')]",
+                                "queries": {
+                                    "x-ms-api-version": "2017-06-15-preview"
+                                }
+                            }
+                        }
+                    },
+                    "actions": {
+                        "[variables('logicApps_ui')[parameters('language')].actionNames.flattenAndTranslate1]": {
+                            "runAfter": {},
+                            "type": "JavaScriptCode",
+                            "inputs": {
+                                "code": "[concat('var eventData = workflowContext.trigger.outputs.body.data;\r\n\r\nreturn {\r\n \"',
+                                    variables('logicApps_ui')[parameters('language')].variableNames.operationId, '\": eventData.operationId,\r\n \"',
+                                    variables('logicApps_ui')[parameters('language')].variableNames.operationDateTimeUtc, '\": eventData.operationDateTimeUtc,\r\n \"',
+                                    variables('logicApps_ui')[parameters('language')].variableNames.subscriptionId, '\": eventData.subscription.subscriptionId,\r\n \"',
+                                    variables('logicApps_ui')[parameters('language')].variableNames.subscriptionName, '\": eventData.subscription.subscriptionName,\r\n \"',
+                                    variables('logicApps_ui')[parameters('language')].variableNames.offerId, '\": eventData.subscription.offerId,\r\n \"',
+                                    variables('logicApps_ui')[parameters('language')].variableNames.planId, '\": eventData.subscription.planId,\r\n \"',
+                                    variables('logicApps_ui')[parameters('language')].variableNames.isTest, '\": eventData.subscription.isTest,\r\n \"',
+                                    variables('logicApps_ui')[parameters('language')].variableNames.isFreeTrial, '\": eventData.subscription.isFreeTrial,\r\n \"',
+                                    variables('logicApps_ui')[parameters('language')].variableNames.seatQty, '\": eventData.subscription.seatQuantity\r\n};')]"
+                            }
+                        },
+                        "[variables('logicApps_ui')[parameters('language')].actionNames.flattenAndTranslate2]": {
+                            "runAfter": {
+                                "[variables('logicApps_ui')[parameters('language')].actionNames.flattenAndTranslate1]": [
+                                    "Succeeded"
+                                ]
+                            },
+                            "type": "JavaScriptCode",
+                            "inputs": {
+                                "code": "[concat('var eventData = workflowContext.trigger.outputs.body.data;\r\n\r\nreturn {\r\n \"',
+                                    variables('logicApps_ui')[parameters('language')].variableNames.term.unit, '\": eventData.subscription.term.termUnit,\r\n \"',
+                                    variables('logicApps_ui')[parameters('language')].variableNames.term.startDate, '\": eventData.subscription.term.startDate,\r\n \"',
+                                    variables('logicApps_ui')[parameters('language')].variableNames.term.endDate, '\": eventData.subscription.term.endDate,\r\n \"',
+                                    variables('logicApps_ui')[parameters('language')].variableNames.beneficiary.userId, '\": eventData.subscription.beneficiary.userId,\r\n \"',
+                                    variables('logicApps_ui')[parameters('language')].variableNames.beneficiary.email, '\": eventData.subscription.beneficiary.userEmail,\r\n \"',
+                                    variables('logicApps_ui')[parameters('language')].variableNames.beneficiary.aadObjectId, '\": eventData.subscription.beneficiary.aadObjectId,\r\n \"',
+                                    variables('logicApps_ui')[parameters('language')].variableNames.beneficiary.aadTenantId, '\": eventData.subscription.beneficiary.aadTenantId,\r\n \"',
+                                    variables('logicApps_ui')[parameters('language')].variableNames.purchaser.userId, '\": eventData.subscription.purchaser.userId,\r\n \"',
+                                    variables('logicApps_ui')[parameters('language')].variableNames.purchaser.email, '\": eventData.subscription.purchaser.userEmail,\r\n \"',
+                                    variables('logicApps_ui')[parameters('language')].variableNames.purchaser.aadObjectId, '\": eventData.subscription.purchaser.aadObjectId,\r\n \"',
+                                    variables('logicApps_ui')[parameters('language')].variableNames.purchaser.aadTenantId, '\": eventData.subscription.purchaser.aadTenantId\r\n};')]"
+                            }
+                        },
+                        "[variables('logicApps_ui')[parameters('language')].actionNames.parseEventInfo1]": {
+                            "runAfter": {
+                                "[variables('logicApps_ui')[parameters('language')].actionNames.flattenAndTranslate2]": [
+                                    "Succeeded"
+                                ]
+                            },
+                            "type": "ParseJson",
+                            "inputs": {
+                                "content": "[concat('@outputs(''', variables('logicApps_ui')[parameters('language')].actionNames.flattenAndTranslate1, ''')?[''body'']')]",
+                                "schema": {
+                                    "properties": {
+                                        "[variables('logicApps_ui')[parameters('language')].variableNames.isFreeTrial]": {
+                                            "type": "boolean"
+                                        },
+                                        "[variables('logicApps_ui')[parameters('language')].variableNames.isTest]": {
+                                            "type": "boolean"
+                                        },
+                                        "[variables('logicApps_ui')[parameters('language')].variableNames.offerId]": {
+                                            "type": "string"
+                                        },
+                                        "[variables('logicApps_ui')[parameters('language')].variableNames.operationDateTimeUtc]": {
+                                            "type": "string"
+                                        },
+                                        "[variables('logicApps_ui')[parameters('language')].variableNames.operationId]": {
+                                            "type": "string"
+                                        },
+                                        "[variables('logicApps_ui')[parameters('language')].variableNames.planId]": {
+                                            "type": "string"
+                                        },
+                                        "[variables('logicApps_ui')[parameters('language')].variableNames.seatQty]": {
+                                            "type": "integer"
+                                        },
+                                        "[variables('logicApps_ui')[parameters('language')].variableNames.subscriptionId]": {
+                                            "type": "string"
+                                        },
+                                        "[variables('logicApps_ui')[parameters('language')].variableNames.subscriptionName]": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        },
+                        "[variables('logicApps_ui')[parameters('language')].actionNames.parseEventInfo2]": {
+                            "runAfter": {
+                                "[variables('logicApps_ui')[parameters('language')].actionNames.parseEventInfo1]": [
+                                    "Succeeded"
+                                ]
+                            },
+                            "type": "ParseJson",
+                            "inputs": {
+                                "content": "[concat('@outputs(''', variables('logicApps_ui')[parameters('language')].actionNames.flattenAndTranslate2, ''')?[''body'']')]",
+                                "schema": {
+                                    "properties": {
+                                        "[variables('logicApps_ui')[parameters('language')].variableNames.beneficiary.aadObjectId]": {
+                                            "type": "string"
+                                        },
+                                        "[variables('logicApps_ui')[parameters('language')].variableNames.beneficiary.aadTenantId]": {
+                                            "type": "string"
+                                        },
+                                        "[variables('logicApps_ui')[parameters('language')].variableNames.beneficiary.email]": {
+                                            "type": "string"
+                                        },
+                                        "[variables('logicApps_ui')[parameters('language')].variableNames.beneficiary.userId]": {
+                                            "type": "string"
+                                        },
+                                        "[variables('logicApps_ui')[parameters('language')].variableNames.purchaser.aadObjectId]": {
+                                            "type": "string"
+                                        },
+                                        "[variables('logicApps_ui')[parameters('language')].variableNames.purchaser.aadTenantId]": {
+                                            "type": "string"
+                                        },
+                                        "[variables('logicApps_ui')[parameters('language')].variableNames.purchaser.email]": {
+                                            "type": "string"
+                                        },
+                                        "[variables('logicApps_ui')[parameters('language')].variableNames.purchaser.userId]": {
+                                            "type": "string"
+                                        },
+                                        "[variables('logicApps_ui')[parameters('language')].variableNames.term.endDate]": {
+                                            "type": "string"
+                                        },
+                                        "[variables('logicApps_ui')[parameters('language')].variableNames.term.startDate]": {
+                                            "type": "string"
+                                        },
+                                        "[variables('logicApps_ui')[parameters('language')].variableNames.term.unit]": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "parameters": {
+                    "$connections": {
+                        "value": {
+                            "eventGrid": {
+                                "connectionId": "[resourceId('Microsoft.web/connections', variables('logicApps').eventGridConnectionName)]",
+                                "connectionName": "[variables('logicApps').eventGridConnectionName]",
+                                "id": "[concat(subscription().id, '/providers/Microsoft.Web/locations/', resourceGroup().location, '/managedApis/azureeventgrid')]"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        {
+            "type": "Microsoft.Logic/workflows",
+            "apiVersion": "2017-07-01",
+            "name": "[variables('logicApps').onCancelled.name]",
+            "location": "[resourceGroup().location]",
+            "tags": {
+                "mona:name": "[variables('logicApps_ui')[parameters('language')].appNames.onCancelled]",
+                "mona:description": "[variables('logicApps_ui')[parameters('language')].appDescriptions.onCancelled]",
+                "mona:event-type": "[variables('logicApps').onCancelled.triggerEventType]"
+            },
+            "dependsOn": [
+                "[variables('integrationAccountName')]",
+                "[variables('eventGridTopicName')]",
+                "[variables('logicApps').eventGridConnectionName]"
+            ],
+            "properties": {
+                "state": "[variables('logicApps').onCancelled.defaultState]",
+                "integrationAccount": {
+                    "id": "[resourceId('Microsoft.Logic/integrationAccounts', variables('integrationAccountName'))]"
+                },
+                "definition": {
+                    "$schema": "https://schema.management.azure.com/providers/Microsoft.Logic/schemas/2016-06-01/workflowdefinition.json#",
+                    "contentVersion": "1.0.0.0",
+                    "parameters": {
+                        "$connections": {
+                            "defaultValue": {},
+                            "type": "Object"
+                        }
+                    },
+                    "triggers": {
+                        "[variables('logicApps_ui')[parameters('language')].triggerNames.onCancelled]": {
+                            "splitOn": "@triggerBody()",
+                            "type": "ApiConnectionWebhook",
+                            "inputs": {
+                                "body": {
+                                    "properties": {
+                                        "destination": {
+                                            "endpointType": "webhook",
+                                            "properties": {
+                                                "endpointUrl": "@{listCallbackUrl()}"
+                                            }
+                                        },
+                                        "filter": {
+                                            "includedEventTypes": [
+                                                "[variables('logicApps').onCancelled.triggerEventType]"
+                                            ]
+                                        },
+                                        "topic": "[resourceId('Microsoft.EventGrid/topics', variables('eventGridTopicName'))]"
+                                    }
+                                },
+                                "host": {
+                                    "connection": {
+                                        "name": "@parameters('$connections')['eventGrid']['connectionId']"
+                                    }
+                                },
+                                "path": "[concat(subscription().id, '/providers/Microsoft.EventGrid.Topics/resource/eventSubscriptions')]",
+                                "queries": {
+                                    "x-ms-api-version": "2017-06-15-preview"
+                                }
+                            }
+                        }
+                    },
+                    "actions": {
+                        "[variables('logicApps_ui')[parameters('language')].actionNames.flattenAndTranslate1]": {
+                            "runAfter": {},
+                            "type": "JavaScriptCode",
+                            "inputs": {
+                                "code": "[concat('var eventData = workflowContext.trigger.outputs.body.data;\r\n\r\nreturn {\r\n \"',
+                                    variables('logicApps_ui')[parameters('language')].variableNames.operationId, '\": eventData.operationId,\r\n \"',
+                                    variables('logicApps_ui')[parameters('language')].variableNames.operationDateTimeUtc, '\": eventData.operationDateTimeUtc,\r\n \"',
+                                    variables('logicApps_ui')[parameters('language')].variableNames.subscriptionId, '\": eventData.subscription.subscriptionId,\r\n \"',
+                                    variables('logicApps_ui')[parameters('language')].variableNames.subscriptionName, '\": eventData.subscription.subscriptionName,\r\n \"',
+                                    variables('logicApps_ui')[parameters('language')].variableNames.offerId, '\": eventData.subscription.offerId,\r\n \"',
+                                    variables('logicApps_ui')[parameters('language')].variableNames.planId, '\": eventData.subscription.planId,\r\n \"',
+                                    variables('logicApps_ui')[parameters('language')].variableNames.isTest, '\": eventData.subscription.isTest,\r\n \"',
+                                    variables('logicApps_ui')[parameters('language')].variableNames.isFreeTrial, '\": eventData.subscription.isFreeTrial,\r\n \"',
+                                    variables('logicApps_ui')[parameters('language')].variableNames.seatQty, '\": eventData.subscription.seatQuantity\r\n};')]"
+                            }
+                        },
+                        "[variables('logicApps_ui')[parameters('language')].actionNames.flattenAndTranslate2]": {
+                            "runAfter": {
+                                "[variables('logicApps_ui')[parameters('language')].actionNames.flattenAndTranslate1]": [
+                                    "Succeeded"
+                                ]
+                            },
+                            "type": "JavaScriptCode",
+                            "inputs": {
+                                "code": "[concat('var eventData = workflowContext.trigger.outputs.body.data;\r\n\r\nreturn {\r\n \"',
+                                    variables('logicApps_ui')[parameters('language')].variableNames.term.unit, '\": eventData.subscription.term.termUnit,\r\n \"',
+                                    variables('logicApps_ui')[parameters('language')].variableNames.term.startDate, '\": eventData.subscription.term.startDate,\r\n \"',
+                                    variables('logicApps_ui')[parameters('language')].variableNames.term.endDate, '\": eventData.subscription.term.endDate,\r\n \"',
+                                    variables('logicApps_ui')[parameters('language')].variableNames.beneficiary.userId, '\": eventData.subscription.beneficiary.userId,\r\n \"',
+                                    variables('logicApps_ui')[parameters('language')].variableNames.beneficiary.email, '\": eventData.subscription.beneficiary.userEmail,\r\n \"',
+                                    variables('logicApps_ui')[parameters('language')].variableNames.beneficiary.aadObjectId, '\": eventData.subscription.beneficiary.aadObjectId,\r\n \"',
+                                    variables('logicApps_ui')[parameters('language')].variableNames.beneficiary.aadTenantId, '\": eventData.subscription.beneficiary.aadTenantId,\r\n \"',
+                                    variables('logicApps_ui')[parameters('language')].variableNames.purchaser.userId, '\": eventData.subscription.purchaser.userId,\r\n \"',
+                                    variables('logicApps_ui')[parameters('language')].variableNames.purchaser.email, '\": eventData.subscription.purchaser.userEmail,\r\n \"',
+                                    variables('logicApps_ui')[parameters('language')].variableNames.purchaser.aadObjectId, '\": eventData.subscription.purchaser.aadObjectId,\r\n \"',
+                                    variables('logicApps_ui')[parameters('language')].variableNames.purchaser.aadTenantId, '\": eventData.subscription.purchaser.aadTenantId\r\n};')]"
+                            }
+                        },
+                        "[variables('logicApps_ui')[parameters('language')].actionNames.parseEventInfo1]": {
+                            "runAfter": {
+                                "[variables('logicApps_ui')[parameters('language')].actionNames.flattenAndTranslate2]": [
+                                    "Succeeded"
+                                ]
+                            },
+                            "type": "ParseJson",
+                            "inputs": {
+                                "content": "[concat('@outputs(''', variables('logicApps_ui')[parameters('language')].actionNames.flattenAndTranslate1, ''')?[''body'']')]",
+                                "schema": {
+                                    "properties": {
+                                        "[variables('logicApps_ui')[parameters('language')].variableNames.isFreeTrial]": {
+                                            "type": "boolean"
+                                        },
+                                        "[variables('logicApps_ui')[parameters('language')].variableNames.isTest]": {
+                                            "type": "boolean"
+                                        },
+                                        "[variables('logicApps_ui')[parameters('language')].variableNames.offerId]": {
+                                            "type": "string"
+                                        },
+                                        "[variables('logicApps_ui')[parameters('language')].variableNames.operationDateTimeUtc]": {
+                                            "type": "string"
+                                        },
+                                        "[variables('logicApps_ui')[parameters('language')].variableNames.operationId]": {
+                                            "type": "string"
+                                        },
+                                        "[variables('logicApps_ui')[parameters('language')].variableNames.planId]": {
+                                            "type": "string"
+                                        },
+                                        "[variables('logicApps_ui')[parameters('language')].variableNames.seatQty]": {
+                                            "type": "integer"
+                                        },
+                                        "[variables('logicApps_ui')[parameters('language')].variableNames.subscriptionId]": {
+                                            "type": "string"
+                                        },
+                                        "[variables('logicApps_ui')[parameters('language')].variableNames.subscriptionName]": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        },
+                        "[variables('logicApps_ui')[parameters('language')].actionNames.parseEventInfo2]": {
+                            "runAfter": {
+                                "[variables('logicApps_ui')[parameters('language')].actionNames.parseEventInfo1]": [
+                                    "Succeeded"
+                                ]
+                            },
+                            "type": "ParseJson",
+                            "inputs": {
+                                "content": "[concat('@outputs(''', variables('logicApps_ui')[parameters('language')].actionNames.flattenAndTranslate2, ''')?[''body'']')]",
+                                "schema": {
+                                    "properties": {
+                                        "[variables('logicApps_ui')[parameters('language')].variableNames.beneficiary.aadObjectId]": {
+                                            "type": "string"
+                                        },
+                                        "[variables('logicApps_ui')[parameters('language')].variableNames.beneficiary.aadTenantId]": {
+                                            "type": "string"
+                                        },
+                                        "[variables('logicApps_ui')[parameters('language')].variableNames.beneficiary.email]": {
+                                            "type": "string"
+                                        },
+                                        "[variables('logicApps_ui')[parameters('language')].variableNames.beneficiary.userId]": {
+                                            "type": "string"
+                                        },
+                                        "[variables('logicApps_ui')[parameters('language')].variableNames.purchaser.aadObjectId]": {
+                                            "type": "string"
+                                        },
+                                        "[variables('logicApps_ui')[parameters('language')].variableNames.purchaser.aadTenantId]": {
+                                            "type": "string"
+                                        },
+                                        "[variables('logicApps_ui')[parameters('language')].variableNames.purchaser.email]": {
+                                            "type": "string"
+                                        },
+                                        "[variables('logicApps_ui')[parameters('language')].variableNames.purchaser.userId]": {
+                                            "type": "string"
+                                        },
+                                        "[variables('logicApps_ui')[parameters('language')].variableNames.term.endDate]": {
+                                            "type": "string"
+                                        },
+                                        "[variables('logicApps_ui')[parameters('language')].variableNames.term.startDate]": {
+                                            "type": "string"
+                                        },
+                                        "[variables('logicApps_ui')[parameters('language')].variableNames.term.unit]": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "parameters": {
+                    "$connections": {
+                        "value": {
+                            "eventGrid": {
+                                "connectionId": "[resourceId('Microsoft.web/connections', variables('logicApps').eventGridConnectionName)]",
+                                "connectionName": "[variables('logicApps').eventGridConnectionName]",
+                                "id": "[concat(subscription().id, '/providers/Microsoft.Web/locations/', resourceGroup().location, '/managedApis/azureeventgrid')]"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        {
+            "type": "Microsoft.Logic/workflows",
+            "apiVersion": "2017-07-01",
+            "name": "[variables('logicApps').onPlanChanged.name]",
+            "location": "[resourceGroup().location]",
+            "tags": {
+                "mona:name": "[variables('logicApps_ui')[parameters('language')].appNames.onPlanChanged]",
+                "mona:description": "[variables('logicApps_ui')[parameters('language')].appDescriptions.onPlanChanged]",
+                "mona:event-type": "[variables('logicApps').onPlanChanged.triggerEventType]"
+            },
+            "dependsOn": [
+                "[variables('integrationAccountName')]",
+                "[variables('eventGridTopicName')]",
+                "[variables('logicApps').eventGridConnectionName]"
+            ],
+            "properties": {
+                "state": "[variables('logicApps').onPlanChanged.defaultState]",
+                "integrationAccount": {
+                    "id": "[resourceId('Microsoft.Logic/integrationAccounts', variables('integrationAccountName'))]"
+                },
+                "definition": {
+                    "$schema": "https://schema.management.azure.com/providers/Microsoft.Logic/schemas/2016-06-01/workflowdefinition.json#",
+                    "contentVersion": "1.0.0.0",
+                    "parameters": {
+                        "$connections": {
+                            "defaultValue": {},
+                            "type": "Object"
+                        }
+                    },
+                    "triggers": {
+                        "[variables('logicApps_ui')[parameters('language')].triggerNames.onPlanChanged]": {
+                            "splitOn": "@triggerBody()",
+                            "type": "ApiConnectionWebhook",
+                            "inputs": {
+                                "body": {
+                                    "properties": {
+                                        "destination": {
+                                            "endpointType": "webhook",
+                                            "properties": {
+                                                "endpointUrl": "@{listCallbackUrl()}"
+                                            }
+                                        },
+                                        "filter": {
+                                            "includedEventTypes": [
+                                                "[variables('logicApps').onPlanChanged.triggerEventType]"
+                                            ]
+                                        },
+                                        "topic": "[resourceId('Microsoft.EventGrid/topics', variables('eventGridTopicName'))]"
+                                    }
+                                },
+                                "host": {
+                                    "connection": {
+                                        "name": "@parameters('$connections')['eventGrid']['connectionId']"
+                                    }
+                                },
+                                "path": "[concat(subscription().id, '/providers/Microsoft.EventGrid.Topics/resource/eventSubscriptions')]",
+                                "queries": {
+                                    "x-ms-api-version": "2017-06-15-preview"
+                                }
+                            }
+                        }
+                    },
+                    "actions": {
+                        "[variables('logicApps_ui')[parameters('language')].actionNames.flattenAndTranslate1]": {
+                            "runAfter": {},
+                            "type": "JavaScriptCode",
+                            "inputs": {
+                                "code": "[concat('var eventData = workflowContext.trigger.outputs.body.data;\r\n\r\nreturn {\r\n \"',
+                                    variables('logicApps_ui')[parameters('language')].variableNames.newPlanId, '\": eventData.newPlanId,\r\n \"',
+                                    variables('logicApps_ui')[parameters('language')].variableNames.operationId, '\": eventData.operationId,\r\n \"',
+                                    variables('logicApps_ui')[parameters('language')].variableNames.operationDateTimeUtc, '\": eventData.operationDateTimeUtc,\r\n \"',
+                                    variables('logicApps_ui')[parameters('language')].variableNames.subscriptionId, '\": eventData.subscription.subscriptionId,\r\n \"',
+                                    variables('logicApps_ui')[parameters('language')].variableNames.subscriptionName, '\": eventData.subscription.subscriptionName,\r\n \"',
+                                    variables('logicApps_ui')[parameters('language')].variableNames.offerId, '\": eventData.subscription.offerId,\r\n \"',
+                                    variables('logicApps_ui')[parameters('language')].variableNames.planId, '\": eventData.subscription.planId,\r\n \"',
+                                    variables('logicApps_ui')[parameters('language')].variableNames.isTest, '\": eventData.subscription.isTest,\r\n \"',
+                                    variables('logicApps_ui')[parameters('language')].variableNames.isFreeTrial, '\": eventData.subscription.isFreeTrial,\r\n \"',
+                                    variables('logicApps_ui')[parameters('language')].variableNames.seatQty, '\": eventData.subscription.seatQuantity\r\n};')]"
+                            }
+                        },
+                        "[variables('logicApps_ui')[parameters('language')].actionNames.flattenAndTranslate2]": {
+                            "runAfter": {
+                                "[variables('logicApps_ui')[parameters('language')].actionNames.flattenAndTranslate1]": [
+                                    "Succeeded"
+                                ]
+                            },
+                            "type": "JavaScriptCode",
+                            "inputs": {
+                                "code": "[concat('var eventData = workflowContext.trigger.outputs.body.data;\r\n\r\nreturn {\r\n \"',
+                                    variables('logicApps_ui')[parameters('language')].variableNames.term.unit, '\": eventData.subscription.term.termUnit,\r\n \"',
+                                    variables('logicApps_ui')[parameters('language')].variableNames.term.startDate, '\": eventData.subscription.term.startDate,\r\n \"',
+                                    variables('logicApps_ui')[parameters('language')].variableNames.term.endDate, '\": eventData.subscription.term.endDate,\r\n \"',
+                                    variables('logicApps_ui')[parameters('language')].variableNames.beneficiary.userId, '\": eventData.subscription.beneficiary.userId,\r\n \"',
+                                    variables('logicApps_ui')[parameters('language')].variableNames.beneficiary.email, '\": eventData.subscription.beneficiary.userEmail,\r\n \"',
+                                    variables('logicApps_ui')[parameters('language')].variableNames.beneficiary.aadObjectId, '\": eventData.subscription.beneficiary.aadObjectId,\r\n \"',
+                                    variables('logicApps_ui')[parameters('language')].variableNames.beneficiary.aadTenantId, '\": eventData.subscription.beneficiary.aadTenantId,\r\n \"',
+                                    variables('logicApps_ui')[parameters('language')].variableNames.purchaser.userId, '\": eventData.subscription.purchaser.userId,\r\n \"',
+                                    variables('logicApps_ui')[parameters('language')].variableNames.purchaser.email, '\": eventData.subscription.purchaser.userEmail,\r\n \"',
+                                    variables('logicApps_ui')[parameters('language')].variableNames.purchaser.aadObjectId, '\": eventData.subscription.purchaser.aadObjectId,\r\n \"',
+                                    variables('logicApps_ui')[parameters('language')].variableNames.purchaser.aadTenantId, '\": eventData.subscription.purchaser.aadTenantId\r\n};')]"
+                            }
+                        },
+                        "[variables('logicApps_ui')[parameters('language')].actionNames.parseEventInfo1]": {
+                            "runAfter": {
+                                "[variables('logicApps_ui')[parameters('language')].actionNames.flattenAndTranslate2]": [
+                                    "Succeeded"
+                                ]
+                            },
+                            "type": "ParseJson",
+                            "inputs": {
+                                "content": "[concat('@outputs(''', variables('logicApps_ui')[parameters('language')].actionNames.flattenAndTranslate1, ''')?[''body'']')]",
+                                "schema": {
+                                    "properties": {
+                                        "[variables('logicApps_ui')[parameters('language')].variableNames.isFreeTrial]": {
+                                            "type": "boolean"
+                                        },
+                                        "[variables('logicApps_ui')[parameters('language')].variableNames.isTest]": {
+                                            "type": "boolean"
+                                        },
+                                        "[variables('logicApps_ui')[parameters('language')].variableNames.newPlanId]": {
+                                            "type": "string"
+                                        },
+                                        "[variables('logicApps_ui')[parameters('language')].variableNames.offerId]": {
+                                            "type": "string"
+                                        },
+                                        "[variables('logicApps_ui')[parameters('language')].variableNames.operationDateTimeUtc]": {
+                                            "type": "string"
+                                        },
+                                        "[variables('logicApps_ui')[parameters('language')].variableNames.operationId]": {
+                                            "type": "string"
+                                        },
+                                        "[variables('logicApps_ui')[parameters('language')].variableNames.planId]": {
+                                            "type": "string"
+                                        },
+                                        "[variables('logicApps_ui')[parameters('language')].variableNames.seatQty]": {
+                                            "type": "integer"
+                                        },
+                                        "[variables('logicApps_ui')[parameters('language')].variableNames.subscriptionId]": {
+                                            "type": "string"
+                                        },
+                                        "[variables('logicApps_ui')[parameters('language')].variableNames.subscriptionName]": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        },
+                        "[variables('logicApps_ui')[parameters('language')].actionNames.parseEventInfo2]": {
+                            "runAfter": {
+                                "[variables('logicApps_ui')[parameters('language')].actionNames.parseEventInfo1]": [
+                                    "Succeeded"
+                                ]
+                            },
+                            "type": "ParseJson",
+                            "inputs": {
+                                "content": "[concat('@outputs(''', variables('logicApps_ui')[parameters('language')].actionNames.flattenAndTranslate2, ''')?[''body'']')]",
+                                "schema": {
+                                    "properties": {
+                                        "[variables('logicApps_ui')[parameters('language')].variableNames.beneficiary.aadObjectId]": {
+                                            "type": "string"
+                                        },
+                                        "[variables('logicApps_ui')[parameters('language')].variableNames.beneficiary.aadTenantId]": {
+                                            "type": "string"
+                                        },
+                                        "[variables('logicApps_ui')[parameters('language')].variableNames.beneficiary.email]": {
+                                            "type": "string"
+                                        },
+                                        "[variables('logicApps_ui')[parameters('language')].variableNames.beneficiary.userId]": {
+                                            "type": "string"
+                                        },
+                                        "[variables('logicApps_ui')[parameters('language')].variableNames.purchaser.aadObjectId]": {
+                                            "type": "string"
+                                        },
+                                        "[variables('logicApps_ui')[parameters('language')].variableNames.purchaser.aadTenantId]": {
+                                            "type": "string"
+                                        },
+                                        "[variables('logicApps_ui')[parameters('language')].variableNames.purchaser.email]": {
+                                            "type": "string"
+                                        },
+                                        "[variables('logicApps_ui')[parameters('language')].variableNames.purchaser.userId]": {
+                                            "type": "string"
+                                        },
+                                        "[variables('logicApps_ui')[parameters('language')].variableNames.term.endDate]": {
+                                            "type": "string"
+                                        },
+                                        "[variables('logicApps_ui')[parameters('language')].variableNames.term.startDate]": {
+                                            "type": "string"
+                                        },
+                                        "[variables('logicApps_ui')[parameters('language')].variableNames.term.unit]": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "parameters": {
+                    "$connections": {
+                        "value": {
+                            "eventGrid": {
+                                "connectionId": "[resourceId('Microsoft.web/connections', variables('logicApps').eventGridConnectionName)]",
+                                "connectionName": "[variables('logicApps').eventGridConnectionName]",
+                                "id": "[concat(subscription().id, '/providers/Microsoft.Web/locations/', resourceGroup().location, '/managedApis/azureeventgrid')]"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        {
+            "type": "Microsoft.Logic/workflows",
+            "apiVersion": "2017-07-01",
+            "name": "[variables('logicApps').onSeatQtyChanged.name]",
+            "location": "[resourceGroup().location]",
+            "tags": {
+                "mona:name": "[variables('logicApps_ui')[parameters('language')].appNames.onSeatQtyChanged]",
+                "mona:description": "[variables('logicApps_ui')[parameters('language')].appDescriptions.onSeatQtyChanged]",
+                "mona:event-type": "[variables('logicApps').onSeatQtyChanged.triggerEventType]"
+            },
+            "dependsOn": [
+                "[variables('integrationAccountName')]",
+                "[variables('eventGridTopicName')]",
+                "[variables('logicApps').eventGridConnectionName]"
+            ],
+            "properties": {
+                "state": "[variables('logicApps').onSeatQtyChanged.defaultState]",
+                "integrationAccount": {
+                    "id": "[resourceId('Microsoft.Logic/integrationAccounts', variables('integrationAccountName'))]"
+                },
+                "definition": {
+                    "$schema": "https://schema.management.azure.com/providers/Microsoft.Logic/schemas/2016-06-01/workflowdefinition.json#",
+                    "contentVersion": "1.0.0.0",
+                    "parameters": {
+                        "$connections": {
+                            "defaultValue": {},
+                            "type": "Object"
+                        }
+                    },
+                    "triggers": {
+                        "[variables('logicApps_ui')[parameters('language')].triggerNames.onSeatQtyChanged]": {
+                            "splitOn": "@triggerBody()",
+                            "type": "ApiConnectionWebhook",
+                            "inputs": {
+                                "body": {
+                                    "properties": {
+                                        "destination": {
+                                            "endpointType": "webhook",
+                                            "properties": {
+                                                "endpointUrl": "@{listCallbackUrl()}"
+                                            }
+                                        },
+                                        "filter": {
+                                            "includedEventTypes": [
+                                                "[variables('logicApps').onSeatQtyChanged.triggerEventType]"
+                                            ]
+                                        },
+                                        "topic": "[resourceId('Microsoft.EventGrid/topics', variables('eventGridTopicName'))]"
+                                    }
+                                },
+                                "host": {
+                                    "connection": {
+                                        "name": "@parameters('$connections')['eventGrid']['connectionId']"
+                                    }
+                                },
+                                "path": "[concat(subscription().id, '/providers/Microsoft.EventGrid.Topics/resource/eventSubscriptions')]",
+                                "queries": {
+                                    "x-ms-api-version": "2017-06-15-preview"
+                                }
+                            }
+                        }
+                    },
+                    "actions": {
+                        "[variables('logicApps_ui')[parameters('language')].actionNames.flattenAndTranslate1]": {
+                            "runAfter": {},
+                            "type": "JavaScriptCode",
+                            "inputs": {
+                                "code": "[concat('var eventData = workflowContext.trigger.outputs.body.data;\r\n\r\nreturn {\r\n \"',
+                                    variables('logicApps_ui')[parameters('language')].variableNames.newSeatQty, '\": eventData.newSeatQuantity,\r\n \"',
+                                    variables('logicApps_ui')[parameters('language')].variableNames.operationId, '\": eventData.operationId,\r\n \"',
+                                    variables('logicApps_ui')[parameters('language')].variableNames.operationDateTimeUtc, '\": eventData.operationDateTimeUtc,\r\n \"',
+                                    variables('logicApps_ui')[parameters('language')].variableNames.subscriptionId, '\": eventData.subscription.subscriptionId,\r\n \"',
+                                    variables('logicApps_ui')[parameters('language')].variableNames.subscriptionName, '\": eventData.subscription.subscriptionName,\r\n \"',
+                                    variables('logicApps_ui')[parameters('language')].variableNames.offerId, '\": eventData.subscription.offerId,\r\n \"',
+                                    variables('logicApps_ui')[parameters('language')].variableNames.planId, '\": eventData.subscription.planId,\r\n \"',
+                                    variables('logicApps_ui')[parameters('language')].variableNames.isTest, '\": eventData.subscription.isTest,\r\n \"',
+                                    variables('logicApps_ui')[parameters('language')].variableNames.isFreeTrial, '\": eventData.subscription.isFreeTrial,\r\n \"',
+                                    variables('logicApps_ui')[parameters('language')].variableNames.seatQty, '\": eventData.subscription.seatQuantity\r\n};')]"
+                            }
+                        },
+                        "[variables('logicApps_ui')[parameters('language')].actionNames.flattenAndTranslate2]": {
+                            "runAfter": {
+                                "[variables('logicApps_ui')[parameters('language')].actionNames.flattenAndTranslate1]": [
+                                    "Succeeded"
+                                ]
+                            },
+                            "type": "JavaScriptCode",
+                            "inputs": {
+                                "code": "[concat('var eventData = workflowContext.trigger.outputs.body.data;\r\n\r\nreturn {\r\n \"',
+                                    variables('logicApps_ui')[parameters('language')].variableNames.term.unit, '\": eventData.subscription.term.termUnit,\r\n \"',
+                                    variables('logicApps_ui')[parameters('language')].variableNames.term.startDate, '\": eventData.subscription.term.startDate,\r\n \"',
+                                    variables('logicApps_ui')[parameters('language')].variableNames.term.endDate, '\": eventData.subscription.term.endDate,\r\n \"',
+                                    variables('logicApps_ui')[parameters('language')].variableNames.beneficiary.userId, '\": eventData.subscription.beneficiary.userId,\r\n \"',
+                                    variables('logicApps_ui')[parameters('language')].variableNames.beneficiary.email, '\": eventData.subscription.beneficiary.userEmail,\r\n \"',
+                                    variables('logicApps_ui')[parameters('language')].variableNames.beneficiary.aadObjectId, '\": eventData.subscription.beneficiary.aadObjectId,\r\n \"',
+                                    variables('logicApps_ui')[parameters('language')].variableNames.beneficiary.aadTenantId, '\": eventData.subscription.beneficiary.aadTenantId,\r\n \"',
+                                    variables('logicApps_ui')[parameters('language')].variableNames.purchaser.userId, '\": eventData.subscription.purchaser.userId,\r\n \"',
+                                    variables('logicApps_ui')[parameters('language')].variableNames.purchaser.email, '\": eventData.subscription.purchaser.userEmail,\r\n \"',
+                                    variables('logicApps_ui')[parameters('language')].variableNames.purchaser.aadObjectId, '\": eventData.subscription.purchaser.aadObjectId,\r\n \"',
+                                    variables('logicApps_ui')[parameters('language')].variableNames.purchaser.aadTenantId, '\": eventData.subscription.purchaser.aadTenantId\r\n};')]"
+                            }
+                        },
+                        "[variables('logicApps_ui')[parameters('language')].actionNames.parseEventInfo1]": {
+                            "runAfter": {
+                                "[variables('logicApps_ui')[parameters('language')].actionNames.flattenAndTranslate2]": [
+                                    "Succeeded"
+                                ]
+                            },
+                            "type": "ParseJson",
+                            "inputs": {
+                                "content": "[concat('@outputs(''', variables('logicApps_ui')[parameters('language')].actionNames.flattenAndTranslate1, ''')?[''body'']')]",
+                                "schema": {
+                                    "properties": {
+                                        "[variables('logicApps_ui')[parameters('language')].variableNames.newSeatQty]": {
+                                            "type": "integer"
+                                        },
+                                        "[variables('logicApps_ui')[parameters('language')].variableNames.isFreeTrial]": {
+                                            "type": "boolean"
+                                        },
+                                        "[variables('logicApps_ui')[parameters('language')].variableNames.isTest]": {
+                                            "type": "boolean"
+                                        },
+                                        "[variables('logicApps_ui')[parameters('language')].variableNames.offerId]": {
+                                            "type": "string"
+                                        },
+                                        "[variables('logicApps_ui')[parameters('language')].variableNames.operationDateTimeUtc]": {
+                                            "type": "string"
+                                        },
+                                        "[variables('logicApps_ui')[parameters('language')].variableNames.operationId]": {
+                                            "type": "string"
+                                        },
+                                        "[variables('logicApps_ui')[parameters('language')].variableNames.planId]": {
+                                            "type": "string"
+                                        },
+                                        "[variables('logicApps_ui')[parameters('language')].variableNames.seatQty]": {
+                                            "type": "integer"
+                                        },
+                                        "[variables('logicApps_ui')[parameters('language')].variableNames.subscriptionId]": {
+                                            "type": "string"
+                                        },
+                                        "[variables('logicApps_ui')[parameters('language')].variableNames.subscriptionName]": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        },
+                        "[variables('logicApps_ui')[parameters('language')].actionNames.parseEventInfo2]": {
+                            "runAfter": {
+                                "[variables('logicApps_ui')[parameters('language')].actionNames.parseEventInfo1]": [
+                                    "Succeeded"
+                                ]
+                            },
+                            "type": "ParseJson",
+                            "inputs": {
+                                "content": "[concat('@outputs(''', variables('logicApps_ui')[parameters('language')].actionNames.flattenAndTranslate2, ''')?[''body'']')]",
+                                "schema": {
+                                    "properties": {
+                                        "[variables('logicApps_ui')[parameters('language')].variableNames.beneficiary.aadObjectId]": {
+                                            "type": "string"
+                                        },
+                                        "[variables('logicApps_ui')[parameters('language')].variableNames.beneficiary.aadTenantId]": {
+                                            "type": "string"
+                                        },
+                                        "[variables('logicApps_ui')[parameters('language')].variableNames.beneficiary.email]": {
+                                            "type": "string"
+                                        },
+                                        "[variables('logicApps_ui')[parameters('language')].variableNames.beneficiary.userId]": {
+                                            "type": "string"
+                                        },
+                                        "[variables('logicApps_ui')[parameters('language')].variableNames.purchaser.aadObjectId]": {
+                                            "type": "string"
+                                        },
+                                        "[variables('logicApps_ui')[parameters('language')].variableNames.purchaser.aadTenantId]": {
+                                            "type": "string"
+                                        },
+                                        "[variables('logicApps_ui')[parameters('language')].variableNames.purchaser.email]": {
+                                            "type": "string"
+                                        },
+                                        "[variables('logicApps_ui')[parameters('language')].variableNames.purchaser.userId]": {
+                                            "type": "string"
+                                        },
+                                        "[variables('logicApps_ui')[parameters('language')].variableNames.term.endDate]": {
+                                            "type": "string"
+                                        },
+                                        "[variables('logicApps_ui')[parameters('language')].variableNames.term.startDate]": {
+                                            "type": "string"
+                                        },
+                                        "[variables('logicApps_ui')[parameters('language')].variableNames.term.unit]": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "parameters": {
+                    "$connections": {
+                        "value": {
+                            "eventGrid": {
+                                "connectionId": "[resourceId('Microsoft.web/connections', variables('logicApps').eventGridConnectionName)]",
+                                "connectionName": "[variables('logicApps').eventGridConnectionName]",
+                                "id": "[concat(subscription().id, '/providers/Microsoft.Web/locations/', resourceGroup().location, '/managedApis/azureeventgrid')]"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        {
+            "type": "Microsoft.Logic/workflows",
+            "apiVersion": "2017-07-01",
+            "name": "[variables('logicApps').onSuspended.name]",
+            "location": "[resourceGroup().location]",
+            "tags": {
+                "mona:name": "[variables('logicApps_ui')[parameters('language')].appNames.onSuspended]",
+                "mona:description": "[variables('logicApps_ui')[parameters('language')].appDescriptions.onSuspended]",
+                "mona:event-type": "[variables('logicApps').onSuspended.triggerEventType]"
+            },
+            "dependsOn": [
+                "[variables('integrationAccountName')]",
+                "[variables('eventGridTopicName')]",
+                "[variables('logicApps').eventGridConnectionName]"
+            ],
+            "properties": {
+                "state": "[variables('logicApps').onSuspended.defaultState]",
+                "integrationAccount": {
+                    "id": "[resourceId('Microsoft.Logic/integrationAccounts', variables('integrationAccountName'))]"
+                },
+                "definition": {
+                    "$schema": "https://schema.management.azure.com/providers/Microsoft.Logic/schemas/2016-06-01/workflowdefinition.json#",
+                    "contentVersion": "1.0.0.0",
+                    "parameters": {
+                        "$connections": {
+                            "defaultValue": {},
+                            "type": "Object"
+                        }
+                    },
+                    "triggers": {
+                        "[variables('logicApps_ui')[parameters('language')].triggerNames.onSuspended]": {
+                            "splitOn": "@triggerBody()",
+                            "type": "ApiConnectionWebhook",
+                            "inputs": {
+                                "body": {
+                                    "properties": {
+                                        "destination": {
+                                            "endpointType": "webhook",
+                                            "properties": {
+                                                "endpointUrl": "@{listCallbackUrl()}"
+                                            }
+                                        },
+                                        "filter": {
+                                            "includedEventTypes": [
+                                                "[variables('logicApps').onSuspended.triggerEventType]"
+                                            ]
+                                        },
+                                        "topic": "[resourceId('Microsoft.EventGrid/topics', variables('eventGridTopicName'))]"
+                                    }
+                                },
+                                "host": {
+                                    "connection": {
+                                        "name": "@parameters('$connections')['eventGrid']['connectionId']"
+                                    }
+                                },
+                                "path": "[concat(subscription().id, '/providers/Microsoft.EventGrid.Topics/resource/eventSubscriptions')]",
+                                "queries": {
+                                    "x-ms-api-version": "2017-06-15-preview"
+                                }
+                            }
+                        }
+                    },
+                    "actions": {
+                        "[variables('logicApps_ui')[parameters('language')].actionNames.flattenAndTranslate1]": {
+                            "runAfter": {},
+                            "type": "JavaScriptCode",
+                            "inputs": {
+                                "code": "[concat('var eventData = workflowContext.trigger.outputs.body.data;\r\n\r\nreturn {\r\n \"',
+                                    variables('logicApps_ui')[parameters('language')].variableNames.operationId, '\": eventData.operationId,\r\n \"',
+                                    variables('logicApps_ui')[parameters('language')].variableNames.operationDateTimeUtc, '\": eventData.operationDateTimeUtc,\r\n \"',
+                                    variables('logicApps_ui')[parameters('language')].variableNames.subscriptionId, '\": eventData.subscription.subscriptionId,\r\n \"',
+                                    variables('logicApps_ui')[parameters('language')].variableNames.subscriptionName, '\": eventData.subscription.subscriptionName,\r\n \"',
+                                    variables('logicApps_ui')[parameters('language')].variableNames.offerId, '\": eventData.subscription.offerId,\r\n \"',
+                                    variables('logicApps_ui')[parameters('language')].variableNames.planId, '\": eventData.subscription.planId,\r\n \"',
+                                    variables('logicApps_ui')[parameters('language')].variableNames.isTest, '\": eventData.subscription.isTest,\r\n \"',
+                                    variables('logicApps_ui')[parameters('language')].variableNames.isFreeTrial, '\": eventData.subscription.isFreeTrial,\r\n \"',
+                                    variables('logicApps_ui')[parameters('language')].variableNames.seatQty, '\": eventData.subscription.seatQuantity\r\n};')]"
+                            }
+                        },
+                        "[variables('logicApps_ui')[parameters('language')].actionNames.flattenAndTranslate2]": {
+                            "runAfter": {
+                                "[variables('logicApps_ui')[parameters('language')].actionNames.flattenAndTranslate1]": [
+                                    "Succeeded"
+                                ]
+                            },
+                            "type": "JavaScriptCode",
+                            "inputs": {
+                                "code": "[concat('var eventData = workflowContext.trigger.outputs.body.data;\r\n\r\nreturn {\r\n \"',
+                                    variables('logicApps_ui')[parameters('language')].variableNames.term.unit, '\": eventData.subscription.term.termUnit,\r\n \"',
+                                    variables('logicApps_ui')[parameters('language')].variableNames.term.startDate, '\": eventData.subscription.term.startDate,\r\n \"',
+                                    variables('logicApps_ui')[parameters('language')].variableNames.term.endDate, '\": eventData.subscription.term.endDate,\r\n \"',
+                                    variables('logicApps_ui')[parameters('language')].variableNames.beneficiary.userId, '\": eventData.subscription.beneficiary.userId,\r\n \"',
+                                    variables('logicApps_ui')[parameters('language')].variableNames.beneficiary.email, '\": eventData.subscription.beneficiary.userEmail,\r\n \"',
+                                    variables('logicApps_ui')[parameters('language')].variableNames.beneficiary.aadObjectId, '\": eventData.subscription.beneficiary.aadObjectId,\r\n \"',
+                                    variables('logicApps_ui')[parameters('language')].variableNames.beneficiary.aadTenantId, '\": eventData.subscription.beneficiary.aadTenantId,\r\n \"',
+                                    variables('logicApps_ui')[parameters('language')].variableNames.purchaser.userId, '\": eventData.subscription.purchaser.userId,\r\n \"',
+                                    variables('logicApps_ui')[parameters('language')].variableNames.purchaser.email, '\": eventData.subscription.purchaser.userEmail,\r\n \"',
+                                    variables('logicApps_ui')[parameters('language')].variableNames.purchaser.aadObjectId, '\": eventData.subscription.purchaser.aadObjectId,\r\n \"',
+                                    variables('logicApps_ui')[parameters('language')].variableNames.purchaser.aadTenantId, '\": eventData.subscription.purchaser.aadTenantId\r\n};')]"
+                            }
+                        },
+                        "[variables('logicApps_ui')[parameters('language')].actionNames.parseEventInfo1]": {
+                            "runAfter": {
+                                "[variables('logicApps_ui')[parameters('language')].actionNames.flattenAndTranslate2]": [
+                                    "Succeeded"
+                                ]
+                            },
+                            "type": "ParseJson",
+                            "inputs": {
+                                "content": "[concat('@outputs(''', variables('logicApps_ui')[parameters('language')].actionNames.flattenAndTranslate1, ''')?[''body'']')]",
+                                "schema": {
+                                    "properties": {
+                                        "[variables('logicApps_ui')[parameters('language')].variableNames.isFreeTrial]": {
+                                            "type": "boolean"
+                                        },
+                                        "[variables('logicApps_ui')[parameters('language')].variableNames.isTest]": {
+                                            "type": "boolean"
+                                        },
+                                        "[variables('logicApps_ui')[parameters('language')].variableNames.offerId]": {
+                                            "type": "string"
+                                        },
+                                        "[variables('logicApps_ui')[parameters('language')].variableNames.operationDateTimeUtc]": {
+                                            "type": "string"
+                                        },
+                                        "[variables('logicApps_ui')[parameters('language')].variableNames.operationId]": {
+                                            "type": "string"
+                                        },
+                                        "[variables('logicApps_ui')[parameters('language')].variableNames.planId]": {
+                                            "type": "string"
+                                        },
+                                        "[variables('logicApps_ui')[parameters('language')].variableNames.seatQty]": {
+                                            "type": "integer"
+                                        },
+                                        "[variables('logicApps_ui')[parameters('language')].variableNames.subscriptionId]": {
+                                            "type": "string"
+                                        },
+                                        "[variables('logicApps_ui')[parameters('language')].variableNames.subscriptionName]": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        },
+                        "[variables('logicApps_ui')[parameters('language')].actionNames.parseEventInfo2]": {
+                            "runAfter": {
+                                "[variables('logicApps_ui')[parameters('language')].actionNames.parseEventInfo1]": [
+                                    "Succeeded"
+                                ]
+                            },
+                            "type": "ParseJson",
+                            "inputs": {
+                                "content": "[concat('@outputs(''', variables('logicApps_ui')[parameters('language')].actionNames.flattenAndTranslate2, ''')?[''body'']')]",
+                                "schema": {
+                                    "properties": {
+                                        "[variables('logicApps_ui')[parameters('language')].variableNames.beneficiary.aadObjectId]": {
+                                            "type": "string"
+                                        },
+                                        "[variables('logicApps_ui')[parameters('language')].variableNames.beneficiary.aadTenantId]": {
+                                            "type": "string"
+                                        },
+                                        "[variables('logicApps_ui')[parameters('language')].variableNames.beneficiary.email]": {
+                                            "type": "string"
+                                        },
+                                        "[variables('logicApps_ui')[parameters('language')].variableNames.beneficiary.userId]": {
+                                            "type": "string"
+                                        },
+                                        "[variables('logicApps_ui')[parameters('language')].variableNames.purchaser.aadObjectId]": {
+                                            "type": "string"
+                                        },
+                                        "[variables('logicApps_ui')[parameters('language')].variableNames.purchaser.aadTenantId]": {
+                                            "type": "string"
+                                        },
+                                        "[variables('logicApps_ui')[parameters('language')].variableNames.purchaser.email]": {
+                                            "type": "string"
+                                        },
+                                        "[variables('logicApps_ui')[parameters('language')].variableNames.purchaser.userId]": {
+                                            "type": "string"
+                                        },
+                                        "[variables('logicApps_ui')[parameters('language')].variableNames.term.endDate]": {
+                                            "type": "string"
+                                        },
+                                        "[variables('logicApps_ui')[parameters('language')].variableNames.term.startDate]": {
+                                            "type": "string"
+                                        },
+                                        "[variables('logicApps_ui')[parameters('language')].variableNames.term.unit]": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "parameters": {
+                    "$connections": {
+                        "value": {
+                            "eventGrid": {
+                                "connectionId": "[resourceId('Microsoft.web/connections', variables('logicApps').eventGridConnectionName)]",
+                                "connectionName": "[variables('logicApps').eventGridConnectionName]",
+                                "id": "[concat(subscription().id, '/providers/Microsoft.Web/locations/', resourceGroup().location, '/managedApis/azureeventgrid')]"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        {
+            "type": "Microsoft.Logic/workflows",
+            "apiVersion": "2017-07-01",
+            "name": "[variables('logicApps').onReinstated.name]",
+            "location": "[resourceGroup().location]",
+            "tags": {
+                "mona:name": "[variables('logicApps_ui')[parameters('language')].appNames.onReinstated]",
+                "mona:description": "[variables('logicApps_ui')[parameters('language')].appDescriptions.onReinstated]",
+                "mona:event-type": "[variables('logicApps').onReinstated.triggerEventType]"
+            },
+            "dependsOn": [
+                "[variables('integrationAccountName')]",
+                "[variables('eventGridTopicName')]",
+                "[variables('logicApps').eventGridConnectionName]"
+            ],
+            "properties": {
+                "state": "[variables('logicApps').onReinstated.defaultState]",
+                "integrationAccount": {
+                    "id": "[resourceId('Microsoft.Logic/integrationAccounts', variables('integrationAccountName'))]"
+                },
+                "definition": {
+                    "$schema": "https://schema.management.azure.com/providers/Microsoft.Logic/schemas/2016-06-01/workflowdefinition.json#",
+                    "contentVersion": "1.0.0.0",
+                    "parameters": {
+                        "$connections": {
+                            "defaultValue": {},
+                            "type": "Object"
+                        }
+                    },
+                    "triggers": {
+                        "[variables('logicApps_ui')[parameters('language')].triggerNames.onReinstated]": {
+                            "splitOn": "@triggerBody()",
+                            "type": "ApiConnectionWebhook",
+                            "inputs": {
+                                "body": {
+                                    "properties": {
+                                        "destination": {
+                                            "endpointType": "webhook",
+                                            "properties": {
+                                                "endpointUrl": "@{listCallbackUrl()}"
+                                            }
+                                        },
+                                        "filter": {
+                                            "includedEventTypes": [
+                                                "[variables('logicApps').onReinstated.triggerEventType]"
+                                            ]
+                                        },
+                                        "topic": "[resourceId('Microsoft.EventGrid/topics', variables('eventGridTopicName'))]"
+                                    }
+                                },
+                                "host": {
+                                    "connection": {
+                                        "name": "@parameters('$connections')['eventGrid']['connectionId']"
+                                    }
+                                },
+                                "path": "[concat(subscription().id, '/providers/Microsoft.EventGrid.Topics/resource/eventSubscriptions')]",
+                                "queries": {
+                                    "x-ms-api-version": "2017-06-15-preview"
+                                }
+                            }
+                        }
+                    },
+                    "actions": {
+                        "[variables('logicApps_ui')[parameters('language')].actionNames.flattenAndTranslate1]": {
+                            "runAfter": {},
+                            "type": "JavaScriptCode",
+                            "inputs": {
+                                "code": "[concat('var eventData = workflowContext.trigger.outputs.body.data;\r\n\r\nreturn {\r\n \"',
+                                    variables('logicApps_ui')[parameters('language')].variableNames.operationId, '\": eventData.operationId,\r\n \"',
+                                    variables('logicApps_ui')[parameters('language')].variableNames.operationDateTimeUtc, '\": eventData.operationDateTimeUtc,\r\n \"',
+                                    variables('logicApps_ui')[parameters('language')].variableNames.subscriptionId, '\": eventData.subscription.subscriptionId,\r\n \"',
+                                    variables('logicApps_ui')[parameters('language')].variableNames.subscriptionName, '\": eventData.subscription.subscriptionName,\r\n \"',
+                                    variables('logicApps_ui')[parameters('language')].variableNames.offerId, '\": eventData.subscription.offerId,\r\n \"',
+                                    variables('logicApps_ui')[parameters('language')].variableNames.planId, '\": eventData.subscription.planId,\r\n \"',
+                                    variables('logicApps_ui')[parameters('language')].variableNames.isTest, '\": eventData.subscription.isTest,\r\n \"',
+                                    variables('logicApps_ui')[parameters('language')].variableNames.isFreeTrial, '\": eventData.subscription.isFreeTrial,\r\n \"',
+                                    variables('logicApps_ui')[parameters('language')].variableNames.seatQty, '\": eventData.subscription.seatQuantity\r\n};')]"
+                            }
+                        },
+                        "[variables('logicApps_ui')[parameters('language')].actionNames.flattenAndTranslate2]": {
+                            "runAfter": {
+                                "[variables('logicApps_ui')[parameters('language')].actionNames.flattenAndTranslate1]": [
+                                    "Succeeded"
+                                ]
+                            },
+                            "type": "JavaScriptCode",
+                            "inputs": {
+                                "code": "[concat('var eventData = workflowContext.trigger.outputs.body.data;\r\n\r\nreturn {\r\n \"',
+                                    variables('logicApps_ui')[parameters('language')].variableNames.term.unit, '\": eventData.subscription.term.termUnit,\r\n \"',
+                                    variables('logicApps_ui')[parameters('language')].variableNames.term.startDate, '\": eventData.subscription.term.startDate,\r\n \"',
+                                    variables('logicApps_ui')[parameters('language')].variableNames.term.endDate, '\": eventData.subscription.term.endDate,\r\n \"',
+                                    variables('logicApps_ui')[parameters('language')].variableNames.beneficiary.userId, '\": eventData.subscription.beneficiary.userId,\r\n \"',
+                                    variables('logicApps_ui')[parameters('language')].variableNames.beneficiary.email, '\": eventData.subscription.beneficiary.userEmail,\r\n \"',
+                                    variables('logicApps_ui')[parameters('language')].variableNames.beneficiary.aadObjectId, '\": eventData.subscription.beneficiary.aadObjectId,\r\n \"',
+                                    variables('logicApps_ui')[parameters('language')].variableNames.beneficiary.aadTenantId, '\": eventData.subscription.beneficiary.aadTenantId,\r\n \"',
+                                    variables('logicApps_ui')[parameters('language')].variableNames.purchaser.userId, '\": eventData.subscription.purchaser.userId,\r\n \"',
+                                    variables('logicApps_ui')[parameters('language')].variableNames.purchaser.email, '\": eventData.subscription.purchaser.userEmail,\r\n \"',
+                                    variables('logicApps_ui')[parameters('language')].variableNames.purchaser.aadObjectId, '\": eventData.subscription.purchaser.aadObjectId,\r\n \"',
+                                    variables('logicApps_ui')[parameters('language')].variableNames.purchaser.aadTenantId, '\": eventData.subscription.purchaser.aadTenantId\r\n};')]"
+                            }
+                        },
+                        "[variables('logicApps_ui')[parameters('language')].actionNames.parseEventInfo1]": {
+                            "runAfter": {
+                                "[variables('logicApps_ui')[parameters('language')].actionNames.flattenAndTranslate2]": [
+                                    "Succeeded"
+                                ]
+                            },
+                            "type": "ParseJson",
+                            "inputs": {
+                                "content": "[concat('@outputs(''', variables('logicApps_ui')[parameters('language')].actionNames.flattenAndTranslate1, ''')?[''body'']')]",
+                                "schema": {
+                                    "properties": {
+                                        "[variables('logicApps_ui')[parameters('language')].variableNames.isFreeTrial]": {
+                                            "type": "boolean"
+                                        },
+                                        "[variables('logicApps_ui')[parameters('language')].variableNames.isTest]": {
+                                            "type": "boolean"
+                                        },
+                                        "[variables('logicApps_ui')[parameters('language')].variableNames.offerId]": {
+                                            "type": "string"
+                                        },
+                                        "[variables('logicApps_ui')[parameters('language')].variableNames.operationDateTimeUtc]": {
+                                            "type": "string"
+                                        },
+                                        "[variables('logicApps_ui')[parameters('language')].variableNames.operationId]": {
+                                            "type": "string"
+                                        },
+                                        "[variables('logicApps_ui')[parameters('language')].variableNames.planId]": {
+                                            "type": "string"
+                                        },
+                                        "[variables('logicApps_ui')[parameters('language')].variableNames.seatQty]": {
+                                            "type": "integer"
+                                        },
+                                        "[variables('logicApps_ui')[parameters('language')].variableNames.subscriptionId]": {
+                                            "type": "string"
+                                        },
+                                        "[variables('logicApps_ui')[parameters('language')].variableNames.subscriptionName]": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        },
+                        "[variables('logicApps_ui')[parameters('language')].actionNames.parseEventInfo2]": {
+                            "runAfter": {
+                                "[variables('logicApps_ui')[parameters('language')].actionNames.parseEventInfo1]": [
+                                    "Succeeded"
+                                ]
+                            },
+                            "type": "ParseJson",
+                            "inputs": {
+                                "content": "[concat('@outputs(''', variables('logicApps_ui')[parameters('language')].actionNames.flattenAndTranslate2, ''')?[''body'']')]",
+                                "schema": {
+                                    "properties": {
+                                        "[variables('logicApps_ui')[parameters('language')].variableNames.beneficiary.aadObjectId]": {
+                                            "type": "string"
+                                        },
+                                        "[variables('logicApps_ui')[parameters('language')].variableNames.beneficiary.aadTenantId]": {
+                                            "type": "string"
+                                        },
+                                        "[variables('logicApps_ui')[parameters('language')].variableNames.beneficiary.email]": {
+                                            "type": "string"
+                                        },
+                                        "[variables('logicApps_ui')[parameters('language')].variableNames.beneficiary.userId]": {
+                                            "type": "string"
+                                        },
+                                        "[variables('logicApps_ui')[parameters('language')].variableNames.purchaser.aadObjectId]": {
+                                            "type": "string"
+                                        },
+                                        "[variables('logicApps_ui')[parameters('language')].variableNames.purchaser.aadTenantId]": {
+                                            "type": "string"
+                                        },
+                                        "[variables('logicApps_ui')[parameters('language')].variableNames.purchaser.email]": {
+                                            "type": "string"
+                                        },
+                                        "[variables('logicApps_ui')[parameters('language')].variableNames.purchaser.userId]": {
+                                            "type": "string"
+                                        },
+                                        "[variables('logicApps_ui')[parameters('language')].variableNames.term.endDate]": {
+                                            "type": "string"
+                                        },
+                                        "[variables('logicApps_ui')[parameters('language')].variableNames.term.startDate]": {
+                                            "type": "string"
+                                        },
+                                        "[variables('logicApps_ui')[parameters('language')].variableNames.term.unit]": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "parameters": {
+                    "$connections": {
+                        "value": {
+                            "eventGrid": {
+                                "connectionId": "[resourceId('Microsoft.web/connections', variables('logicApps').eventGridConnectionName)]",
+                                "connectionName": "[variables('logicApps').eventGridConnectionName]",
+                                "id": "[concat(subscription().id, '/providers/Microsoft.Web/locations/', resourceGroup().location, '/managedApis/azureeventgrid')]"
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    ],
+    "outputs": {
+        "resourceGroupName": {
+            "type": "string",
+            "value": "[resourceGroup().name]"
+        },
+        "subscriptionId": {
+            "type": "string",
+            "value": "[subscription().subscriptionId]"
+        },
+        "deploymentName": {
+            "type": "string",
+            "value": "[variables('deploymentName')]"
+        },
+        "eventGridTopicEndpoint": {
+            "type": "string",
+            "value": "[reference(variables('eventGridTopicName')).endpoint]"
+        },
+        "eventGridTopicKey": {
+            "type": "string",
+            "value": "[listKeys(resourceId('Microsoft.EventGrid/topics/', variables('eventGridTopicName')), '2020-04-01-preview').key1]"
+        },
+        "storageConnectionString": {
+            "type": "string",
+            "value": "[concat('DefaultEndpointsProtocol=https;AccountName=', variables('storageAccountName'), ';AccountKey=', listKeys(resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName')), '2021-01-01').keys[0].value, ';EndpointSuffix=core.windows.net')]"
+        },
+        "subscriptionStorageContainerName": {
+            "type": "string",
+            "value": "[variables('subContainerName')]"
+        },
+        "appConfigServiceConnectionString": {
+            "type": "string",
+            "value": "[listKeys(resourceId('Microsoft.AppConfiguration/configurationStores', variables('appConfigName')), '2019-11-01-preview').value[0].connectionString]"
+        },
+        "appConfigServiceName": {
+            "type": "string",
+            "value": "[variables('appConfigName')]"
+        },
+        "webAppBaseUrl": {
+            "type": "string",
+            "value": "[concat('https://', variables('webAppName'), '.azurewebsites.net')]"
+        },
+        "webAppName": {
+            "type": "string",
+            "value": "[variables('webAppName')]"
+        },
+        "appInsightsConnectionString": {
+            "type": "string",
+            "value": "[concat('InstrumentationKey=', reference(resourceId('microsoft.insights/components', variables('appInsightsName')), '2014-04-01').InstrumentationKey)]"
+        },
+        "eventGridTopicId": {
+            "type": "string",
+            "value": "[resourceId('Microsoft.EventGrid/topics', variables('eventGridTopicName'))]"
+        }
+    }
+}
