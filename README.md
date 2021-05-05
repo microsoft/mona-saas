@@ -6,10 +6,10 @@
 
  Read further to learn more.
 
-* [How does Mona SaaS work?](#how-does-mona-saas-work?)
-* [How much does Mona SaaS cost?](#how-much-does-mona-saas-cost?)
-* [How do I set up Mona SaaS?](#how-do-i-set-up-mona-saas?)
-* [How can I contribute?](#how-can-i-contribute?)
+* [How does Mona SaaS work?](#how-does-mona-saas-work)
+* [How much does Mona SaaS cost?](#how-much-does-mona-saas-cost)
+* [How do I set up Mona SaaS?](#how-do-i-set-up-mona-saas)
+* [How can I contribute?](#how-can-i-contribute)
 * [Considerations and limitations](#considerations-and-limitations)
 * [Trademarks](#trademarks)
 
