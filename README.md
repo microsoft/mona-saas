@@ -27,10 +27,15 @@ Each of these operations is exposed to your SaaS application by Mona SaaS throug
 
  As an open source project, Mona SaaS itself is free to use (within the confines of [our license](./LICENSE.txt), of course).
  
- A basic, US-based Mona SaaS deployment typically costs less than __$50 USD per month__ as of May 2021.
+ As Mona SaaS is designed to be deployed directly into an ISV's subscription, the ISV is ultimately responsible for the costs of Azure services. Use the [Azure pricing calculator](https://azure.microsoft.com/pricing/calculator/) for cost guidance 
  
- As Mona SaaS is designed to be deployed directly into an ISV's subscription, the ISV is ultimately responsible for these costs. Your actual costs may vary depending on a number of factors including —
+ * Azure App Service plan
+ * Azure Logic Apps
+ * Application Insights
+ * Azure Storage
+ * Azure EventGrid
 
+Your actual costs may vary depending on a number of factors including —
  * __The integrations that you build.__ For example, Logic Apps offers [a growing list of Standard and Enterprise connectors](https://docs.microsoft.com/en-us/azure/connectors/apis-list) that allow you to easily access various cloud-based and on-premises services. [The connectors that you use have a direct impact on your overall Azure costs](https://azure.microsoft.com/en-us/pricing/details/logic-apps/) outside of the base Mona SaaS deployment.
  * __Where you deploy Mona SaaS.__ Be aware that costs for the same Azure services can vary across regions.
  * __Any special pricing arrangements you have with Microsoft.__ Many of the ISVs that we work with have special pricing arrangements through their partnerships with Microsoft.
