@@ -53,6 +53,8 @@ First, ensure that the following prerequisites are met.
  * You have the ability to create resources and resource groups within the target Azure subscription. Typically, this requires at least [contributor-level access](https://docs.microsoft.com/azure/role-based-access-control/built-in-roles#contributor) to the subscription.
 
  Next, follow the instructions below.
+ 
+ > During pilot, this repository is private. Per Microsoft policy, you must use two-factor authentication (2FA) to access this repo using your own Github credentials. Since the Azure cloud shell doesn't support Github 2FA, you'll need to both [enable 2FA for your Github account](https://docs.github.com/en/github/authenticating-to-github/securing-your-account-with-two-factor-authentication-2fa) and [generate a personal access token (PAT) with the `repo` scope selected](https://docs.github.com/en/github/authenticating-to-github/keeping-your-account-and-data-secure/creating-a-personal-access-token). Save this PAT in a secure place as you'll need it later (as your password) when cloning this repository into your own Azure environment.
 
  1. Navigate to [the Azure portal](https://portal.azure.com) and [launch the Bash cloud shell](https://docs.microsoft.com/azure/cloud-shell/quickstart#start-cloud-shell).
  2. Clone the Mona SaaS Github repository into your own Azure environment by running `git clone https://github.com/microsoft/mona-saas` from the cloud shell.
