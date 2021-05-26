@@ -53,6 +53,8 @@ First, ensure that the following prerequisites are met.
  * You have the ability to create resources and resource groups within the target Azure subscription. Typically, this requires at least [contributor-level access](https://docs.microsoft.com/azure/role-based-access-control/built-in-roles#contributor) to the subscription.
 
  Next, follow the instructions below.
+ 
+ > During pilot, this repository is private. Per Microsoft policy, you must use two-factor authentication (2FA) to access this repo using your own Github credentials. Since the Azure cloud shell doesn't support Github 2FA, you'll need to both [enable 2FA for your Github account](https://docs.github.com/en/github/authenticating-to-github/securing-your-account-with-two-factor-authentication-2fa) and [generate a personal access token (PAT) with the `repo` scope selected](https://docs.github.com/en/github/authenticating-to-github/keeping-your-account-and-data-secure/creating-a-personal-access-token). Save this PAT in a secure place as you'll need it later (as your password) when cloning this repository into your own Azure environment.
 
  1. Navigate to [the Azure portal](https://portal.azure.com) and [launch the Bash cloud shell](https://docs.microsoft.com/azure/cloud-shell/quickstart#start-cloud-shell).
  2. Clone the Mona SaaS Github repository into your own Azure environment by running `git clone https://github.com/microsoft/mona-saas` from the cloud shell.
@@ -74,9 +76,12 @@ First, ensure that the following prerequisites are met.
 | `-n` | Deployment name | __Yes__ | N/A | A user-defined, globally-unique name for this Mona SaaS deployment. The deployment name must contain _only_ alphanumeric characters and be 13 characters in length or less. |
 | `-r` | Deployment region | __Yes__ | N/A | [The Azure region](https://azure.microsoft.com/global-infrastructure/geographies/) to which Mona SaaS should be deployed. For a complete list of available regions, run `az account list-locations -o table` from the Azure CLI (Bash cloud shell). Be sure to use the region's `Name`, not `DisplayName` or `RegionalDisplayName`.
 | `-d` | Display name | No | Same as deployment name (`-n`) | A "friendly" display name for this Mona SaaS deployment. If provided, this is also the name of the Azure Active Directory (AAD) app created during setup. __While providing this parameter isn't required, it's highly recommended.__ |
+| `-a` | Existing App Service plan ID | No | N/A | The complete resource ID (i.e., `/subscriptions/{subscriptionId}/...`) of an existing [App Service plan](https://docs.microsoft.com/azure/app-service/overview-hosting-plans) to publish the Mona web app to. If provided, the App Service plan must exist in the same region (see `-l`) and Azure subscription (see `-s`) where Mona is being deployed. If not provided, the setup script will automatically provision a new App Service plan (S1) within the same resource group (see `-r`) where Mona is being deployed. It must also be a Windows-based App Service plan. |
 | `-g` | Deployment Azure resource group name | No | `mona-[deployment name (-n)]` | The Azure resource group to deploy Mona SaaS into. If the resource group already exists, it must be empty. If the group doesn't exist, it will be automatically created during setup. |
 | `-l` | UI language | No | English (`en`) | The ISV's preferred UI language. Currently, only English (`en`) and Spanish (`es`) are supported. |
 | `-s` | Deployment Azure subscription ID | No | The current subscription | The ID of the Azure subscription to deploy Mona SaaS into. |
+| `-h` | __Flag__ - Don't show script splash screen. | No | N/A | When set, the setup script will not display the standard Mona setup splash screen. |
+| `-p` | __Flag__ - Don't publish the web app. | No | N/A | When set, the setup script will provision all Azure and Azure Active Directory reources as usual _but_ won't actually publish the Mona web app. |
 
 ## How can I contribute?
 
