@@ -19,7 +19,6 @@ using Mona.AutoIntegration.Interrogators;
 using Mona.SaaS.Core.Models.Configuration;
 using Mona.SaaS.Web.Models;
 using Mona.SaaS.Web.Models.Admin;
-using Mona.SaaS.Web.Models.Admin.LogicApps;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -71,8 +70,7 @@ namespace Mona.SaaS.Web.Controllers
                     PartnerCenterTechnicalDetails = GetPartnerCenterTechnicalDetails(),
                     ResourceGroupOverviewUrl = GetResourceGroupUrl(),
                     TestLandingPageUrl = Url.RouteUrl("landing/test", null, Request.Scheme),
-                    TestWebhookUrl = Url.RouteUrl("webhook/test", null, Request.Scheme),
-                    LogicAppSnippets = GetLogicAppSnippetUrls()
+                    TestWebhookUrl = Url.RouteUrl("webhook/test", null, Request.Scheme)
                 };
 
                 return View(adminModel);
@@ -84,42 +82,7 @@ namespace Mona.SaaS.Web.Controllers
                 throw;
             }
         }
-
-        [HttpGet, Route("/admin/logic-apps/action-templates/activated", Name = "logic-apps/action-templates/activated")]
-        public IActionResult GetActivatedLogicAppActionTemplate() => SnippetJson(
-            new HttpAction<ActivatedHttpActionInputs>(new ActivatedHttpActionInputs(GetMarketplaceAuthenticationMetadata())),
-            "Notify Marketplace of subscription activation");
-
-        [HttpGet, Route("/admin/logic-apps/action-templates/operation-failed", Name = "logic-apps/action-templates/operation-failed")]
-        public IActionResult GetFailedOperationUpdateLogicAppActionTemplate() => SnippetJson(
-            new HttpAction<OperationUpdateHttpActionInputs>(new OperationUpdateHttpActionInputs(GetMarketplaceAuthenticationMetadata(), false)),
-            "Notify Marketplace of failed operation");
-
-        [HttpGet, Route("/admin/logic-apps/action-templates/operation-succeeded", Name = "logic-apps/action-templates/operation-succeeded")]
-        public IActionResult GetSuccessfulOperationUpdateLogicAppActionTemplate() => SnippetJson(
-            new HttpAction<OperationUpdateHttpActionInputs>(new OperationUpdateHttpActionInputs(GetMarketplaceAuthenticationMetadata(), true)),
-            "Notify Marketplace of successful operation");
-
-        private JsonResult SnippetJson(object data, string snippetTitle) => Json(
-            new Dictionary<string, object> { [snippetTitle] = data },
-            new JsonSerializerSettings { Formatting = Formatting.Indented });
-
-        private LogicAppSnippetsModel GetLogicAppSnippetUrls() =>
-            new LogicAppSnippetsModel
-            {
-                ActivationSnippetUrl = Url.RouteUrl("logic-apps/action-templates/activated", null, Request.Scheme),
-                OperationFailedUrl = Url.RouteUrl("logic-apps/action-templates/operation-failed", null, Request.Scheme),
-                OperationSucceededUrl = Url.RouteUrl("logic-apps/action-templates/operation-succeeded", null, Request.Scheme)
-            };
-
-        private MarketplaceAuthenticationMetadata GetMarketplaceAuthenticationMetadata() =>
-            new MarketplaceAuthenticationMetadata
-            {
-               ClientId = this.identityConfig.AppIdentity.AadClientId,
-               Secret = this.identityConfig.AppIdentity.AadClientSecret,
-               TenantId = this.identityConfig.AppIdentity.AadTenantId
-            };
-
+        
         private string GetConfigurationSettingsEditorUrl() =>
             $"https://portal.azure.com/#@{this.identityConfig.AppIdentity.AadTenantId}/resource/subscriptions/{this.deploymentConfig.AzureSubscriptionId}" +
             $"/resourceGroups/{this.deploymentConfig.AzureResourceGroupName}/providers/Microsoft.AppConfiguration" +
