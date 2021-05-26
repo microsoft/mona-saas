@@ -28,6 +28,13 @@
                 "description": "This Mona deployment's Azure Active Directory (AAD) client secret."
             }
         },
+        "appServicePlanId": {
+            "type": "string",
+            "defaultValue": "",
+            "metadata": {
+                "description": "If provided, specifies the ID of an existing app service plan that the Mona web app should be deployed to."
+            }
+        },
         "language": {
             "type": "string",
             "defaultValue": "en",
@@ -51,6 +58,7 @@
         "appInsightsName": "[concat('mona-app-insights-', variables('deploymentName'))]",
         "appPlanName": "[concat('mona-plan-', variables('deploymentName'))]",
         "webAppName": "[concat('mona-web-', variables('deploymentName'))]",
+        "marketplaceApiAuthAudience": "20e940b3-4c77-4b0b-9a53-9e16a1b010a7",
         "logicApps_prefixes": {
             "onPurchased": "mona-on-subscription-purchased-",
             "onCancelled": "mona-on-subscription-cancelled-",
@@ -90,7 +98,10 @@
                     "flattenAndTranslate1": "Flatten_and_translate_event_information_(1)",
                     "flattenAndTranslate2": "Flatten_and_translate_event_information_(2)",
                     "parseEventInfo1": "Parse_event_information_(1)",
-                    "parseEventInfo2": "Parse_event_information_(2)"
+                    "parseEventInfo2": "Parse_event_information_(2)",
+                    "yourIntegrationLogic": "Add_your_integration_logic_here",
+                    "notifyMarketplaceCondition": "Conditional_|_Notify_the_Marketplace",
+                    "notifyMarketplace": "Notify_the_Marketplace"
                 },
                 "variableNames": {
                     "isFreeTrial": "Is Free Trial Subscription?",
@@ -318,6 +329,7 @@
             "type": "Microsoft.Web/serverfarms",
             "apiVersion": "2018-02-01",
             "name": "[variables('appPlanName')]",
+            "condition": "[empty(parameters('appServicePlanId'))]",
             "location": "[resourceGroup().location]",
             "sku": {
                 "name": "S1",
@@ -339,7 +351,7 @@
             ],
             "kind": "app",
             "properties": {
-                "serverFarmId": "[resourceId('Microsoft.Web/serverfarms', variables('appPlanName'))]"
+                "serverFarmId": "[if(empty(parameters('appServicePlanId')), resourceId('Microsoft.Web/serverfarms', variables('appPlanName')), parameters('appServicePlanId'))]"
             }
         },
         {
@@ -353,7 +365,7 @@
             "kind": "V1",
             "properties": {
                 "displayName": "[variables('logicApps_ui')[parameters('language')].eventGridConnectionDisplayName]",
-                "customParameterValues": { },
+                "customParameterValues": {},
                 "parameterValues": {
                     "token:clientId": "[parameters('aadClientId')]",
                     "token:clientSecret": "[parameters('aadClientSecret')]",
@@ -557,6 +569,64 @@
                                     "type": "object"
                                 }
                             }
+                        },
+                        "[variables('logicApps_ui')[parameters('language')].actionNames.yourIntegrationLogic]": {
+                            "actions": {},
+                            "runAfter": {
+                                "[variables('logicApps_ui')[parameters('language')].actionNames.parseEventInfo2]": [
+                                    "Succeeded"
+                                ]
+                            },
+                            "type": "Scope"
+                        },
+                        "[variables('logicApps_ui')[parameters('language')].actionNames.notifyMarketplaceCondition]": {
+                            "actions": {
+                                "[variables('logicApps_ui')[parameters('language')].actionNames.notifyMarketplace]": {
+                                    "inputs": {
+                                        "authentication": {
+                                            "audience": "[variables('marketplaceApiAuthAudience')]",
+                                            "clientId": "[parameters('aadClientId')]",
+                                            "credentialType": "Secret",
+                                            "secret": "[parameters('aadClientSecret')]",
+                                            "tenant": "[parameters('aadTenantId')]",
+                                            "type": "ActiveDirectoryOAuth"
+                                        },
+                                        "body": {
+                                            "planId": "@{body('Parse_event_information_(1)')?['Plan ID']}",
+                                            "quantity": "@{body('Parse_event_information_(1)')?['Seat Quantity']}"
+                                        },
+                                        "headers": {
+                                            "content-type": "application/json"
+                                        },
+                                        "method": "POST",
+                                        "uri": "https://marketplaceapi.microsoft.com/api/saas/subscriptions/@{body('Parse_event_information_(1)')?['Subscription ID']}/activate?api-version=2018-08-31"
+                                    },
+                                    "runAfter": { },
+                                    "type": "Http"
+                                }
+                            },
+                            "expression": {
+                                "and": [
+                                    {
+                                        "equals": [
+                                            true,
+                                            false
+                                        ]
+                                    },
+                                    {
+                                        "equals": [
+                                            "@body('Parse_event_information_(1)')?['Is Test Subscription?']",
+                                            false
+                                        ]
+                                    }
+                                ]
+                            },
+                            "runAfter": {
+                                "[variables('logicApps_ui')[parameters('language')].actionNames.yourIntegrationLogic]": [
+                                    "Succeeded"
+                                ]
+                            },
+                            "type": "If"
                         }
                     }
                 },
@@ -765,6 +835,15 @@
                                     "type": "object"
                                 }
                             }
+                        },
+                        "[variables('logicApps_ui')[parameters('language')].actionNames.yourIntegrationLogic]": {
+                            "actions": {},
+                            "runAfter": {
+                                "[variables('logicApps_ui')[parameters('language')].actionNames.parseEventInfo2]": [
+                                    "Succeeded"
+                                ]
+                            },
+                            "type": "Scope"
                         }
                     }
                 },
@@ -977,6 +1056,63 @@
                                     "type": "object"
                                 }
                             }
+                        },
+                        "[variables('logicApps_ui')[parameters('language')].actionNames.yourIntegrationLogic]": {
+                            "actions": {},
+                            "runAfter": {
+                                "[variables('logicApps_ui')[parameters('language')].actionNames.parseEventInfo2]": [
+                                    "Succeeded"
+                                ]
+                            },
+                            "type": "Scope"
+                        },
+                        "[variables('logicApps_ui')[parameters('language')].actionNames.notifyMarketplaceCondition]": {
+                            "actions": {
+                                "[variables('logicApps_ui')[parameters('language')].actionNames.notifyMarketplace]": {
+                                    "inputs": {
+                                        "authentication": {
+                                            "audience": "[variables('marketplaceApiAuthAudience')]",
+                                            "clientId": "[parameters('aadClientId')]",
+                                            "credentialType": "Secret",
+                                            "secret": "[parameters('aadClientSecret')]",
+                                            "tenant": "[parameters('aadTenantId')]",
+                                            "type": "ActiveDirectoryOAuth"
+                                        },
+                                        "body": {
+                                            "status": "Success"
+                                        },
+                                        "headers": {
+                                            "content-type": "application/json"
+                                        },
+                                        "method": "PATCH",
+                                        "uri": "https://marketplaceapi.microsoft.com/api/saas/subscriptions/@{body('Parse_event_information_(1)')?['Subscription ID']}/operations/@{body('Parse_event_information_(1)')?['Operation ID']}?api-version=2018-08-31"
+                                    },
+                                    "runAfter": { },
+                                    "type": "Http"
+                                }
+                            },
+                            "expression": {
+                                "and": [
+                                    {
+                                        "equals": [
+                                            true,
+                                            false
+                                        ]
+                                    },
+                                    {
+                                        "equals": [
+                                            "@body('Parse_event_information_(1)')?['Is Test Subscription?']",
+                                            false
+                                        ]
+                                    }
+                                ]
+                            },
+                            "runAfter": {
+                                "[variables('logicApps_ui')[parameters('language')].actionNames.yourIntegrationLogic]": [
+                                    "Succeeded"
+                                ]
+                            },
+                            "type": "If"
                         }
                     }
                 },
@@ -1189,6 +1325,63 @@
                                     "type": "object"
                                 }
                             }
+                        },
+                        "[variables('logicApps_ui')[parameters('language')].actionNames.yourIntegrationLogic]": {
+                            "actions": {},
+                            "runAfter": {
+                                "[variables('logicApps_ui')[parameters('language')].actionNames.parseEventInfo2]": [
+                                    "Succeeded"
+                                ]
+                            },
+                            "type": "Scope"
+                        },
+                        "[variables('logicApps_ui')[parameters('language')].actionNames.notifyMarketplaceCondition]": {
+                            "actions": {
+                                "[variables('logicApps_ui')[parameters('language')].actionNames.notifyMarketplace]": {
+                                    "inputs": {
+                                        "authentication": {
+                                            "audience": "[variables('marketplaceApiAuthAudience')]",
+                                            "clientId": "[parameters('aadClientId')]",
+                                            "credentialType": "Secret",
+                                            "secret": "[parameters('aadClientSecret')]",
+                                            "tenant": "[parameters('aadTenantId')]",
+                                            "type": "ActiveDirectoryOAuth"
+                                        },
+                                        "body": {
+                                            "status": "Success"
+                                        },
+                                        "headers": {
+                                            "content-type": "application/json"
+                                        },
+                                        "method": "PATCH",
+                                        "uri": "https://marketplaceapi.microsoft.com/api/saas/subscriptions/@{body('Parse_event_information_(1)')?['Subscription ID']}/operations/@{body('Parse_event_information_(1)')?['Operation ID']}?api-version=2018-08-31"
+                                    },
+                                    "runAfter": { },
+                                    "type": "Http"
+                                }
+                            },
+                            "expression": {
+                                "and": [
+                                    {
+                                        "equals": [
+                                            true,
+                                            false
+                                        ]
+                                    },
+                                    {
+                                        "equals": [
+                                            "@body('Parse_event_information_(1)')?['Is Test Subscription?']",
+                                            false
+                                        ]
+                                    }
+                                ]
+                            },
+                            "runAfter": {
+                                "[variables('logicApps_ui')[parameters('language')].actionNames.yourIntegrationLogic]": [
+                                    "Succeeded"
+                                ]
+                            },
+                            "type": "If"
                         }
                     }
                 },
@@ -1397,6 +1590,15 @@
                                     "type": "object"
                                 }
                             }
+                        },
+                        "[variables('logicApps_ui')[parameters('language')].actionNames.yourIntegrationLogic]": {
+                            "actions": {},
+                            "runAfter": {
+                                "[variables('logicApps_ui')[parameters('language')].actionNames.parseEventInfo2]": [
+                                    "Succeeded"
+                                ]
+                            },
+                            "type": "Scope"
                         }
                     }
                 },
@@ -1605,6 +1807,63 @@
                                     "type": "object"
                                 }
                             }
+                        },
+                        "[variables('logicApps_ui')[parameters('language')].actionNames.yourIntegrationLogic]": {
+                            "actions": {},
+                            "runAfter": {
+                                "[variables('logicApps_ui')[parameters('language')].actionNames.parseEventInfo2]": [
+                                    "Succeeded"
+                                ]
+                            },
+                            "type": "Scope"
+                        },
+                        "[variables('logicApps_ui')[parameters('language')].actionNames.notifyMarketplaceCondition]": {
+                            "actions": {
+                                "[variables('logicApps_ui')[parameters('language')].actionNames.notifyMarketplace]": {
+                                    "inputs": {
+                                        "authentication": {
+                                            "audience": "[variables('marketplaceApiAuthAudience')]",
+                                            "clientId": "[parameters('aadClientId')]",
+                                            "credentialType": "Secret",
+                                            "secret": "[parameters('aadClientSecret')]",
+                                            "tenant": "[parameters('aadTenantId')]",
+                                            "type": "ActiveDirectoryOAuth"
+                                        },
+                                        "body": {
+                                            "status": "Success"
+                                        },
+                                        "headers": {
+                                            "content-type": "application/json"
+                                        },
+                                        "method": "PATCH",
+                                        "uri": "https://marketplaceapi.microsoft.com/api/saas/subscriptions/@{body('Parse_event_information_(1)')?['Subscription ID']}/operations/@{body('Parse_event_information_(1)')?['Operation ID']}?api-version=2018-08-31"
+                                    },
+                                    "runAfter": { },
+                                    "type": "Http"
+                                }
+                            },
+                            "expression": {
+                                "and": [
+                                    {
+                                        "equals": [
+                                            true,
+                                            false
+                                        ]
+                                    },
+                                    {
+                                        "equals": [
+                                            "@body('Parse_event_information_(1)')?['Is Test Subscription?']",
+                                            false
+                                        ]
+                                    }
+                                ]
+                            },
+                            "runAfter": {
+                                "[variables('logicApps_ui')[parameters('language')].actionNames.yourIntegrationLogic]": [
+                                    "Succeeded"
+                                ]
+                            },
+                            "type": "If"
                         }
                     }
                 },

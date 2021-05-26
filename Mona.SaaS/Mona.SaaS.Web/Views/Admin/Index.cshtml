@@ -1,7 +1,6 @@
 ﻿@model AdminPageModel
 
 @using Microsoft.AspNetCore.Mvc.Localization
-@using Mona.AutoIntegration.Interrogators
 @using Mona.SaaS.Core.Constants
 
 @inject IViewLocalizer Localizer
@@ -182,67 +181,6 @@
                                 </td>
                             </tr>
                         }
-                    </tbody>
-                </table>
-            </div>
-            <div class="admin-section">
-                <h5 class="display-5">@Localizer["Logic app snippets"]</h5>
-                <p>
-                    @Localizer[
-                    "Logic apps are one of the most convenient tools to use when building out your Mona integrations. " +
-                    "For certain operations, the Marketplace requires confirmation that an operation has failed or succeeded. " +
-                    "The JSON snippets below can <a href=\"{0}\" target=\"_blank\">easily be added to the default Logic Apps</a> that ship with Mona SaaS " +
-                    "to handle some of the most common Marketplace callbacks.",
-                    "https://docs.microsoft.com/azure/logic-apps/logic-apps-author-definitions"
-                    ]
-                </p>
-                <div class="alert alert-warning" role="alert">
-                    Today, these snippets are designed to work only when using the default English (<code>en</code>) UI experience.
-                </div>
-                 <div class="alert alert-warning" role="alert">
-                    These snippets contain highly sensitive configuration information. Use carefully.
-                </div>
-                <table class="table">
-                    <tbody>
-                        <tr>
-                            <td class="align-middle">
-                                <a href="@Model.LogicAppSnippets.ActivationSnippetUrl" target="_blank"><b>@Localizer["On subscription activated"]</b></a>
-                                <p>
-                                    @Localizer[
-                                    "Use this snippet when you need to notify the Marketplace that a new subscription has been activated within a logic app. " +
-                                    "Necessary client authentication metadata is automatically included. For more information about this notification, see " +
-                                    "<a href=\"{0}\" target=\"_blank\">this article</a>.",
-                                    "https://docs.microsoft.com/azure/marketplace/partner-center-portal/pc-saas-fulfillment-api-v2#activate-a-subscription"
-                                    ]
-                                </p>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td class="align-middle">
-                                <a href="@Model.LogicAppSnippets.OperationSucceededUrl" target="_blank"><b>@Localizer["On subscription operation succeeded"]</b></a>
-                                <p>
-                                    @Localizer[
-                                    "Use this snippet when you need to notify the Marketplace that a new subscrption operation, originally requested by Microsoft, has succeeded. " +
-                                    "Necessary client authentication metadata is automatically included. For more information about this notification, see " +
-                                    "<a href=\"{0}\" target=\"_blank\">this article</a>.",
-                                    "https://docs.microsoft.com/azure/marketplace/partner-center-portal/pc-saas-fulfillment-api-v2#update-the-status-of-an-operation"
-                                    ]
-                                </p>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td class="align-middle">
-                                <a href="@Model.LogicAppSnippets.OperationFailedUrl" target="_blank"><b>@Localizer["On subscription operation failed"]</b></a>
-                                <p>
-                                    @Localizer[
-                                    "Use this snippet when you need to notify the Marketplace that a new subscrption operation, originally requested by Microsoft, has failed. " +
-                                    "Necessary client authentication metadata is automatically included. For more information about this notification, see " +
-                                    "<a href=\"{0}\" target=\"_blank\">this article</a>.",
-                                    "https://docs.microsoft.com/azure/marketplace/partner-center-portal/pc-saas-fulfillment-api-v2#update-the-status-of-an-operation"
-                                    ]
-                                </p>
-                            </td>
-                        </tr>
                     </tbody>
                 </table>
             </div>

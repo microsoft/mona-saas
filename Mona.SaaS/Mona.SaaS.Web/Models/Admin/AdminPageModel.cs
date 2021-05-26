@@ -11,7 +11,6 @@
 // In no event shall Microsoft be liable for any damages whatsoever (including, without limitation, damages for loss of business profits, business interruption, loss of business information, or other pecuniary loss) arising out of the use of or inability to use the preview code, even if Microsoft has been advised of the possibility of such damages.
 
 using Mona.SaaS.Web.Models.Admin;
-using Mona.SaaS.Web.Models.Admin.LogicApps;
 using System.Collections.Generic;
 
 namespace Mona.SaaS.Web.Models
@@ -31,8 +30,6 @@ namespace Mona.SaaS.Web.Models
         public string AzureSubscriptionId { get; set; }
 
         public List<PluginModel> IntegrationPlugins { get; set; } = new List<PluginModel>();
-
-        public LogicAppSnippetsModel LogicAppSnippets { get; set; }
 
         public PartnerCenterTechnicalDetails PartnerCenterTechnicalDetails { get; set; }
     }
