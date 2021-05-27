@@ -57,8 +57,6 @@ namespace Mona.SaaS.Web.Controllers
             var offerModel = setupModel.Offer;
             var configClient = new ConfigurationClient(GetAppConfigurationServiceConnectionString());
 
-            // Gross.
-
             Task.WaitAll(new[]
             {
                 (configClient.SetConfigurationSettingAsync("Offer:OfferMarketplaceListingUrl", offerModel.OfferMarketplaceListingUrl)),
