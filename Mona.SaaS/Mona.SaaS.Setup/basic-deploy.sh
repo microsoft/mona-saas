@@ -99,7 +99,7 @@ check_language() {
 check_deployment_name() {
     name=$1
 
-    if [[ $name =~ ^[a-z0-9]{5,13}+$ ]]; then
+    if [[ $name =~ ^[a-z0-9]{5,13}$ ]]; then
         echo "✔   [$name] is a valid Mona deployment name."
     else
         echo "❌   [$name] is not a valid Mona deployment name. The name must contain only lowercase letters and numbers and be between 5 and 13 characters in length."
