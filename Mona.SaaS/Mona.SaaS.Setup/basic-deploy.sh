@@ -96,6 +96,17 @@ check_language() {
     fi
 }
 
+check_deployment_name() {
+    name=$1
+
+    if [[ $name =~ ^[a-z0-9]{5,13}$ ]]; then
+        echo "✔   [$name] is a valid Mona deployment name."
+    else
+        echo "❌   [$name] is not a valid Mona deployment name. The name must contain only lowercase letters and numbers and be between 5 and 13 characters in length."
+        return 1
+    fi
+}
+
 language="en" # Default UI language is English ("en"). Can be overridden using [-l] flag below.
 
 while getopts "a:d:g:l:n:r:s:hp" opt; do
@@ -138,6 +149,11 @@ done
 # Set default resource group name and deployment display name.
 
 [[ -z $deployment_name || -z $deployment_region ]] && { usage; exit 1; }
+
+check_deployment_name "$deployment_name"
+
+[[ $? -ne 0 ]] && exit 1;
+
 [[ -z $resource_group_name ]] && resource_group_name="mona-$deployment_name";
 [[ -z $display_name ]] && display_name="$deployment_name";
 
@@ -148,8 +164,6 @@ echo "$lp Setting up Mona SaaS in your Azure environment...";
 # Show Mona setup splash screen...
 
 [[ -z $no_splash ]] && cat ./splash.txt && echo;
-
-echo "$lp This Mona deployment's name is [$deployment_name]."
 
 # Check setup pre-reqs.
 
