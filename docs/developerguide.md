@@ -52,10 +52,77 @@ This is the base subscription event when
 ```
 #### SubscriptionCancelled
 ```json
+{
+    "properties": {
+        "Is Free Trial Subscription?": {
+            "type": "boolean"
+        },
+        "Is Test Subscription?": {
+            "type": "boolean"
+        },
+        "Offer ID": {
+            "type": "string"
+        },
+        "Operation Date/Time UTC": {
+            "type": "string"
+        },
+        "Operation ID": {
+            "type": "string"
+        },
+        "Plan ID": {
+            "type": "string"
+        },
+        "Seat Quantity": {
+            "type": "integer"
+        },
+        "Subscription ID": {
+            "type": "string"
+        },
+        "Subscription Name": {
+            "type": "string"
+        }
+    },
+    "type": "object"
+}
 ```
 
 #### SubscriptionPlanChanged
 ```json
+{
+    "properties": {
+        "Is Free Trial Subscription?": {
+            "type": "boolean"
+        },
+        "Is Test Subscription?": {
+            "type": "boolean"
+        },
+        "New Plan ID": {
+            "type": "string"
+        },
+        "Offer ID": {
+            "type": "string"
+        },
+        "Operation Date/Time UTC": {
+            "type": "string"
+        },
+        "Operation ID": {
+            "type": "string"
+        },
+        "Plan ID": {
+            "type": "string"
+        },
+        "Seat Quantity": {
+            "type": "integer"
+        },
+        "Subscription ID": {
+            "type": "string"
+        },
+        "Subscription Name": {
+            "type": "string"
+        }
+    },
+    "type": "object"
+}
 ```
 #### SubscriptionPurchased
 ```json
