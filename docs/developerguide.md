@@ -1,19 +1,43 @@
-# Intro
+# Contents
+* [Introduction](#introduction)
+* [Events](#events)
+* [Testing Mode](#testing-mode)
+* [Integration](#configuration) 
+* [Language Support](#language-support)
+* [Conclusion](#conclusion)
+# Introduction
 
+Welcome to the Mona SaaS developer guide. This document serves as a guide
 
 
 # Events
 
-##Description holder 
+Each of these operations is exposed to your SaaS application by Mona SaaS through events published to a custom Event Grid topic automatically provisioned during setup. By default, we deploy a set of "stub" Logic Apps into your Azure subscription that are enabled by default and configured to be triggered by these subscription events.
+
+Since Mona SaaS exposes these subscription-related events to your SaaS application through an Event Grid topic, you have lots of options for handling them. Because we're using Event Grid, multiple event subscribers can handle the same events simultaneously. These flows can be easily modified in production with no downtime.
+
+## Event Types
+* [BaseSubscriptionEvent](basesubscriptionevent)
+* [SubscriptionCancelled](subscriptionCancelled)
+* [SubscriptionPlanChanged](subscriptionplanchanged)
+* [SubscriptionPurchased](subscriptionpurchased)
+* [SubscriptionReinstated](subscriptionreinstated)
+* [SubscriptionSeatQuantityChanged](subscriptionseatquantitychanged)
+* [SubscriptionSuspended](subscriptionsuspended)
+
+
+#### BaseSubscriptionEvent
+
+This is the base subscription event when 
 
 ```json
 {
-  "id": "<guid>", // purchased SaaS subscription ID
-  "subscriptionName": "Contoso Cloud Solution", // SaaS subscription name
-  "offerId": "offer1", // purchased offer ID
-  "planId": "silver", // purchased offer's plan ID
-  "quantity": "20", // number of purchased seats, might be empty if the plan is not per seat
-  "subscription": { // full SaaS subscription details, see Get Subscription APIs response body for full description
+  "id": "<guid>", 
+  "subscriptionName": "Contoso Cloud Solution", 
+  "offerId": "offer1",
+  "planId": "silver", 
+  "quantity": "20", 
+  "subscription": { 
     "id": "<guid>",
     "publisherId": "contoso",
     "offerId": "offer1",
@@ -26,6 +50,25 @@
       "pid": "<ID of the user>"
     }
 ```
+#### SubscriptionCancelled
+```json
+```
+
+#### SubscriptionPlanChanged
+```json
+```
+#### SubscriptionPurchased
+```json
+```
+#### SubscriptionReinstated
+```json
+```
+### SubscriptionSeatQuantityChanged
+```json
+```
+#### SubscriptionSuspended
+```json
+```
 
 First Header | Second Header
 ------------ | -------------
@@ -34,6 +77,8 @@ Content in the first column | Content in the second column
 
 # Testing Mode
 
-# Configuration
+# Integration guidance
 
+# Language Support
 
+# Conclusion
