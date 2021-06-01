@@ -316,4 +316,91 @@ Is Test Subscription? | Content in the second column
 
 # Language Support
 
+## Globalization and localization in ASP.NET Core
+
+This application allows multilingual site to reach a wider audience. 
+We used ASP.NET Core that provides services and middleware for localizing into different languages and cultures.
+
+Globalization is the process of designing apps that support different cultures. Globalization adds support for input, display, and output of a defined set of language scripts that relate to specific geographic areas.
+
+Localization is the process of adapting a globalized app, which you have already processed for localizability, to a particular culture/locale. For more information see Globalization and localization terms near the end of this document.
+
+**Right now the application support English and Spanish.**
+
+#### Add New languages
+
+1. You need to specify the languages or cultures that you plan to support in the application, go to the `Startup.cs` file and add the language to be supported un the `supportCulture` variable.
+   
+   You will be able to find how to specific the culture [here](https://docs.microsoft.com/en-us/dotnet/api/system.globalization.cultureinfo?view=net-5.0)
+   
+   ```
+    private void ConfigureLocalizationMiddleware(IApplicationBuilder app)
+        {
+            var supportedCultures = new[] { "en-US", "es" }; // TODO: Support for additional languages coming soon!
+
+            var localizationOptions = new RequestLocalizationOptions()
+                .SetDefaultCulture(supportedCultures[0])
+                .AddSupportedCultures(supportedCultures)
+                .AddSupportedUICultures(supportedCultures);
+
+            app.UseRequestLocalization(localizationOptions);
+        }
+    ```
+2. Under the Resource folder you will find `.resx` resource files for each view that will contain the translated strings. All views allow to translated the content. You will able to find the `@Localizer[]` tag and the content inside, that will be the content to be translated.
+
+    To create new Resources please follow this [steps](https://docs.microsoft.com/en-us/aspnet/core/fundamentals/localization?view=aspnetcore-5.0#resource-files-2)
+
+
+## ARM template language configuration
+
+You can configurate the preferred UI language for the Mona deployment. The ARM template support the configuration of different languages for the logic app variables.
+
+#### Add new languages
+
+Under `Mona.SaaS.Setup/arm-templates/basic-deploy.json` you will find the language parameter where you add add a support languages. You will do it under `allowedValues`
+
+    ```json
+    "language": {
+        "type": "string",
+        "defaultValue": "en",
+        "allowedValues": [
+            "en", // English
+            "es" // Spanish
+        ],
+        ...
+    }
+    ```
+
+#### Logic Apps variables
+
+After adding the languages you have to add the translation of each string under `logicApps_ui` variables.
+
+Here an example:
+
+    ```json
+    "logicApps_ui": {
+        "en":{
+            "eventGridConnectionDisplayName": "Mona Subscription Events",
+            "appNames": {
+                "onCancelled": "On subscription cancelled",
+                "onPurchased": "On subscription purchased",
+                "onPlanChanged": "On subscription plan changed",
+                "onSeatQtyChanged": "On subscription seat quantity changed",
+                "onSuspended": "On subscription suspended",
+                "onReinstated": "On subscription reinstated"
+            }
+        },
+        "es": {
+            "eventGridConnectionDisplayName": "Eventos de Suscripción de Mona",
+            "appNames": {
+                "onCancelled": "Suscripción cancelada",
+                "onPurchased": "Suscripción comprada ",
+                "onPlanChanged": "Plan de suscripción cambiado",
+                "onSeatQtyChanged": "Cantidad de asientos de suscripción cambiada",
+                "onSuspended": "Suscripción suspendida",
+                "onReinstated": "Suscripción reestablecida"
+                }
+        }
+    ```
+
 # Conclusion
