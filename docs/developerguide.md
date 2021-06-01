@@ -314,6 +314,32 @@ Is Test Subscription? | Content in the second column
 
 # Integration
 
+Mona SaaS exposes  subscription-related events to your SaaS application through an Event Grid topic. Mona provides the flexibility for integrating multiple options for handling of the subscription-related events. A subscription tells Event Grid which events on a topic you're interested in receiving. When creating the subscription, you provide an endpoint for handling these event. This section serves as a guidline to help with integrating events handlers in Mona. Outlines below ae example event handlers that can be used to integrate events. Please see the following link for more information on other services that can be used to integrate with Event Grid Topics; [Event Handlers](https://docs.microsoft.com/en-us/azure/event-grid/overview#event-handlers).
+
+Please see the below image for a screenshot of an Subscription Event Grid Topic in Mona
+(insert img)
+
+## Event Handlers
+An [event handler](https://docs.microsoft.com/en-us/azure/event-grid/concepts#event-handlers) is the place where the events are sent. The handler takes an action to process the event. Listed below are a few Azure services that are automatically configured to handle events with the Event Grid. Before integrating please review the supported event handlers for [Azure Event Grid](https://docs.microsoft.com/en-us/azure/event-grid/event-handlers).
+
+#### Azure Functions 
+Serverless solution for processing events with minmal code required. For more information, please review the following [docs](https://docs.microsoft.com/en-us/azure/azure-functions/functions-overview).
+
+The following are approaches to using a function as an event handler for [Event Grid Trigger](https://docs.microsoft.com/en-us/azure/event-grid/handler-functions)
+
+
+#### Logic Apps
+Service that helps with automating and orchestrating tasks, business processes and workflows. For more information, please review the following [docs](https://docs.microsoft.com/en-us/azure/logic-apps/logic-apps-overview). Currenlty Mona has Logic Apps preconfigured out of the box. Please see the below image for reference of Logic App integration in Mona.
+
+
+
+Mona Logic App
+(Insert Image)
+
+
+
+#### Other Event Grid Subscribers 
+
 # Language Support
 
 ## Globalization and localization in ASP.NET Core
