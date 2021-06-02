@@ -56,85 +56,48 @@ Below is a sample of what the JSON body will look like
 {
 
   "id": "XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX",
-
   "subject": "mona/saas/subscriptions/YYYYYYYY-YYYY-YYYY-YYYY-YYYYYYYYYYYY",
-
   "data": {
-
     "eventId": "XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX",
-
     "eventType": "Mona.SaaS.Marketplace.SubscriptionPurchased",
-
     "eventVersion": "2021-05-01",
-
     "operationId": "ZZZZZZZZ-ZZZZ-ZZZZ-ZZZZ-ZZZZZZZZZZZZZ",
-
     "subscription": {
-
       "subscriptionId": "YYYYYYYY-YYYY-YYYY-YYYY-YYYYYYYYYYYY",
-
       "subscriptionName": "Test Subscription",
-
       "offerId": "Test Offer",
-
       "planId": "Test Plan",
-
       "isTest": true,
-
       "isFreeTrial": false,
-
       "status": 2,
-
       "term": {
-
         "termUnit": "PT1M",
-
         "startDate": "2021-05-26T00:00:00Z",
-
         "endDate": "2021-06-26T00:00:00Z"
-
       },
 
       "beneficiary": {
-
         "userId": "AAAAAAAA-AAAA-AAAA-AAAA-AAAAAAAAAAAA",
-
         "userEmail": "beneficiary@microsoft.com",
-
         "aadObjectId": "BBBBBBBB-BBBB-BBBB-BBBBBBBBBBBBBB",
-
         "aadTenantId": "CCCCCCCC-CCCC-CCCC-CCCC-CCCCCCCCCCCC"
-
       },
 
       "purchaser": {
-
         "userId": "DDDDDDDD-DDDD-DDDD-DDDD-DDDDDDDDDDDDDD",
-
         "userEmail": "purchaser@microsoft.com",
-
         "aadObjectId": "EEEEEEEE-EEEE-EEEE-EEEE-EEEEEEEEEEEE",
-
         "aadTenantId": "FFFFFFFF-FFFF-FFFF-FFFF-FFFFFFFFFFFFF"
-
       }
-
     },
 
     "operationDateTimeUtc": "2021-05-26T14:20:58.7727333Z"
-
   },
-
   "eventType": "Mona.SaaS.Marketplace.SubscriptionPurchased",
-
   "dataVersion": "2021-05-01",
-
   "metadataVersion": "1",
-
   "eventTime": "2021-05-26T14:20:58.7806573Z",
-
   "topic": "/subscriptions/GGGGGGGG-GGGG-GGGG-GGGG-GGGGGGGGGGGG/resourceGroups/monatest10/providers/Microsoft.EventGrid/topics/mona-events-monatest10"
-
 }
 
 ```
@@ -142,18 +105,36 @@ Below is a sample of what the JSON body will look like
 
 Parameter | Value
 ------------ | -------------
-Is Free Trial Subscription?| Content from cell 2
-Is Test Subscription? | Content in the second column
-Offer ID| Content from cell 2
-Operation Date/Time UTC | Content in the second column
-Operation ID| Content from cell 2
-Plan ID | Content in the second column
-Seat Quantity| Content from cell 2
-Subscription ID | Content in the second column
-Subscription Name | Content in the second column
-Is Test Subscription? | Content in the second column
-Is Test Subscription? | Content in the second column
-Is Test Subscription? | Content in the second column
+id| Content from cell 2
+subject | Content in the second column
+data| Content from cell 2
+eventId | Content in the second column
+eventType| Content from cell 2
+eventVersion | Content in the second column
+operationId| Content from cell 2
+subscription | Content in the second column
+subscriptionId | Content in the second column
+subscriptionName | Content in the second column
+offerId | Content in the second column
+planId | Content in the second column
+isTest| Content from cell 2
+isFreeTrial | Content in the second column
+status | Content from cell 2
+term | Content in the second column
+termUnit| Content from cell 2
+startDate | Content in the second column
+endDate | Content from cell 2
+beneficiary | Content in the second column
+userId | Content in the second column
+userEmail | Content in the second column
+aadObjectId | Content in the second column
+aadTenantId | Content in the second column
+operationDateTimeUtc| Content in the second column
+eventType | Content in the second column
+dataVersion | Content in the second column
+metadataVersion | Content in the second column
+eventTime | Content in the second column
+topic | Content in the second column
 
 
 # Testing Mode
