@@ -143,8 +143,29 @@ topic | Content in the second column
 
 Mona SaaS exposes  subscription-related events to your SaaS application through an Event Grid topic. Mona provides the flexibility for integrating multiple options for handling of the subscription-related events. A subscription tells Event Grid which events on a topic you're interested in receiving. When creating the subscription, you provide an endpoint for handling these event. This section serves as a guidline to help with integrating events handlers in Mona. Outlines below ae example event handlers that can be used to integrate events. Please see the following link for more information on other services that can be used to integrate with Event Grid Topics; [Event Handlers](https://docs.microsoft.com/en-us/azure/event-grid/overview#event-handlers).
 
-Please see the below image for a screenshot of an Subscription Event Grid Topic in Mona
-(insert img)
+Please see below json for Subscription Event Grid Architecture 
+
+```json
+{
+    "properties": {
+        "provisioningState": "Succeeded",
+        "endpoint": "https://mona-events-monadocs01.northeurope-1.eventgrid.azure.net/api/events",
+        "inputSchema": "EventGridSchema",
+        "metricResourceId": "c763c70e-ddf6-4562-b809-02d563077fae",
+        "publicNetworkAccess": "Enabled"
+    },
+    "sku": {
+        "name": "Basic"
+    },
+    "kind": "Azure",
+    "systemData": null,
+    "location": "northeurope",
+    "tags": null,
+    "id": "/subscriptions/4ff7b032-cdca-461c-adaf-30be3a1769b3/resourceGroups/mona-monadocs01/providers/Microsoft.EventGrid/topics/mona-events-monadocs01",
+    "name": "mona-events-monadocs01",
+    "type": "Microsoft.EventGrid/topics"
+}
+```
 
 ## Event Handlers
 An [event handler](https://docs.microsoft.com/en-us/azure/event-grid/concepts#event-handlers) is the place where the events are sent. The handler takes an action to process the event. Listed below are a few Azure services that are automatically configured to handle events with the Event Grid. Before integrating please review the supported event handlers for [Azure Event Grid](https://docs.microsoft.com/en-us/azure/event-grid/event-handlers).
@@ -158,14 +179,18 @@ The following are approaches to using a function as an event handler for [Event 
 #### Logic Apps
 Service that helps with automating and orchestrating tasks, business processes and workflows. For more information, please review the following [docs](https://docs.microsoft.com/en-us/azure/logic-apps/logic-apps-overview). Currenlty Mona has Logic Apps preconfigured out of the box. Please see the below image for reference of Logic App integration in Mona.
 
+![Logic App Architecture](docs/images/monalogicapp.png)
 
+- #### Other Event Grid Subscribers
+	- Webhooks
+	- Event hubs
+	- Relay hybrid connections
+	- Service Bus queues and topics
+	- Storage queues
 
-Mona Logic App
-(Insert Image)
+## Logic App Integration Logic
 
-
-
-#### Other Event Grid Subscribers 
+![Logic App Integration Logic](docs/images/monalogicappintegration.png)
 
 # Language Support
 
