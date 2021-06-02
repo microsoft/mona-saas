@@ -30,269 +30,115 @@ Since Mona SaaS exposes these subscription-related events to your SaaS applicati
 
 This is the base subscription event that all the subsequent events will be based of off. All events following this one will use these parameters **in addiiton** to whatever other parameters are shown in the JSON template. Active (Subscribed) is the steady state of a provisioned SaaS subscription. After the Microsoft side has processed the Activate Subscription API call, the SaaS subscription is marked as Subscribed. The customer can now use the SaaS service on the publisher's side and will be billed.
 
-```json
-{
-  
-    "properties": {
-        "Is Free Trial Subscription?": {
-            "type": "boolean"
-        },
-        "Is Test Subscription?": {
-            "type": "boolean"
-        },
-        "Offer ID": {
-            "type": "string"
-        },
-        "Operation Date/Time UTC": {
-            "type": "string"
-        },
-        "Operation ID": {
-            "type": "string"
-        },
-        "Plan ID": {
-            "type": "string"
-        },
-        "Seat Quantity": {
-            "type": "integer"
-        },
-        "Subscription ID": {
-            "type": "string"
-        },
-        "Subscription Name": {
-            "type": "string"
-        }
-    },
-    "type": "object"
-}
-```
+
 #### SubscriptionCancelled
 
 Subscriptions reach this state in response to an explicit customer or CSP action by the cancellation of a subscription from the publisher site, the Azure portal, or Microsoft 365 Admin Center. A subscription can also be canceled implicitly, as a result of nonpayment of dues, after being in the Suspended state for 30 days.
 
-```json
-{
-    "properties": {
-        "Is Free Trial Subscription?": {
-            "type": "boolean"
-        },
-        "Is Test Subscription?": {
-            "type": "boolean"
-        },
-        "New Plan ID": {
-            "type": "string"
-        },
-        "Offer ID": {
-            "type": "string"
-        },
-        "Operation Date/Time UTC": {
-            "type": "string"
-        },
-        "Operation ID": {
-            "type": "string"
-        },
-        "Plan ID": {
-            "type": "string"
-        },
-        "Seat Quantity": {
-            "type": "integer"
-        },
-        "Subscription ID": {
-            "type": "string"
-        },
-        "Subscription Name": {
-            "type": "string"
-        }
-     },
-    "type": "object"
-}
-```
-
 #### SubscriptionPlanChanged
 Use this API to update (increase or decrease) the quantity of seats purchased for a SaaS subscription. The publisher must call this API when the number of seats is changed from the publisher side for a SaaS subscription created in the commercial marketplace.
-```json
-{
-    "properties": {
-        "Is Free Trial Subscription?": {
-            "type": "boolean"
-        },
-        "Is Test Subscription?": {
-            "type": "boolean"
-        },
-        "New Plan ID": {
-            "type": "string"
-        },
-        "Offer ID": {
-            "type": "string"
-        },
-        "Operation Date/Time UTC": {
-            "type": "string"
-        },
-        "Operation ID": {
-            "type": "string"
-        },
-        "Plan ID": {
-            "type": "string"
-        },
-        "Seat Quantity": {
-            "type": "integer"
-        },
-        "Subscription ID": {
-            "type": "string"
-        },
-        "Subscription Name": {
-            "type": "string"
-        }
-    },
-    "type": "object"
-}
-```
+
 #### SubscriptionPurchased
-```json
-{
-    "properties": {
-        "Is Free Trial Subscription?": {
-            "type": "boolean"
-        },
-        "Is Test Subscription?": {
-            "type": "boolean"
-        },
-        "Offer ID": {
-            "type": "string"
-        },
-        "Operation Date/Time UTC": {
-            "type": "string"
-        },
-        "Operation ID": {
-            "type": "string"
-        },
-        "Plan ID": {
-            "type": "string"
-        },
-        "Seat Quantity": {
-            "type": "integer"
-        },
-        "Subscription ID": {
-            "type": "string"
-        },
-        "Subscription Name": {
-            "type": "string"
-        }
-    },
-    "type": "object"
-}
-```
+After an end user (or CSP) purchases a SaaS offer in the commercial marketplace, the publisher should be notified of the purchase. The publisher can then create and configure a new SaaS account on the publisher side for the end user.
+
 #### SubscriptionReinstated
 This action indicates that the customer's payment instrument has become valid again, a payment has been made for the SaaS subscription, and the subscription is being reinstated. In this case:
 
-```json
-{
-    "properties": {
-        "Is Free Trial Subscription?": {
-            "type": "boolean"
-        },
-        "Is Test Subscription?": {
-            "type": "boolean"
-        },
-        "Offer ID": {
-            "type": "string"
-        },
-        "Operation Date/Time UTC": {
-            "type": "string"
-        },
-        "Operation ID": {
-            "type": "string"
-        },
-        "Plan ID": {
-            "type": "string"
-        },
-        "Seat Quantity": {
-            "type": "integer"
-        },
-        "Subscription ID": {
-            "type": "string"
-        },
-        "Subscription Name": {
-            "type": "string"
-        }
-    },
-    "type": "object"
-}
-```
 ### SubscriptionSeatQuantityChanged
 Use this API to update (increase or decrease) the quantity of seats purchased for a SaaS subscription. The publisher must call this API when the number of seats is changed from the publisher side for a SaaS subscription created in the commercial marketplace.
-```json
-{
-    "properties": {
-        "Is Free Trial Subscription?": {
-            "type": "boolean"
-        },
-        "Is Test Subscription?": {
-            "type": "boolean"
-        },
-        "New Seat Quantity": {
-            "type": "integer"
-        },
-        "Offer ID": {
-            "type": "string"
-        },
-        "Operation Date/Time UTC": {
-            "type": "string"
-        },
-        "Operation ID": {
-            "type": "string"
-        },
-        "Plan ID": {
-            "type": "string"
-        },
-        "Seat Quantity": {
-            "type": "integer"
-        },
-        "Subscription ID": {
-            "type": "string"
-        },
-        "Subscription Name": {
-            "type": "string"
-        }
-    },
-    "type": "object"
-}
-```
+
 #### SubscriptionSuspended
 This state indicates that a customer's payment for the SaaS service has not been received. The publisher will be notified of this change in the SaaS subscription status by Microsoft. The notification is done via a call to webhook with the action parameter set to Suspended.
+
+Below is a sample of what the JSON body will look like 
+
 ```json
 {
-    "properties": {
-        "Is Free Trial Subscription?": {
-            "type": "boolean"
-        },
-        "Is Test Subscription?": {
-            "type": "boolean"
-        },
-        "Offer ID": {
-            "type": "string"
-        },
-        "Operation Date/Time UTC": {
-            "type": "string"
-        },
-        "Operation ID": {
-            "type": "string"
-        },
-        "Plan ID": {
-            "type": "string"
-        },
-        "Seat Quantity": {
-            "type": "integer"
-        },
-        "Subscription ID": {
-            "type": "string"
-        },
-        "Subscription Name": {
-            "type": "string"
-        }
+
+  "id": "XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX",
+
+  "subject": "mona/saas/subscriptions/YYYYYYYY-YYYY-YYYY-YYYY-YYYYYYYYYYYY",
+
+  "data": {
+
+    "eventId": "XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX",
+
+    "eventType": "Mona.SaaS.Marketplace.SubscriptionPurchased",
+
+    "eventVersion": "2021-05-01",
+
+    "operationId": "ZZZZZZZZ-ZZZZ-ZZZZ-ZZZZ-ZZZZZZZZZZZZZ",
+
+    "subscription": {
+
+      "subscriptionId": "YYYYYYYY-YYYY-YYYY-YYYY-YYYYYYYYYYYY",
+
+      "subscriptionName": "Test Subscription",
+
+      "offerId": "Test Offer",
+
+      "planId": "Test Plan",
+
+      "isTest": true,
+
+      "isFreeTrial": false,
+
+      "status": 2,
+
+      "term": {
+
+        "termUnit": "PT1M",
+
+        "startDate": "2021-05-26T00:00:00Z",
+
+        "endDate": "2021-06-26T00:00:00Z"
+
+      },
+
+      "beneficiary": {
+
+        "userId": "AAAAAAAA-AAAA-AAAA-AAAA-AAAAAAAAAAAA",
+
+        "userEmail": "beneficiary@microsoft.com",
+
+        "aadObjectId": "BBBBBBBB-BBBB-BBBB-BBBBBBBBBBBBBB",
+
+        "aadTenantId": "CCCCCCCC-CCCC-CCCC-CCCC-CCCCCCCCCCCC"
+
+      },
+
+      "purchaser": {
+
+        "userId": "DDDDDDDD-DDDD-DDDD-DDDD-DDDDDDDDDDDDDD",
+
+        "userEmail": "purchaser@microsoft.com",
+
+        "aadObjectId": "EEEEEEEE-EEEE-EEEE-EEEE-EEEEEEEEEEEE",
+
+        "aadTenantId": "FFFFFFFF-FFFF-FFFF-FFFF-FFFFFFFFFFFFF"
+
+      }
+
     },
-    "type": "object"
+
+    "operationDateTimeUtc": "2021-05-26T14:20:58.7727333Z"
+
+  },
+
+  "eventType": "Mona.SaaS.Marketplace.SubscriptionPurchased",
+
+  "dataVersion": "2021-05-01",
+
+  "metadataVersion": "1",
+
+  "eventTime": "2021-05-26T14:20:58.7806573Z",
+
+  "topic": "/subscriptions/GGGGGGGG-GGGG-GGGG-GGGG-GGGGGGGGGGGG/resourceGroups/monatest10/providers/Microsoft.EventGrid/topics/mona-events-monatest10"
+
 }
+
 ```
+
 
 Parameter | Value
 ------------ | -------------
