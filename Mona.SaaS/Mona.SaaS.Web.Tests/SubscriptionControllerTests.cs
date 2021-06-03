@@ -1,4 +1,16 @@
-﻿using FluentAssertions;
+﻿// MICROSOFT CONFIDENTIAL INFORMATION
+//
+// Copyright © Microsoft Corporation
+//
+// Microsoft Corporation (or based on where you live, one of its affiliates) licenses this preview code for your internal testing purposes only.
+//
+// Microsoft provides the following preview code AS IS without warranty of any kind. The preview code is not supported under any Microsoft standard support program or services.
+//
+// Microsoft further disclaims all implied warranties including, without limitation, any implied warranties of merchantability or of fitness for a particular purpose. The entire risk arising out of the use or performance of the preview code remains with you.
+//
+// In no event shall Microsoft be liable for any damages whatsoever (including, without limitation, damages for loss of business profits, business interruption, loss of business information, or other pecuniary loss) arising out of the use of or inability to use the preview code, even if Microsoft has been advised of the possibility of such damages.
+
+using FluentAssertions;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Controllers;
@@ -28,7 +40,7 @@ namespace Mona.SaaS.Web.Tests
     public class SubscriptionControllerTests
     {
         [Fact]
-        public async Task PostLiveLandingPage_WithValidSubscriptionId_ShouldPublishEvent_AndRedirectToPurchaseConfirmationUrl()
+        public async Task PostLiveLandingPage_GivenValidSubscriptionId_ShouldPublishEvent_AndRedirectToPurchaseConfirmationUrl()
         {
             var testToken = Guid.NewGuid().ToString();
             var testUserName = "Clippy";
@@ -72,7 +84,7 @@ namespace Mona.SaaS.Web.Tests
         }
 
         [Fact]
-        public async Task PostTestLandingPage_WithValidSubscriptionId_ShouldPublishEvent_AndRedirectToPurchaseConfirmationUrl()
+        public async Task PostTestLandingPage_GivenValidSubscriptionId_ShouldPublishEvent_AndRedirectToPurchaseConfirmationUrl()
         {
             var testToken = Guid.NewGuid().ToString();
             var testUserName = "Clippy";
@@ -118,7 +130,7 @@ namespace Mona.SaaS.Web.Tests
         }
 
         [Fact]
-        public async Task PostLiveLandingPage_WithInvalidSubscriptionId_ShouldRespondOkWithErrorCode()
+        public async Task PostLiveLandingPage_GivenInvalidSubscriptionId_ShouldRespondOk_WithErrorCode()
         {
             var testToken = Guid.NewGuid().ToString();
             var testUserName = "Clippy";
@@ -173,7 +185,7 @@ namespace Mona.SaaS.Web.Tests
         }
 
         [Fact]
-        public async Task PostTestLandingPage_WithInvalidSubscriptionId_ShouldRespondOkWithErrorCode()
+        public async Task PostTestLandingPage_GivenInvalidSubscriptionId_ShouldRespondOk_WithErrorCode()
         {
             var testToken = Guid.NewGuid().ToString();
             var testUserName = "Clippy";
@@ -228,7 +240,7 @@ namespace Mona.SaaS.Web.Tests
         }
 
         [Fact]
-        public async Task GetLiveLandingPage_WithNoMarketplaceToken_AndConfiguredMarketingPage_ShouldRedirectToMarketingPage()
+        public async Task GetLiveLandingPage_GivenNoMarketplaceToken_AndConfiguredMarketingPage_ShouldRedirectToMarketingPage()
         {
             var mockDeployConfig = GetOptionsSnapshotMock(GetDefaultDeploymentConfiguration());
             var mockLogger = new Mock<ILogger<SubscriptionController>>();
@@ -250,7 +262,7 @@ namespace Mona.SaaS.Web.Tests
         }
 
         [Fact]
-        public async Task GetLiveLandingPage_WithNoMarketplaceToken_AndNoConfiguredMarketingPage_ShouldRespondNotFound()
+        public async Task GetLiveLandingPage_GivenNoMarketplaceToken_AndNoConfiguredMarketingPage_ShouldRespondNotFound()
         {
             var mockDeployConfig = GetOptionsSnapshotMock(GetDefaultDeploymentConfiguration());
             var mockLogger = new Mock<ILogger<SubscriptionController>>();
@@ -274,7 +286,7 @@ namespace Mona.SaaS.Web.Tests
         }
 
         [Fact]
-        public async Task GetLiveLandingPage_WithInvalidMarketplaceToken_AndAuthenticatedUser_ShouldRespondOkWithErrorCode()
+        public async Task GetLiveLandingPage_GivenUnresolvableMarketplaceToken_AndAuthedUser_ShouldRespondOk_WithErrorCode()
         {
             var testToken = Guid.NewGuid().ToString();
             var testUserName = "Clippy";
@@ -327,43 +339,32 @@ namespace Mona.SaaS.Web.Tests
         }
 
         [Fact]
-        public async Task GetTestLandingPage_WithAuthenticatedUser_AndExistingSubscription_ShouldRedirectToSubscriptionConfigurationUrl()
+        public async Task GetTestLandingPage_GivenTestModeDisabled_ShouldRespondNotFound()
         {
-            var testToken = Guid.NewGuid().ToString();
-            var testUserName = "Clippy";
+            var deployConfig = GetDefaultDeploymentConfiguration();
 
-            var mockDeployConfig = GetOptionsSnapshotMock(GetDefaultDeploymentConfiguration());
+            deployConfig.IsTestModeEnabled = false;
+
+            var mockDeployConfig = GetOptionsSnapshotMock(deployConfig);
             var mockLogger = new Mock<ILogger<SubscriptionController>>();
             var mockMpOperationService = new Mock<IMarketplaceOperationService>();
             var mockMpSubscriptionService = new Mock<IMarketplaceSubscriptionService>();
             var mockEventPublisher = new Mock<ISubscriptionEventPublisher>();
             var mockSubscriptionRepo = new Mock<ISubscriptionRepository>();
-            var mockHttpContext = new Mock<HttpContext>();
             var offerConfig = GetDefaultOfferConfiguration();
-            var testSubscription = CreateTestSubscription();
-
-            testSubscription.Status = SubscriptionStatus.Active;
-
-            mockHttpContext.SetupGet(hc => hc.User.Identity.IsAuthenticated).Returns(true);
-            mockHttpContext.SetupGet(hc => hc.User.Claims).Returns(new Claim[] { new Claim("name", testUserName) });
-            mockMpSubscriptionService.Setup(ss => ss.ResolveSubscriptionTokenAsync(testToken)).Returns(Task.FromResult(testSubscription));
-
-            var controllerContext = new ControllerContext(new ActionContext(mockHttpContext.Object, new RouteData(), new ControllerActionDescriptor()));
 
             var controllerUt = new SubscriptionController(
                 mockDeployConfig.Object, offerConfig, mockLogger.Object, mockMpOperationService.Object,
-                mockMpSubscriptionService.Object, mockEventPublisher.Object, mockSubscriptionRepo.Object)
-            { ControllerContext = controllerContext };
+                mockMpSubscriptionService.Object, mockEventPublisher.Object, mockSubscriptionRepo.Object);
 
-            var actionResult = await controllerUt.GetLiveLandingPageAsync(testToken);
+            var actionResult = await controllerUt.GetTestLandingPageAsync();
 
             actionResult.Should().NotBeNull();
-            actionResult.Should().BeOfType<RedirectResult>();
-            (actionResult as RedirectResult).Url.Should().Be(offerConfig.SubscriptionConfigurationUrl.Replace("{subscription-id}", testSubscription.SubscriptionId));
+            actionResult.Should().BeOfType<NotFoundResult>();
         }
-        
+
         [Fact]
-        public async Task GetLiveLandingPage_WithValidMarketplaceToken_AndAuthenticatedUser_AndExistingSubscription_ShouldRedirectToSubscriptionConfigurationUrl()
+        public async Task GetTestLandingPage_GivenAuthedUser_AndExistingSubscription_ShouldRedirectToSubscriptionConfigurationUrl()
         {
             var testToken = Guid.NewGuid().ToString();
             var testUserName = "Clippy";
@@ -399,7 +400,43 @@ namespace Mona.SaaS.Web.Tests
         }
 
         [Fact]
-        public async Task GetTestLandingPage_WithAuthenticatedUser_ShouldRespondOkWithTestSubscriptionDetails()
+        public async Task GetLiveLandingPage_GivenResolvableMarketplaceToken_AndAuthedUser_AndExistingSubscription_ShouldRedirectToSubscriptionConfigurationUrl()
+        {
+            var testToken = Guid.NewGuid().ToString();
+            var testUserName = "Clippy";
+
+            var mockDeployConfig = GetOptionsSnapshotMock(GetDefaultDeploymentConfiguration());
+            var mockLogger = new Mock<ILogger<SubscriptionController>>();
+            var mockMpOperationService = new Mock<IMarketplaceOperationService>();
+            var mockMpSubscriptionService = new Mock<IMarketplaceSubscriptionService>();
+            var mockEventPublisher = new Mock<ISubscriptionEventPublisher>();
+            var mockSubscriptionRepo = new Mock<ISubscriptionRepository>();
+            var mockHttpContext = new Mock<HttpContext>();
+            var offerConfig = GetDefaultOfferConfiguration();
+            var testSubscription = CreateTestSubscription();
+
+            testSubscription.Status = SubscriptionStatus.Active;
+
+            mockHttpContext.SetupGet(hc => hc.User.Identity.IsAuthenticated).Returns(true);
+            mockHttpContext.SetupGet(hc => hc.User.Claims).Returns(new Claim[] { new Claim("name", testUserName) });
+            mockMpSubscriptionService.Setup(ss => ss.ResolveSubscriptionTokenAsync(testToken)).Returns(Task.FromResult(testSubscription));
+
+            var controllerContext = new ControllerContext(new ActionContext(mockHttpContext.Object, new RouteData(), new ControllerActionDescriptor()));
+
+            var controllerUt = new SubscriptionController(
+                mockDeployConfig.Object, offerConfig, mockLogger.Object, mockMpOperationService.Object,
+                mockMpSubscriptionService.Object, mockEventPublisher.Object, mockSubscriptionRepo.Object)
+            { ControllerContext = controllerContext };
+
+            var actionResult = await controllerUt.GetLiveLandingPageAsync(testToken);
+
+            actionResult.Should().NotBeNull();
+            actionResult.Should().BeOfType<RedirectResult>();
+            (actionResult as RedirectResult).Url.Should().Be(offerConfig.SubscriptionConfigurationUrl.Replace("{subscription-id}", testSubscription.SubscriptionId));
+        }
+
+        [Fact]
+        public async Task GetTestLandingPage_GivenAuthedUser_ShouldRespondOk_WithSubscriptionDetails()
         {
             var testUserName = "Clippy";
 
@@ -456,7 +493,7 @@ namespace Mona.SaaS.Web.Tests
         }
 
         [Fact]
-        public async Task GetTestLandingPage_WithAuthenticatedUser_AndTestSubscriptionParameterOverrides_ShouldRespondOkWithTestSubscriptionDetails()
+        public async Task GetTestLandingPage_GivenAuthedUser_AndTestSubscriptionOverrides_ShouldRespondOk_WithSubscriptionDetails()
         {
             var testUserName = "Clippy";
 
@@ -516,7 +553,7 @@ namespace Mona.SaaS.Web.Tests
         }
 
         [Fact]
-        public async Task GetLiveLandingPage_WithValidMarketplaceToken_AndAuthenticatedUser_AndNewSubscription_ShouldRespondOkWithSubscriptionDetails()
+        public async Task GetLiveLandingPage_GivenResolvableMarketplaceToken_AndAuthenticatedUser_AndNewSubscription_ShouldRespondOk_WithSubscriptionDetails()
         {
             var testToken = Guid.NewGuid().ToString();
             var testUserName = "Clippy";
@@ -576,7 +613,7 @@ namespace Mona.SaaS.Web.Tests
         }
 
         [Fact]
-        public async Task GetTestLandingPage_WithNoAuthenticatedUser_ShouldChallenge()
+        public async Task GetTestLandingPage_GivenUnauthedUser_ShouldChallenge()
         {
             var mockDeployConfig = GetOptionsSnapshotMock(GetDefaultDeploymentConfiguration());
             var mockLogger = new Mock<ILogger<SubscriptionController>>();
@@ -603,7 +640,7 @@ namespace Mona.SaaS.Web.Tests
         }
 
         [Fact]
-        public async Task GetLiveLandingPage_WithMarketplaceToken_AndNoAuthenticatedUser_ShouldChallenge()
+        public async Task GetLiveLandingPage_GivenMarketplaceToken_AndUnauthenticatedUser_ShouldChallenge()
         {
             var mockDeployConfig = GetOptionsSnapshotMock(GetDefaultDeploymentConfiguration());
             var mockLogger = new Mock<ILogger<SubscriptionController>>();
@@ -622,7 +659,7 @@ namespace Mona.SaaS.Web.Tests
                 mockDeployConfig.Object, offerConfig, mockLogger.Object, mockMpOperationService.Object,
                 mockMpSubscriptionService.Object, mockEventPublisher.Object, mockSubscriptionRepo.Object)
             { ControllerContext = controllerContext };
-             
+
             var actionResult = await controllerUt.GetLiveLandingPageAsync(Guid.NewGuid().ToString());
 
             actionResult.Should().NotBeNull();
@@ -630,7 +667,7 @@ namespace Mona.SaaS.Web.Tests
         }
 
         [Fact]
-        public async Task GetTestLandingPage_WithIncompleteSetup_ShouldRedirectToSetup()
+        public async Task GetTestLandingPage_GivenIncompleteMonaSetup_ShouldRedirectToSetup()
         {
             var mockDeployConfig = GetOptionsSnapshotMock(GetDefaultDeploymentConfiguration());
             var mockLogger = new Mock<ILogger<SubscriptionController>>();
@@ -655,7 +692,7 @@ namespace Mona.SaaS.Web.Tests
         }
 
         [Fact]
-        public async Task GetLiveLandingPage_WithIncompleteSetup_ShouldRedirectToSetup()
+        public async Task GetLiveLandingPage_GivenIncompleteMonaSetup_ShouldRedirectToSetup()
         {
             var mockDeployConfig = GetOptionsSnapshotMock(GetDefaultDeploymentConfiguration());
             var mockLogger = new Mock<ILogger<SubscriptionController>>();
@@ -677,6 +714,779 @@ namespace Mona.SaaS.Web.Tests
             actionResult.Should().NotBeNull();
             actionResult.Should().BeOfType<RedirectToRouteResult>();
             (actionResult as RedirectToRouteResult).RouteName.Should().Be("setup");
+        }
+
+        [Fact]
+        public async Task PostLiveWebhookNotification_GivenVerifiableReinstatementNotification_ShouldPublishEvent_AndRespondOk()
+        {
+            var mockDeployConfig = GetOptionsSnapshotMock(GetDefaultDeploymentConfiguration());
+            var mockLogger = new Mock<ILogger<SubscriptionController>>();
+            var mockMpOperationService = new Mock<IMarketplaceOperationService>();
+            var mockMpSubscriptionService = new Mock<IMarketplaceSubscriptionService>();
+            var mockEventPublisher = new Mock<ISubscriptionEventPublisher>();
+            var mockSubscriptionRepo = new Mock<ISubscriptionRepository>();
+            var offerConfig = GetDefaultOfferConfiguration();
+            var testSubscription = CreateTestSubscription();
+
+            var testWhNotification = new WebhookNotification
+            {
+                ActionType = MarketplaceActionTypes.Reinstate,
+                ActivityId = Guid.NewGuid().ToString(),
+                OfferId = testSubscription.OfferId,
+                OperationId = Guid.NewGuid().ToString(),
+                PlanId = testSubscription.PlanId,
+                PublisherId = Guid.NewGuid().ToString(),
+                SeatQuantity = testSubscription.SeatQuantity,
+                SubscriptionId = testSubscription.SubscriptionId,
+                Timestamp = DateTime.UtcNow
+            };
+
+            var testOperation = new SubscriptionOperation
+            {
+                OperationId = testWhNotification.OperationId,
+                OperationType = SubscriptionOperationType.Reinstate,
+                PlanId = testWhNotification.PlanId,
+                SeatQuantity = testWhNotification.SeatQuantity,
+                SubscriptionId = testWhNotification.SubscriptionId
+            };
+
+            SubscriptionReinstated reinstatedEvent = null;
+
+            mockMpOperationService
+                .Setup(os => os.GetSubscriptionOperationAsync(testWhNotification.SubscriptionId, testWhNotification.OperationId))
+                .Returns(Task.FromResult(testOperation));
+
+            mockMpSubscriptionService
+                .Setup(ss => ss.GetSubscriptionAsync(testSubscription.SubscriptionId))
+                .Returns(Task.FromResult(testSubscription));
+
+            mockEventPublisher
+                .Setup(ep => ep.PublishEventAsync(It.IsAny<SubscriptionReinstated>()))
+                .Callback<SubscriptionReinstated>(e => reinstatedEvent = e);
+
+            var controllerUt = new SubscriptionController(
+                mockDeployConfig.Object, offerConfig, mockLogger.Object, mockMpOperationService.Object,
+                mockMpSubscriptionService.Object, mockEventPublisher.Object, mockSubscriptionRepo.Object);
+
+            var actionResult = await controllerUt.ProcessLiveWebhookNotificationAsync(testWhNotification);
+
+            actionResult.Should().NotBeNull();
+            actionResult.Should().BeOfType<OkResult>();
+
+            reinstatedEvent.Should().NotBeNull();
+            reinstatedEvent.EventType.Should().Be(CoreEventTypes.SubscriptionReinstated);
+            reinstatedEvent.OperationId.Should().Be(testWhNotification.OperationId);
+            reinstatedEvent.Subscription.Should().BeEquivalentTo(testSubscription);
+        }
+
+        [Fact]
+        public async Task PostLiveWebhookNotification_GivenUnverifiableNotification_ShouldRespondWith500()
+        {
+            var mockDeployConfig = GetOptionsSnapshotMock(GetDefaultDeploymentConfiguration());
+            var mockLogger = new Mock<ILogger<SubscriptionController>>();
+            var mockMpOperationService = new Mock<IMarketplaceOperationService>();
+            var mockMpSubscriptionService = new Mock<IMarketplaceSubscriptionService>();
+            var mockEventPublisher = new Mock<ISubscriptionEventPublisher>();
+            var mockSubscriptionRepo = new Mock<ISubscriptionRepository>();
+            var offerConfig = GetDefaultOfferConfiguration();
+            var testSubscription = CreateTestSubscription();
+
+            var testWhNotification = new WebhookNotification
+            {
+                ActionType = MarketplaceActionTypes.ChangePlan,
+                ActivityId = Guid.NewGuid().ToString(),
+                OfferId = testSubscription.OfferId,
+                OperationId = Guid.NewGuid().ToString(),
+                PlanId = testSubscription.PlanId,
+                PublisherId = Guid.NewGuid().ToString(),
+                SeatQuantity = testSubscription.SeatQuantity,
+                SubscriptionId = testSubscription.SubscriptionId
+            };
+
+            mockMpSubscriptionService.Setup(ss => ss.GetSubscriptionAsync(testSubscription.SubscriptionId)).Returns(Task.FromResult(testSubscription));
+
+            mockMpOperationService
+                .Setup(os => os.GetSubscriptionOperationAsync(testSubscription.SubscriptionId, testWhNotification.OperationId))
+                .Returns(Task.FromResult(null as SubscriptionOperation));
+
+            var controllerUt = new SubscriptionController(
+                mockDeployConfig.Object, offerConfig, mockLogger.Object, mockMpOperationService.Object,
+                mockMpSubscriptionService.Object, mockEventPublisher.Object, mockSubscriptionRepo.Object);
+
+            var actionResult = await controllerUt.ProcessLiveWebhookNotificationAsync(testWhNotification);
+
+            actionResult.Should().NotBeNull();
+            actionResult.Should().BeOfType<StatusCodeResult>();
+            (actionResult as StatusCodeResult).StatusCode.Should().Be(500);
+        }
+
+        [Fact]
+        public async Task PostLiveWebhookNotification_GivenVerifiableSuspensionNotification_ShouldPublishEvent_AndRespondOk()
+        {
+            var mockDeployConfig = GetOptionsSnapshotMock(GetDefaultDeploymentConfiguration());
+            var mockLogger = new Mock<ILogger<SubscriptionController>>();
+            var mockMpOperationService = new Mock<IMarketplaceOperationService>();
+            var mockMpSubscriptionService = new Mock<IMarketplaceSubscriptionService>();
+            var mockEventPublisher = new Mock<ISubscriptionEventPublisher>();
+            var mockSubscriptionRepo = new Mock<ISubscriptionRepository>();
+            var offerConfig = GetDefaultOfferConfiguration();
+            var testSubscription = CreateTestSubscription();
+
+            var testWhNotification = new WebhookNotification
+            {
+                ActionType = MarketplaceActionTypes.Suspend,
+                ActivityId = Guid.NewGuid().ToString(),
+                OfferId = testSubscription.OfferId,
+                OperationId = Guid.NewGuid().ToString(),
+                PlanId = testSubscription.PlanId,
+                PublisherId = Guid.NewGuid().ToString(),
+                SeatQuantity = testSubscription.SeatQuantity,
+                SubscriptionId = testSubscription.SubscriptionId,
+                Timestamp = DateTime.UtcNow
+            };
+
+            var testOperation = new SubscriptionOperation
+            {
+                OperationId = testWhNotification.OperationId,
+                OperationType = SubscriptionOperationType.Suspend,
+                PlanId = testWhNotification.PlanId,
+                SeatQuantity = testWhNotification.SeatQuantity,
+                SubscriptionId = testWhNotification.SubscriptionId
+            };
+
+            SubscriptionSuspended suspendedEvent = null;
+
+            mockMpOperationService
+                .Setup(os => os.GetSubscriptionOperationAsync(testWhNotification.SubscriptionId, testWhNotification.OperationId))
+                .Returns(Task.FromResult(testOperation));
+
+            mockMpSubscriptionService
+                .Setup(ss => ss.GetSubscriptionAsync(testSubscription.SubscriptionId))
+                .Returns(Task.FromResult(testSubscription));
+
+            mockEventPublisher
+                .Setup(ep => ep.PublishEventAsync(It.IsAny<SubscriptionSuspended>()))
+                .Callback<SubscriptionSuspended>(e => suspendedEvent = e);
+
+            var controllerUt = new SubscriptionController(
+                mockDeployConfig.Object, offerConfig, mockLogger.Object, mockMpOperationService.Object,
+                mockMpSubscriptionService.Object, mockEventPublisher.Object, mockSubscriptionRepo.Object);
+
+            var actionResult = await controllerUt.ProcessLiveWebhookNotificationAsync(testWhNotification);
+
+            actionResult.Should().NotBeNull();
+            actionResult.Should().BeOfType<OkResult>();
+
+            suspendedEvent.Should().NotBeNull();
+            suspendedEvent.EventType.Should().Be(CoreEventTypes.SubscriptionSuspended);
+            suspendedEvent.OperationId.Should().Be(testWhNotification.OperationId);
+            suspendedEvent.Subscription.Should().BeEquivalentTo(testSubscription);
+        }
+
+        [Fact]
+        public async Task PostLiveWebhookNotification_GivenVerifiableCancellationNotification_ShouldPublishEvent_AndRespondOk()
+        {
+            var mockDeployConfig = GetOptionsSnapshotMock(GetDefaultDeploymentConfiguration());
+            var mockLogger = new Mock<ILogger<SubscriptionController>>();
+            var mockMpOperationService = new Mock<IMarketplaceOperationService>();
+            var mockMpSubscriptionService = new Mock<IMarketplaceSubscriptionService>();
+            var mockEventPublisher = new Mock<ISubscriptionEventPublisher>();
+            var mockSubscriptionRepo = new Mock<ISubscriptionRepository>();
+            var offerConfig = GetDefaultOfferConfiguration();
+            var testSubscription = CreateTestSubscription();
+
+            var testWhNotification = new WebhookNotification
+            {
+                ActionType = MarketplaceActionTypes.Unsubscribe,
+                ActivityId = Guid.NewGuid().ToString(),
+                OfferId = testSubscription.OfferId,
+                OperationId = Guid.NewGuid().ToString(),
+                PlanId = testSubscription.PlanId,
+                PublisherId = Guid.NewGuid().ToString(),
+                SeatQuantity = testSubscription.SeatQuantity,
+                SubscriptionId = testSubscription.SubscriptionId,
+                Timestamp = DateTime.UtcNow
+            };
+
+            var testOperation = new SubscriptionOperation
+            {
+                OperationId = testWhNotification.OperationId,
+                OperationType = SubscriptionOperationType.Cancel,
+                PlanId = testWhNotification.PlanId,
+                SeatQuantity = testWhNotification.SeatQuantity,
+                SubscriptionId = testWhNotification.SubscriptionId
+            };
+
+            SubscriptionCancelled cancelledEvent = null;
+
+            mockMpOperationService
+                .Setup(os => os.GetSubscriptionOperationAsync(testWhNotification.SubscriptionId, testWhNotification.OperationId))
+                .Returns(Task.FromResult(testOperation));
+
+            mockMpSubscriptionService
+                .Setup(ss => ss.GetSubscriptionAsync(testSubscription.SubscriptionId))
+                .Returns(Task.FromResult(testSubscription));
+
+            mockEventPublisher
+                .Setup(ep => ep.PublishEventAsync(It.IsAny<SubscriptionCancelled>()))
+                .Callback<SubscriptionCancelled>(e => cancelledEvent = e);
+
+            var controllerUt = new SubscriptionController(
+                mockDeployConfig.Object, offerConfig, mockLogger.Object, mockMpOperationService.Object,
+                mockMpSubscriptionService.Object, mockEventPublisher.Object, mockSubscriptionRepo.Object);
+
+            var actionResult = await controllerUt.ProcessLiveWebhookNotificationAsync(testWhNotification);
+
+            actionResult.Should().NotBeNull();
+            actionResult.Should().BeOfType<OkResult>();
+
+            cancelledEvent.Should().NotBeNull();
+            cancelledEvent.EventType.Should().Be(CoreEventTypes.SubscriptionCancelled);
+            cancelledEvent.OperationId.Should().Be(testWhNotification.OperationId);
+            cancelledEvent.Subscription.Should().BeEquivalentTo(testSubscription);
+        }
+
+        [Fact]
+        public async Task PostLiveWebhookNotification_GivenVerifiableSeatQuantityChangeNotification_ShouldPublishEvent_AndRespondOk()
+        {
+            var newSeatQty = 50;
+
+            var mockDeployConfig = GetOptionsSnapshotMock(GetDefaultDeploymentConfiguration());
+            var mockLogger = new Mock<ILogger<SubscriptionController>>();
+            var mockMpOperationService = new Mock<IMarketplaceOperationService>();
+            var mockMpSubscriptionService = new Mock<IMarketplaceSubscriptionService>();
+            var mockEventPublisher = new Mock<ISubscriptionEventPublisher>();
+            var mockSubscriptionRepo = new Mock<ISubscriptionRepository>();
+            var offerConfig = GetDefaultOfferConfiguration();
+            var testSubscription = CreateTestSubscription();
+
+            var testWhNotification = new WebhookNotification
+            {
+                ActionType = MarketplaceActionTypes.ChangeQuantity,
+                ActivityId = Guid.NewGuid().ToString(),
+                OfferId = testSubscription.OfferId,
+                OperationId = Guid.NewGuid().ToString(),
+                PlanId = testSubscription.PlanId,
+                PublisherId = Guid.NewGuid().ToString(),
+                SeatQuantity = newSeatQty,
+                SubscriptionId = testSubscription.SubscriptionId,
+                Timestamp = DateTime.UtcNow
+            };
+
+            var testOperation = new SubscriptionOperation
+            {
+                OperationId = testWhNotification.OperationId,
+                OperationType = SubscriptionOperationType.ChangeSeatQuantity,
+                PlanId = testWhNotification.PlanId,
+                SeatQuantity = testWhNotification.SeatQuantity,
+                SubscriptionId = testWhNotification.SubscriptionId
+            };
+
+            SubscriptionSeatQuantityChanged seatQtyChangedEvent = null;
+
+            mockMpOperationService
+                .Setup(os => os.GetSubscriptionOperationAsync(testWhNotification.SubscriptionId, testWhNotification.OperationId))
+                .Returns(Task.FromResult(testOperation));
+
+            mockMpSubscriptionService
+                .Setup(ss => ss.GetSubscriptionAsync(testSubscription.SubscriptionId))
+                .Returns(Task.FromResult(testSubscription));
+
+            mockEventPublisher
+                .Setup(ep => ep.PublishEventAsync(It.IsAny<SubscriptionSeatQuantityChanged>()))
+                .Callback<SubscriptionSeatQuantityChanged>(e => seatQtyChangedEvent = e);
+
+            var controllerUt = new SubscriptionController(
+                mockDeployConfig.Object, offerConfig, mockLogger.Object, mockMpOperationService.Object,
+                mockMpSubscriptionService.Object, mockEventPublisher.Object, mockSubscriptionRepo.Object);
+
+            var actionResult = await controllerUt.ProcessLiveWebhookNotificationAsync(testWhNotification);
+
+            actionResult.Should().NotBeNull();
+            actionResult.Should().BeOfType<OkResult>();
+
+            seatQtyChangedEvent.Should().NotBeNull();
+            seatQtyChangedEvent.EventType.Should().Be(CoreEventTypes.SubscriptionSeatQuantityChanged);
+            seatQtyChangedEvent.NewSeatQuantity.Should().Be(newSeatQty);
+            seatQtyChangedEvent.OperationId.Should().Be(testWhNotification.OperationId);
+            seatQtyChangedEvent.Subscription.Should().BeEquivalentTo(testSubscription);
+        }
+
+        [Fact]
+        public async Task PostLiveWebhookNotification_GivenVerifiablePlanChangeNotification_ShouldPublishEvent_AndRespondOk()
+        {
+            var newPlanId = Guid.NewGuid().ToString();
+
+            var mockDeployConfig = GetOptionsSnapshotMock(GetDefaultDeploymentConfiguration());
+            var mockLogger = new Mock<ILogger<SubscriptionController>>();
+            var mockMpOperationService = new Mock<IMarketplaceOperationService>();
+            var mockMpSubscriptionService = new Mock<IMarketplaceSubscriptionService>();
+            var mockEventPublisher = new Mock<ISubscriptionEventPublisher>();
+            var mockSubscriptionRepo = new Mock<ISubscriptionRepository>();
+            var offerConfig = GetDefaultOfferConfiguration();
+            var testSubscription = CreateTestSubscription();
+
+            var testWhNotification = new WebhookNotification
+            {
+                ActionType = MarketplaceActionTypes.ChangePlan,
+                ActivityId = Guid.NewGuid().ToString(),
+                OfferId = testSubscription.OfferId,
+                OperationId = Guid.NewGuid().ToString(),
+                PlanId = newPlanId,
+                PublisherId = Guid.NewGuid().ToString(),
+                SeatQuantity = testSubscription.SeatQuantity,
+                SubscriptionId = testSubscription.SubscriptionId,
+                Timestamp = DateTime.UtcNow
+            };
+
+            var testOperation = new SubscriptionOperation
+            {
+                OperationId = testWhNotification.OperationId,
+                OperationType = SubscriptionOperationType.ChangePlan,
+                PlanId = testWhNotification.PlanId,
+                SeatQuantity = testWhNotification.SeatQuantity,
+                SubscriptionId = testWhNotification.SubscriptionId
+            };
+
+            SubscriptionPlanChanged planChangeEvent = null;
+
+            mockMpOperationService.Setup(os => os.GetSubscriptionOperationAsync(testWhNotification.SubscriptionId, testWhNotification.OperationId)).Returns(Task.FromResult(testOperation));
+            mockMpSubscriptionService.Setup(ss => ss.GetSubscriptionAsync(testSubscription.SubscriptionId)).Returns(Task.FromResult(testSubscription));
+            mockEventPublisher.Setup(ep => ep.PublishEventAsync(It.IsAny<SubscriptionPlanChanged>())).Callback<SubscriptionPlanChanged>(e => planChangeEvent = e);
+
+            var controllerUt = new SubscriptionController(
+                mockDeployConfig.Object, offerConfig, mockLogger.Object, mockMpOperationService.Object,
+                mockMpSubscriptionService.Object, mockEventPublisher.Object, mockSubscriptionRepo.Object);
+
+            var actionResult = await controllerUt.ProcessLiveWebhookNotificationAsync(testWhNotification);
+
+            actionResult.Should().NotBeNull();
+            actionResult.Should().BeOfType<OkResult>();
+
+            planChangeEvent.Should().NotBeNull();
+            planChangeEvent.EventType.Should().Be(CoreEventTypes.SubscriptionPlanChanged);
+            planChangeEvent.NewPlanId.Should().Be(newPlanId);
+            planChangeEvent.OperationId.Should().Be(testWhNotification.OperationId);
+            planChangeEvent.Subscription.Should().BeEquivalentTo(testSubscription);
+        }
+
+        [Fact]
+        public async Task PostLiveWebhookNotification_GivenInvalidSubscriptionId_ShouldRespondNotFound()
+        {
+            var mockDeployConfig = GetOptionsSnapshotMock(GetDefaultDeploymentConfiguration());
+            var mockLogger = new Mock<ILogger<SubscriptionController>>();
+            var mockMpOperationService = new Mock<IMarketplaceOperationService>();
+            var mockMpSubscriptionService = new Mock<IMarketplaceSubscriptionService>();
+            var mockEventPublisher = new Mock<ISubscriptionEventPublisher>();
+            var mockSubscriptionRepo = new Mock<ISubscriptionRepository>();
+            var offerConfig = GetDefaultOfferConfiguration();
+            var testSubscription = CreateTestSubscription();
+
+            var testWhNotification = new WebhookNotification
+            {
+                ActionType = MarketplaceActionTypes.ChangePlan,
+                ActivityId = Guid.NewGuid().ToString(),
+                OfferId = testSubscription.OfferId,
+                OperationId = Guid.NewGuid().ToString(),
+                PlanId = testSubscription.PlanId,
+                PublisherId = Guid.NewGuid().ToString(),
+                SeatQuantity = testSubscription.SeatQuantity,
+                SubscriptionId = testSubscription.SubscriptionId
+            };
+
+            mockMpSubscriptionService.Setup(ss => ss.GetSubscriptionAsync(testSubscription.SubscriptionId)).Returns(Task.FromResult(null as Subscription));
+
+            var controllerUt = new SubscriptionController(
+                mockDeployConfig.Object, offerConfig, mockLogger.Object, mockMpOperationService.Object,
+                mockMpSubscriptionService.Object, mockEventPublisher.Object, mockSubscriptionRepo.Object);
+
+            var actionResult = await controllerUt.ProcessLiveWebhookNotificationAsync(testWhNotification);
+
+            actionResult.Should().NotBeNull();
+            actionResult.Should().BeOfType<NotFoundResult>();
+        }
+
+        [Fact]
+        public async Task PostTestWebhookNotification_GivenTestModeDisabled_ShouldRespondNotFound()
+        {
+            var deployConfig = GetDefaultDeploymentConfiguration();
+
+            deployConfig.IsTestModeEnabled = false;
+
+            var mockDeployConfig = GetOptionsSnapshotMock(deployConfig);
+            var mockLogger = new Mock<ILogger<SubscriptionController>>();
+            var mockMpOperationService = new Mock<IMarketplaceOperationService>();
+            var mockMpSubscriptionService = new Mock<IMarketplaceSubscriptionService>();
+            var mockEventPublisher = new Mock<ISubscriptionEventPublisher>();
+            var mockSubscriptionRepo = new Mock<ISubscriptionRepository>();
+            var offerConfig = GetDefaultOfferConfiguration();
+            var testSubscription = CreateTestSubscription();
+
+            testSubscription.IsTest = true;
+
+            var testWhNotification = new WebhookNotification
+            {
+                ActionType = MarketplaceActionTypes.Reinstate,
+                ActivityId = Guid.NewGuid().ToString(),
+                OfferId = testSubscription.OfferId,
+                OperationId = Guid.NewGuid().ToString(),
+                PlanId = testSubscription.PlanId,
+                PublisherId = Guid.NewGuid().ToString(),
+                SeatQuantity = testSubscription.SeatQuantity,
+                SubscriptionId = testSubscription.SubscriptionId,
+                Timestamp = DateTime.UtcNow
+            };
+
+            var controllerUt = new SubscriptionController(
+                mockDeployConfig.Object, offerConfig, mockLogger.Object, mockMpOperationService.Object,
+                mockMpSubscriptionService.Object, mockEventPublisher.Object, mockSubscriptionRepo.Object);
+
+            var actionResult = await controllerUt.ProcessTestWebhookNotificationAsync(testWhNotification);
+
+            actionResult.Should().NotBeNull();
+            actionResult.Should().BeOfType<NotFoundResult>();
+        }
+
+        [Fact]
+        public async Task PostTestWebhookNotification_GivenReinstatementNotification_ShouldPublishEvent_AndRespondOk()
+        {
+            var mockDeployConfig = GetOptionsSnapshotMock(GetDefaultDeploymentConfiguration());
+            var mockLogger = new Mock<ILogger<SubscriptionController>>();
+            var mockMpOperationService = new Mock<IMarketplaceOperationService>();
+            var mockMpSubscriptionService = new Mock<IMarketplaceSubscriptionService>();
+            var mockEventPublisher = new Mock<ISubscriptionEventPublisher>();
+            var mockSubscriptionRepo = new Mock<ISubscriptionRepository>();
+            var offerConfig = GetDefaultOfferConfiguration();
+            var testSubscription = CreateTestSubscription();
+
+            testSubscription.IsTest = true;
+
+            var testWhNotification = new WebhookNotification
+            {
+                ActionType = MarketplaceActionTypes.Reinstate,
+                ActivityId = Guid.NewGuid().ToString(),
+                OfferId = testSubscription.OfferId,
+                OperationId = Guid.NewGuid().ToString(),
+                PlanId = testSubscription.PlanId,
+                PublisherId = Guid.NewGuid().ToString(),
+                SeatQuantity = testSubscription.SeatQuantity,
+                SubscriptionId = testSubscription.SubscriptionId,
+                Timestamp = DateTime.UtcNow
+            };
+
+            var testOperation = new SubscriptionOperation
+            {
+                OperationId = testWhNotification.OperationId,
+                OperationType = SubscriptionOperationType.Reinstate,
+                PlanId = testWhNotification.PlanId,
+                SeatQuantity = testWhNotification.SeatQuantity,
+                SubscriptionId = testWhNotification.SubscriptionId
+            };
+
+            SubscriptionReinstated reinstatedEvent = null;
+
+            mockSubscriptionRepo
+                .Setup(sr => sr.GetSubscriptionAsync(testSubscription.SubscriptionId))
+                .Returns(Task.FromResult(testSubscription));
+
+            mockEventPublisher
+                .Setup(ep => ep.PublishEventAsync(It.IsAny<SubscriptionReinstated>()))
+                .Callback<SubscriptionReinstated>(e => reinstatedEvent = e);
+
+            var controllerUt = new SubscriptionController(
+                mockDeployConfig.Object, offerConfig, mockLogger.Object, mockMpOperationService.Object,
+                mockMpSubscriptionService.Object, mockEventPublisher.Object, mockSubscriptionRepo.Object);
+
+            var actionResult = await controllerUt.ProcessTestWebhookNotificationAsync(testWhNotification);
+
+            actionResult.Should().NotBeNull();
+            actionResult.Should().BeOfType<OkResult>();
+
+            reinstatedEvent.Should().NotBeNull();
+            reinstatedEvent.EventType.Should().Be(CoreEventTypes.SubscriptionReinstated);
+            reinstatedEvent.OperationId.Should().Be(testWhNotification.OperationId);
+            reinstatedEvent.Subscription.Should().BeEquivalentTo(testSubscription);
+        }
+
+        [Fact]
+        public async Task PostTestWebhookNotification_GivenSuspensionNotification_ShouldPublishEvent_AndRespondOk()
+        {
+            var mockDeployConfig = GetOptionsSnapshotMock(GetDefaultDeploymentConfiguration());
+            var mockLogger = new Mock<ILogger<SubscriptionController>>();
+            var mockMpOperationService = new Mock<IMarketplaceOperationService>();
+            var mockMpSubscriptionService = new Mock<IMarketplaceSubscriptionService>();
+            var mockEventPublisher = new Mock<ISubscriptionEventPublisher>();
+            var mockSubscriptionRepo = new Mock<ISubscriptionRepository>();
+            var offerConfig = GetDefaultOfferConfiguration();
+            var testSubscription = CreateTestSubscription();
+
+            testSubscription.IsTest = true;
+
+            var testWhNotification = new WebhookNotification
+            {
+                ActionType = MarketplaceActionTypes.Suspend,
+                ActivityId = Guid.NewGuid().ToString(),
+                OfferId = testSubscription.OfferId,
+                OperationId = Guid.NewGuid().ToString(),
+                PlanId = testSubscription.PlanId,
+                PublisherId = Guid.NewGuid().ToString(),
+                SeatQuantity = testSubscription.SeatQuantity,
+                SubscriptionId = testSubscription.SubscriptionId,
+                Timestamp = DateTime.UtcNow
+            };
+
+            var testOperation = new SubscriptionOperation
+            {
+                OperationId = testWhNotification.OperationId,
+                OperationType = SubscriptionOperationType.Suspend,
+                PlanId = testWhNotification.PlanId,
+                SeatQuantity = testWhNotification.SeatQuantity,
+                SubscriptionId = testWhNotification.SubscriptionId
+            };
+
+            SubscriptionSuspended suspendedEvent = null;
+
+            mockSubscriptionRepo
+                .Setup(sr => sr.GetSubscriptionAsync(testSubscription.SubscriptionId))
+                .Returns(Task.FromResult(testSubscription));
+
+            mockEventPublisher
+                .Setup(ep => ep.PublishEventAsync(It.IsAny<SubscriptionSuspended>()))
+                .Callback<SubscriptionSuspended>(e => suspendedEvent = e);
+
+            var controllerUt = new SubscriptionController(
+                mockDeployConfig.Object, offerConfig, mockLogger.Object, mockMpOperationService.Object,
+                mockMpSubscriptionService.Object, mockEventPublisher.Object, mockSubscriptionRepo.Object);
+
+            var actionResult = await controllerUt.ProcessTestWebhookNotificationAsync(testWhNotification);
+
+            actionResult.Should().NotBeNull();
+            actionResult.Should().BeOfType<OkResult>();
+
+            suspendedEvent.Should().NotBeNull();
+            suspendedEvent.EventType.Should().Be(CoreEventTypes.SubscriptionSuspended);
+            suspendedEvent.OperationId.Should().Be(testWhNotification.OperationId);
+            suspendedEvent.Subscription.Should().BeEquivalentTo(testSubscription);
+        }
+
+        [Fact]
+        public async Task PostTestWebhookNotification_GivenCancellationNotification_ShouldPublishEvent_AndRespondOk()
+        {
+            var mockDeployConfig = GetOptionsSnapshotMock(GetDefaultDeploymentConfiguration());
+            var mockLogger = new Mock<ILogger<SubscriptionController>>();
+            var mockMpOperationService = new Mock<IMarketplaceOperationService>();
+            var mockMpSubscriptionService = new Mock<IMarketplaceSubscriptionService>();
+            var mockEventPublisher = new Mock<ISubscriptionEventPublisher>();
+            var mockSubscriptionRepo = new Mock<ISubscriptionRepository>();
+            var offerConfig = GetDefaultOfferConfiguration();
+            var testSubscription = CreateTestSubscription();
+
+            testSubscription.IsTest = true;
+
+            var testWhNotification = new WebhookNotification
+            {
+                ActionType = MarketplaceActionTypes.Unsubscribe,
+                ActivityId = Guid.NewGuid().ToString(),
+                OfferId = testSubscription.OfferId,
+                OperationId = Guid.NewGuid().ToString(),
+                PlanId = testSubscription.PlanId,
+                PublisherId = Guid.NewGuid().ToString(),
+                SeatQuantity = testSubscription.SeatQuantity,
+                SubscriptionId = testSubscription.SubscriptionId,
+                Timestamp = DateTime.UtcNow
+            };
+
+            var testOperation = new SubscriptionOperation
+            {
+                OperationId = testWhNotification.OperationId,
+                OperationType = SubscriptionOperationType.Cancel,
+                PlanId = testWhNotification.PlanId,
+                SeatQuantity = testWhNotification.SeatQuantity,
+                SubscriptionId = testWhNotification.SubscriptionId
+            };
+
+            SubscriptionCancelled cancelledEvent = null;
+
+            mockSubscriptionRepo
+                .Setup(sr => sr.GetSubscriptionAsync(testSubscription.SubscriptionId))
+                .Returns(Task.FromResult(testSubscription));
+
+            mockEventPublisher
+                .Setup(ep => ep.PublishEventAsync(It.IsAny<SubscriptionCancelled>()))
+                .Callback<SubscriptionCancelled>(e => cancelledEvent = e);
+
+            var controllerUt = new SubscriptionController(
+                mockDeployConfig.Object, offerConfig, mockLogger.Object, mockMpOperationService.Object,
+                mockMpSubscriptionService.Object, mockEventPublisher.Object, mockSubscriptionRepo.Object);
+
+            var actionResult = await controllerUt.ProcessTestWebhookNotificationAsync(testWhNotification);
+
+            actionResult.Should().NotBeNull();
+            actionResult.Should().BeOfType<OkResult>();
+
+            cancelledEvent.Should().NotBeNull();
+            cancelledEvent.EventType.Should().Be(CoreEventTypes.SubscriptionCancelled);
+            cancelledEvent.OperationId.Should().Be(testWhNotification.OperationId);
+            cancelledEvent.Subscription.Should().BeEquivalentTo(testSubscription);
+        }
+
+        [Fact]
+        public async Task PostTestWebhookNotification_GivenSeatQuantityChangeNotification_ShouldPublishEvent_AndRespondOk()
+        {
+            var newSeatQty = 50;
+
+            var mockDeployConfig = GetOptionsSnapshotMock(GetDefaultDeploymentConfiguration());
+            var mockLogger = new Mock<ILogger<SubscriptionController>>();
+            var mockMpOperationService = new Mock<IMarketplaceOperationService>();
+            var mockMpSubscriptionService = new Mock<IMarketplaceSubscriptionService>();
+            var mockEventPublisher = new Mock<ISubscriptionEventPublisher>();
+            var mockSubscriptionRepo = new Mock<ISubscriptionRepository>();
+            var offerConfig = GetDefaultOfferConfiguration();
+            var testSubscription = CreateTestSubscription();
+
+            testSubscription.IsTest = true;
+
+            var testWhNotification = new WebhookNotification
+            {
+                ActionType = MarketplaceActionTypes.ChangeQuantity,
+                ActivityId = Guid.NewGuid().ToString(),
+                OfferId = testSubscription.OfferId,
+                OperationId = Guid.NewGuid().ToString(),
+                PlanId = testSubscription.PlanId,
+                PublisherId = Guid.NewGuid().ToString(),
+                SeatQuantity = newSeatQty,
+                SubscriptionId = testSubscription.SubscriptionId,
+                Timestamp = DateTime.UtcNow
+            };
+
+            var testOperation = new SubscriptionOperation
+            {
+                OperationId = testWhNotification.OperationId,
+                OperationType = SubscriptionOperationType.ChangeSeatQuantity,
+                PlanId = testWhNotification.PlanId,
+                SeatQuantity = testWhNotification.SeatQuantity,
+                SubscriptionId = testWhNotification.SubscriptionId
+            };
+
+            SubscriptionSeatQuantityChanged seatQtyChangedEvent = null;
+
+            mockSubscriptionRepo
+                .Setup(sr => sr.GetSubscriptionAsync(testSubscription.SubscriptionId))
+                .Returns(Task.FromResult(testSubscription));
+
+            mockEventPublisher
+                .Setup(ep => ep.PublishEventAsync(It.IsAny<SubscriptionSeatQuantityChanged>()))
+                .Callback<SubscriptionSeatQuantityChanged>(e => seatQtyChangedEvent = e);
+
+            var controllerUt = new SubscriptionController(
+                mockDeployConfig.Object, offerConfig, mockLogger.Object, mockMpOperationService.Object,
+                mockMpSubscriptionService.Object, mockEventPublisher.Object, mockSubscriptionRepo.Object);
+
+            var actionResult = await controllerUt.ProcessTestWebhookNotificationAsync(testWhNotification);
+
+            actionResult.Should().NotBeNull();
+            actionResult.Should().BeOfType<OkResult>();
+
+            seatQtyChangedEvent.Should().NotBeNull();
+            seatQtyChangedEvent.EventType.Should().Be(CoreEventTypes.SubscriptionSeatQuantityChanged);
+            seatQtyChangedEvent.NewSeatQuantity.Should().Be(newSeatQty);
+            seatQtyChangedEvent.OperationId.Should().Be(testWhNotification.OperationId);
+            seatQtyChangedEvent.Subscription.Should().BeEquivalentTo(testSubscription);
+        }
+
+        [Fact]
+        public async Task PostTestWebhookNotification_GivenPlanChangeNotification_ShouldPublishEvent_AndRespondOk()
+        {
+            var newPlanId = Guid.NewGuid().ToString();
+
+            var mockDeployConfig = GetOptionsSnapshotMock(GetDefaultDeploymentConfiguration());
+            var mockLogger = new Mock<ILogger<SubscriptionController>>();
+            var mockMpOperationService = new Mock<IMarketplaceOperationService>();
+            var mockMpSubscriptionService = new Mock<IMarketplaceSubscriptionService>();
+            var mockEventPublisher = new Mock<ISubscriptionEventPublisher>();
+            var mockSubscriptionRepo = new Mock<ISubscriptionRepository>();
+            var offerConfig = GetDefaultOfferConfiguration();
+            var testSubscription = CreateTestSubscription();
+
+            testSubscription.IsTest = true;
+
+            var testWhNotification = new WebhookNotification
+            {
+                ActionType = MarketplaceActionTypes.ChangePlan,
+                ActivityId = Guid.NewGuid().ToString(),
+                OfferId = testSubscription.OfferId,
+                OperationId = Guid.NewGuid().ToString(),
+                PlanId = newPlanId,
+                PublisherId = Guid.NewGuid().ToString(),
+                SeatQuantity = testSubscription.SeatQuantity,
+                SubscriptionId = testSubscription.SubscriptionId,
+                Timestamp = DateTime.UtcNow
+            };
+
+            var testOperation = new SubscriptionOperation
+            {
+                OperationId = testWhNotification.OperationId,
+                OperationType = SubscriptionOperationType.ChangePlan,
+                PlanId = testWhNotification.PlanId,
+                SeatQuantity = testWhNotification.SeatQuantity,
+                SubscriptionId = testWhNotification.SubscriptionId
+            };
+
+            SubscriptionPlanChanged planChangeEvent = null;
+
+            mockSubscriptionRepo.Setup(sr => sr.GetSubscriptionAsync(testSubscription.SubscriptionId)).Returns(Task.FromResult(testSubscription));
+            mockEventPublisher.Setup(ep => ep.PublishEventAsync(It.IsAny<SubscriptionPlanChanged>())).Callback<SubscriptionPlanChanged>(e => planChangeEvent = e);
+
+            var controllerUt = new SubscriptionController(
+                mockDeployConfig.Object, offerConfig, mockLogger.Object, mockMpOperationService.Object,
+                mockMpSubscriptionService.Object, mockEventPublisher.Object, mockSubscriptionRepo.Object);
+
+            var actionResult = await controllerUt.ProcessTestWebhookNotificationAsync(testWhNotification);
+
+            actionResult.Should().NotBeNull();
+            actionResult.Should().BeOfType<OkResult>();
+
+            planChangeEvent.Should().NotBeNull();
+            planChangeEvent.EventType.Should().Be(CoreEventTypes.SubscriptionPlanChanged);
+            planChangeEvent.NewPlanId.Should().Be(newPlanId);
+            planChangeEvent.OperationId.Should().Be(testWhNotification.OperationId);
+            planChangeEvent.Subscription.Should().BeEquivalentTo(testSubscription);
+        }
+
+        [Fact]
+        public async Task PostTestWebhookNotification_GivenInvalidSubscriptionId_ShouldRespondNotFound()
+        {
+            var mockDeployConfig = GetOptionsSnapshotMock(GetDefaultDeploymentConfiguration());
+            var mockLogger = new Mock<ILogger<SubscriptionController>>();
+            var mockMpOperationService = new Mock<IMarketplaceOperationService>();
+            var mockMpSubscriptionService = new Mock<IMarketplaceSubscriptionService>();
+            var mockEventPublisher = new Mock<ISubscriptionEventPublisher>();
+            var mockSubscriptionRepo = new Mock<ISubscriptionRepository>();
+            var offerConfig = GetDefaultOfferConfiguration();
+            var testSubscription = CreateTestSubscription();
+
+            var testWhNotification = new WebhookNotification
+            {
+                ActionType = MarketplaceActionTypes.ChangePlan,
+                ActivityId = Guid.NewGuid().ToString(),
+                OfferId = testSubscription.OfferId,
+                OperationId = Guid.NewGuid().ToString(),
+                PlanId = testSubscription.PlanId,
+                PublisherId = Guid.NewGuid().ToString(),
+                SeatQuantity = testSubscription.SeatQuantity,
+                SubscriptionId = testSubscription.SubscriptionId
+            };
+
+            mockSubscriptionRepo.Setup(sr => sr.GetSubscriptionAsync(testSubscription.SubscriptionId)).Returns(Task.FromResult(null as Subscription));
+
+            var controllerUt = new SubscriptionController(
+                mockDeployConfig.Object, offerConfig, mockLogger.Object, mockMpOperationService.Object,
+                mockMpSubscriptionService.Object, mockEventPublisher.Object, mockSubscriptionRepo.Object);
+
+            var actionResult = await controllerUt.ProcessTestWebhookNotificationAsync(testWhNotification);
+
+            actionResult.Should().NotBeNull();
+            actionResult.Should().BeOfType<NotFoundResult>();
         }
 
         private Mock<IOptionsSnapshot<T>> GetOptionsSnapshotMock<T>(T options) where T : class
