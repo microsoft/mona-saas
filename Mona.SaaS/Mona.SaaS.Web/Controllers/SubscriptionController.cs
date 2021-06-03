@@ -433,32 +433,40 @@ namespace Mona.SaaS.Web.Controllers
 
         private Subscription CreateTestSubscription() => new Subscription
         {
-            SubscriptionId = TryGetQueryStringParameter("subscriptionId", Guid.NewGuid().ToString()),
-            SubscriptionName = TryGetQueryStringParameter("subscriptionName", "Test Subscription"),
-            OfferId = TryGetQueryStringParameter("offerId", "Test Offer"),
-            PlanId = TryGetQueryStringParameter("planId", "Test Plan"),
+            SubscriptionId = TryGetQueryStringParameter(TestSubscriptionParameterNames.SubscriptionId, Guid.NewGuid().ToString()),
+            SubscriptionName = TryGetQueryStringParameter(TestSubscriptionParameterNames.SubscriptionName, "Test Subscription"),
+            OfferId = TryGetQueryStringParameter(TestSubscriptionParameterNames.OfferId, "Test Offer"),
+            PlanId = TryGetQueryStringParameter(TestSubscriptionParameterNames.PlanId, "Test Plan"),
             IsTest = true,
-            IsFreeTrial = TryParseBooleanQueryStringParameter("isFreeTrial", false).Value,
-            SeatQuantity = TryParseIntQueryStringParameter("seatQuantity"),
+            IsFreeTrial = TryParseBooleanQueryStringParameter(TestSubscriptionParameterNames.IsFreeTrial, false).Value,
+            SeatQuantity = TryParseIntQueryStringParameter(TestSubscriptionParameterNames.SeatQuantity),
             Term = CreateTestMarketplaceTerm(),
-            Beneficiary = CreateTestMarketplaceUser("beneficiary", "beneficiary@microsoft.com"),
-            Purchaser = CreateTestMarketplaceUser("purchaser", "purchaser@microsoft.com"),
+            Beneficiary = CreateTestMarketplaceBeneficiary("beneficiary@microsoft.com"),
+            Purchaser = CreateTestMarketplacePurchaser("purchaser@microsoft.com"),
             Status = SubscriptionStatus.PendingActivation
         };
 
         private MarketplaceTerm CreateTestMarketplaceTerm() => new MarketplaceTerm
         {
-            EndDate = TryParseDateTimeQueryStringParameter("term_endDate", DateTime.UtcNow.Date.AddMonths(1)),
-            StartDate = TryParseDateTimeQueryStringParameter("term_startDate", DateTime.UtcNow.Date),
-            TermUnit = TryGetQueryStringParameter("term_termUnit", "PT1M")
+            EndDate = TryParseDateTimeQueryStringParameter(TestSubscriptionParameterNames.TermEndDate, DateTime.UtcNow.Date.AddMonths(1)),
+            StartDate = TryParseDateTimeQueryStringParameter(TestSubscriptionParameterNames.TermStartDate, DateTime.UtcNow.Date),
+            TermUnit = TryGetQueryStringParameter(TestSubscriptionParameterNames.TermUnit, "PT1M")
         };
 
-        private MarketplaceUser CreateTestMarketplaceUser(string keyPrefix, string defaultUserEmail) => new MarketplaceUser
+        private MarketplaceUser CreateTestMarketplaceBeneficiary(string defaultUserEmail) => new MarketplaceUser
         {
-            AadObjectId = TryGetQueryStringParameter($"{keyPrefix}_aadObjectId", Guid.NewGuid().ToString()),
-            AadTenantId = TryGetQueryStringParameter($"{keyPrefix}_aadTenantId", Guid.NewGuid().ToString()),
-            UserEmail = TryGetQueryStringParameter($"{keyPrefix}_userEmail", defaultUserEmail),
-            UserId = TryGetQueryStringParameter($"{keyPrefix}_userId", Guid.NewGuid().ToString())
+            AadObjectId = TryGetQueryStringParameter(TestSubscriptionParameterNames.BeneficiaryAadObjectId, Guid.NewGuid().ToString()),
+            AadTenantId = TryGetQueryStringParameter(TestSubscriptionParameterNames.BeneficiaryAadTenantId, Guid.NewGuid().ToString()),
+            UserEmail = TryGetQueryStringParameter(TestSubscriptionParameterNames.BeneficiaryUserEmail, defaultUserEmail),
+            UserId = TryGetQueryStringParameter(TestSubscriptionParameterNames.BeneficiaryUserId, Guid.NewGuid().ToString())
+        };
+
+        private MarketplaceUser CreateTestMarketplacePurchaser(string defaultUserEmail) => new MarketplaceUser
+        {
+            AadObjectId = TryGetQueryStringParameter(TestSubscriptionParameterNames.PurchaserAadObjectId, Guid.NewGuid().ToString()),
+            AadTenantId = TryGetQueryStringParameter(TestSubscriptionParameterNames.PurchaserAadTenantId, Guid.NewGuid().ToString()),
+            UserEmail = TryGetQueryStringParameter(TestSubscriptionParameterNames.PurchaserUserEmail, defaultUserEmail),
+            UserId = TryGetQueryStringParameter(TestSubscriptionParameterNames.PurchaserUserId, Guid.NewGuid().ToString())
         };
 
         private string TryGetQueryStringParameter(string key, string defaultValue = null) =>
@@ -472,5 +480,26 @@ namespace Mona.SaaS.Web.Controllers
 
         private int? TryParseIntQueryStringParameter(string key, int? defaultValue = null) =>
             (Request.Query.TryGetValue(key, out var value) ? int.Parse(value.ToString()) : defaultValue);
+
+        public static class TestSubscriptionParameterNames
+        {
+            public const string SubscriptionId = "subscriptionId";
+            public const string SubscriptionName = "subscriptionName";
+            public const string OfferId = "offerId";
+            public const string PlanId = "planId";
+            public const string IsFreeTrial = "isFreeTrial";
+            public const string SeatQuantity = "seatQuantity";
+            public const string TermStartDate = "term_startDate";
+            public const string TermEndDate = "term_endDate";
+            public const string TermUnit = "term_termUnit";
+            public const string BeneficiaryAadObjectId = "beneficiary_aadObjectId";
+            public const string BeneficiaryAadTenantId = "beneficiary_aadTenantId";
+            public const string BeneficiaryUserEmail = "beneficiary_userEmail";
+            public const string BeneficiaryUserId = "beneficiary_userId";
+            public const string PurchaserAadObjectId = "purchaser_aadObjectId";
+            public const string PurchaserAadTenantId = "purchaser_aadTenantId";
+            public const string PurchaserUserEmail = "purchaser_userEmail";
+            public const string PurchaserUserId = "purchaser_userId";
+        }
     }
 }
