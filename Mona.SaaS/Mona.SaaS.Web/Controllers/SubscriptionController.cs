@@ -57,10 +57,10 @@ namespace Mona.SaaS.Web.Controllers
             ISubscriptionEventPublisher subscriptionEventPublisher,
             ISubscriptionRepository subscriptionRepo)
         {
+            this.mpOperationService = mpOperationService;
             this.deploymentConfig = deploymentConfig.Value;
             this.logger = logger;
             this.offerConfig = offerConfig;
-            this.mpOperationService = mpOperationService;
             this.mpSubscriptionService = mpSubscriptionService;
             this.subscriptionEventPublisher = subscriptionEventPublisher;
             this.subscriptionRepo = subscriptionRepo;

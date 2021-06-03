@@ -10,13 +10,9 @@
   <ItemGroup>
     <PackageReference Include="Azure.Core" Version="1.11.0" />
     <PackageReference Include="Azure.Identity" Version="1.3.0" />
-    <Compile Remove="Interfaces\**" />
     <Compile Remove="Resources\**" />
-    <Content Remove="Interfaces\**" />
     <Content Remove="Resources\**" />
-    <EmbeddedResource Remove="Interfaces\**" />
     <EmbeddedResource Remove="Resources\**" />
-    <None Remove="Interfaces\**" />
     <None Remove="Resources\**" />
   </ItemGroup>
 
