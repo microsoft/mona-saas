@@ -72,6 +72,52 @@ namespace Mona.SaaS.Web.Tests
         }
 
         [Fact]
+        public async Task PostTestLandingPage_WithValidSubscriptionId_ShouldPublishEvent_AndRedirectToPurchaseConfirmationUrl()
+        {
+            var testToken = Guid.NewGuid().ToString();
+            var testUserName = "Clippy";
+
+            var mockDeployConfig = GetOptionsSnapshotMock(GetDefaultDeploymentConfiguration());
+            var mockLogger = new Mock<ILogger<SubscriptionController>>();
+            var mockMpOperationService = new Mock<IMarketplaceOperationService>();
+            var mockMpSubscriptionService = new Mock<IMarketplaceSubscriptionService>();
+            var mockEventPublisher = new Mock<ISubscriptionEventPublisher>();
+            var mockSubscriptionRepo = new Mock<ISubscriptionRepository>();
+            var mockHttpContext = new Mock<HttpContext>();
+            var offerConfig = GetDefaultOfferConfiguration();
+            var testSubscription = CreateTestSubscription();
+
+            testSubscription.IsTest = true;
+
+            SubscriptionPurchased purchasedEvent = null;
+
+            mockEventPublisher.Setup(ep => ep.PublishEventAsync(It.IsAny<SubscriptionPurchased>())).Callback<SubscriptionPurchased>(sp => purchasedEvent = sp);
+            mockHttpContext.SetupGet(hc => hc.User.Identity.IsAuthenticated).Returns(true);
+            mockHttpContext.SetupGet(hc => hc.User.Claims).Returns(new Claim[] { new Claim("name", testUserName) });
+            mockSubscriptionRepo.Setup(sr => sr.GetSubscriptionAsync(testSubscription.SubscriptionId)).Returns(Task.FromResult(testSubscription));
+
+            var controllerContext = new ControllerContext(new ActionContext(mockHttpContext.Object, new RouteData(), new ControllerActionDescriptor()));
+
+            var controllerUt = new SubscriptionController(
+                mockDeployConfig.Object, offerConfig, mockLogger.Object, mockMpOperationService.Object,
+                mockMpSubscriptionService.Object, mockEventPublisher.Object, mockSubscriptionRepo.Object)
+            { ControllerContext = controllerContext };
+
+            var lpModel = new LandingPageModel { SubscriptionId = testSubscription.SubscriptionId };
+
+            var actionResult = await controllerUt.PostTestLandingPageAsync(lpModel);
+
+            actionResult.Should().NotBeNull();
+            actionResult.Should().BeOfType<RedirectResult>();
+            (actionResult as RedirectResult).Url.Should().Be(offerConfig.SubscriptionPurchaseConfirmationUrl.Replace("{subscription-id}", testSubscription.SubscriptionId));
+
+            purchasedEvent.Should().NotBeNull();
+            purchasedEvent.EventType = CoreEventTypes.SubscriptionPurchased;
+            purchasedEvent.Subscription.Should().NotBeNull();
+            purchasedEvent.Subscription.Should().BeEquivalentTo(testSubscription);
+        }
+
+        [Fact]
         public async Task PostLiveLandingPage_WithInvalidSubscriptionId_ShouldRespondOkWithErrorCode()
         {
             var testToken = Guid.NewGuid().ToString();
@@ -116,6 +162,61 @@ namespace Mona.SaaS.Web.Tests
             lpModel.ErrorCode.Should().Be(SubscriptionController.ErrorCodes.SubscriptionActivationFailed);
             lpModel.OfferDisplayName.Should().Be(offerConfig.OfferDisplayName);
             lpModel.InTestMode.Should().Be(false);
+            lpModel.OfferMarketingPageUrl.Should().Be(offerConfig.OfferMarketingPageUrl);
+            lpModel.OfferMarketplaceListingUrl.Should().Be(offerConfig.OfferMarketplaceListingUrl);
+            lpModel.PublisherContactPageUrl.Should().Be(offerConfig.PublisherContactPageUrl);
+            lpModel.PublisherCopyrightNotice.Should().Be(offerConfig.PublisherCopyrightNotice);
+            lpModel.PublisherDisplayName.Should().Be(offerConfig.PublisherDisplayName);
+            lpModel.PublisherHomePageUrl.Should().Be(offerConfig.PublisherHomePageUrl);
+            lpModel.PublisherPrivacyNoticePageUrl.Should().Be(offerConfig.PublisherPrivacyNoticePageUrl);
+            lpModel.UserFriendlyName.Should().Be(testUserName);
+        }
+
+        [Fact]
+        public async Task PostTestLandingPage_WithInvalidSubscriptionId_ShouldRespondOkWithErrorCode()
+        {
+            var testToken = Guid.NewGuid().ToString();
+            var testUserName = "Clippy";
+
+            var mockDeployConfig = GetOptionsSnapshotMock(GetDefaultDeploymentConfiguration());
+            var mockLogger = new Mock<ILogger<SubscriptionController>>();
+            var mockMpOperationService = new Mock<IMarketplaceOperationService>();
+            var mockMpSubscriptionService = new Mock<IMarketplaceSubscriptionService>();
+            var mockEventPublisher = new Mock<ISubscriptionEventPublisher>();
+            var mockSubscriptionRepo = new Mock<ISubscriptionRepository>();
+            var mockHttpContext = new Mock<HttpContext>();
+            var offerConfig = GetDefaultOfferConfiguration();
+            var testSubscription = CreateTestSubscription();
+
+            mockHttpContext.SetupGet(hc => hc.User.Identity.IsAuthenticated).Returns(true);
+            mockHttpContext.SetupGet(hc => hc.User.Claims).Returns(new Claim[] { new Claim("name", testUserName) });
+            mockSubscriptionRepo.Setup(sr => sr.GetSubscriptionAsync(testSubscription.SubscriptionId)).Returns(Task.FromResult(null as Subscription));
+
+            var controllerContext = new ControllerContext(new ActionContext(mockHttpContext.Object, new RouteData(), new ControllerActionDescriptor()));
+
+            var controllerUt = new SubscriptionController(
+                mockDeployConfig.Object, offerConfig, mockLogger.Object, mockMpOperationService.Object,
+                mockMpSubscriptionService.Object, mockEventPublisher.Object, mockSubscriptionRepo.Object)
+            { ControllerContext = controllerContext };
+
+            var lpModel = new LandingPageModel { SubscriptionId = testSubscription.SubscriptionId };
+
+            var actionResult = await controllerUt.PostTestLandingPageAsync(lpModel);
+
+            actionResult.Should().NotBeNull();
+            actionResult.Should().BeOfType<ViewResult>();
+
+            var viewResult = actionResult as ViewResult;
+
+            viewResult.ViewName.Should().Be("Index");
+            viewResult.Model.Should().NotBeNull();
+            viewResult.Model.Should().BeOfType<LandingPageModel>();
+
+            lpModel = viewResult.Model as LandingPageModel;
+
+            lpModel.ErrorCode.Should().Be(SubscriptionController.ErrorCodes.SubscriptionActivationFailed);
+            lpModel.OfferDisplayName.Should().Be(offerConfig.OfferDisplayName);
+            lpModel.InTestMode.Should().Be(true);
             lpModel.OfferMarketingPageUrl.Should().Be(offerConfig.OfferMarketingPageUrl);
             lpModel.OfferMarketplaceListingUrl.Should().Be(offerConfig.OfferMarketplaceListingUrl);
             lpModel.PublisherContactPageUrl.Should().Be(offerConfig.PublisherContactPageUrl);
