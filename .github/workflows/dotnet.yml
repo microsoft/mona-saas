@@ -20,6 +20,6 @@ jobs:
     - name: Restore dependencies
       run: dotnet restore ./Mona.SaaS/Mona.SaaS.sln
     - name: Build
-      run: dotnet build --no-restore ./Mona.SaaS/Mona.SaaS.sln
-    - name: Test
-      run: dotnet test --no-build --verbosity normal ./Mona.SaaS/Mona.SaaS.sln
+      run: dotnet build ./Mona.SaaS/Mona.SaaS.sln --no-restore 
+    - name: Web test
+      run: dotnet test ./Mona.SaaS/Mona.SaaS.Web.Tests/Mona.SaaS.Web.Tests.csproj --no-build --verbosity normal 
