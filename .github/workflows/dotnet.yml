@@ -1,4 +1,4 @@
-name: .NET
+name: Mona Build + Tests
 
 on:
   push:
