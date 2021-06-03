@@ -1,5 +1,7 @@
 # Mona SaaS (Pilot)
 
+![CI Build](https://github.com/microsoft/mona-saas/actions/workflows/dotnet.yml/badge.svg)
+
 > ⚠ __WARNING__ | Mona SaaS is currently in pilot. We do not yet recommend it for production scenarios.
 
  Mona SaaS is a [__M__]arketplace [__On__]boarding [__A__]ccelerator designed to make it easier for [our ISV partners](https://partner.microsoft.com/community/my-partner-hub/isv) to rapidly onboard their transactable SaaS solutions to the [Azure Marketplace](https://azure.microsoft.com/marketplace) and [AppSource](https://appsource.microsoft.com). Mona SaaS accomplishes this through lightweight, reusable code modules deployed directly into the ISV's own Azure subscription and [low/no-code integration templates](https://azure.microsoft.com/en-us/solutions/low-code-application-development) featuring [Azure Logic Apps](https://azure.microsoft.com/services/logic-apps).
