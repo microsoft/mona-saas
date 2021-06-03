@@ -14,7 +14,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Mona.SaaS.Web", "Mona.SaaS.
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Mona.AutoIntegration", "Mona.AutoIntegration\Mona.AutoIntegration.csproj", "{34B39C0E-C5F6-497A-97F4-31CD9AA14CB0}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mona.SaaS.Services.Default", "Mona.SaaS.Services.Default\Mona.SaaS.Services.Default.csproj", "{BB15E201-B247-4942-9B2F-8FE6FF872DFC}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Mona.SaaS.Services.Default", "Mona.SaaS.Services.Default\Mona.SaaS.Services.Default.csproj", "{BB15E201-B247-4942-9B2F-8FE6FF872DFC}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mona.SaaS.Web.Tests", "Mona.SaaS.Web.Tests\Mona.SaaS.Web.Tests.csproj", "{207DF0C6-32E4-49CF-8413-4F26D07FABF4}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -38,6 +40,10 @@ Global
 		{BB15E201-B247-4942-9B2F-8FE6FF872DFC}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{BB15E201-B247-4942-9B2F-8FE6FF872DFC}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{BB15E201-B247-4942-9B2F-8FE6FF872DFC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{207DF0C6-32E4-49CF-8413-4F26D07FABF4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{207DF0C6-32E4-49CF-8413-4F26D07FABF4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{207DF0C6-32E4-49CF-8413-4F26D07FABF4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{207DF0C6-32E4-49CF-8413-4F26D07FABF4}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
