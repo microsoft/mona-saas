@@ -82,7 +82,7 @@ namespace Mona.SaaS.Web.Controllers
                 throw;
             }
         }
-        
+
         private string GetConfigurationSettingsEditorUrl() =>
             $"https://portal.azure.com/#@{this.identityConfig.AppIdentity.AadTenantId}/resource/subscriptions/{this.deploymentConfig.AzureSubscriptionId}" +
             $"/resourceGroups/{this.deploymentConfig.AzureResourceGroupName}/providers/Microsoft.AppConfiguration" +

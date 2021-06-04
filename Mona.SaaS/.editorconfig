@@ -2,22 +2,7 @@
 
 [*.cs]
 
-# CS1998: Async method lacks 'await' operators and will run synchronously
-#dotnet_diagnostic.CS1998.severity = none
-
-# IDE0003: Remove qualification
-#dotnet_diagnostic.IDE0003.severity = none
-
-# IDE0047: Remove unnecessary parentheses
-#dotnet_diagnostic.IDE0047.severity = none
-
-
-###########################################################################################
-###########################################################################################
-###########################################################################################
-###########################################################################################
 #   https://docs.microsoft.com/en-us/dotnet/fundamentals/code-analysis/code-style-rule-options?view=vs-2019#example-editorconfig-file
-
 
 
 #### Core EditorConfig Options ####
