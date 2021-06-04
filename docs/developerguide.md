@@ -225,7 +225,7 @@ Localization is the process of adapting a globalized app, which you have already
             app.UseRequestLocalization(localizationOptions);
         }
     ```
-2. Under the Resource folder you will find `.resx` resource files for each view that will contain the translated strings. All views allow to translated the content. You will able to find the `@Localizer[]` tag and the content inside, that will be the content to be translated.
+2. Under the `Resources/Views` folder you will find `.resx` resource files for each view that will contain the translated strings. All views allow to translated the content. You will able to find the `@Localizer[]` tag and the content inside, that will be the content to be translated.
 
     To create new Resources please follow this [steps](https://docs.microsoft.com/en-us/aspnet/core/fundamentals/localization?view=aspnetcore-5.0#resource-files-2)
 
