@@ -14,7 +14,7 @@ Welcome to the Mona SaaS developer guide. This document serves as a means to ass
 
 Mona is an events driven support system. There are six main events that need to occur in order to integrate with the market place. Each of these operations is exposed to your SaaS application by Mona SaaS through events published to a custom Event Grid topic automatically provisioned during setup. By default, we deploy a set of "stub" Logic Apps into your Azure subscription that are enabled by default and configured to be triggered by these subscription events.
 
-Since Mona SaaS exposes these subscription-related events to your SaaS application through an Event Grid topic, you have lots of options for handling them. Because we're using Event Grid, multiple event subscribers can handle the same events simultaneously. These flows can be easily modified in production with no downtime.
+Since Mona SaaS exposes these subscription-related events to your SaaS application through an Event Grid topic, you have lots of options for handling them. Because we're using Event Grid, multiple event subscribers can handle the same events simultaneously. These flows can be easily modified in production with no downtime. To learn more about these event types visit the [official docs](https://docs.microsoft.com/en-us/azure/marketplace/partner-center-portal/pc-saas-fulfillment-api-v2)
 
 ## Event Types
 * [BaseSubscriptionEvent](basesubscriptionevent)
@@ -106,39 +106,44 @@ Below is a sample of what the JSON body will look like
 Parameter | Value
 ------------ | -------------
 id| purchased SaaS subscription ID
-subject | Content in the second column
-data| 
+subject | Publisher-defined path to the event subject
+data| --
 eventId | same as id
 eventType| one of the 6 event types shown above 
-eventVersion | date time value
-operationId| Content from cell 2
-subscription |
-subscriptionId | Content in the second column
-subscriptionName | Content in the second column
-offerId | Content in the second column
+eventVersion | date time value of when the event was sent out 
+operationId| when you register your app in Azue AD 
+subscription | --
+subscriptionId | The unique identifier of the purchased SaaS subscription. This ID is obtained after resolving the commercial marketplace authorization token by using the Resolve API.
+subscriptionName | 
+offerId | 
 planId |  purchased plan, cannot be empty
-isTest| Content from cell 2
-isFreeTrial | Content in the second column
-status | Content from cell 2
-term | 
+isTest| 
+isFreeTrial | 
+status |
+term | --
 termUnit| Content from cell 2
 startDate | Content in the second column
-endDate | Content from cell 2
-beneficiary | email address, user ID and tenant ID for which SaaS subscription was purchased.
-purchaser | 
-userId | userId used to 
-userEmail | Content in the second column
-aadObjectId | Content in the second column
-aadTenantId | Content in the second column
-operationDateTimeUtc| Content in the second column
-eventType | Content in the second column
-dataVersion | Content in the second column
-metadataVersion | Content in the second column
-eventTime | Content in the second column
-topic | Content in the second column
+endDate | 
+beneficiary | -- email address, user ID and tenant ID for which SaaS subscription was purchased.
+userId | userId
+userEmail | email
+aadObjectId | object id
+aadTenantId | tenant id
+purchaser | -- email address ,user ID and tenant ID that purchased the SaaS subscription.  These could be different from beneficiary information for reseller (CSP) scenario
+userId | 
+userEmail | 
+aadObjectId | 
+aadTenantId |
+operationDateTimeUtc| The time the event is generated based on the provider's UTC time.
+eventType |  One of the registered event types for this event source.
+dataVersion | The schema version of the data object. The publisher defines the schema version
+metadataVersion | The schema version of the event metadata. Event Grid defines the schema of the top-level properties. Event Grid provides this value.
+eventTime | The time the event is generated based on the provider's UTC time.
+topic | Full resource path to the event source. This field isn't writeable. Event Grid provides this value.
 
 
 # Testing Mode
+Running Mona in test mode allows you to ensure your configuration is done properly before you go live. When you are in test mode you cannot hanndle new incoming subscriptions 
 
 # Integration
 
@@ -225,7 +230,7 @@ Localization is the process of adapting a globalized app, which you have already
             app.UseRequestLocalization(localizationOptions);
         }
     ```
-2. Under the `Resources/Views` folder you will find `.resx` resource files for each view that will contain the translated strings. All views allow to translated the content. You will able to find the `@Localizer[]` tag and the content inside, that will be the content to be translated.
+2. Under the Resource folder you will find `.resx` resource files for each view that will contain the translated strings. All views allow to translated the content. You will able to find the `@Localizer[]` tag and the content inside, that will be the content to be translated.
 
     To create new Resources please follow this [steps](https://docs.microsoft.com/en-us/aspnet/core/fundamentals/localization?view=aspnetcore-5.0#resource-files-2)
 
@@ -283,7 +288,3 @@ Here an example:
     ```
 
 # Conclusion
-
-This document provide a summary of the building blocks used in the Mona SaaS project. This should have provided a foundation of the most important part in the Project like Events and the different integration part.
-
-This is an open-source project that speed up the development for our ISV partners to rapidly onboard their transactable SaaS solutions. While we focused on the flows that are required by our own SaaS fulfillment APIs including both the landing page that customers will see when purchasing your SaaS offer and the webhook that we use to notify you of subscription changes like cancellations and suspensions. We will continue working to introduce new features and capabilities. **We encourage you to provide feedback to help us  evolution of this environment.**
