@@ -283,3 +283,7 @@ Here an example:
     ```
 
 # Conclusion
+
+This document provide a summary of the building blocks used in the Mona SaaS project. This should have provided a foundation of the most important part in the Project like Events and the different integration part.
+
+This is an open-source project that speed up the development for our ISV partners to rapidly onboard their transactable SaaS solutions. While we focused on the flows that are required by our own SaaS fulfillment APIs including both the landing page that customers will see when purchasing your SaaS offer and the webhook that we use to notify you of subscription changes like cancellations and suspensions. We will continue working to introduce new features and capabilities. **We encourage you to provide feedback to help us  evolution of this environment.**
