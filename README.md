@@ -93,6 +93,10 @@ Please refer to these docs for more information.
 * [Microsoft Open Source Code of Conduct](./CODE_OF_CONDUCT.md)
 * [Security](./SECURITY.md)
 
+## Dependency
+
+Mona SaaS uses Open Source [commercial-marketplace-client-dotnet](https://github.com/microsoft/commercial-marketplace-client-dotnet).  It is currently not distributed via NuGet so dll is conveniently included in the repo.
+
 ## Considerations and limitations
 
 * Due to various Azure resource limitations, you can only have one Mona SaaS deployment per Azure region at a time. We plan on addressing this in future releases.
