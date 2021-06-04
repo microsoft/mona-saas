@@ -105,27 +105,28 @@ Below is a sample of what the JSON body will look like
 
 Parameter | Value
 ------------ | -------------
-id| Content from cell 2
+id| purchased SaaS subscription ID
 subject | Content in the second column
-data| Content from cell 2
-eventId | Content in the second column
-eventType| Content from cell 2
-eventVersion | Content in the second column
+data| 
+eventId | same as id
+eventType| one of the 6 event types shown above 
+eventVersion | date time value
 operationId| Content from cell 2
-subscription | Content in the second column
+subscription |
 subscriptionId | Content in the second column
 subscriptionName | Content in the second column
 offerId | Content in the second column
-planId | Content in the second column
+planId |  purchased plan, cannot be empty
 isTest| Content from cell 2
 isFreeTrial | Content in the second column
 status | Content from cell 2
-term | Content in the second column
+term | 
 termUnit| Content from cell 2
 startDate | Content in the second column
 endDate | Content from cell 2
-beneficiary | Content in the second column
-userId | Content in the second column
+beneficiary | email address, user ID and tenant ID for which SaaS subscription was purchased.
+purchaser | 
+userId | userId used to 
 userEmail | Content in the second column
 aadObjectId | Content in the second column
 aadTenantId | Content in the second column
