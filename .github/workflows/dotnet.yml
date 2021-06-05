@@ -1,25 +1,30 @@
 name: Mona Build + Tests
 
 on:
-  push:
-    branches: [ main ]
-  pull_request:
-    branches: [ main ]
+  pull_request
 
 jobs:
   build:
-
     runs-on: ubuntu-latest
-
     steps:
-    - uses: actions/checkout@v2
-    - name: Setup .NET
-      uses: actions/setup-dotnet@v1
-      with:
-        dotnet-version: 3.1.x
-    - name: Restore dependencies
-      run: dotnet restore ./Mona.SaaS/Mona.SaaS.sln
-    - name: Build
-      run: dotnet build ./Mona.SaaS/Mona.SaaS.sln --no-restore 
-    - name: Web test
-      run: dotnet test ./Mona.SaaS/Mona.SaaS.Web.Tests/Mona.SaaS.Web.Tests.csproj --no-build --verbosity normal 
+      - uses: actions/checkout@v2
+      
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v1
+        with:
+          dotnet-version: 3.1.x
+      
+      - name: Install dotnet-format
+        run: dotnet tool update -g dotnet-format
+
+      - name: Run dotnet-format
+        run: dotnet format --folder Mona.SaaS  --check
+      
+      - name: Restore dependencies
+        run: dotnet restore ./Mona.SaaS/Mona.SaaS.sln
+
+      - name: Build
+        run: dotnet build ./Mona.SaaS/Mona.SaaS.sln --no-restore 
+      
+      - name: Web test
+        run: dotnet test ./Mona.SaaS/Mona.SaaS.Web.Tests/Mona.SaaS.Web.Tests.csproj --no-build --verbosity normal 
