@@ -231,11 +231,11 @@ namespace Mona.SaaS.Web.Controllers
                                 $"Subscription [{subscription.SubscriptionId}] is unknown to Mona. " +
                                 $"Presenting user with default subscription purchase confirmation page...");
 
-                            if (inTestMode) 
+                            if (inTestMode)
                             {
                                 await this.subscriptionRepo.PutSubscriptionAsync(subscription).ConfigureAwait(false);
                             }
-                               
+
                             return View("Index", new LandingPageModel(inTestMode)
                                 .WithCurrentUserInformation(User)
                                 .WithOfferInformation(this.offerConfig)
