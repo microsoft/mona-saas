@@ -21,7 +21,7 @@ jobs:
         run: dotnet tool update -g dotnet-format
 
       - name: Run dotnet-format
-        run: dotnet format --check
+        run: dotnet format --folder Mona.SaaS  --check
       
       - name: Restore dependencies
         run: dotnet restore ./Mona.SaaS/Mona.SaaS.sln
