@@ -251,7 +251,7 @@ Under `Mona.SaaS.Setup/arm-templates/basic-deploy.json` you will find the langua
     "en", // English
     "es" // Spanish
 ],
-...
+
 }
 ```
 
