@@ -145,6 +145,28 @@ topic | Full resource path to the event source. This field isn't writeable. Even
 # Testing Mode
 Running Mona in test mode allows you to ensure your configuration is done properly before you go live. When youre in testing mode, the different test URLs are in the admin center. Your test mode subscriptions are stored in blob storage in a test "cache". The test landing page can only be accessed if you belong to the admin tenant in initial set up. You have to know the GUID of the original test subscription to be able to access the Webhook.  
 
+Below are sample query string paramters you can provide, you can include all or none of these params -
+Parameter | Value
+------------ | -------------
+"subscriptionId"; | The unique identifier of the purchased SaaS subscription.
+"subscriptionName"; | user friendly name for your subscription defined by the customer 
+"offerId"; | purchased offerId, always the same (mona currently supports one offer at a time) 
+"planId"; |  purchased plan, cannot be empty
+"isFreeTrial"; | is free trial
+"seatQuantity"; | number of purchased seats, might be empty if the plan is not per seat
+"term_startDate"; | format: YYYY-MM-DD. This is the date when the subscription was activated by the ISV and the billing started. This field is relevant only for Active and Suspended subscriptions.
+"term_endDate"; | This is the last day the subscription is valid. Unless stated otherwise, the automatic renew will happen the next day. This field is relevant only for Active and Suspended subscriptions.
+"term_termUnit"; | where P1M is monthly and P1Y is yearly. Also reflected in the startDate and endDate values
+"beneficiary_aadObjectId"; |email address, user ID and tenant ID for which SaaS subscription was purchased.
+"beneficiary_aadTenantId"; | aad tenant id
+"beneficiary_userEmail"; | email 
+"beneficiary_userId"; | user id
+"purchaser_aadObjectId"; | mail address, user ID and tenant ID that purchased the SaaS subscription. These could be different from beneficiary information for reseller (CSP) purchase
+"purchaser_aadTenantId"; | tenant id
+"purchaser_userEmail"; | email
+"purchaser_userId"; | unique GUID
+
+	
 # Integration
 
 Mona SaaS exposes  subscription-related events to your SaaS application through an Event Grid topic. Mona provides the flexibility for integrating multiple options for handling of the subscription-related events. A subscription tells Event Grid which events on a topic you're interested in receiving. When creating the subscription, you provide an endpoint for handling these event. This section serves as a guidline to help with integrating events handlers in Mona. Outlines below ae example event handlers that can be used to integrate events. Please see the following link for more information on other services that can be used to integrate with Event Grid Topics; [Event Handlers](https://docs.microsoft.com/en-us/azure/event-grid/overview#event-handlers).
