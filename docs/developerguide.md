@@ -143,7 +143,7 @@ topic | Full resource path to the event source. This field isn't writeable. Even
 
 
 # Testing Mode
-Running Mona in test mode allows you to ensure your configuration is done properly before you go live. When you are in test mode you cannot hanndle new incoming subscriptions 
+Running Mona in test mode allows you to ensure your configuration is done properly before you go live. When youre in testing mode, the different test URLs are in the admin center. Your test mode subscriptions are stored in blob storage in a test "cache". The test landing page can only be accessed if you belong to the admin tenant in initial set up. You have to know the GUID of the original test subscription to be able to access the Webhook.  
 
 # Integration
 
@@ -288,3 +288,7 @@ Here an example:
 ```
 
 # Conclusion
+
+This document providea summary of the buildingblocks used in the MonaSaaS project. This should have provided a foundation ofthe most important part in the Project like Eventsand the different integrationpart.
+
+This is anopen-source project that speedup the development for our ISV partners to rapidlyonboard their transactable SaaSsolutions. While we focused on the flows that are required by our own SaaSfulfillment APIs including boththe landing page that customerswill see when purchasing your SaaS offer and thewebhook that we use tonotify you of subscription changes like cancellations and suspensions. We will continue working to introduce new featuresand capabilities. **We encourage you to provide feedback to help us evolution ofthis environment.**
