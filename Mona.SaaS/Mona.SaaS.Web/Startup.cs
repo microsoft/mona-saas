@@ -1,6 +1,6 @@
 // MICROSOFT CONFIDENTIAL INFORMATION
 //
-// Copyright © Microsoft Corporation
+// Copyright ï¿½ Microsoft Corporation
 //
 // Microsoft Corporation (or based on where you live, one of its affiliates) licenses this preview code for your internal testing purposes only.
 //
@@ -58,7 +58,7 @@ namespace Mona.SaaS.Web
                 .AddRazorPages()
                 .AddViewLocalization(LanguageViewLocationExpanderFormat.Suffix);
 
-            services.AddApplicationInsightsTelemetry(Configuration["Deployment:AppInsightsConnectionString"]);
+            services.AddApplicationInsightsTelemetry(Configuration["Deployment:AppInsightsInstrumentationKey"]);
         }
 
         private void ConfigureAuth(IServiceCollection services)

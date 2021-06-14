@@ -1926,9 +1926,9 @@
             "type": "string",
             "value": "[variables('webAppName')]"
         },
-        "appInsightsConnectionString": {
+        "appInsightsInstrumentationKey": {
             "type": "string",
-            "value": "[concat('InstrumentationKey=', reference(resourceId('microsoft.insights/components', variables('appInsightsName')), '2014-04-01').InstrumentationKey)]"
+            "value": "[reference(resourceId('microsoft.insights/components', variables('appInsightsName')), '2014-04-01').InstrumentationKey]"
         },
         "eventGridTopicId": {
             "type": "string",

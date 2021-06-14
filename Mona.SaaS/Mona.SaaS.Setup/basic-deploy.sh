@@ -300,14 +300,14 @@ app_config_connection_string=$(az deployment group show --resource-group "$resou
 app_config_name=$(az deployment group show --resource-group "$resource_group_name" --name "$az_deployment_name" --query properties.outputs.appConfigServiceName.value --output tsv);
 web_app_base_url=$(az deployment group show --resource-group "$resource_group_name" --name "$az_deployment_name" --query properties.outputs.webAppBaseUrl.value --output tsv);
 web_app_name=$(az deployment group show --resource-group "$resource_group_name" --name "$az_deployment_name" --query properties.outputs.webAppName.value --output tsv);
-app_insights_conn_str=$(az deployment group show --resource-group "$resource_group_name" --name "$az_deployment_name" --query properties.outputs.appInsightsConnectionString.value --output tsv);
+app_insights_key=$(az deployment group show --resource-group "$resource_group_name" --name "$az_deployment_name" --query properties.outputs.appInsightsInstrumentationKey.value --output tsv);
 
 # Configure Mona.
 
 echo "$lp Configuring Mona settings...";
 
 az appconfig kv set --name "$app_config_name" --key "Deployment:MonaVersion" --yes                                      --value "$mona_version";                
-az appconfig kv set --name "$app_config_name" --key "Deployment:AppInsightsConnectionString" --yes                      --value "$app_insights_conn_str";       
+az appconfig kv set --name "$app_config_name" --key "Deployment:AppInsightsInstrumentationKey" --yes                    --value "$app_insights_key";       
 az appconfig kv set --name "$app_config_name" --key "Deployment:AzureResourceGroupName" --yes                           --value "$resource_group_name";         
 az appconfig kv set --name "$app_config_name" --key "Deployment:AzureSubscriptionId" --yes                              --value "$subscription_id";             
 az appconfig kv set --name "$app_config_name" --key "Deployment:IsTestModeEnabled" --yes                                --value "true";                         

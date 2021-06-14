@@ -1500,7 +1500,7 @@ namespace Mona.SaaS.Web.Tests
         private DeploymentConfiguration GetDefaultDeploymentConfiguration() =>
             new DeploymentConfiguration
             {
-                AppInsightsConnectionString = $"InstrumentationKey={Guid.NewGuid()}",
+                AppInsightsInstrumentationKey = Guid.NewGuid().ToString(),
                 AzureResourceGroupName = "mona-test-rg",
                 AzureSubscriptionId = Guid.NewGuid().ToString(),
                 IsTestModeEnabled = true,
