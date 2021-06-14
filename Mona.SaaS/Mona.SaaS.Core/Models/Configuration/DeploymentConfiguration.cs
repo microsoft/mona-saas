@@ -32,10 +32,10 @@ namespace Mona.SaaS.Core.Models.Configuration
         public string MonaVersion { get; set; }
 
         /// <summary>
-        /// Gets/sets the connection string needed to push events and metrics to App Insights.
+        /// Gets/sets the instrumentation key needed to push events and metrics to App Insights.
         /// </summary>
         [Required]
-        public string AppInsightsConnectionString { get; set; }
+        public string AppInsightsInstrumentationKey { get; set; }
 
         /// <summary>
         /// Gets/sets the Azure subscription ID that Mona has been deployed to.
