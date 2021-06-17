@@ -247,7 +247,12 @@ echo "$lp Creating app service principal. This might take a while..."
 
 sleep 30 # Give AAD a chance to catch up...
 
-aad_sp_id=$(az ad sp create --id "$aad_app_id" --query objectId --output tsv 2>/dev/null);
+aad_sp_id=$(az ad sp create --id "$aad_app_id" --query objectId --output tsv);
+
+if [[ -z $aad_sp_id ]]; then 
+    echo "$lp ❌   Unable to create service principal for AAD app [$aad_app_name ($aad_app_id)]. See above output for details. Setup failed."
+    exit 1
+fi
 
 echo "$lp Granting AAD app [$aad_app_name] service principal [$aad_sp_id] contributor access to resource group [$resource_group_name]..."
 
