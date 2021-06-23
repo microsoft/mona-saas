@@ -151,27 +151,24 @@ namespace Mona.SaaS.Web
             // =========================================================================
             // NOTE: Many of these settings are automatically configured during setup.
             // -------------------------------------------------------------------------
-            // Offer: OfferMarketplaceListingUrl                            [Required] *
-            // Offer: OfferMarketingPageUrl                                 [Required] *
-            // Offer: OfferDisplayName                                      [Required] *
-            // Offer: PublisherDisplayName                                  [Required] *
-            // Offer: PublisherHomePageUrl                                  [Optional]
-            // Offer: PublisherPrivacyNoticePageUrl                         [Optional]
-            // Offer: PublisherContactPageUrl                               [Optional]
-            // Offer: PublisherCopyrightNotice                              [Optional]
-            // Offer: SubscriptionConfigurationUrl                          [Required] *
-            // Offer: SubscriptionPurchaseConfirmationUrl                   [Required] *
+            // Publisher: PublisherDisplayName                              [Required] *
+            // Publisher: PublisherHomePageUrl                              [Optional]
+            // Publisher: PublisherPrivacyNoticePageUrl                     [Optional]
+            // Publisher: PublisherContactPageUrl                           [Optional]
+            // Publisher: PublisherCopyrightNotice                          [Optional]
+            // Publisher: SubscriptionConfigurationUrl                      [Required] *
+            // Publisher: SubscriptionPurchaseConfirmationUrl               [Required] *
 
             // Injecting as a regular singleton object that is pre-loaded with values from
             // App Configuration Service but is also mutable upon installation by the
             // setup wizard. This *should* only be needed once right upon installation so 
             // not too worried about concurrency.
 
-            var offerConfig = new OfferConfiguration();
+            var publisherConfig = new PublisherConfiguration();
 
-            this.Configuration.GetSection("Offer").Bind(offerConfig);
+            this.Configuration.GetSection("Publisher").Bind(publisherConfig);
 
-            services.AddSingleton(offerConfig);
+            services.AddSingleton(publisherConfig);
 
             // -------------------------------------------------------------------------
             // Deployment: AppInsightsConnectionString                      [Required] *

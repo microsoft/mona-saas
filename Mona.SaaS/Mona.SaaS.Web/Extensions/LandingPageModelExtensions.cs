@@ -44,31 +44,28 @@ namespace Mona.SaaS.Web.Extensions
         }
 
         /// <summary>
-        /// Applies general offer information to the provided landing page model.
+        /// Applies general publisher information to the provided landing page model.
         /// </summary>
         /// <param name="landingPageModel">The landing page model.</param>
-        /// <param name="offerInfo">The general offer information.</param>
+        /// <param name="publisherInfo">The general publisher information.</param>
         /// <returns>The updated landing page model.</returns>
-        public static LandingPageModel WithOfferInformation(this LandingPageModel landingPageModel, OfferConfiguration offerInfo)
+        public static LandingPageModel WithPublisherInformation(this LandingPageModel landingPageModel, PublisherConfiguration publisherInfo)
         {
             if (landingPageModel == null)
             {
                 throw new ArgumentNullException(nameof(landingPageModel));
             }
 
-            if (offerInfo == null)
+            if (publisherInfo == null)
             {
-                throw new ArgumentNullException(nameof(offerInfo));
+                throw new ArgumentNullException(nameof(publisherInfo));
             }
 
-            landingPageModel.OfferDisplayName = offerInfo.OfferDisplayName;
-            landingPageModel.OfferMarketingPageUrl = offerInfo.OfferMarketingPageUrl;
-            landingPageModel.OfferMarketplaceListingUrl = offerInfo.OfferMarketplaceListingUrl;
-            landingPageModel.PublisherContactPageUrl = offerInfo.PublisherContactPageUrl;
-            landingPageModel.PublisherCopyrightNotice = offerInfo.PublisherCopyrightNotice;
-            landingPageModel.PublisherDisplayName = offerInfo.PublisherDisplayName;
-            landingPageModel.PublisherHomePageUrl = offerInfo.PublisherHomePageUrl;
-            landingPageModel.PublisherPrivacyNoticePageUrl = offerInfo.PublisherPrivacyNoticePageUrl;
+            landingPageModel.PublisherContactPageUrl = publisherInfo.PublisherContactPageUrl;
+            landingPageModel.PublisherCopyrightNotice = publisherInfo.PublisherCopyrightNotice;
+            landingPageModel.PublisherDisplayName = publisherInfo.PublisherDisplayName;
+            landingPageModel.PublisherHomePageUrl = publisherInfo.PublisherHomePageUrl;
+            landingPageModel.PublisherPrivacyNoticePageUrl = publisherInfo.PublisherPrivacyNoticePageUrl;
 
             return landingPageModel;
         }

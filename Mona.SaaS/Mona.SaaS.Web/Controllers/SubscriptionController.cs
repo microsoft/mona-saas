@@ -40,7 +40,7 @@ namespace Mona.SaaS.Web.Controllers
         }
 
         private readonly DeploymentConfiguration deploymentConfig;
-        private readonly OfferConfiguration offerConfig;
+        private readonly PublisherConfiguration publisherConfig;
 
         private readonly ILogger logger;
         private readonly IMarketplaceOperationService mpOperationService;
@@ -50,7 +50,7 @@ namespace Mona.SaaS.Web.Controllers
 
         public SubscriptionController(
             IOptionsSnapshot<DeploymentConfiguration> deploymentConfig,
-            OfferConfiguration offerConfig,
+            PublisherConfiguration publisherConfig,
             ILogger<SubscriptionController> logger,
             IMarketplaceOperationService mpOperationService,
             IMarketplaceSubscriptionService mpSubscriptionService,
@@ -60,7 +60,7 @@ namespace Mona.SaaS.Web.Controllers
             this.mpOperationService = mpOperationService;
             this.deploymentConfig = deploymentConfig.Value;
             this.logger = logger;
-            this.offerConfig = offerConfig;
+            this.publisherConfig = publisherConfig;
             this.mpSubscriptionService = mpSubscriptionService;
             this.subscriptionEventPublisher = subscriptionEventPublisher;
             this.subscriptionRepo = subscriptionRepo;
@@ -144,7 +144,7 @@ namespace Mona.SaaS.Web.Controllers
 
                     return View("Index", new LandingPageModel(inTestMode)
                         .WithCurrentUserInformation(User)
-                        .WithOfferInformation(this.offerConfig)
+                        .WithPublisherInformation(this.publisherConfig)
                         .WithErrorCode(ErrorCodes.SubscriptionNotFound));
                 }
                 else
@@ -153,7 +153,7 @@ namespace Mona.SaaS.Web.Controllers
 
                     await this.subscriptionEventPublisher.PublishEventAsync(new SubscriptionPurchased(subscription));
 
-                    var subPurchasedUrl = this.offerConfig.SubscriptionPurchaseConfirmationUrl.WithSubscriptionId(subscription.SubscriptionId);
+                    var subPurchasedUrl = this.publisherConfig.SubscriptionPurchaseConfirmationUrl.WithSubscriptionId(subscription.SubscriptionId);
 
                     this.logger.LogInformation($"Subscription [{subscription.SubscriptionId}] purchase confirmed. Redirecting user to [{subPurchasedUrl}]...");
 
@@ -170,14 +170,14 @@ namespace Mona.SaaS.Web.Controllers
 
                 return View("Index", new LandingPageModel(inTestMode)
                     .WithCurrentUserInformation(User)
-                    .WithOfferInformation(this.offerConfig)
+                    .WithPublisherInformation(this.publisherConfig)
                     .WithErrorCode(ErrorCodes.SubscriptionActivationFailed));
             }
         }
 
         private async Task<IActionResult> GetLandingPageAsync(string token = null, bool inTestMode = false)
         {
-            if (this.offerConfig.IsSetupComplete == false)
+            if (this.publisherConfig.IsSetupComplete == false)
             {
                 // Not so fast... you need to complete the setup wizard before you can access the landing page.           
                 // TODO: Need to think about what happens if a non-admin user accesses the landing page but Mona has not yet been set up. Just return a 404 I guess? Feels kind of clunky...
@@ -212,7 +212,7 @@ namespace Mona.SaaS.Web.Controllers
 
                         return View("Index", new LandingPageModel(inTestMode)
                             .WithCurrentUserInformation(User)
-                            .WithOfferInformation(this.offerConfig)
+                            .WithPublisherInformation(this.publisherConfig)
                             .WithErrorCode(ErrorCodes.UnableToResolveMarketplaceToken));
                     }
                     else
@@ -238,14 +238,14 @@ namespace Mona.SaaS.Web.Controllers
 
                             return View("Index", new LandingPageModel(inTestMode)
                                 .WithCurrentUserInformation(User)
-                                .WithOfferInformation(this.offerConfig)
+                                .WithPublisherInformation(this.publisherConfig)
                                 .WithSubscriptionInformation(subscription));
                         }
                         else
                         {
                             // We already know about this subscription. Redirecting to publisher-defined subscription configuration UI...
 
-                            var subConfigUrl = this.offerConfig.SubscriptionConfigurationUrl.WithSubscriptionId(subscription.SubscriptionId);
+                            var subConfigUrl = this.publisherConfig.SubscriptionConfigurationUrl.WithSubscriptionId(subscription.SubscriptionId);
 
                             this.logger.LogInformation(
                                 $"Subscription [{subscription.SubscriptionId}] is known to Mona. " +
@@ -339,7 +339,9 @@ namespace Mona.SaaS.Web.Controllers
         }
 
         private IActionResult TryToRedirectToServiceMarketingPageUrl() =>
-            string.IsNullOrEmpty(this.offerConfig.OfferMarketingPageUrl) ? NotFound() as IActionResult : Redirect(this.offerConfig.OfferMarketingPageUrl);
+            string.IsNullOrEmpty(this.publisherConfig.PublisherHomePageUrl) 
+            ? NotFound() as IActionResult 
+            : Redirect(this.publisherConfig.PublisherHomePageUrl);
 
         private async Task<Subscription> TryGetSubscriptionAsync(string subscriptionId, bool inTestMode = false)
         {

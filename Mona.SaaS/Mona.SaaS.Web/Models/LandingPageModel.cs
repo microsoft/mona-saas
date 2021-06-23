@@ -24,7 +24,6 @@ namespace Mona.SaaS.Web.Models
         public string SubscriptionId { get; set; }
         public string SubscriptionName { get; set; }
         public string OfferId { get; set; }
-        public string OfferDisplayName { get; set; }
         public string PlanId { get; set; }
         public string PublisherDisplayName { get; set; }
         public string PublisherCopyrightNotice { get; set; }

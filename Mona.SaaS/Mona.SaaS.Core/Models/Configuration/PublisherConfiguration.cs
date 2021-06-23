@@ -15,30 +15,12 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Mona.SaaS.Core.Models.Configuration
 {
-    public class OfferConfiguration
+    public class PublisherConfiguration
     {
         /// <summary>
         /// Indicates whether or not the setup wizard has been copleted.
         /// </summary>
         public bool IsSetupComplete { get; set; }
-
-        /// <summary>
-        /// Gets/sets the URL of the offer's AppSource/Marketplace listing.
-        /// </summary>
-        [Display(Name = "Offer listing URL")]
-        public string OfferMarketplaceListingUrl { get; set; }
-
-        /// <summary>
-        /// Gets/sets the URL of the offer's main marketing page.
-        /// </summary>
-        [Required, Display(Name = "Offer marketing page URL")]
-        public string OfferMarketingPageUrl { get; set; }
-
-        /// <summary>
-        /// Gets/sets the offer's display/friendly name.
-        /// </summary>
-        [Required, Display(Name = "Offer name")]
-        public string OfferDisplayName { get; set; }
 
         /// <summary>
         /// Gets/sets the publisher's friendly/display name.
