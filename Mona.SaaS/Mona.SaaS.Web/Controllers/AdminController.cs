@@ -19,7 +19,6 @@ using Mona.AutoIntegration.Interrogators;
 using Mona.SaaS.Core.Models.Configuration;
 using Mona.SaaS.Web.Models;
 using Mona.SaaS.Web.Models.Admin;
-using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -33,18 +32,18 @@ namespace Mona.SaaS.Web.Controllers
     {
         private readonly DeploymentConfiguration deploymentConfig;
         private readonly IdentityConfiguration identityConfig;
-        private readonly OfferConfiguration offerConfig;
+        private readonly PublisherConfiguration publisherConfig;
         private readonly ILogger logger;
 
         public AdminController(
             IOptionsSnapshot<DeploymentConfiguration> deploymentConfig,
             IOptionsSnapshot<IdentityConfiguration> identityConfig,
-            OfferConfiguration offerConfig,
+            PublisherConfiguration publisherConfig,
             ILogger<AdminController> logger)
         {
             this.deploymentConfig = deploymentConfig.Value;
             this.identityConfig = identityConfig.Value;
-            this.offerConfig = offerConfig;
+            this.publisherConfig = publisherConfig;
             this.logger = logger;
         }
 
@@ -53,7 +52,7 @@ namespace Mona.SaaS.Web.Controllers
         {
             try
             {
-                if (this.offerConfig.IsSetupComplete == false)
+                if (this.publisherConfig.IsSetupComplete == false)
                 {
                     return RedirectToRoute("setup");
                 }

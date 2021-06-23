@@ -17,14 +17,14 @@ namespace Mona.SaaS.Web.Models
     public class SetupModel
     {
         public SetupModel() =>
-            Offer = new OfferConfiguration();
+            Publisher = new PublisherConfiguration();
 
-        public SetupModel(OfferConfiguration offer) =>
-            Offer = offer;
+        public SetupModel(PublisherConfiguration publisherConfig) =>
+            Publisher = publisherConfig;
 
         /// <summary>
-        /// Gets/sets the offer to be set up.
+        /// Gets/sets the publisher to be set up.
         /// </summary>
-        public OfferConfiguration Offer { get; set; }
+        public PublisherConfiguration Publisher { get; set; }
     }
 }

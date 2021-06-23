@@ -11,7 +11,7 @@
 <html lang="@Localizer["en"]">
 <head>
     <link href="~/lib/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet" />
-    <title>@Localizer["Confirm Purchase"]&nbsp;|&nbsp;@Model.OfferDisplayName</title>
+    <title>@Localizer["Confirm Purchase"]&nbsp;|&nbsp;@Model.OfferId</title>
     <style>
         a.footer {
             color: black;
@@ -53,7 +53,7 @@
                         </tr>
                         <tr>
                             <th scope="row">@Localizer["Offer"]</th>
-                            <td>@Model.OfferDisplayName</td>
+                            <td>@Model.OfferId</td>
                         </tr>
                         <tr>
                             <th scope="row">@Localizer["Plan"]</th>

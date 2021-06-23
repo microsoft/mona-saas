@@ -25,10 +25,10 @@
 <body style="display: flex; align-items: center; height: 100%; padding-top: 40px; padding-bottom: 40px">
     <main style="width: 100%; max-width: 960px; padding: 15px; margin: auto">
         <div class="container">
-            <h4 class="display-4">@Localizer["Tell us a little about your offer"]</h4>
+            <h4 class="display-4">@Localizer["Tell us a little about yourself"]</h4>
             <p class="lead">
                 <b>@Localizer["Thank you for installing Mona."]</b>
-                @Localizer["Before we go any further, we need some additional information about your offer so we can better customize the purchasing experience for your customers. " +
+                @Localizer["Before we go any further, we need some additional information about you so we can better customize the purchasing experience for your customers. " +
                 "This shouldn't take long. Before you know it, you'll be up and running and transacting with Microsoft."]
             </p>
             @using (Html.BeginForm())
@@ -36,53 +36,38 @@
                 @Html.AntiForgeryToken();
                 <div style="margin-top: 45px">
                     <div style="margin-bottom: 30px">
-                        @Html.LabelFor(m => m.Offer.OfferDisplayName, new { @class = "form-label" }) <span class="required">*</span>
-                        @Html.TextBoxFor(m => m.Offer.OfferDisplayName, new { @class = "form-control" })
-                        <div class="form-text text-muted"><small>@Localizer["This is the name of your offer (SaaS solution) as it will appear on the landing page."]</small></div>
-                    </div>
-                    <div style="margin-bottom: 30px">
-                        @Html.LabelFor(m => m.Offer.OfferMarketingPageUrl, new { @class = "form-label" }) <span class="required">*</span>
-                        @Html.TextBoxFor(m => m.Offer.OfferMarketingPageUrl, new { @class = "form-control", placeholder = "https://yourdomain.com/saas/marketing" })
-                        <div class="form-text text-muted"><small>@Localizer["This is your offer's (SaaS solution) public marketing page. If someone accesses the landing page without providing a subscription token, they will be automatically redirected to this page."]</small></div>
-                    </div>
-                    <div style="margin-bottom: 30px">
-                        @Html.LabelFor(m => m.Offer.OfferMarketplaceListingUrl, new { @class = "form-label" })
-                        @Html.TextBoxFor(m => m.Offer.OfferMarketplaceListingUrl, new { @class = "form-control" })
-                        <div class="form-text text-muted"><small>@Localizer["This is your offer's (SaaS solution) public AppSource/Marketplace listing page. If you don't have it yet, you can update this URL later."]</small></div>
-                    </div>
-                    <div style="margin-bottom: 30px">
-                        @Html.LabelFor(m => m.Offer.SubscriptionPurchaseConfirmationUrl, new { @class = "form-label" }) <span class="required">*</span>
-                        @Html.TextBoxFor(m => m.Offer.SubscriptionPurchaseConfirmationUrl, new { @class = "form-control", placeholder = "https://yourdomain.com/saas/purchased/{subscription-id}" })
+                        @Html.LabelFor(m => m.Publisher.SubscriptionPurchaseConfirmationUrl, new { @class = "form-label" }) <span class="required">*</span>
+                        @Html.TextBoxFor(m => m.Publisher.SubscriptionPurchaseConfirmationUrl, new { @class = "form-control", placeholder = "https://yourdomain.com/saas/purchased/{subscription-id}" })
                         <div class="form-text text-muted"><small>@Localizer["After your customer has confirmed their purchase through the landing page, they will automatically be redirected to this URL. Note that you can include the customer's subscription ID in the URL by using the <code>{{subscription-id}}</code> placeholder."]</small></div>
                     </div>
                     <div style="margin-bottom: 30px">
-                        @Html.LabelFor(m => m.Offer.SubscriptionConfigurationUrl, new { @class = "form-label" }) <span class="required">*</span>
-                        @Html.TextBoxFor(m => m.Offer.SubscriptionConfigurationUrl, new { @class = "form-control", placeholder = "https://yourdomain.com/saas/config/{subscription-id}" })
+                        @Html.LabelFor(m => m.Publisher.SubscriptionConfigurationUrl, new { @class = "form-label" }) <span class="required">*</span>
+                        @Html.TextBoxFor(m => m.Publisher.SubscriptionConfigurationUrl, new { @class = "form-control", placeholder = "https://yourdomain.com/saas/config/{subscription-id}" })
                         <div class="form-text text-muted"><small>@Localizer["If your customer chooses to configure their subscription through AppSource/Marketplace, they will be automatically redirected to this URL. Note that you can include the customer's subscription ID in the URL by using the <code>{{subscription-id}}</code> placeholder."]</small></div>
                     </div>
                     <div style="margin-bottom: 30px">
-                        @Html.LabelFor(m => m.Offer.PublisherDisplayName, new { @class = "form-label" }) <span class="required">*</span>
-                        @Html.TextBoxFor(m => m.Offer.PublisherDisplayName, new { @class = "form-control" })
+                        @Html.LabelFor(m => m.Publisher.PublisherDisplayName, new { @class = "form-label" }) <span class="required">*</span>
+                        @Html.TextBoxFor(m => m.Publisher.PublisherDisplayName, new { @class = "form-control" })
                         <div class="form-text text-muted"><small>@Localizer["The name of your company as it will appear on the landing page."]</small></div>
                     </div>
                     <div style="margin-bottom: 30px">
-                        @Html.LabelFor(m => m.Offer.PublisherHomePageUrl, new { @class = "form-label" })
-                        @Html.TextBoxFor(m => m.Offer.PublisherHomePageUrl, new { @class = "form-control", placeholder = "https://yourdomain.com" })
+                        @Html.LabelFor(m => m.Publisher.PublisherHomePageUrl, new { @class = "form-label" })
+                        @Html.TextBoxFor(m => m.Publisher.PublisherHomePageUrl, new { @class = "form-control", placeholder = "https://yourdomain.com" })
                         <div class="form-text text-muted"><small>@Localizer["Your company's home page."]</small></div>
                     </div>
                     <div style="margin-bottom: 30px">
-                        @Html.LabelFor(m => m.Offer.PublisherContactPageUrl, new { @class = "form-label" })
-                        @Html.TextBoxFor(m => m.Offer.PublisherContactPageUrl, new { @class = "form-control", placeholder = $"https://yourdomain.com/contact-us" })
+                        @Html.LabelFor(m => m.Publisher.PublisherContactPageUrl, new { @class = "form-label" })
+                        @Html.TextBoxFor(m => m.Publisher.PublisherContactPageUrl, new { @class = "form-control", placeholder = $"https://yourdomain.com/contact-us" })
                         <div class="form-text text-muted"><small>@Localizer["Your company's contact page."]</small></div>
                     </div>
                     <div style="margin-bottom: 30px">
-                        @Html.LabelFor(m => m.Offer.PublisherPrivacyNoticePageUrl, new { @class = "form-label" })
-                        @Html.TextBoxFor(m => m.Offer.PublisherPrivacyNoticePageUrl, new { @class = "form-control", placeholder = $"https://yourdomain.com/privacy" })
+                        @Html.LabelFor(m => m.Publisher.PublisherPrivacyNoticePageUrl, new { @class = "form-label" })
+                        @Html.TextBoxFor(m => m.Publisher.PublisherPrivacyNoticePageUrl, new { @class = "form-control", placeholder = $"https://yourdomain.com/privacy" })
                         <div class="form-text text-muted"><small>@Localizer["Your company's private notice page."]</small></div>
                     </div>
                     <div style="margin-bottom: 30px">
-                        @Html.LabelFor(m => m.Offer.PublisherCopyrightNotice, new { @class = "form-label" })
-                        @Html.TextBoxFor(m => m.Offer.PublisherCopyrightNotice, new { @class = "form-control", placeholder = $"© Awesome ISV {DateTime.UtcNow.Year}" })
+                        @Html.LabelFor(m => m.Publisher.PublisherCopyrightNotice, new { @class = "form-label" })
+                        @Html.TextBoxFor(m => m.Publisher.PublisherCopyrightNotice, new { @class = "form-control", placeholder = $"© Awesome ISV {DateTime.UtcNow.Year}" })
                         <div class="form-text text-muted"><small>@Localizer["Your copyright notice as it will appear on the landing page."]</small></div>
                     </div>
                     <hr />
