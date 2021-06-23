@@ -33,8 +33,6 @@ namespace Mona.SaaS.Web.Models
         // For various landing page links...
         // The landing page should be intelligent enough to only show links when the URL is included in this model.
 
-        public string OfferMarketingPageUrl { get; set; }
-        public string OfferMarketplaceListingUrl { get; set; }
         public string PublisherHomePageUrl { get; set; }
         public string PublisherPrivacyNoticePageUrl { get; set; }
         public string PublisherContactPageUrl { get; set; }

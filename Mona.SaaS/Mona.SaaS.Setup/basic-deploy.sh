@@ -322,7 +322,7 @@ az appconfig kv set --name "$app_config_name" --key "Identity:AdminIdentity:AadU
 az appconfig kv set --name "$app_config_name" --key "Identity:AppIdentity:AadClientId" --yes                            --value "$aad_app_id";
 az appconfig kv set --name "$app_config_name" --key "Identity:AppIdentity:AadClientSecret" --yes                        --value "$aad_app_secret" >/dev/null
 az appconfig kv set --name "$app_config_name" --key "Identity:AppIdentity:AadTenantId" --yes                            --value "$current_user_tid";
-az appconfig kv set --name "$app_config_name" --key "Offer:IsSetupComplete" --yes                                       --value "false";
+az appconfig kv set --name "$app_config_name" --key "Publisher:IsSetupComplete" --yes                                   --value "false";
 az appconfig kv set --name "$app_config_name" --key "Subscriptions:Events:EventGrid:TopicEndpoint" --yes                --value "$event_grid_topic_endpoint"; 
 az appconfig kv set --name "$app_config_name" --key "Subscriptions:Events:EventGrid:TopicKey" --yes                     --value "$event_grid_topic_key" >/dev/null
 az appconfig kv set --name "$app_config_name" --key "Subscriptions:Repository:BlobStorage:ConnectionString" --yes       --value "$blob_conn_str" >/dev/null
