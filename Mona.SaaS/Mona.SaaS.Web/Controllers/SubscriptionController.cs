@@ -338,10 +338,7 @@ namespace Mona.SaaS.Web.Controllers
             }
         }
 
-        private IActionResult TryToRedirectToServiceMarketingPageUrl() =>
-            string.IsNullOrEmpty(this.publisherConfig.PublisherHomePageUrl) 
-            ? NotFound() as IActionResult 
-            : Redirect(this.publisherConfig.PublisherHomePageUrl);
+        private IActionResult TryToRedirectToServiceMarketingPageUrl() => string.IsNullOrEmpty(this.publisherConfig.PublisherHomePageUrl) ? NotFound() as IActionResult : Redirect(this.publisherConfig.PublisherHomePageUrl);
 
         private async Task<Subscription> TryGetSubscriptionAsync(string subscriptionId, bool inTestMode = false)
         {
