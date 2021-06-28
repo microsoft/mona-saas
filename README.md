@@ -106,28 +106,43 @@ Click the URL (it's automatically linked within the cloud shell) to navigate to 
 
 ## How much does Mona SaaS cost?
 
-Mona SaaS itself is [open source licensed](./LICENSE.txt) and free to use.
- 
-Once deployed directly into an ISV's subscription, the ISV is ultimately responsible for the costs of Azure services such as Azure App Service plan, Azure Logic Apps, Application Insights, Azure Storage and Azure Event Grid. Your actual costs may vary depending on a number of factors including:
+Mona SaaS is open source (see [our license](./LICENSE.txt)) and free to use.
+
+Since Mona SaaS is deployed into your Azure environment, the only costs that you're responsible for are those of hosting its Azure services. These resources include —
+
+* An S1 App Service Plan ([Pricing](https://azure.microsoft.com/pricing/details/app-service/windows/))
+    * This is the most expensive part of the Mona SaaS deployment.
+    * Note that you can deploy Mona SaaS to a compatible existing App Service Plan using the [`-a` setup script parameter](#setup-script-parameters).
+* An Event Grid topic ([Pricing](https://azure.microsoft.com/pricing/details/event-grid/))
+* Six (6) Logic Apps preconfigured to handle different types of Marketplace events (Consumption Plan [Pricing](https://azure.microsoft.com/en-us/pricing/details/logic-apps/))
+
+Your actual costs may vary based on the following —
 
  * __The integrations that you build.__ For example, Logic Apps offers [a growing list of Standard and Enterprise connectors](https://docs.microsoft.com/en-us/azure/connectors/apis-list) that allow you to easily access various cloud-based and on-premises services. [The connectors that you use have a direct impact on your overall Azure costs](https://azure.microsoft.com/en-us/pricing/details/logic-apps/) outside of the base Mona SaaS deployment.
  * __Where you deploy Mona SaaS.__ Be aware that costs for the same Azure services can vary across regions.
  * __Any special pricing arrangements you have with Microsoft.__ Many of the ISVs that we work with have special pricing arrangements through their partnerships with Microsoft.
 
-You may use the [Azure pricing calculator](https://azure.microsoft.com/pricing/calculator/) for cost guidance. For help in forecasting your Mona SaaS costs, [see this article](https://docs.microsoft.com/en-us/azure/cost-management-billing/costs/cost-analysis-common-uses#view-forecasted-costs).
+Use the [Azure pricing calculator](https://azure.microsoft.com/pricing/calculator/) to better understand your unique costs.
 
-## Dependency
+For help in forecasting your Mona SaaS costs [see this article](https://docs.microsoft.com/en-us/azure/cost-management-billing/costs/cost-analysis-common-uses#view-forecasted-costs).
 
-Mona SaaS uses Open Source [commercial-marketplace-client-dotnet](https://github.com/microsoft/commercial-marketplace-client-dotnet).  It is currently not distributed via NuGet so dll is conveniently included in the repo.
+## Dependencies
+
+Mona SaaS takes a dependency on the open source [Commercial Marketplace .NET Client (`commercial-marketplace-client-dotnet)](https://github.com/microsoft/commercial-marketplace-client-dotnet). This library's DLL is conveniently included in the Mona SaaS reopsitory.
+
+All other dependencies are automatically satisfied using Nuget during the Mona SaaS setup process. For more information on Mona SaaS' dependencies, [check out our dependency graph](https://github.com/microsoft/mona-saas/network/dependencies).
+
+## How is Mona SaaS supported?
 
 ## Who supports Mona SaaS?
 
-> ⚠ __WARNING__ | Mona SaaS is currently in pilot. We do not yet recommend it for production scenarios.
-Please read [SUPPORT.md](SUPPORT.md).
+> ⚠ __WARNING__ | Mona SaaS is currently in private preview. We do not yet recommend it for production scenarios.
+
+Please see [our support docs](SUPPORT.md) for more information.
 
 ## Security
 
-Please read [SECURITY.md](SECURITY.md)
+Please see [our security docs](SECURITY.md) for more information.
 
 ## Considerations and limitations
 
