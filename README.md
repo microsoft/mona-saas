@@ -1,8 +1,8 @@
-# Mona SaaS (Pilot)
+# Mona SaaS (Private Preview)
 
 ![CI Build](https://github.com/microsoft/mona-saas/actions/workflows/dotnet.yml/badge.svg)
 
-> ⚠ __WARNING__ | Mona SaaS is currently in pilot. We do not yet recommend it for production scenarios.
+> ⚠ __WARNING__ | Mona SaaS is currently in private preview. We do not yet recommend it for production scenarios.
 
  Mona SaaS is a [__M__]arketplace [__On__]boarding [__A__]ccelerator designed to make it easier for Microsoft's [ISV partners](https://partner.microsoft.com/community/my-partner-hub/isv) to rapidly onboard transactable SaaS solutions to [Azure Marketplace](https://azure.microsoft.com/marketplace) and [AppSource](https://appsource.microsoft.com). It includes lightweight, reusable code modules that ISVs deploy in their own Azure subscription, and [low/no-code integration templates](https://azure.microsoft.com/en-us/solutions/low-code-application-development) featuring [Azure Logic Apps](https://azure.microsoft.com/services/logic-apps).
 
@@ -27,24 +27,55 @@ First, ensure that the following prerequisites are met.
  * You have the ability to create new app registrations within your Azure Active Directory (AAD) tenant. In order to create app registrations, you must be a directory administrator. For more information, see [this article](https://docs.microsoft.com/en-us/azure/active-directory/roles/permissions-reference).
  * You have the ability to create resources and resource groups within the target Azure subscription. Typically, this requires at least [contributor-level access](https://docs.microsoft.com/azure/role-based-access-control/built-in-roles#contributor) to the subscription.
 
- Next, follow the instructions below.
+### Gain access to the Mona SaaS GitHub repository
  
- > During pilot, this repository is private. Per Microsoft policy, you must use two-factor authentication (2FA) to access this repo using your own Github credentials. Since the Azure cloud shell doesn't support Github 2FA, you'll need to both [enable 2FA for your Github account](https://docs.github.com/en/github/authenticating-to-github/securing-your-account-with-two-factor-authentication-2fa) and [generate a personal access token (PAT) with the `repo` scope selected](https://docs.github.com/en/github/authenticating-to-github/keeping-your-account-and-data-secure/creating-a-personal-access-token). Save this PAT in a secure place as you'll need it later (as your password) when cloning this repository into your own Azure environment.
+ During our private preview phase, the Mona SaaS GitHub repository is private.
+ Per Microsoft policy, you must use two-factor authentication (2FA) to access this repo using your own Github credentials. Since the Azure cloud shell doesn't support Github 2FA, you'll need to both [enable 2FA for your Github account](https://docs.github.com/en/github/authenticating-to-github/securing-your-account-with-two-factor-authentication-2fa) and [generate a personal access token (PAT) with the `repo` scope selected](https://docs.github.com/en/github/authenticating-to-github/keeping-your-account-and-data-secure/creating-a-personal-access-token). Save this PAT in a secure place as you'll need it later (as your password) when cloning this repository into your own Azure environment.
 
- 1. Navigate to [the Azure portal](https://portal.azure.com) and [launch the Bash cloud shell](https://docs.microsoft.com/azure/cloud-shell/quickstart#start-cloud-shell).
- 2. Clone the Mona SaaS Github repository into your own Azure environment by running `git clone https://github.com/microsoft/mona-saas` from the cloud shell.
-    * During our pilot phase, you will need to provide your Github credentials at this step.
-3. Once the repository has been cloned, navigate to the `./Mona.SaaS/Mona.SaaS.Setup/` folder within your newly cloned Mona repository and ensure that the setup script is locally executable by running `chmod +x ./basic-deploy.sh` from the cloud shell.
-4. Run [the Mona SaaS setup script](./Mona.SaaS/Mona.SaaS.Setup/basic-deploy.sh).
-    * To deploy a Mona SaaS instance named `"monadocs01"` (display name is `"Mona Docs 01"`) into the North Europe (`"northeurope"`) region, you would run `./basic-deploy.sh -r "northeurope" -n "monadocs01" -d "Mona Docs 01"` from the cloud shell.
-    * Refer to [this table](#setup-script-parameters) for more information on Mona SaaS setup script parameters.
-    * Setup takes approximately five minutes. Grab a cup of coffee. ☕
-5. Once the script is finished, note the information provided in the `Mona Deployment Summary`. We recommend saving these values somewhere convenient as you will likely need them later.
-6. Find the setup URL at the _very bottom_ of the script output. It should look similiar to this - `"https://your-mona-web.azurewebsites.net/setup"`. Navigate to that site in your browser to complete setup.
-7. [Use the Partner Center to finish onboarding your SaaS solution and begin transacting with Microsoft!](https://docs.microsoft.com/azure/marketplace/create-new-saas-offer)
+ ### Clone the Mona SaaS GitHub repository
 
+ Navigate to [the Azure portal](https://portal.azure.com) and [launch the Bash cloud shell](https://docs.microsoft.com/azure/cloud-shell/quickstart#start-cloud-shell).
+ 
+ > If this is the first time that you've used the cloud shell, you will be prompted to [create or choose an existing an Azure Files share](https://docs.microsoft.com/en-us/azure/cloud-shell/overview#connect-your-microsoft-azure-files-storage).
 
-### Setup script parameters
+Run this command from the cloud shell to clone the Mona SaaS repository —
+
+`git clone https://github.com/microsoft/mona-saas`
+
+Your user name is your GitHub user name. Your password is the PAT generated in the previous section. By default, the Mona SaaS source will be cloned to a directory named `mona-saas`. Navigate to the setup folder by running tehe following command —
+
+`cd ./mona-saas/Mona.SaaS/Mona.SaaS.Setup`
+
+Finally, enable the setup script to be executed locally by running —
+
+`chmod +x ./basic-deploy.sh`
+
+### Set up Mona SaaS
+
+At a bare minimum, you need these three pieces of information before running the setup script —
+
+* [The Azure region](https://azure.microsoft.com/global-infrastructure/geographies/) in which you wish to deploy Mona SaaS.
+    * For a complete list of available regions, run `az account list-locations -o table` from the cloud shell. Be sure to use the region's `Name`, not `DisplayName` or `RegionalDisplayName`.
+* An arbitrary, globally-unique name for this Mona deployment.
+    * This identifier must consist of lowercase alphanumeric characters _only_.
+    * It must also be between 3 and 13 characters in length.
+* A friendly display name for your Mona deployment which your customers will see when authenticating to the landing page that Mona SaaS deploys. Although a display name isn't technically required, it's highly recommended.
+
+#### Setup script examples
+
+To deploy a Mona instance named `monaex01` to the `westeurope` (West Europe) region, you would run the following command from the cloud shell. Note that, since we didn't explicilty provide a display name, Mona will also use `monaex01` as the display name.
+
+`./basic-deploy.sh -r "westeurope" -n "monaex01"`
+
+To instead include the display name `Mona Example 01` explicitly, your would run —
+
+`./basic-deploy.sh -r "westeurope" -n "monaex01" -d "Mona Example 01"`
+
+The setup script supports additional optional parameters detailed in the table below. For example, if you wished to deploy Mona into a specific subscription (`9897b07c-86fa-4779-92e3-6273664ec722`) and resource group (`monaex01group`), you would run —
+
+`./basic-deploy.sh -r "westeurope" -n "monaex01" -d "Mona Example 01" -g "monaex01group" -s "9897b07c-86fa-4779-92e3-6273664ec722"`
+
+#### Setup script parameters
 
 | Switch | Name | Required | Default | Notes |
 | --- | --- | --- | --- | --- |
@@ -53,10 +84,25 @@ First, ensure that the following prerequisites are met.
 | `-d` | Display name | No | Same as deployment name (`-n`) | A "friendly" display name for this Mona SaaS deployment. If provided, this is also the name of the Azure Active Directory (AAD) app created during setup. __While providing this parameter isn't required, it's highly recommended.__ |
 | `-a` | Existing App Service plan ID | No | N/A | The complete resource ID (i.e., `/subscriptions/{subscriptionId}/...`) of an existing [App Service plan](https://docs.microsoft.com/azure/app-service/overview-hosting-plans) to publish the Mona web app to. If provided, the App Service plan must exist in the same region (see `-l`) and Azure subscription (see `-s`) where Mona is being deployed. If not provided, the setup script will automatically provision a new App Service plan (S1) within the same resource group (see `-r`) where Mona is being deployed. It must also be a Windows-based App Service plan. |
 | `-g` | Deployment Azure resource group name | No | `mona-[deployment name (-n)]` | The Azure resource group to deploy Mona SaaS into. If the resource group already exists, it must be empty. If the group doesn't exist, it will be automatically created during setup. |
-| `-l` | UI language | No | English (`en`) | The ISV's preferred UI language. Currently, only English (`en`) and Spanish (`es`) are supported. |
 | `-s` | Deployment Azure subscription ID | No | The current subscription | The ID of the Azure subscription to deploy Mona SaaS into. |
 | `-h` | __Flag__ - Don't show script splash screen. | No | N/A | When set, the setup script will not display the standard Mona setup splash screen. |
 | `-p` | __Flag__ - Don't publish the web app. | No | N/A | When set, the setup script will provision all Azure and Azure Active Directory reources as usual _but_ won't actually publish the Mona web app. |
+
+### Complete Mona SaaS setup
+
+Once the script is finished, note the information provided in the `Mona Deployment Summary`. We stronly recommend saving these values somewhere safe and convenient as you will likely need to refer to them again later.
+
+Locate the setup URL at the _very bottom_ of the script output. It will look similiar to this —
+
+`https://mona-web-monaex01.azurewebsites.net/setup`
+
+Click the URL (it's automatically linked within the cloud shell) to navigate to that site and complete the Mona SaaS setup wizard.
+
+> The setup wizard is hosted entirely within your own Mona SaaS deployment so you're aren't sharing any information with Microsoft (or anyone else) at this point.
+
+### Finish setting up your offer(s) in Partner Center
+
+[Use the Partner Center to configure your offer(s) and begin transacting with Microsoft!](https://docs.microsoft.com/azure/marketplace/create-new-saas-offer)
 
 ## How much does Mona SaaS cost?
 
