@@ -1,4 +1,4 @@
-# Mona SaaS (Private Preview)
+# Mona SaaS
 
 ![CI Build](https://github.com/microsoft/mona-saas/actions/workflows/dotnet.yml/badge.svg)
 
@@ -15,7 +15,6 @@
 Each of these operations is exposed to your SaaS application by Mona SaaS through events published to [a custom Event Grid topic](https://docs.microsoft.com/azure/event-grid/custom-topics) automatically provisioned during setup. By default, we deploy a set of "stub" Logic Apps into your Azure subscription that are enabled by default and configured to be triggered by these subscription events.
  
  Since Mona SaaS exposes these subscription-related events to your SaaS application through an Event Grid topic, [you have lots of options for handling them](https://docs.microsoft.com/azure/event-grid/overview#event-handlers). Because we're using Event Grid, multiple event subscribers can handle the same events simultaneously. These flows can be easily modified in production with no downtime.
-
 
 ## How do I get started with Mona SaaS?
 
@@ -131,8 +130,6 @@ For help in forecasting your Mona SaaS costs [see this article](https://docs.mic
 Mona SaaS takes a dependency on the open source [Commercial Marketplace .NET Client (`commercial-marketplace-client-dotnet)](https://github.com/microsoft/commercial-marketplace-client-dotnet). This library's DLL is conveniently included in the Mona SaaS reopsitory.
 
 All other dependencies are automatically satisfied using Nuget during the Mona SaaS setup process. For more information on Mona SaaS' dependencies, [check out our dependency graph](https://github.com/microsoft/mona-saas/network/dependencies).
-
-## How is Mona SaaS supported?
 
 ## Who supports Mona SaaS?
 
