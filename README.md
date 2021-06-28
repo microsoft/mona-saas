@@ -127,9 +127,9 @@ For help in forecasting your Mona SaaS costs [see this article](https://docs.mic
 
 ## Dependencies
 
-Mona SaaS takes a dependency on the open source [Commercial Marketplace .NET Client (`commercial-marketplace-client-dotnet`)](https://github.com/microsoft/commercial-marketplace-client-dotnet). This library's DLL is conveniently included in the Mona SaaS reopsitory.
+Mona SaaS takes a dependency on the open source [Commercial Marketplace .NET Client (`commercial-marketplace-client-dotnet`)](https://github.com/microsoft/commercial-marketplace-client-dotnet). This library's DLL is conveniently included in the Mona SaaS repository.
 
-All other dependencies are automatically satisfied using Nuget during the Mona SaaS setup process. For more information on Mona SaaS' dependencies, [check out our dependency graph](https://github.com/microsoft/mona-saas/network/dependencies).
+All other dependencies are automatically satisfied using [Nuget](https://docs.microsoft.com/nuget/what-is-nuget) during the Mona SaaS setup process. For more information on Mona SaaS' dependencies, [check out our dependency graph](https://github.com/microsoft/mona-saas/network/dependencies).
 
 ## Who supports Mona SaaS?
 
