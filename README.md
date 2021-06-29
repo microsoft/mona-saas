@@ -133,10 +133,12 @@ Mona SaaS is open source (see [our license](./LICENSE.txt)) and free to use.
 
 Since Mona SaaS is deployed into your Azure environment, the only costs that you're responsible for are those of hosting its supporting Azure resources. These resources include —
 
-* An S1 [App Service Plan](https://docs.microsoft.com/azure/app-service/overview-hosting-plans)( ([Pricing](https://azure.microsoft.com/pricing/details/app-service/windows/))
+* An S1 (Standard) [App Service Plan](https://docs.microsoft.com/azure/app-service/overview-hosting-plans) ([Pricing](https://azure.microsoft.com/pricing/details/app-service/windows/))
     * Note that you can deploy Mona SaaS to a compatible existing App Service Plan using the [`-a` setup script parameter](#setup-script-parameters).
 * An [Event Grid topic](https://docs.microsoft.com/en-us/azure/event-grid/custom-topics) ([Pricing](https://azure.microsoft.com/pricing/details/event-grid/))
 * Six (6) independent [Azure Logic Apps](https://docs.microsoft.com/en-us/azure/logic-apps/logic-apps-overview) preconfigured to handle different types of Marketplace events (Consumption Plan | [Pricing](https://azure.microsoft.com/en-us/pricing/details/logic-apps/))
+* A Basic Integration Account ([Pricing](https://azure.microsoft.com/en-us/pricing/details/logic-apps/))
+* A locally-redundant (LRS) standard (GPv2) storage account ([Pricing](https://azure.microsoft.com/pricing/details/storage/blobs/))
 
 Your actual costs may vary based on the following —
 
