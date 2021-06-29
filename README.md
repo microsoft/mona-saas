@@ -64,15 +64,28 @@ At a bare minimum, you need these three pieces of information before running the
 
 To deploy a Mona instance named `monaex01` to the `westeurope` (West Europe) region, you would run the following command from the cloud shell. Note that, since we didn't explicilty provide a display name, Mona will also use `monaex01` as the display name.
 
-`./basic-deploy.sh -r "westeurope" -n "monaex01"`
+```shell
+./basic-deploy.sh -r "westeurope" -n "monaex01"
+```
 
 To instead include the display name `Mona Example 01` explicitly, your would run —
 
-`./basic-deploy.sh -r "westeurope" -n "monaex01" -d "Mona Example 01"`
+```shell
+./basic-deploy.sh -r "westeurope" -n "monaex01" -d "Mona Example 01"
+```
 
 The setup script supports additional optional parameters detailed in the table below. For example, if you wished to deploy Mona into a specific subscription (`9897b07c-86fa-4779-92e3-6273664ec722`) and resource group (`monaex01group`), you would run —
 
-`./basic-deploy.sh -r "westeurope" -n "monaex01" -d "Mona Example 01" -g "monaex01group" -s "9897b07c-86fa-4779-92e3-6273664ec722"`
+```shell
+# Broken down into multiple lines for readability...
+
+./basic-deploy.sh \
+   -r "westeurope" \
+   -n "monaex01" \
+   -d "Mona Example 01" \
+   -g "monaex01group" \
+   -s "9897b07c-86fa-4779-92e3-6273664ec722"
+```
 
 #### Setup script parameters
 
