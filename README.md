@@ -134,11 +134,14 @@ Mona SaaS is open source (see [our license](./LICENSE.txt)) and free to use.
 Since Mona SaaS is deployed into your Azure environment, the only costs that you're responsible for are those of hosting its supporting Azure resources. These resources include —
 
 * An S1 (Standard) [App Service Plan](https://docs.microsoft.com/azure/app-service/overview-hosting-plans) ([Pricing](https://azure.microsoft.com/pricing/details/app-service/windows/))
-    * Note that you can deploy Mona SaaS to a compatible existing App Service Plan using the [`-a` setup script parameter](#setup-script-parameters).
-* An [Event Grid topic](https://docs.microsoft.com/en-us/azure/event-grid/custom-topics) ([Pricing](https://azure.microsoft.com/pricing/details/event-grid/))
-* Six (6) independent [Azure Logic Apps](https://docs.microsoft.com/en-us/azure/logic-apps/logic-apps-overview) preconfigured to handle different types of Marketplace events (Consumption Plan | [Pricing](https://azure.microsoft.com/pricing/details/logic-apps/))
-* A Basic [Integration Account](https://docs.microsoft.com/azure/logic-apps/logic-apps-enterprise-integration-create-integration-account?tabs=azure-portal) ([Pricing](https://azure.microsoft.com/en-us/pricing/details/logic-apps/))
+    * Note that you can deploy Mona SaaS to an existing Windows-based App Service Plan using the [`-a` setup script parameter](#setup-script-parameters).
+* An [Event Grid topic](https://docs.microsoft.com/azure/event-grid/custom-topics) ([Pricing](https://azure.microsoft.com/pricing/details/event-grid/))
+* Six (6) independent [Azure Logic Apps](https://docs.microsoft.com/azure/logic-apps/logic-apps-overview) preconfigured to handle different types of Marketplace events (Consumption Plan | [Pricing](https://azure.microsoft.com/pricing/details/logic-apps/))
+* A Basic [Integration Account](https://docs.microsoft.com/azure/logic-apps/logic-apps-enterprise-integration-create-integration-account?tabs=azure-portal) ([Pricing](https://azure.microsoft.com/pricing/details/logic-apps/))
 * A [locally-redundant (LRS)](https://docs.microsoft.com/azure/storage/common/storage-redundancy#locally-redundant-storage) standard (GPv2) [storage account](https://docs.microsoft.com/azure/storage/common/storage-account-overview) ([Pricing](https://azure.microsoft.com/pricing/details/storage/blobs/))
+* [Application Insights](https://docs.microsoft.com/en-us/azure/azure-monitor/app/app-insights-overview) ([Pricing](https://docs.microsoft.com/azure/azure-monitor/app/pricing))
+
+> Note that free services are not included in this list.
 
 Your actual costs may vary based on the following —
 
