@@ -43,6 +43,7 @@ namespace Mona.SaaS.Web.Tests
         public async Task PostLiveLandingPage_GivenValidSubscriptionId_ShouldPublishEvent_AndRedirectToPurchaseConfirmationUrl()
         {
             var testToken = Guid.NewGuid().ToString();
+            var testSubscriptionToken = Guid.NewGuid().ToString();
             var testUserName = "Clippy";
 
             var mockDeployConfig = GetOptionsSnapshotMock(GetDefaultDeploymentConfiguration());
@@ -50,7 +51,8 @@ namespace Mona.SaaS.Web.Tests
             var mockMpOperationService = new Mock<IMarketplaceOperationService>();
             var mockMpSubscriptionService = new Mock<IMarketplaceSubscriptionService>();
             var mockEventPublisher = new Mock<ISubscriptionEventPublisher>();
-            var mockSubscriptionRepo = new Mock<ISubscriptionRepository>();
+            var mockSubscriptionRepo = new Mock<ISubscriptionTestingCache>();
+            var mockSubscriptionStagingCache = new Mock<ISubscriptionStagingCache>();
             var mockHttpContext = new Mock<HttpContext>();
             var publisherConfig = GetDefaultPublisherConfiguration();
             var testSubscription = CreateTestSubscription();
@@ -61,21 +63,26 @@ namespace Mona.SaaS.Web.Tests
             mockHttpContext.SetupGet(hc => hc.User.Identity.IsAuthenticated).Returns(true);
             mockHttpContext.SetupGet(hc => hc.User.Claims).Returns(new Claim[] { new Claim("name", testUserName) });
             mockMpSubscriptionService.Setup(ss => ss.GetSubscriptionAsync(testSubscription.SubscriptionId)).Returns(Task.FromResult(testSubscription));
+            mockSubscriptionStagingCache.Setup(sc => sc.StageSubscriptionAsync(testSubscription)).Returns(Task.FromResult(testSubscriptionToken));
 
             var controllerContext = new ControllerContext(new ActionContext(mockHttpContext.Object, new RouteData(), new ControllerActionDescriptor()));
 
             var controllerUt = new SubscriptionController(
                 mockDeployConfig.Object, publisherConfig, mockLogger.Object, mockMpOperationService.Object,
-                mockMpSubscriptionService.Object, mockEventPublisher.Object, mockSubscriptionRepo.Object)
+                mockMpSubscriptionService.Object, mockEventPublisher.Object, mockSubscriptionStagingCache.Object, mockSubscriptionRepo.Object)
             { ControllerContext = controllerContext };
 
             var lpModel = new LandingPageModel { SubscriptionId = testSubscription.SubscriptionId };
 
             var actionResult = await controllerUt.PostLiveLandingPageAsync(lpModel);
 
+            var expectedRedirectUrl =
+                publisherConfig.SubscriptionPurchaseConfirmationUrl.Replace("{subscription-id}", testSubscription.SubscriptionId) +
+                $"?st={testSubscriptionToken}";
+
             actionResult.Should().NotBeNull();
             actionResult.Should().BeOfType<RedirectResult>();
-            (actionResult as RedirectResult).Url.Should().Be(publisherConfig.SubscriptionPurchaseConfirmationUrl.Replace("{subscription-id}", testSubscription.SubscriptionId));
+            (actionResult as RedirectResult).Url.Should().Be(expectedRedirectUrl);
 
             purchasedEvent.Should().NotBeNull();
             purchasedEvent.EventType = CoreEventTypes.SubscriptionPurchased;
@@ -87,6 +94,7 @@ namespace Mona.SaaS.Web.Tests
         public async Task PostTestLandingPage_GivenValidSubscriptionId_ShouldPublishEvent_AndRedirectToPurchaseConfirmationUrl()
         {
             var testToken = Guid.NewGuid().ToString();
+            var testSubscriptionToken = Guid.NewGuid().ToString();
             var testUserName = "Clippy";
 
             var mockDeployConfig = GetOptionsSnapshotMock(GetDefaultDeploymentConfiguration());
@@ -94,7 +102,8 @@ namespace Mona.SaaS.Web.Tests
             var mockMpOperationService = new Mock<IMarketplaceOperationService>();
             var mockMpSubscriptionService = new Mock<IMarketplaceSubscriptionService>();
             var mockEventPublisher = new Mock<ISubscriptionEventPublisher>();
-            var mockSubscriptionRepo = new Mock<ISubscriptionRepository>();
+            var mockSubscriptionStagingCache = new Mock<ISubscriptionStagingCache>();
+            var mockSubscriptionRepo = new Mock<ISubscriptionTestingCache>();
             var mockHttpContext = new Mock<HttpContext>();
             var publisherConfig = GetDefaultPublisherConfiguration();
             var testSubscription = CreateTestSubscription();
@@ -107,21 +116,26 @@ namespace Mona.SaaS.Web.Tests
             mockHttpContext.SetupGet(hc => hc.User.Identity.IsAuthenticated).Returns(true);
             mockHttpContext.SetupGet(hc => hc.User.Claims).Returns(new Claim[] { new Claim("name", testUserName) });
             mockSubscriptionRepo.Setup(sr => sr.GetSubscriptionAsync(testSubscription.SubscriptionId)).Returns(Task.FromResult(testSubscription));
+            mockSubscriptionStagingCache.Setup(sc => sc.StageSubscriptionAsync(testSubscription)).Returns(Task.FromResult(testSubscriptionToken));
 
             var controllerContext = new ControllerContext(new ActionContext(mockHttpContext.Object, new RouteData(), new ControllerActionDescriptor()));
 
             var controllerUt = new SubscriptionController(
-                mockDeployConfig.Object, publisherConfig, mockLogger.Object, mockMpOperationService.Object,
-                mockMpSubscriptionService.Object, mockEventPublisher.Object, mockSubscriptionRepo.Object)
+              mockDeployConfig.Object, publisherConfig, mockLogger.Object, mockMpOperationService.Object,
+              mockMpSubscriptionService.Object, mockEventPublisher.Object, mockSubscriptionStagingCache.Object, mockSubscriptionRepo.Object)
             { ControllerContext = controllerContext };
 
             var lpModel = new LandingPageModel { SubscriptionId = testSubscription.SubscriptionId };
 
             var actionResult = await controllerUt.PostTestLandingPageAsync(lpModel);
 
+            var expectedRedirectUrl =
+                publisherConfig.SubscriptionPurchaseConfirmationUrl.Replace("{subscription-id}", testSubscription.SubscriptionId) +
+                $"?st={testSubscriptionToken}";
+
             actionResult.Should().NotBeNull();
             actionResult.Should().BeOfType<RedirectResult>();
-            (actionResult as RedirectResult).Url.Should().Be(publisherConfig.SubscriptionPurchaseConfirmationUrl.Replace("{subscription-id}", testSubscription.SubscriptionId));
+            (actionResult as RedirectResult).Url.Should().Be(expectedRedirectUrl);
 
             purchasedEvent.Should().NotBeNull();
             purchasedEvent.EventType = CoreEventTypes.SubscriptionPurchased;
@@ -133,6 +147,7 @@ namespace Mona.SaaS.Web.Tests
         public async Task PostLiveLandingPage_GivenInvalidSubscriptionId_ShouldRespondOk_WithErrorCode()
         {
             var testToken = Guid.NewGuid().ToString();
+            var testSubscriptionToken = Guid.NewGuid().ToString();
             var testUserName = "Clippy";
 
             var mockDeployConfig = GetOptionsSnapshotMock(GetDefaultDeploymentConfiguration());
@@ -140,7 +155,8 @@ namespace Mona.SaaS.Web.Tests
             var mockMpOperationService = new Mock<IMarketplaceOperationService>();
             var mockMpSubscriptionService = new Mock<IMarketplaceSubscriptionService>();
             var mockEventPublisher = new Mock<ISubscriptionEventPublisher>();
-            var mockSubscriptionRepo = new Mock<ISubscriptionRepository>();
+            var mockSubscriptionStagingCache = new Mock<ISubscriptionStagingCache>();
+            var mockSubscriptionRepo = new Mock<ISubscriptionTestingCache>();
             var mockHttpContext = new Mock<HttpContext>();
             var publisherConfig = GetDefaultPublisherConfiguration();
             var testSubscription = CreateTestSubscription();
@@ -152,8 +168,8 @@ namespace Mona.SaaS.Web.Tests
             var controllerContext = new ControllerContext(new ActionContext(mockHttpContext.Object, new RouteData(), new ControllerActionDescriptor()));
 
             var controllerUt = new SubscriptionController(
-                mockDeployConfig.Object, publisherConfig, mockLogger.Object, mockMpOperationService.Object,
-                mockMpSubscriptionService.Object, mockEventPublisher.Object, mockSubscriptionRepo.Object)
+              mockDeployConfig.Object, publisherConfig, mockLogger.Object, mockMpOperationService.Object,
+              mockMpSubscriptionService.Object, mockEventPublisher.Object, mockSubscriptionStagingCache.Object, mockSubscriptionRepo.Object)
             { ControllerContext = controllerContext };
 
             var lpModel = new LandingPageModel { SubscriptionId = testSubscription.SubscriptionId };
@@ -192,7 +208,8 @@ namespace Mona.SaaS.Web.Tests
             var mockMpOperationService = new Mock<IMarketplaceOperationService>();
             var mockMpSubscriptionService = new Mock<IMarketplaceSubscriptionService>();
             var mockEventPublisher = new Mock<ISubscriptionEventPublisher>();
-            var mockSubscriptionRepo = new Mock<ISubscriptionRepository>();
+            var mockSubscriptionStagingCache = new Mock<ISubscriptionStagingCache>();
+            var mockSubscriptionRepo = new Mock<ISubscriptionTestingCache>();
             var mockHttpContext = new Mock<HttpContext>();
             var publisherConfig = GetDefaultPublisherConfiguration();
             var testSubscription = CreateTestSubscription();
@@ -204,8 +221,8 @@ namespace Mona.SaaS.Web.Tests
             var controllerContext = new ControllerContext(new ActionContext(mockHttpContext.Object, new RouteData(), new ControllerActionDescriptor()));
 
             var controllerUt = new SubscriptionController(
-                mockDeployConfig.Object, publisherConfig, mockLogger.Object, mockMpOperationService.Object,
-                mockMpSubscriptionService.Object, mockEventPublisher.Object, mockSubscriptionRepo.Object)
+              mockDeployConfig.Object, publisherConfig, mockLogger.Object, mockMpOperationService.Object,
+              mockMpSubscriptionService.Object, mockEventPublisher.Object, mockSubscriptionStagingCache.Object, mockSubscriptionRepo.Object)
             { ControllerContext = controllerContext };
 
             var lpModel = new LandingPageModel { SubscriptionId = testSubscription.SubscriptionId };
@@ -241,12 +258,13 @@ namespace Mona.SaaS.Web.Tests
             var mockMpOperationService = new Mock<IMarketplaceOperationService>();
             var mockMpSubscriptionService = new Mock<IMarketplaceSubscriptionService>();
             var mockEventPublisher = new Mock<ISubscriptionEventPublisher>();
-            var mockSubscriptionRepo = new Mock<ISubscriptionRepository>();
+            var mockSubscriptionStagingCache = new Mock<ISubscriptionStagingCache>();
+            var mockSubscriptionRepo = new Mock<ISubscriptionTestingCache>();
             var publisherConfig = GetDefaultPublisherConfiguration();
 
             var controllerUt = new SubscriptionController(
-                mockDeployConfig.Object, publisherConfig, mockLogger.Object, mockMpOperationService.Object,
-                mockMpSubscriptionService.Object, mockEventPublisher.Object, mockSubscriptionRepo.Object);
+              mockDeployConfig.Object, publisherConfig, mockLogger.Object, mockMpOperationService.Object,
+              mockMpSubscriptionService.Object, mockEventPublisher.Object, mockSubscriptionStagingCache.Object, mockSubscriptionRepo.Object);
 
             var actionResult = await controllerUt.GetLiveLandingPageAsync();
 
@@ -263,15 +281,16 @@ namespace Mona.SaaS.Web.Tests
             var mockMpOperationService = new Mock<IMarketplaceOperationService>();
             var mockMpSubscriptionService = new Mock<IMarketplaceSubscriptionService>();
             var mockEventPublisher = new Mock<ISubscriptionEventPublisher>();
-            var mockSubscriptionRepo = new Mock<ISubscriptionRepository>();
+            var mockSubscriptionStagingCache = new Mock<ISubscriptionStagingCache>();
+            var mockSubscriptionRepo = new Mock<ISubscriptionTestingCache>();
 
             var publisherConfig = GetDefaultPublisherConfiguration();
 
             publisherConfig.PublisherHomePageUrl = null;
 
             var controllerUt = new SubscriptionController(
-                mockDeployConfig.Object, publisherConfig, mockLogger.Object, mockMpOperationService.Object,
-                mockMpSubscriptionService.Object, mockEventPublisher.Object, mockSubscriptionRepo.Object);
+              mockDeployConfig.Object, publisherConfig, mockLogger.Object, mockMpOperationService.Object,
+              mockMpSubscriptionService.Object, mockEventPublisher.Object, mockSubscriptionStagingCache.Object, mockSubscriptionRepo.Object);
 
             var actionResult = await controllerUt.GetLiveLandingPageAsync();
 
@@ -290,7 +309,8 @@ namespace Mona.SaaS.Web.Tests
             var mockMpOperationService = new Mock<IMarketplaceOperationService>();
             var mockMpSubscriptionService = new Mock<IMarketplaceSubscriptionService>();
             var mockEventPublisher = new Mock<ISubscriptionEventPublisher>();
-            var mockSubscriptionRepo = new Mock<ISubscriptionRepository>();
+            var mockSubscriptionStagingCache = new Mock<ISubscriptionStagingCache>();
+            var mockSubscriptionRepo = new Mock<ISubscriptionTestingCache>();
             var mockHttpContext = new Mock<HttpContext>();
             var publisherConfig = GetDefaultPublisherConfiguration();
             var testSubscription = CreateTestSubscription();
@@ -302,8 +322,8 @@ namespace Mona.SaaS.Web.Tests
             var controllerContext = new ControllerContext(new ActionContext(mockHttpContext.Object, new RouteData(), new ControllerActionDescriptor()));
 
             var controllerUt = new SubscriptionController(
-                mockDeployConfig.Object, publisherConfig, mockLogger.Object, mockMpOperationService.Object,
-                mockMpSubscriptionService.Object, mockEventPublisher.Object, mockSubscriptionRepo.Object)
+               mockDeployConfig.Object, publisherConfig, mockLogger.Object, mockMpOperationService.Object,
+               mockMpSubscriptionService.Object, mockEventPublisher.Object, mockSubscriptionStagingCache.Object, mockSubscriptionRepo.Object)
             { ControllerContext = controllerContext };
 
             var actionResult = await controllerUt.GetLiveLandingPageAsync(testToken);
@@ -341,12 +361,13 @@ namespace Mona.SaaS.Web.Tests
             var mockMpOperationService = new Mock<IMarketplaceOperationService>();
             var mockMpSubscriptionService = new Mock<IMarketplaceSubscriptionService>();
             var mockEventPublisher = new Mock<ISubscriptionEventPublisher>();
-            var mockSubscriptionRepo = new Mock<ISubscriptionRepository>();
+            var mockSubscriptionStagingCache = new Mock<ISubscriptionStagingCache>();
+            var mockSubscriptionRepo = new Mock<ISubscriptionTestingCache>();
             var publisherConfig = GetDefaultPublisherConfiguration();
 
             var controllerUt = new SubscriptionController(
-                mockDeployConfig.Object, publisherConfig, mockLogger.Object, mockMpOperationService.Object,
-                mockMpSubscriptionService.Object, mockEventPublisher.Object, mockSubscriptionRepo.Object);
+              mockDeployConfig.Object, publisherConfig, mockLogger.Object, mockMpOperationService.Object,
+              mockMpSubscriptionService.Object, mockEventPublisher.Object, mockSubscriptionStagingCache.Object, mockSubscriptionRepo.Object);
 
             var actionResult = await controllerUt.GetTestLandingPageAsync();
 
@@ -365,7 +386,8 @@ namespace Mona.SaaS.Web.Tests
             var mockMpOperationService = new Mock<IMarketplaceOperationService>();
             var mockMpSubscriptionService = new Mock<IMarketplaceSubscriptionService>();
             var mockEventPublisher = new Mock<ISubscriptionEventPublisher>();
-            var mockSubscriptionRepo = new Mock<ISubscriptionRepository>();
+            var mockSubscriptionStagingCache = new Mock<ISubscriptionStagingCache>();
+            var mockSubscriptionRepo = new Mock<ISubscriptionTestingCache>();
             var mockHttpContext = new Mock<HttpContext>();
             var publisherConfig = GetDefaultPublisherConfiguration();
             var testSubscription = CreateTestSubscription();
@@ -379,8 +401,8 @@ namespace Mona.SaaS.Web.Tests
             var controllerContext = new ControllerContext(new ActionContext(mockHttpContext.Object, new RouteData(), new ControllerActionDescriptor()));
 
             var controllerUt = new SubscriptionController(
-                mockDeployConfig.Object, publisherConfig, mockLogger.Object, mockMpOperationService.Object,
-                mockMpSubscriptionService.Object, mockEventPublisher.Object, mockSubscriptionRepo.Object)
+              mockDeployConfig.Object, publisherConfig, mockLogger.Object, mockMpOperationService.Object,
+              mockMpSubscriptionService.Object, mockEventPublisher.Object, mockSubscriptionStagingCache.Object, mockSubscriptionRepo.Object)
             { ControllerContext = controllerContext };
 
             var actionResult = await controllerUt.GetLiveLandingPageAsync(testToken);
@@ -401,7 +423,8 @@ namespace Mona.SaaS.Web.Tests
             var mockMpOperationService = new Mock<IMarketplaceOperationService>();
             var mockMpSubscriptionService = new Mock<IMarketplaceSubscriptionService>();
             var mockEventPublisher = new Mock<ISubscriptionEventPublisher>();
-            var mockSubscriptionRepo = new Mock<ISubscriptionRepository>();
+            var mockSubscriptionStagingCache = new Mock<ISubscriptionStagingCache>();
+            var mockSubscriptionRepo = new Mock<ISubscriptionTestingCache>();
             var mockHttpContext = new Mock<HttpContext>();
             var publisherConfig = GetDefaultPublisherConfiguration();
             var testSubscription = CreateTestSubscription();
@@ -415,8 +438,8 @@ namespace Mona.SaaS.Web.Tests
             var controllerContext = new ControllerContext(new ActionContext(mockHttpContext.Object, new RouteData(), new ControllerActionDescriptor()));
 
             var controllerUt = new SubscriptionController(
-                mockDeployConfig.Object, publisherConfig, mockLogger.Object, mockMpOperationService.Object,
-                mockMpSubscriptionService.Object, mockEventPublisher.Object, mockSubscriptionRepo.Object)
+              mockDeployConfig.Object, publisherConfig, mockLogger.Object, mockMpOperationService.Object,
+              mockMpSubscriptionService.Object, mockEventPublisher.Object, mockSubscriptionStagingCache.Object, mockSubscriptionRepo.Object)
             { ControllerContext = controllerContext };
 
             var actionResult = await controllerUt.GetLiveLandingPageAsync(testToken);
@@ -436,7 +459,8 @@ namespace Mona.SaaS.Web.Tests
             var mockMpOperationService = new Mock<IMarketplaceOperationService>();
             var mockMpSubscriptionService = new Mock<IMarketplaceSubscriptionService>();
             var mockEventPublisher = new Mock<ISubscriptionEventPublisher>();
-            var mockSubscriptionRepo = new Mock<ISubscriptionRepository>();
+            var mockSubscriptionStagingCache = new Mock<ISubscriptionStagingCache>();
+            var mockSubscriptionRepo = new Mock<ISubscriptionTestingCache>();
             var mockHttpContext = new Mock<HttpContext>();
             var publisherConfig = GetDefaultPublisherConfiguration();
             var testSubscription = CreateTestSubscription();
@@ -448,8 +472,8 @@ namespace Mona.SaaS.Web.Tests
             var controllerContext = new ControllerContext(new ActionContext(mockHttpContext.Object, new RouteData(), new ControllerActionDescriptor()));
 
             var controllerUt = new SubscriptionController(
-                mockDeployConfig.Object, publisherConfig, mockLogger.Object, mockMpOperationService.Object,
-                mockMpSubscriptionService.Object, mockEventPublisher.Object, mockSubscriptionRepo.Object)
+               mockDeployConfig.Object, publisherConfig, mockLogger.Object, mockMpOperationService.Object,
+               mockMpSubscriptionService.Object, mockEventPublisher.Object, mockSubscriptionStagingCache.Object, mockSubscriptionRepo.Object)
             { ControllerContext = controllerContext };
 
             var actionResult = await controllerUt.GetTestLandingPageAsync();
@@ -490,7 +514,8 @@ namespace Mona.SaaS.Web.Tests
             var mockMpOperationService = new Mock<IMarketplaceOperationService>();
             var mockMpSubscriptionService = new Mock<IMarketplaceSubscriptionService>();
             var mockEventPublisher = new Mock<ISubscriptionEventPublisher>();
-            var mockSubscriptionRepo = new Mock<ISubscriptionRepository>();
+            var mockSubscriptionStagingCache = new Mock<ISubscriptionStagingCache>();
+            var mockSubscriptionRepo = new Mock<ISubscriptionTestingCache>();
             var mockHttpContext = new Mock<HttpContext>();
             var publisherConfig = GetDefaultPublisherConfiguration();
             var testSubscription = CreateTestSubscription();
@@ -505,8 +530,8 @@ namespace Mona.SaaS.Web.Tests
             var controllerContext = new ControllerContext(new ActionContext(mockHttpContext.Object, new RouteData(), new ControllerActionDescriptor()));
 
             var controllerUt = new SubscriptionController(
-                mockDeployConfig.Object, publisherConfig, mockLogger.Object, mockMpOperationService.Object,
-                mockMpSubscriptionService.Object, mockEventPublisher.Object, mockSubscriptionRepo.Object)
+              mockDeployConfig.Object, publisherConfig, mockLogger.Object, mockMpOperationService.Object,
+              mockMpSubscriptionService.Object, mockEventPublisher.Object, mockSubscriptionStagingCache.Object, mockSubscriptionRepo.Object)
             { ControllerContext = controllerContext };
 
             var actionResult = await controllerUt.GetTestLandingPageAsync();
@@ -548,7 +573,8 @@ namespace Mona.SaaS.Web.Tests
             var mockMpOperationService = new Mock<IMarketplaceOperationService>();
             var mockMpSubscriptionService = new Mock<IMarketplaceSubscriptionService>();
             var mockEventPublisher = new Mock<ISubscriptionEventPublisher>();
-            var mockSubscriptionRepo = new Mock<ISubscriptionRepository>();
+            var mockSubscriptionStagingCache = new Mock<ISubscriptionStagingCache>();
+            var mockSubscriptionRepo = new Mock<ISubscriptionTestingCache>();
             var mockHttpContext = new Mock<HttpContext>();
             var publisherConfig = GetDefaultPublisherConfiguration();
             var testSubscription = CreateTestSubscription();
@@ -560,8 +586,8 @@ namespace Mona.SaaS.Web.Tests
             var controllerContext = new ControllerContext(new ActionContext(mockHttpContext.Object, new RouteData(), new ControllerActionDescriptor()));
 
             var controllerUt = new SubscriptionController(
-                mockDeployConfig.Object, publisherConfig, mockLogger.Object, mockMpOperationService.Object,
-                mockMpSubscriptionService.Object, mockEventPublisher.Object, mockSubscriptionRepo.Object)
+               mockDeployConfig.Object, publisherConfig, mockLogger.Object, mockMpOperationService.Object,
+               mockMpSubscriptionService.Object, mockEventPublisher.Object, mockSubscriptionStagingCache.Object, mockSubscriptionRepo.Object)
             { ControllerContext = controllerContext };
 
             var actionResult = await controllerUt.GetLiveLandingPageAsync(testToken);
@@ -602,7 +628,8 @@ namespace Mona.SaaS.Web.Tests
             var mockMpOperationService = new Mock<IMarketplaceOperationService>();
             var mockMpSubscriptionService = new Mock<IMarketplaceSubscriptionService>();
             var mockEventPublisher = new Mock<ISubscriptionEventPublisher>();
-            var mockSubscriptionRepo = new Mock<ISubscriptionRepository>();
+            var mockSubscriptionStagingCache = new Mock<ISubscriptionStagingCache>();
+            var mockSubscriptionRepo = new Mock<ISubscriptionTestingCache>();
             var mockHttpContext = new Mock<HttpContext>();
             var publisherConfig = GetDefaultPublisherConfiguration();
 
@@ -611,8 +638,8 @@ namespace Mona.SaaS.Web.Tests
             var controllerContext = new ControllerContext(new ActionContext(mockHttpContext.Object, new RouteData(), new ControllerActionDescriptor()));
 
             var controllerUt = new SubscriptionController(
-                mockDeployConfig.Object, publisherConfig, mockLogger.Object, mockMpOperationService.Object,
-                mockMpSubscriptionService.Object, mockEventPublisher.Object, mockSubscriptionRepo.Object)
+              mockDeployConfig.Object, publisherConfig, mockLogger.Object, mockMpOperationService.Object,
+              mockMpSubscriptionService.Object, mockEventPublisher.Object, mockSubscriptionStagingCache.Object, mockSubscriptionRepo.Object)
             { ControllerContext = controllerContext };
 
             var actionResult = await controllerUt.GetTestLandingPageAsync();
@@ -629,7 +656,8 @@ namespace Mona.SaaS.Web.Tests
             var mockMpOperationService = new Mock<IMarketplaceOperationService>();
             var mockMpSubscriptionService = new Mock<IMarketplaceSubscriptionService>();
             var mockEventPublisher = new Mock<ISubscriptionEventPublisher>();
-            var mockSubscriptionRepo = new Mock<ISubscriptionRepository>();
+            var mockSubscriptionStagingCache = new Mock<ISubscriptionStagingCache>();
+            var mockSubscriptionRepo = new Mock<ISubscriptionTestingCache>();
             var mockHttpContext = new Mock<HttpContext>();
             var publisherConfig = GetDefaultPublisherConfiguration();
 
@@ -638,8 +666,8 @@ namespace Mona.SaaS.Web.Tests
             var controllerContext = new ControllerContext(new ActionContext(mockHttpContext.Object, new RouteData(), new ControllerActionDescriptor()));
 
             var controllerUt = new SubscriptionController(
-                mockDeployConfig.Object, publisherConfig, mockLogger.Object, mockMpOperationService.Object,
-                mockMpSubscriptionService.Object, mockEventPublisher.Object, mockSubscriptionRepo.Object)
+              mockDeployConfig.Object, publisherConfig, mockLogger.Object, mockMpOperationService.Object,
+              mockMpSubscriptionService.Object, mockEventPublisher.Object, mockSubscriptionStagingCache.Object, mockSubscriptionRepo.Object)
             { ControllerContext = controllerContext };
 
             var actionResult = await controllerUt.GetLiveLandingPageAsync(Guid.NewGuid().ToString());
@@ -656,15 +684,16 @@ namespace Mona.SaaS.Web.Tests
             var mockMpOperationService = new Mock<IMarketplaceOperationService>();
             var mockMpSubscriptionService = new Mock<IMarketplaceSubscriptionService>();
             var mockEventPublisher = new Mock<ISubscriptionEventPublisher>();
-            var mockSubscriptionRepo = new Mock<ISubscriptionRepository>();
+            var mockSubscriptionStagingCache = new Mock<ISubscriptionStagingCache>();
+            var mockSubscriptionRepo = new Mock<ISubscriptionTestingCache>();
 
             var publisherConfig = GetDefaultPublisherConfiguration();
 
             publisherConfig.IsSetupComplete = false;
 
             var controllerUt = new SubscriptionController(
-                mockDeployConfig.Object, publisherConfig, mockLogger.Object, mockMpOperationService.Object,
-                mockMpSubscriptionService.Object, mockEventPublisher.Object, mockSubscriptionRepo.Object);
+              mockDeployConfig.Object, publisherConfig, mockLogger.Object, mockMpOperationService.Object,
+              mockMpSubscriptionService.Object, mockEventPublisher.Object, mockSubscriptionStagingCache.Object, mockSubscriptionRepo.Object);
 
             var actionResult = await controllerUt.GetTestLandingPageAsync();
 
@@ -681,15 +710,16 @@ namespace Mona.SaaS.Web.Tests
             var mockMpOperationService = new Mock<IMarketplaceOperationService>();
             var mockMpSubscriptionService = new Mock<IMarketplaceSubscriptionService>();
             var mockEventPublisher = new Mock<ISubscriptionEventPublisher>();
-            var mockSubscriptionRepo = new Mock<ISubscriptionRepository>();
+            var mockSubscriptionStagingCache = new Mock<ISubscriptionStagingCache>();
+            var mockSubscriptionRepo = new Mock<ISubscriptionTestingCache>();
 
             var publisherConfig = GetDefaultPublisherConfiguration();
 
             publisherConfig.IsSetupComplete = false;
 
             var controllerUt = new SubscriptionController(
-                mockDeployConfig.Object, publisherConfig, mockLogger.Object, mockMpOperationService.Object,
-                mockMpSubscriptionService.Object, mockEventPublisher.Object, mockSubscriptionRepo.Object);
+              mockDeployConfig.Object, publisherConfig, mockLogger.Object, mockMpOperationService.Object,
+              mockMpSubscriptionService.Object, mockEventPublisher.Object, mockSubscriptionStagingCache.Object, mockSubscriptionRepo.Object);
 
             var actionResult = await controllerUt.GetLiveLandingPageAsync();
 
@@ -706,7 +736,8 @@ namespace Mona.SaaS.Web.Tests
             var mockMpOperationService = new Mock<IMarketplaceOperationService>();
             var mockMpSubscriptionService = new Mock<IMarketplaceSubscriptionService>();
             var mockEventPublisher = new Mock<ISubscriptionEventPublisher>();
-            var mockSubscriptionRepo = new Mock<ISubscriptionRepository>();
+            var mockSubscriptionStagingCache = new Mock<ISubscriptionStagingCache>();
+            var mockSubscriptionRepo = new Mock<ISubscriptionTestingCache>();
             var publisherConfig = GetDefaultPublisherConfiguration();
             var testSubscription = CreateTestSubscription();
 
@@ -747,8 +778,8 @@ namespace Mona.SaaS.Web.Tests
                 .Callback<SubscriptionReinstated>(e => reinstatedEvent = e);
 
             var controllerUt = new SubscriptionController(
-                mockDeployConfig.Object, publisherConfig, mockLogger.Object, mockMpOperationService.Object,
-                mockMpSubscriptionService.Object, mockEventPublisher.Object, mockSubscriptionRepo.Object);
+              mockDeployConfig.Object, publisherConfig, mockLogger.Object, mockMpOperationService.Object,
+              mockMpSubscriptionService.Object, mockEventPublisher.Object, mockSubscriptionStagingCache.Object, mockSubscriptionRepo.Object);
 
             var actionResult = await controllerUt.ProcessLiveWebhookNotificationAsync(testWhNotification);
 
@@ -769,7 +800,8 @@ namespace Mona.SaaS.Web.Tests
             var mockMpOperationService = new Mock<IMarketplaceOperationService>();
             var mockMpSubscriptionService = new Mock<IMarketplaceSubscriptionService>();
             var mockEventPublisher = new Mock<ISubscriptionEventPublisher>();
-            var mockSubscriptionRepo = new Mock<ISubscriptionRepository>();
+            var mockSubscriptionStagingCache = new Mock<ISubscriptionStagingCache>();
+            var mockSubscriptionRepo = new Mock<ISubscriptionTestingCache>();
             var publisherConfig = GetDefaultPublisherConfiguration();
             var testSubscription = CreateTestSubscription();
 
@@ -792,8 +824,8 @@ namespace Mona.SaaS.Web.Tests
                 .Returns(Task.FromResult(null as SubscriptionOperation));
 
             var controllerUt = new SubscriptionController(
-                mockDeployConfig.Object, publisherConfig, mockLogger.Object, mockMpOperationService.Object,
-                mockMpSubscriptionService.Object, mockEventPublisher.Object, mockSubscriptionRepo.Object);
+              mockDeployConfig.Object, publisherConfig, mockLogger.Object, mockMpOperationService.Object,
+              mockMpSubscriptionService.Object, mockEventPublisher.Object, mockSubscriptionStagingCache.Object, mockSubscriptionRepo.Object);
 
             var actionResult = await controllerUt.ProcessLiveWebhookNotificationAsync(testWhNotification);
 
@@ -810,7 +842,8 @@ namespace Mona.SaaS.Web.Tests
             var mockMpOperationService = new Mock<IMarketplaceOperationService>();
             var mockMpSubscriptionService = new Mock<IMarketplaceSubscriptionService>();
             var mockEventPublisher = new Mock<ISubscriptionEventPublisher>();
-            var mockSubscriptionRepo = new Mock<ISubscriptionRepository>();
+            var mockSubscriptionStagingCache = new Mock<ISubscriptionStagingCache>();
+            var mockSubscriptionRepo = new Mock<ISubscriptionTestingCache>();
             var publisherConfig = GetDefaultPublisherConfiguration();
             var testSubscription = CreateTestSubscription();
 
@@ -851,8 +884,8 @@ namespace Mona.SaaS.Web.Tests
                 .Callback<SubscriptionSuspended>(e => suspendedEvent = e);
 
             var controllerUt = new SubscriptionController(
-                mockDeployConfig.Object, publisherConfig, mockLogger.Object, mockMpOperationService.Object,
-                mockMpSubscriptionService.Object, mockEventPublisher.Object, mockSubscriptionRepo.Object);
+              mockDeployConfig.Object, publisherConfig, mockLogger.Object, mockMpOperationService.Object,
+              mockMpSubscriptionService.Object, mockEventPublisher.Object, mockSubscriptionStagingCache.Object, mockSubscriptionRepo.Object);
 
             var actionResult = await controllerUt.ProcessLiveWebhookNotificationAsync(testWhNotification);
 
@@ -873,7 +906,8 @@ namespace Mona.SaaS.Web.Tests
             var mockMpOperationService = new Mock<IMarketplaceOperationService>();
             var mockMpSubscriptionService = new Mock<IMarketplaceSubscriptionService>();
             var mockEventPublisher = new Mock<ISubscriptionEventPublisher>();
-            var mockSubscriptionRepo = new Mock<ISubscriptionRepository>();
+            var mockSubscriptionStagingCache = new Mock<ISubscriptionStagingCache>();
+            var mockSubscriptionRepo = new Mock<ISubscriptionTestingCache>();
             var publisherConfig = GetDefaultPublisherConfiguration();
             var testSubscription = CreateTestSubscription();
 
@@ -914,8 +948,8 @@ namespace Mona.SaaS.Web.Tests
                 .Callback<SubscriptionCancelled>(e => cancelledEvent = e);
 
             var controllerUt = new SubscriptionController(
-                mockDeployConfig.Object, publisherConfig, mockLogger.Object, mockMpOperationService.Object,
-                mockMpSubscriptionService.Object, mockEventPublisher.Object, mockSubscriptionRepo.Object);
+              mockDeployConfig.Object, publisherConfig, mockLogger.Object, mockMpOperationService.Object,
+              mockMpSubscriptionService.Object, mockEventPublisher.Object, mockSubscriptionStagingCache.Object, mockSubscriptionRepo.Object);
 
             var actionResult = await controllerUt.ProcessLiveWebhookNotificationAsync(testWhNotification);
 
@@ -938,7 +972,8 @@ namespace Mona.SaaS.Web.Tests
             var mockMpOperationService = new Mock<IMarketplaceOperationService>();
             var mockMpSubscriptionService = new Mock<IMarketplaceSubscriptionService>();
             var mockEventPublisher = new Mock<ISubscriptionEventPublisher>();
-            var mockSubscriptionRepo = new Mock<ISubscriptionRepository>();
+            var mockSubscriptionStagingCache = new Mock<ISubscriptionStagingCache>();
+            var mockSubscriptionRepo = new Mock<ISubscriptionTestingCache>();
             var publisherConfig = GetDefaultPublisherConfiguration();
             var testSubscription = CreateTestSubscription();
 
@@ -979,8 +1014,8 @@ namespace Mona.SaaS.Web.Tests
                 .Callback<SubscriptionSeatQuantityChanged>(e => seatQtyChangedEvent = e);
 
             var controllerUt = new SubscriptionController(
-                mockDeployConfig.Object, publisherConfig, mockLogger.Object, mockMpOperationService.Object,
-                mockMpSubscriptionService.Object, mockEventPublisher.Object, mockSubscriptionRepo.Object);
+              mockDeployConfig.Object, publisherConfig, mockLogger.Object, mockMpOperationService.Object,
+              mockMpSubscriptionService.Object, mockEventPublisher.Object, mockSubscriptionStagingCache.Object, mockSubscriptionRepo.Object);
 
             var actionResult = await controllerUt.ProcessLiveWebhookNotificationAsync(testWhNotification);
 
@@ -1004,7 +1039,8 @@ namespace Mona.SaaS.Web.Tests
             var mockMpOperationService = new Mock<IMarketplaceOperationService>();
             var mockMpSubscriptionService = new Mock<IMarketplaceSubscriptionService>();
             var mockEventPublisher = new Mock<ISubscriptionEventPublisher>();
-            var mockSubscriptionRepo = new Mock<ISubscriptionRepository>();
+            var mockSubscriptionStagingCache = new Mock<ISubscriptionStagingCache>();
+            var mockSubscriptionRepo = new Mock<ISubscriptionTestingCache>();
             var publisherConfig = GetDefaultPublisherConfiguration();
             var testSubscription = CreateTestSubscription();
 
@@ -1037,8 +1073,8 @@ namespace Mona.SaaS.Web.Tests
             mockEventPublisher.Setup(ep => ep.PublishEventAsync(It.IsAny<SubscriptionPlanChanged>())).Callback<SubscriptionPlanChanged>(e => planChangeEvent = e);
 
             var controllerUt = new SubscriptionController(
-                mockDeployConfig.Object, publisherConfig, mockLogger.Object, mockMpOperationService.Object,
-                mockMpSubscriptionService.Object, mockEventPublisher.Object, mockSubscriptionRepo.Object);
+              mockDeployConfig.Object, publisherConfig, mockLogger.Object, mockMpOperationService.Object,
+              mockMpSubscriptionService.Object, mockEventPublisher.Object, mockSubscriptionStagingCache.Object, mockSubscriptionRepo.Object);
 
             var actionResult = await controllerUt.ProcessLiveWebhookNotificationAsync(testWhNotification);
 
@@ -1060,7 +1096,8 @@ namespace Mona.SaaS.Web.Tests
             var mockMpOperationService = new Mock<IMarketplaceOperationService>();
             var mockMpSubscriptionService = new Mock<IMarketplaceSubscriptionService>();
             var mockEventPublisher = new Mock<ISubscriptionEventPublisher>();
-            var mockSubscriptionRepo = new Mock<ISubscriptionRepository>();
+            var mockSubscriptionStagingCache = new Mock<ISubscriptionStagingCache>();
+            var mockSubscriptionRepo = new Mock<ISubscriptionTestingCache>();
             var publisherConfig = GetDefaultPublisherConfiguration();
             var testSubscription = CreateTestSubscription();
 
@@ -1079,8 +1116,8 @@ namespace Mona.SaaS.Web.Tests
             mockMpSubscriptionService.Setup(ss => ss.GetSubscriptionAsync(testSubscription.SubscriptionId)).Returns(Task.FromResult(null as Subscription));
 
             var controllerUt = new SubscriptionController(
-                mockDeployConfig.Object, publisherConfig, mockLogger.Object, mockMpOperationService.Object,
-                mockMpSubscriptionService.Object, mockEventPublisher.Object, mockSubscriptionRepo.Object);
+              mockDeployConfig.Object, publisherConfig, mockLogger.Object, mockMpOperationService.Object,
+              mockMpSubscriptionService.Object, mockEventPublisher.Object, mockSubscriptionStagingCache.Object, mockSubscriptionRepo.Object);
 
             var actionResult = await controllerUt.ProcessLiveWebhookNotificationAsync(testWhNotification);
 
@@ -1100,7 +1137,8 @@ namespace Mona.SaaS.Web.Tests
             var mockMpOperationService = new Mock<IMarketplaceOperationService>();
             var mockMpSubscriptionService = new Mock<IMarketplaceSubscriptionService>();
             var mockEventPublisher = new Mock<ISubscriptionEventPublisher>();
-            var mockSubscriptionRepo = new Mock<ISubscriptionRepository>();
+            var mockSubscriptionStagingCache = new Mock<ISubscriptionStagingCache>();
+            var mockSubscriptionRepo = new Mock<ISubscriptionTestingCache>();
             var publisherConfig = GetDefaultPublisherConfiguration();
             var testSubscription = CreateTestSubscription();
 
@@ -1120,8 +1158,8 @@ namespace Mona.SaaS.Web.Tests
             };
 
             var controllerUt = new SubscriptionController(
-                mockDeployConfig.Object, publisherConfig, mockLogger.Object, mockMpOperationService.Object,
-                mockMpSubscriptionService.Object, mockEventPublisher.Object, mockSubscriptionRepo.Object);
+              mockDeployConfig.Object, publisherConfig, mockLogger.Object, mockMpOperationService.Object,
+              mockMpSubscriptionService.Object, mockEventPublisher.Object, mockSubscriptionStagingCache.Object, mockSubscriptionRepo.Object);
 
             var actionResult = await controllerUt.ProcessTestWebhookNotificationAsync(testWhNotification);
 
@@ -1137,7 +1175,8 @@ namespace Mona.SaaS.Web.Tests
             var mockMpOperationService = new Mock<IMarketplaceOperationService>();
             var mockMpSubscriptionService = new Mock<IMarketplaceSubscriptionService>();
             var mockEventPublisher = new Mock<ISubscriptionEventPublisher>();
-            var mockSubscriptionRepo = new Mock<ISubscriptionRepository>();
+            var mockSubscriptionStagingCache = new Mock<ISubscriptionStagingCache>();
+            var mockSubscriptionRepo = new Mock<ISubscriptionTestingCache>();
             var publisherConfig = GetDefaultPublisherConfiguration();
             var testSubscription = CreateTestSubscription();
 
@@ -1176,8 +1215,8 @@ namespace Mona.SaaS.Web.Tests
                 .Callback<SubscriptionReinstated>(e => reinstatedEvent = e);
 
             var controllerUt = new SubscriptionController(
-                mockDeployConfig.Object, publisherConfig, mockLogger.Object, mockMpOperationService.Object,
-                mockMpSubscriptionService.Object, mockEventPublisher.Object, mockSubscriptionRepo.Object);
+              mockDeployConfig.Object, publisherConfig, mockLogger.Object, mockMpOperationService.Object,
+              mockMpSubscriptionService.Object, mockEventPublisher.Object, mockSubscriptionStagingCache.Object, mockSubscriptionRepo.Object);
 
             var actionResult = await controllerUt.ProcessTestWebhookNotificationAsync(testWhNotification);
 
@@ -1198,7 +1237,8 @@ namespace Mona.SaaS.Web.Tests
             var mockMpOperationService = new Mock<IMarketplaceOperationService>();
             var mockMpSubscriptionService = new Mock<IMarketplaceSubscriptionService>();
             var mockEventPublisher = new Mock<ISubscriptionEventPublisher>();
-            var mockSubscriptionRepo = new Mock<ISubscriptionRepository>();
+            var mockSubscriptionStagingCache = new Mock<ISubscriptionStagingCache>();
+            var mockSubscriptionRepo = new Mock<ISubscriptionTestingCache>();
             var publisherConfig = GetDefaultPublisherConfiguration();
             var testSubscription = CreateTestSubscription();
 
@@ -1237,8 +1277,8 @@ namespace Mona.SaaS.Web.Tests
                 .Callback<SubscriptionSuspended>(e => suspendedEvent = e);
 
             var controllerUt = new SubscriptionController(
-                mockDeployConfig.Object, publisherConfig, mockLogger.Object, mockMpOperationService.Object,
-                mockMpSubscriptionService.Object, mockEventPublisher.Object, mockSubscriptionRepo.Object);
+              mockDeployConfig.Object, publisherConfig, mockLogger.Object, mockMpOperationService.Object,
+              mockMpSubscriptionService.Object, mockEventPublisher.Object, mockSubscriptionStagingCache.Object, mockSubscriptionRepo.Object);
 
             var actionResult = await controllerUt.ProcessTestWebhookNotificationAsync(testWhNotification);
 
@@ -1259,7 +1299,8 @@ namespace Mona.SaaS.Web.Tests
             var mockMpOperationService = new Mock<IMarketplaceOperationService>();
             var mockMpSubscriptionService = new Mock<IMarketplaceSubscriptionService>();
             var mockEventPublisher = new Mock<ISubscriptionEventPublisher>();
-            var mockSubscriptionRepo = new Mock<ISubscriptionRepository>();
+            var mockSubscriptionStagingCache = new Mock<ISubscriptionStagingCache>();
+            var mockSubscriptionRepo = new Mock<ISubscriptionTestingCache>();
             var publisherConfig = GetDefaultPublisherConfiguration();
             var testSubscription = CreateTestSubscription();
 
@@ -1298,8 +1339,8 @@ namespace Mona.SaaS.Web.Tests
                 .Callback<SubscriptionCancelled>(e => cancelledEvent = e);
 
             var controllerUt = new SubscriptionController(
-                mockDeployConfig.Object, publisherConfig, mockLogger.Object, mockMpOperationService.Object,
-                mockMpSubscriptionService.Object, mockEventPublisher.Object, mockSubscriptionRepo.Object);
+              mockDeployConfig.Object, publisherConfig, mockLogger.Object, mockMpOperationService.Object,
+              mockMpSubscriptionService.Object, mockEventPublisher.Object, mockSubscriptionStagingCache.Object, mockSubscriptionRepo.Object);
 
             var actionResult = await controllerUt.ProcessTestWebhookNotificationAsync(testWhNotification);
 
@@ -1322,7 +1363,8 @@ namespace Mona.SaaS.Web.Tests
             var mockMpOperationService = new Mock<IMarketplaceOperationService>();
             var mockMpSubscriptionService = new Mock<IMarketplaceSubscriptionService>();
             var mockEventPublisher = new Mock<ISubscriptionEventPublisher>();
-            var mockSubscriptionRepo = new Mock<ISubscriptionRepository>();
+            var mockSubscriptionStagingCache = new Mock<ISubscriptionStagingCache>();
+            var mockSubscriptionRepo = new Mock<ISubscriptionTestingCache>();
             var publisherConfig = GetDefaultPublisherConfiguration();
             var testSubscription = CreateTestSubscription();
 
@@ -1361,8 +1403,8 @@ namespace Mona.SaaS.Web.Tests
                 .Callback<SubscriptionSeatQuantityChanged>(e => seatQtyChangedEvent = e);
 
             var controllerUt = new SubscriptionController(
-                mockDeployConfig.Object, publisherConfig, mockLogger.Object, mockMpOperationService.Object,
-                mockMpSubscriptionService.Object, mockEventPublisher.Object, mockSubscriptionRepo.Object);
+              mockDeployConfig.Object, publisherConfig, mockLogger.Object, mockMpOperationService.Object,
+              mockMpSubscriptionService.Object, mockEventPublisher.Object, mockSubscriptionStagingCache.Object, mockSubscriptionRepo.Object);
 
             var actionResult = await controllerUt.ProcessTestWebhookNotificationAsync(testWhNotification);
 
@@ -1386,7 +1428,8 @@ namespace Mona.SaaS.Web.Tests
             var mockMpOperationService = new Mock<IMarketplaceOperationService>();
             var mockMpSubscriptionService = new Mock<IMarketplaceSubscriptionService>();
             var mockEventPublisher = new Mock<ISubscriptionEventPublisher>();
-            var mockSubscriptionRepo = new Mock<ISubscriptionRepository>();
+            var mockSubscriptionStagingCache = new Mock<ISubscriptionStagingCache>();
+            var mockSubscriptionRepo = new Mock<ISubscriptionTestingCache>();
             var publisherConfig = GetDefaultPublisherConfiguration();
             var testSubscription = CreateTestSubscription();
 
@@ -1420,8 +1463,8 @@ namespace Mona.SaaS.Web.Tests
             mockEventPublisher.Setup(ep => ep.PublishEventAsync(It.IsAny<SubscriptionPlanChanged>())).Callback<SubscriptionPlanChanged>(e => planChangeEvent = e);
 
             var controllerUt = new SubscriptionController(
-                mockDeployConfig.Object, publisherConfig, mockLogger.Object, mockMpOperationService.Object,
-                mockMpSubscriptionService.Object, mockEventPublisher.Object, mockSubscriptionRepo.Object);
+              mockDeployConfig.Object, publisherConfig, mockLogger.Object, mockMpOperationService.Object,
+              mockMpSubscriptionService.Object, mockEventPublisher.Object, mockSubscriptionStagingCache.Object, mockSubscriptionRepo.Object);
 
             var actionResult = await controllerUt.ProcessTestWebhookNotificationAsync(testWhNotification);
 
@@ -1443,7 +1486,8 @@ namespace Mona.SaaS.Web.Tests
             var mockMpOperationService = new Mock<IMarketplaceOperationService>();
             var mockMpSubscriptionService = new Mock<IMarketplaceSubscriptionService>();
             var mockEventPublisher = new Mock<ISubscriptionEventPublisher>();
-            var mockSubscriptionRepo = new Mock<ISubscriptionRepository>();
+            var mockSubscriptionStagingCache = new Mock<ISubscriptionStagingCache>();
+            var mockSubscriptionRepo = new Mock<ISubscriptionTestingCache>();
             var publisherConfig = GetDefaultPublisherConfiguration();
             var testSubscription = CreateTestSubscription();
 
@@ -1462,8 +1506,8 @@ namespace Mona.SaaS.Web.Tests
             mockSubscriptionRepo.Setup(sr => sr.GetSubscriptionAsync(testSubscription.SubscriptionId)).Returns(Task.FromResult(null as Subscription));
 
             var controllerUt = new SubscriptionController(
-                mockDeployConfig.Object, publisherConfig, mockLogger.Object, mockMpOperationService.Object,
-                mockMpSubscriptionService.Object, mockEventPublisher.Object, mockSubscriptionRepo.Object);
+              mockDeployConfig.Object, publisherConfig, mockLogger.Object, mockMpOperationService.Object,
+              mockMpSubscriptionService.Object, mockEventPublisher.Object, mockSubscriptionStagingCache.Object, mockSubscriptionRepo.Object);
 
             var actionResult = await controllerUt.ProcessTestWebhookNotificationAsync(testWhNotification);
 

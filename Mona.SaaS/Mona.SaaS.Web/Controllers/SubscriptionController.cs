@@ -46,7 +46,8 @@ namespace Mona.SaaS.Web.Controllers
         private readonly IMarketplaceOperationService mpOperationService;
         private readonly IMarketplaceSubscriptionService mpSubscriptionService;
         private readonly ISubscriptionEventPublisher subscriptionEventPublisher;
-        private readonly ISubscriptionRepository subscriptionRepo;
+        private readonly ISubscriptionStagingCache subscriptionStagingCache;
+        private readonly ISubscriptionTestingCache subscriptionTestingCache;
 
         public SubscriptionController(
             IOptionsSnapshot<DeploymentConfiguration> deploymentConfig,
@@ -55,7 +56,8 @@ namespace Mona.SaaS.Web.Controllers
             IMarketplaceOperationService mpOperationService,
             IMarketplaceSubscriptionService mpSubscriptionService,
             ISubscriptionEventPublisher subscriptionEventPublisher,
-            ISubscriptionRepository subscriptionRepo)
+            ISubscriptionStagingCache subscriptionStagingCache,
+            ISubscriptionTestingCache subscriptionTestingCache)
         {
             this.mpOperationService = mpOperationService;
             this.deploymentConfig = deploymentConfig.Value;
@@ -63,7 +65,8 @@ namespace Mona.SaaS.Web.Controllers
             this.publisherConfig = publisherConfig;
             this.mpSubscriptionService = mpSubscriptionService;
             this.subscriptionEventPublisher = subscriptionEventPublisher;
-            this.subscriptionRepo = subscriptionRepo;
+            this.subscriptionStagingCache = subscriptionStagingCache;
+            this.subscriptionTestingCache = subscriptionTestingCache;
         }
 
         [Authorize]
@@ -153,11 +156,19 @@ namespace Mona.SaaS.Web.Controllers
 
                     await this.subscriptionEventPublisher.PublishEventAsync(new SubscriptionPurchased(subscription));
 
-                    var subPurchasedUrl = this.publisherConfig.SubscriptionPurchaseConfirmationUrl.WithSubscriptionId(subscription.SubscriptionId);
+                    var purchaseRedirectUrl = this.publisherConfig.SubscriptionPurchaseConfirmationUrl
+                        .WithSubscriptionId(subscription.SubscriptionId);
 
-                    this.logger.LogInformation($"Subscription [{subscription.SubscriptionId}] purchase confirmed. Redirecting user to [{subPurchasedUrl}]...");
+                    var subToken = await this.subscriptionStagingCache.StageSubscriptionAsync(subscription);
 
-                    return Redirect(subPurchasedUrl);
+                    if (!string.IsNullOrEmpty(subToken))
+                    {
+                        purchaseRedirectUrl += $"{(string.IsNullOrEmpty(new Uri(purchaseRedirectUrl).Query) ? "?" : "&")}st={WebUtility.UrlEncode(subToken)}";
+                    }
+
+                    this.logger.LogInformation($"Subscription [{subscription.SubscriptionId}] purchase confirmed. Redirecting user to [{purchaseRedirectUrl}]...");
+
+                    return Redirect(purchaseRedirectUrl);
                 }
             }
             catch (Exception ex)
@@ -233,7 +244,7 @@ namespace Mona.SaaS.Web.Controllers
 
                             if (inTestMode)
                             {
-                                await this.subscriptionRepo.PutSubscriptionAsync(subscription).ConfigureAwait(false);
+                                await this.subscriptionTestingCache.PutSubscriptionAsync(subscription).ConfigureAwait(false);
                             }
 
                             return View("Index", new LandingPageModel(inTestMode)
@@ -318,7 +329,7 @@ namespace Mona.SaaS.Web.Controllers
 
                     if (inTestMode)
                     {
-                        await this.subscriptionRepo.PutSubscriptionAsync(subscription);
+                        await this.subscriptionTestingCache.PutSubscriptionAsync(subscription);
                     }
 
                     this.logger.LogInformation($"Subscription [{subscription.SubscriptionId}] webhook [{opType}] operation [{whNotification.OperationId}] processed successfully.");
@@ -351,7 +362,7 @@ namespace Mona.SaaS.Web.Controllers
 
                     this.logger.LogWarning($"[TEST MODE]: Trying to get test subscription [{subscriptionId}] from subscription cache...");
 
-                    return await this.subscriptionRepo.GetSubscriptionAsync(subscriptionId);
+                    return await this.subscriptionTestingCache.GetSubscriptionAsync(subscriptionId);
                 }
                 else
                 {
