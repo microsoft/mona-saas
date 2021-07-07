@@ -14,7 +14,7 @@ When you issue an HTTP GET request against the combined URL, the full subscripti
 
 This design prevents outside actors from either spoofing the subscription details or reading the subscription details since you need both pieces of information (the base storage URL and the `_sub` parameter value) in order to access the information.
 
-> You can disable this functionality by setting the `Deployment:SendSubscriptionDetailsToPurchaseConfirmationPage` configuration value to `false`.
+> This functionality is enabled by default. You can disable it by setting the `Deployment:SendSubscriptionDetailsToPurchaseConfirmationPage` configuration value to `false` and restarting the web app.
 
 
 
