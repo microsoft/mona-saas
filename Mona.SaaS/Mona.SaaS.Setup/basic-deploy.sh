@@ -297,6 +297,7 @@ az group deployment create \
 # Get ARM deployment output variables.
 
 blob_conn_str=$(az deployment group show --resource-group "$resource_group_name" --name "$az_deployment_name" --query properties.outputs.storageConnectionString.value --output tsv);
+storage_account_name=$(az deployment group show --resource-group "$resource_group_name" --name "$az_deployment_name" --query properties.outputs.storageAccountName.value --output tsv);
 stage_blob_sub_container_name=$(az deployment group show --resource-group "$resource_group_name" --name "$az_deployment_name" --query properties.outputs.stagingSubscriptionContainerName.value --output tsv);
 test_blob_sub_container_name=$(az deployment group show --resource-group "$resource_group_name" --name "$az_deployment_name" --query properties.outputs.testingSubscriptionContainerName.value --output tsv);
 event_grid_id=$(az deployment group show --resource-group "$resource_group_name" --name "$az_deployment_name" --query properties.outputs.eventGridTopicId.value --output tsv);
@@ -328,7 +329,7 @@ az appconfig kv set --name "$app_config_name" --key "Subscriptions:Events:EventG
 az appconfig kv set --name "$app_config_name" --key "Subscriptions:Events:EventGrid:TopicKey" --yes                     --value "$event_grid_topic_key" >/dev/null
 az appconfig kv set --name "$app_config_name" --key "Subscriptions:Testing:Cache:BlobStorage:ConnectionString" --yes    --value "$blob_conn_str" >/dev/null
 az appconfig kv set --name "$app_config_name" --key "Subscriptions:Testing:Cache:BlobStorage:ContainerName" --yes       --value "$test_blob_sub_container_name"; 
-az appconfig kv set --name "$app_config_name" --key "Subscriptions:Staging:Cache:BlobStorage:ConnectionString" --yes    --value "$blob_conn_str" > /dev/null
+az appconfig kv set --name "$app_config_name" --key "Subscriptions:Staging:Cache:BlobStorage:ConnectionString" --yes    --value "$blob_conn_str" >/dev/null
 az appconfig kv set --name "$app_config_name" --key "Subscriptions:Staging:Cache:BlobStorage:ContainerName" --yes       --value "$stage_blob_sub_container_name"; 
 
 # Configure AD app reply and ID URLs.
@@ -386,6 +387,7 @@ if [[ -z $no_publish ]]; then
     printf "$lp Webhook URL                         [$web_app_base_url/webhook]\n"
     printf "$lp Webhook URL (Testing)               [$web_app_base_url/webhook/test]\n"
     printf "$lp Admin Center URL                    [$web_app_base_url/admin]\n"
+    printf "$lp Subscription Staging Store Base URL [https://$storage_account_name.blob.core.windows.net]\n"
 fi
 
 echo
