@@ -32,6 +32,8 @@ namespace Mona.SaaS.Web.Controllers
 {
     public class SubscriptionController : Controller
     {
+        public const string SubscriptionDetailQueryParameter = "_sub";
+
         public static class ErrorCodes
         {
             public const string UnableToResolveMarketplaceToken = "UnableToResolveMarketplaceToken";
@@ -156,19 +158,25 @@ namespace Mona.SaaS.Web.Controllers
 
                     await this.subscriptionEventPublisher.PublishEventAsync(new SubscriptionPurchased(subscription));
 
-                    var purchaseRedirectUrl = this.publisherConfig.SubscriptionPurchaseConfirmationUrl
+                    var redirectUrl = this.publisherConfig.SubscriptionPurchaseConfirmationUrl
                         .WithSubscriptionId(subscription.SubscriptionId);
 
-                    var subToken = await this.subscriptionStagingCache.StageSubscriptionAsync(subscription);
-
-                    if (!string.IsNullOrEmpty(subToken))
+                    if (this.deploymentConfig.SendSubscriptionDetailsToPurchaseConfirmationPage)
                     {
-                        purchaseRedirectUrl += $"{(string.IsNullOrEmpty(new Uri(purchaseRedirectUrl).Query) ? "?" : "&")}st={WebUtility.UrlEncode(subToken)}";
+                        // Stage the subscription so we can pass the details along to the purchase confirmation page...
+
+                        var subToken = await this.subscriptionStagingCache.StageSubscriptionAsync(subscription);
+
+                        // The web app being redirected to must know the name of the storage account (https://*.blob.core.windows.net) to be
+                        // able to use the SAS fragment that we provide. This prevents bad actors from either reading the subscription details
+                        // from blob storage or injecting their own false subscription info.
+
+                        redirectUrl += $"{(string.IsNullOrEmpty(new Uri(redirectUrl).Query) ? "?" : "&")}{SubscriptionDetailQueryParameter}={WebUtility.UrlEncode(subToken)}";
                     }
 
-                    this.logger.LogInformation($"Subscription [{subscription.SubscriptionId}] purchase confirmed. Redirecting user to [{purchaseRedirectUrl}]...");
+                    this.logger.LogInformation($"Subscription [{subscription.SubscriptionId}] purchase confirmed. Redirecting user to [{redirectUrl}]...");
 
-                    return Redirect(purchaseRedirectUrl);
+                    return Redirect(redirectUrl);
                 }
             }
             catch (Exception ex)
@@ -301,7 +309,11 @@ namespace Mona.SaaS.Web.Controllers
 
                     this.logger.LogInformation($"Processing subscription [{subscription.SubscriptionId}] webhook [{opType}] operation [{whNotification.OperationId}]...");
 
+                    // Make sure that the Marketplace actually sent this notification...
+
                     await VerifyWebhookNotificationAsync(whNotification, inTestMode);
+
+                    // Depending on the type of action, publish an appropriate event...
 
                     switch (opType)
                     {
@@ -326,6 +338,8 @@ namespace Mona.SaaS.Web.Controllers
                                 new SubscriptionSuspended(subscription, whNotification.OperationId));
                             break;
                     }
+
+                    // If we're in test mode, cache the subscription model for later.
 
                     if (inTestMode)
                     {

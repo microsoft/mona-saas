@@ -53,5 +53,10 @@ namespace Mona.SaaS.Core.Models.Configuration
         /// Gets/sets whether or not this Mona deployment currently supports test mode.
         /// </summary>
         public bool IsTestModeEnabled { get; set; }
+
+        /// <summary>
+        /// Gets/sets whether or not to send subscription details to the purchase confirmation page upon purchase completion.
+        /// </summary>
+        public bool SendSubscriptionDetailsToPurchaseConfirmationPage { get; set; } = true;
     }
 }

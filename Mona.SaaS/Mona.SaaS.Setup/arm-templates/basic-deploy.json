@@ -52,7 +52,8 @@
         "appConfigName": "[concat('mona-config-', variables('deploymentName'))]",
         "storageAccountName": "[concat('monastorage', toLower(variables('deploymentName')))]",
         "blobServiceName": "default",
-        "subContainerName": "saas-subscriptions",
+        "testSubContainerName": "test-subscriptions",
+        "stageSubContainerName": "stage-subscriptions",
         "eventGridTopicName": "[concat('mona-events-', variables('deploymentName'))]",
         "integrationAccountName": "[concat('mona-integration-', variables('deploymentName'))]",
         "appInsightsName": "[concat('mona-app-insights-', variables('deploymentName'))]",
@@ -294,7 +295,19 @@
         {
             "type": "Microsoft.Storage/storageAccounts/blobServices/containers",
             "apiVersion": "2021-01-01",
-            "name": "[concat(variables('storageAccountName'), '/', variables('blobServiceName'), '/', variables('subContainerName'))]",
+            "name": "[concat(variables('storageAccountName'), '/', variables('blobServiceName'), '/', variables('testSubContainerName'))]",
+            "dependsOn": [
+                "[variables('storageAccountName')]",
+                "[resourceId('Microsoft.Storage/storageAccounts/blobServices', variables('storageAccountName'), variables('blobServiceName'))]"
+            ],
+            "properties": {
+                "publicAccess": "None"
+            }
+        },
+        {
+            "type": "Microsoft.Storage/storageAccounts/blobServices/containers",
+            "apiVersion": "2021-01-01",
+            "name": "[concat(variables('storageAccountName'), '/', variables('blobServiceName'), '/', variables('stageSubContainerName'))]",
             "dependsOn": [
                 "[variables('storageAccountName')]",
                 "[resourceId('Microsoft.Storage/storageAccounts/blobServices', variables('storageAccountName'), variables('blobServiceName'))]"
@@ -1906,9 +1919,13 @@
             "type": "string",
             "value": "[concat('DefaultEndpointsProtocol=https;AccountName=', variables('storageAccountName'), ';AccountKey=', listKeys(resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName')), '2021-01-01').keys[0].value, ';EndpointSuffix=core.windows.net')]"
         },
-        "subscriptionStorageContainerName": {
+        "stagingSubscriptionContainerName": {
             "type": "string",
-            "value": "[variables('subContainerName')]"
+            "value": "[variables('stageSubContainerName')]"
+        },
+        "testingSubscriptionContainerName": {
+            "type": "string",
+            "value": "[variables('testSubContainerName')]"
         },
         "appConfigServiceConnectionString": {
             "type": "string",

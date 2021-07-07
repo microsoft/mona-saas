@@ -78,7 +78,7 @@ namespace Mona.SaaS.Web.Tests
 
             var expectedRedirectUrl =
                 publisherConfig.SubscriptionPurchaseConfirmationUrl.Replace("{subscription-id}", testSubscription.SubscriptionId) +
-                $"?st={testSubscriptionToken}";
+                $"?{SubscriptionController.SubscriptionDetailQueryParameter}={testSubscriptionToken}";
 
             actionResult.Should().NotBeNull();
             actionResult.Should().BeOfType<RedirectResult>();
@@ -131,7 +131,7 @@ namespace Mona.SaaS.Web.Tests
 
             var expectedRedirectUrl =
                 publisherConfig.SubscriptionPurchaseConfirmationUrl.Replace("{subscription-id}", testSubscription.SubscriptionId) +
-                $"?st={testSubscriptionToken}";
+                $"?{SubscriptionController.SubscriptionDetailQueryParameter}={testSubscriptionToken}";
 
             actionResult.Should().NotBeNull();
             actionResult.Should().BeOfType<RedirectResult>();
@@ -1531,7 +1531,8 @@ namespace Mona.SaaS.Web.Tests
                 AzureSubscriptionId = Guid.NewGuid().ToString(),
                 IsTestModeEnabled = true,
                 MonaVersion = "1.0",
-                Name = "Mona SaaS Testing"
+                Name = "Mona SaaS Testing",
+                SendSubscriptionDetailsToPurchaseConfirmationPage = true
             };
 
         private PublisherConfiguration GetDefaultPublisherConfiguration() =>

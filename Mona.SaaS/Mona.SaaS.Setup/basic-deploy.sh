@@ -297,7 +297,8 @@ az group deployment create \
 # Get ARM deployment output variables.
 
 blob_conn_str=$(az deployment group show --resource-group "$resource_group_name" --name "$az_deployment_name" --query properties.outputs.storageConnectionString.value --output tsv);
-blob_sub_container_name=$(az deployment group show --resource-group "$resource_group_name" --name "$az_deployment_name" --query properties.outputs.subscriptionStorageContainerName.value --output tsv);
+stage_blob_sub_container_name=$(az deployment group show --resource-group "$resource_group_name" --name "$az_deployment_name" --query properties.outputs.stagingSubscriptionContainerName.value --output tsv);
+test_blob_sub_container_name=$(az deployment group show --resource-group "$resource_group_name" --name "$az_deployment_name" --query properties.outputs.testingSubscriptionContainerName.value --output tsv);
 event_grid_id=$(az deployment group show --resource-group "$resource_group_name" --name "$az_deployment_name" --query properties.outputs.eventGridTopicId.value --output tsv);
 event_grid_topic_endpoint=$(az deployment group show --resource-group "$resource_group_name" --name "$az_deployment_name" --query properties.outputs.eventGridTopicEndpoint.value --output tsv);
 event_grid_topic_key=$(az deployment group show --resource-group "$resource_group_name" --name "$az_deployment_name" --query properties.outputs.eventGridTopicKey.value --output tsv);
@@ -311,7 +312,7 @@ app_insights_key=$(az deployment group show --resource-group "$resource_group_na
 
 echo "$lp Configuring Mona settings...";
 
-az appconfig kv set --name "$app_config_name" --key "Deployment:MonaVersion" --yes                                      --value "$mona_version";                
+az appconfig kv set --name "$app_config_name" --key "Deployment:MonaVersion" --yes                                      --value "$mona_version";               
 az appconfig kv set --name "$app_config_name" --key "Deployment:AppInsightsInstrumentationKey" --yes                    --value "$app_insights_key";       
 az appconfig kv set --name "$app_config_name" --key "Deployment:AzureResourceGroupName" --yes                           --value "$resource_group_name";         
 az appconfig kv set --name "$app_config_name" --key "Deployment:AzureSubscriptionId" --yes                              --value "$subscription_id";             
@@ -325,8 +326,10 @@ az appconfig kv set --name "$app_config_name" --key "Identity:AppIdentity:AadTen
 az appconfig kv set --name "$app_config_name" --key "Publisher:IsSetupComplete" --yes                                   --value "false";
 az appconfig kv set --name "$app_config_name" --key "Subscriptions:Events:EventGrid:TopicEndpoint" --yes                --value "$event_grid_topic_endpoint"; 
 az appconfig kv set --name "$app_config_name" --key "Subscriptions:Events:EventGrid:TopicKey" --yes                     --value "$event_grid_topic_key" >/dev/null
-az appconfig kv set --name "$app_config_name" --key "Subscriptions:Repository:BlobStorage:ConnectionString" --yes       --value "$blob_conn_str" >/dev/null
-az appconfig kv set --name "$app_config_name" --key "Subscriptions:Repository:BlobStorage:ContainerName" --yes          --value "$blob_sub_container_name"; 
+az appconfig kv set --name "$app_config_name" --key "Subscriptions:Testing:Cache:BlobStorage:ConnectionString" --yes    --value "$blob_conn_str" >/dev/null
+az appconfig kv set --name "$app_config_name" --key "Subscriptions:Testing:Cache:BlobStorage:ContainerName" --yes       --value "$test_blob_sub_container_name"; 
+az appconfig kv set --name "$app_config_name" --key "Subscriptions:Staging:Cache:BlobStorage:ConnectionString" --yes    --value "$blob_conn_str" > /dev/null
+az appconfig kv set --name "$app_config_name" --key "Subscriptions:Staging:Cache:BlobStorage:ContainerName" --yes       --value "$stage_blob_sub_container_name"; 
 
 # Configure AD app reply and ID URLs.
 
