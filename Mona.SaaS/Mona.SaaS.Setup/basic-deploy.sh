@@ -328,7 +328,7 @@ az appconfig kv set --name "$app_config_name" --key "Subscriptions:Events:EventG
 az appconfig kv set --name "$app_config_name" --key "Subscriptions:Events:EventGrid:TopicKey" --yes                     --value "$event_grid_topic_key" >/dev/null
 az appconfig kv set --name "$app_config_name" --key "Subscriptions:Testing:Cache:BlobStorage:ConnectionString" --yes    --value "$blob_conn_str" >/dev/null
 az appconfig kv set --name "$app_config_name" --key "Subscriptions:Testing:Cache:BlobStorage:ContainerName" --yes       --value "$test_blob_sub_container_name"; 
-az appconfig kv set --name "$app_config_name" --key "Subscriptions:Staging:Cache:BlobStorage:ConnectionString" --yes    --value "$blob_conn_str" > /dev/null
+az appconfig kv set --name "$app_config_name" --key "Subscriptions:Staging:Cache:BlobStorage:ConnectionString" --yes    --value "$blob_conn_str" >/dev/null
 az appconfig kv set --name "$app_config_name" --key "Subscriptions:Staging:Cache:BlobStorage:ContainerName" --yes       --value "$stage_blob_sub_container_name"; 
 
 # Configure AD app reply and ID URLs.
