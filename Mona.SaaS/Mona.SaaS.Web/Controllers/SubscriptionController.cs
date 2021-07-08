@@ -171,7 +171,7 @@ namespace Mona.SaaS.Web.Controllers
                         // able to use the SAS fragment that we provide. This prevents bad actors from either reading the subscription details
                         // from blob storage or injecting their own false subscription info.
 
-                        redirectUrl += $"{(string.IsNullOrEmpty(new Uri(redirectUrl).Query) ? "?" : "&")}{SubscriptionDetailQueryParameter}={WebUtility.UrlEncode(subToken)}";
+                        redirectUrl = AppendSubscriptionAccessTokenToUrl(redirectUrl, subToken);
                     }
 
                     this.logger.LogInformation($"Subscription [{subscription.SubscriptionId}] purchase confirmed. Redirecting user to [{redirectUrl}]...");
@@ -264,13 +264,26 @@ namespace Mona.SaaS.Web.Controllers
                         {
                             // We already know about this subscription. Redirecting to publisher-defined subscription configuration UI...
 
-                            var subConfigUrl = this.publisherConfig.SubscriptionConfigurationUrl.WithSubscriptionId(subscription.SubscriptionId);
+                            var redirectUrl = this.publisherConfig.SubscriptionConfigurationUrl.WithSubscriptionId(subscription.SubscriptionId);
+
+                            if (this.deploymentConfig.SendSubscriptionDetailsToSubscriptionConfigurationPage)
+                            {
+                                // Stage the subscription so we can pass the details along to the configuration page...
+
+                                var subToken = await this.subscriptionStagingCache.StageSubscriptionAsync(subscription);
+
+                                // The web app being redirected to must know the name of the storage account (https://*.blob.core.windows.net) to be
+                                // able to use the SAS fragment that we provide. This prevents bad actors from either reading the subscription details
+                                // from blob storage or injecting their own false subscription info.
+
+                                redirectUrl = AppendSubscriptionAccessTokenToUrl(redirectUrl, subToken);
+                            }
 
                             this.logger.LogInformation(
                                 $"Subscription [{subscription.SubscriptionId}] is known to Mona. " +
-                                $"Redirecting user to subscription configuration page at [{subConfigUrl}]...");
+                                $"Redirecting user to subscription configuration page at [{redirectUrl}]...");
 
-                            return Redirect(subConfigUrl);
+                            return Redirect(redirectUrl);
                         }
                     }
                 }
@@ -284,6 +297,9 @@ namespace Mona.SaaS.Web.Controllers
                 }
             }
         }
+
+        private string AppendSubscriptionAccessTokenToUrl(string url, string subToken) =>
+            $"{url}{(string.IsNullOrEmpty(new Uri(url).Query) ? "?" : "&")}{SubscriptionDetailQueryParameter}={WebUtility.UrlEncode(subToken)}";
 
         private async Task<IActionResult> ProcessWebhookNotificationAsync(WebhookNotification whNotification, bool inTestMode = false)
         {

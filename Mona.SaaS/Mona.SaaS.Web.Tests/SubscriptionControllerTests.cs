@@ -379,6 +379,7 @@ namespace Mona.SaaS.Web.Tests
         public async Task GetTestLandingPage_GivenAuthedUser_AndExistingSubscription_ShouldRedirectToSubscriptionConfigurationUrl()
         {
             var testToken = Guid.NewGuid().ToString();
+            var testSubscriptionToken = Guid.NewGuid().ToString();
             var testUserName = "Clippy";
 
             var mockDeployConfig = GetOptionsSnapshotMock(GetDefaultDeploymentConfiguration());
@@ -397,6 +398,7 @@ namespace Mona.SaaS.Web.Tests
             mockHttpContext.SetupGet(hc => hc.User.Identity.IsAuthenticated).Returns(true);
             mockHttpContext.SetupGet(hc => hc.User.Claims).Returns(new Claim[] { new Claim("name", testUserName) });
             mockMpSubscriptionService.Setup(ss => ss.ResolveSubscriptionTokenAsync(testToken)).Returns(Task.FromResult(testSubscription));
+            mockSubscriptionStagingCache.Setup(sc => sc.StageSubscriptionAsync(testSubscription)).Returns(Task.FromResult(testSubscriptionToken));
 
             var controllerContext = new ControllerContext(new ActionContext(mockHttpContext.Object, new RouteData(), new ControllerActionDescriptor()));
 
@@ -407,15 +409,20 @@ namespace Mona.SaaS.Web.Tests
 
             var actionResult = await controllerUt.GetLiveLandingPageAsync(testToken);
 
+            var expectedRedirectUrl =
+                publisherConfig.SubscriptionConfigurationUrl.Replace("{subscription-id}", testSubscription.SubscriptionId) +
+                $"?{SubscriptionController.SubscriptionDetailQueryParameter}={testSubscriptionToken}";
+
             actionResult.Should().NotBeNull();
             actionResult.Should().BeOfType<RedirectResult>();
-            (actionResult as RedirectResult).Url.Should().Be(publisherConfig.SubscriptionConfigurationUrl.Replace("{subscription-id}", testSubscription.SubscriptionId));
+            (actionResult as RedirectResult).Url.Should().Be(expectedRedirectUrl);
         }
 
         [Fact]
         public async Task GetLiveLandingPage_GivenResolvableMarketplaceToken_AndAuthedUser_AndExistingSubscription_ShouldRedirectToSubscriptionConfigurationUrl()
         {
             var testToken = Guid.NewGuid().ToString();
+            var testSubscriptionToken = Guid.NewGuid().ToString();
             var testUserName = "Clippy";
 
             var mockDeployConfig = GetOptionsSnapshotMock(GetDefaultDeploymentConfiguration());
@@ -434,6 +441,7 @@ namespace Mona.SaaS.Web.Tests
             mockHttpContext.SetupGet(hc => hc.User.Identity.IsAuthenticated).Returns(true);
             mockHttpContext.SetupGet(hc => hc.User.Claims).Returns(new Claim[] { new Claim("name", testUserName) });
             mockMpSubscriptionService.Setup(ss => ss.ResolveSubscriptionTokenAsync(testToken)).Returns(Task.FromResult(testSubscription));
+            mockSubscriptionStagingCache.Setup(sc => sc.StageSubscriptionAsync(testSubscription)).Returns(Task.FromResult(testSubscriptionToken));
 
             var controllerContext = new ControllerContext(new ActionContext(mockHttpContext.Object, new RouteData(), new ControllerActionDescriptor()));
 
@@ -444,9 +452,13 @@ namespace Mona.SaaS.Web.Tests
 
             var actionResult = await controllerUt.GetLiveLandingPageAsync(testToken);
 
+            var expectedRedirectUrl =
+                publisherConfig.SubscriptionConfigurationUrl.Replace("{subscription-id}", testSubscription.SubscriptionId) +
+                $"?{SubscriptionController.SubscriptionDetailQueryParameter}={testSubscriptionToken}";
+
             actionResult.Should().NotBeNull();
             actionResult.Should().BeOfType<RedirectResult>();
-            (actionResult as RedirectResult).Url.Should().Be(publisherConfig.SubscriptionConfigurationUrl.Replace("{subscription-id}", testSubscription.SubscriptionId));
+            (actionResult as RedirectResult).Url.Should().Be(expectedRedirectUrl);
         }
 
         [Fact]
@@ -1532,7 +1544,8 @@ namespace Mona.SaaS.Web.Tests
                 IsTestModeEnabled = true,
                 MonaVersion = "1.0",
                 Name = "Mona SaaS Testing",
-                SendSubscriptionDetailsToPurchaseConfirmationPage = true
+                SendSubscriptionDetailsToPurchaseConfirmationPage = true,
+                SendSubscriptionDetailsToSubscriptionConfigurationPage = true
             };
 
         private PublisherConfiguration GetDefaultPublisherConfiguration() =>
