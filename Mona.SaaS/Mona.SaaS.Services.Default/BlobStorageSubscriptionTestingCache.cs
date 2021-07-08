@@ -25,14 +25,14 @@ using System.Threading.Tasks;
 
 namespace Mona.SaaS.Services.Default
 {
-    public class BlobStorageSubscriptionRepository : ISubscriptionRepository
+    public class BlobStorageSubscriptionTestingCache : ISubscriptionTestingCache
     {
         private readonly BlobContainerClient containerClient;
         private readonly ILogger logger;
 
-        public BlobStorageSubscriptionRepository(
+        public BlobStorageSubscriptionTestingCache(
             IOptionsSnapshot<Configuration> configSnapshot,
-            ILogger<BlobStorageSubscriptionRepository> logger)
+            ILogger<BlobStorageSubscriptionTestingCache> logger)
         {
             var config = configSnapshot.Value;
             var serviceClient = new BlobServiceClient(config.ConnectionString);
@@ -104,8 +104,7 @@ namespace Mona.SaaS.Services.Default
             [Required]
             public string ConnectionString { get; set; }
 
-            [Required]
-            public string ContainerName { get; set; }
+            public string ContainerName { get; set; } = "test-subscriptions";
         }
     }
 }

@@ -32,6 +32,8 @@ namespace Mona.SaaS.Web.Controllers
 {
     public class SubscriptionController : Controller
     {
+        public const string SubscriptionDetailQueryParameter = "_sub";
+
         public static class ErrorCodes
         {
             public const string UnableToResolveMarketplaceToken = "UnableToResolveMarketplaceToken";
@@ -46,7 +48,8 @@ namespace Mona.SaaS.Web.Controllers
         private readonly IMarketplaceOperationService mpOperationService;
         private readonly IMarketplaceSubscriptionService mpSubscriptionService;
         private readonly ISubscriptionEventPublisher subscriptionEventPublisher;
-        private readonly ISubscriptionRepository subscriptionRepo;
+        private readonly ISubscriptionStagingCache subscriptionStagingCache;
+        private readonly ISubscriptionTestingCache subscriptionTestingCache;
 
         public SubscriptionController(
             IOptionsSnapshot<DeploymentConfiguration> deploymentConfig,
@@ -55,7 +58,8 @@ namespace Mona.SaaS.Web.Controllers
             IMarketplaceOperationService mpOperationService,
             IMarketplaceSubscriptionService mpSubscriptionService,
             ISubscriptionEventPublisher subscriptionEventPublisher,
-            ISubscriptionRepository subscriptionRepo)
+            ISubscriptionStagingCache subscriptionStagingCache,
+            ISubscriptionTestingCache subscriptionTestingCache)
         {
             this.mpOperationService = mpOperationService;
             this.deploymentConfig = deploymentConfig.Value;
@@ -63,7 +67,8 @@ namespace Mona.SaaS.Web.Controllers
             this.publisherConfig = publisherConfig;
             this.mpSubscriptionService = mpSubscriptionService;
             this.subscriptionEventPublisher = subscriptionEventPublisher;
-            this.subscriptionRepo = subscriptionRepo;
+            this.subscriptionStagingCache = subscriptionStagingCache;
+            this.subscriptionTestingCache = subscriptionTestingCache;
         }
 
         [Authorize]
@@ -153,11 +158,25 @@ namespace Mona.SaaS.Web.Controllers
 
                     await this.subscriptionEventPublisher.PublishEventAsync(new SubscriptionPurchased(subscription));
 
-                    var subPurchasedUrl = this.publisherConfig.SubscriptionPurchaseConfirmationUrl.WithSubscriptionId(subscription.SubscriptionId);
+                    var redirectUrl = this.publisherConfig.SubscriptionPurchaseConfirmationUrl
+                        .WithSubscriptionId(subscription.SubscriptionId);
 
-                    this.logger.LogInformation($"Subscription [{subscription.SubscriptionId}] purchase confirmed. Redirecting user to [{subPurchasedUrl}]...");
+                    if (this.deploymentConfig.SendSubscriptionDetailsToPurchaseConfirmationPage)
+                    {
+                        // Stage the subscription so we can pass the details along to the purchase confirmation page...
 
-                    return Redirect(subPurchasedUrl);
+                        var subToken = await this.subscriptionStagingCache.StageSubscriptionAsync(subscription);
+
+                        // The web app being redirected to must know the name of the storage account (https://*.blob.core.windows.net) to be
+                        // able to use the SAS fragment that we provide. This prevents bad actors from either reading the subscription details
+                        // from blob storage or injecting their own false subscription info.
+
+                        redirectUrl = AppendSubscriptionAccessTokenToUrl(redirectUrl, subToken);
+                    }
+
+                    this.logger.LogInformation($"Subscription [{subscription.SubscriptionId}] purchase confirmed. Redirecting user to [{redirectUrl}]...");
+
+                    return Redirect(redirectUrl);
                 }
             }
             catch (Exception ex)
@@ -233,7 +252,7 @@ namespace Mona.SaaS.Web.Controllers
 
                             if (inTestMode)
                             {
-                                await this.subscriptionRepo.PutSubscriptionAsync(subscription).ConfigureAwait(false);
+                                await this.subscriptionTestingCache.PutSubscriptionAsync(subscription).ConfigureAwait(false);
                             }
 
                             return View("Index", new LandingPageModel(inTestMode)
@@ -245,13 +264,26 @@ namespace Mona.SaaS.Web.Controllers
                         {
                             // We already know about this subscription. Redirecting to publisher-defined subscription configuration UI...
 
-                            var subConfigUrl = this.publisherConfig.SubscriptionConfigurationUrl.WithSubscriptionId(subscription.SubscriptionId);
+                            var redirectUrl = this.publisherConfig.SubscriptionConfigurationUrl.WithSubscriptionId(subscription.SubscriptionId);
+
+                            if (this.deploymentConfig.SendSubscriptionDetailsToSubscriptionConfigurationPage)
+                            {
+                                // Stage the subscription so we can pass the details along to the configuration page...
+
+                                var subToken = await this.subscriptionStagingCache.StageSubscriptionAsync(subscription);
+
+                                // The web app being redirected to must know the name of the storage account (https://*.blob.core.windows.net) to be
+                                // able to use the SAS fragment that we provide. This prevents bad actors from either reading the subscription details
+                                // from blob storage or injecting their own false subscription info.
+
+                                redirectUrl = AppendSubscriptionAccessTokenToUrl(redirectUrl, subToken);
+                            }
 
                             this.logger.LogInformation(
                                 $"Subscription [{subscription.SubscriptionId}] is known to Mona. " +
-                                $"Redirecting user to subscription configuration page at [{subConfigUrl}]...");
+                                $"Redirecting user to subscription configuration page at [{redirectUrl}]...");
 
-                            return Redirect(subConfigUrl);
+                            return Redirect(redirectUrl);
                         }
                     }
                 }
@@ -265,6 +297,9 @@ namespace Mona.SaaS.Web.Controllers
                 }
             }
         }
+
+        private string AppendSubscriptionAccessTokenToUrl(string url, string subToken) =>
+            $"{url}{(string.IsNullOrEmpty(new Uri(url).Query) ? "?" : "&")}{SubscriptionDetailQueryParameter}={WebUtility.UrlEncode(subToken)}";
 
         private async Task<IActionResult> ProcessWebhookNotificationAsync(WebhookNotification whNotification, bool inTestMode = false)
         {
@@ -290,7 +325,11 @@ namespace Mona.SaaS.Web.Controllers
 
                     this.logger.LogInformation($"Processing subscription [{subscription.SubscriptionId}] webhook [{opType}] operation [{whNotification.OperationId}]...");
 
+                    // Make sure that the Marketplace actually sent this notification...
+
                     await VerifyWebhookNotificationAsync(whNotification, inTestMode);
+
+                    // Depending on the type of action, publish an appropriate event...
 
                     switch (opType)
                     {
@@ -316,9 +355,11 @@ namespace Mona.SaaS.Web.Controllers
                             break;
                     }
 
+                    // If we're in test mode, cache the subscription model for later.
+
                     if (inTestMode)
                     {
-                        await this.subscriptionRepo.PutSubscriptionAsync(subscription);
+                        await this.subscriptionTestingCache.PutSubscriptionAsync(subscription);
                     }
 
                     this.logger.LogInformation($"Subscription [{subscription.SubscriptionId}] webhook [{opType}] operation [{whNotification.OperationId}] processed successfully.");
@@ -351,7 +392,7 @@ namespace Mona.SaaS.Web.Controllers
 
                     this.logger.LogWarning($"[TEST MODE]: Trying to get test subscription [{subscriptionId}] from subscription cache...");
 
-                    return await this.subscriptionRepo.GetSubscriptionAsync(subscriptionId);
+                    return await this.subscriptionTestingCache.GetSubscriptionAsync(subscriptionId);
                 }
                 else
                 {

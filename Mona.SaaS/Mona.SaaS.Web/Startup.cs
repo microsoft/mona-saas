@@ -140,7 +140,8 @@ namespace Mona.SaaS.Web
             services.AddTransient<IMarketplaceOperationService, DefaultMarketplaceClient>();
             services.AddTransient<IMarketplaceSubscriptionService, DefaultMarketplaceClient>();
             services.AddTransient<ISubscriptionEventPublisher, EventGridSubscriptionEventPublisher>();
-            services.AddTransient<ISubscriptionRepository, BlobStorageSubscriptionRepository>();
+            services.AddTransient<ISubscriptionStagingCache, BlobStorageSubscriptionStagingCache>();
+            services.AddTransient<ISubscriptionTestingCache, BlobStorageSubscriptionTestingCache>();
         }
 
         public void ConfigureOptions(IServiceCollection services)
@@ -170,38 +171,45 @@ namespace Mona.SaaS.Web
 
             services.AddSingleton(publisherConfig);
 
-            // -------------------------------------------------------------------------
-            // Deployment: AppInsightsConnectionString                      [Required] *
-            // Deployment: AzureSubscriptionId                              [Required] * 
-            // Deployment: AzureResourceGroupName                           [Required] *
-            // Deployment: MarketplaceLandingPageUrl                        [Required] *
-            // Deployment: MarketplaceWebhookUrl                            [Required] *
-            // Deployment: InTestMode                                       [Optional]
-            // Deployment: Name                                             [Required] *
+            // ---------------------------------------------------------------------------------
+            // Deployment: AppInsightsConnectionString                              [Required] *
+            // Deployment: AzureSubscriptionId                                      [Required] * 
+            // Deployment: AzureResourceGroupName                                   [Required] *
+            // Deployment: MarketplaceLandingPageUrl                                [Required] *
+            // Deployment: MarketplaceWebhookUrl                                    [Required] *
+            // Deployment: InTestMode                                               [Optional]
+            // Deployment: Name                                                     [Required] *
 
             services.Configure<DeploymentConfiguration>(this.Configuration.GetSection("Deployment"));
 
-            // -------------------------------------------------------------------------
-            // Identity: AppIdentity: AadTenantId                           [Required] *
-            // Identity: AppIdentity: AadClientId                           [Required] *
-            // Identity: AppIdentity: AadClientSecret                       [Required] *
-            // Identity: AdminIdentity: AadTenantId                         [Required] *
-            // Identity: AdminIdentity: AadUserId                           [Required] *
-            // Identity: AdminIdentity: RoleName                            [Optional]
+            // ---------------------------------------------------------------------------------
+            // Identity: AppIdentity: AadTenantId                                   [Required] *
+            // Identity: AppIdentity: AadClientId                                   [Required] *
+            // Identity: AppIdentity: AadClientSecret                               [Required] *
+            // Identity: AdminIdentity: AadTenantId                                 [Required] *
+            // Identity: AdminIdentity: AadUserId                                   [Required] *
+            // Identity: AdminIdentity: RoleName                                    [Optional]
 
             services.Configure<IdentityConfiguration>(this.Configuration.GetSection("Identity"));
 
-            // -------------------------------------------------------------------------
-            // Subscriptions: Events: EventGrid: TopicEndpoint              [Required] *
-            // Subscriptions: Events: EventGrid: TopicKey                   [Required] *
+            // ---------------------------------------------------------------------------------
+            // Subscriptions: Events: EventGrid: TopicEndpoint                      [Required] *
+            // Subscriptions: Events: EventGrid: TopicKey                           [Required] *
 
             services.Configure<EventGridSubscriptionEventPublisher.Configuration>(this.Configuration.GetSection("Subscriptions:Events:EventGrid"));
 
-            // -------------------------------------------------------------------------
-            // Subscriptions: Repositories: BlobStorage: ConnectionString   [Required] *
-            // Subscriptions: Repositories: BlobStorage: ContainerName      [Required] *
+            // ---------------------------------------------------------------------------------
+            // Subscriptions: Testing: Cache: BlobStorage: ConnectionString         [Required] *
+            // Subscriptions: Testing: Cache: BlobStorage: ContainerName            [Optional]
 
-            services.Configure<BlobStorageSubscriptionRepository.Configuration>(this.Configuration.GetSection("Subscriptions:Repository:BlobStorage"));
+            services.Configure<BlobStorageSubscriptionTestingCache.Configuration>(this.Configuration.GetSection("Subscriptions:Testing:Cache:BlobStorage"));
+
+            // ---------------------------------------------------------------------------------
+            // Subscriptions: Staging: Cache: BlobStorage: ConnectionString         [Required] *
+            // Subscriptions: Staging: Cache: BlobStorage: ContainerName            [Optional]
+            // Subscriptions: Staging: Cache: BlobStorage: TokenExpirationInSeconds [Optional]
+
+            services.Configure<BlobStorageSubscriptionStagingCache.Configuration>(this.Configuration.GetSection("Subscriptions:Staging:Cache:BlobStorage"));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
