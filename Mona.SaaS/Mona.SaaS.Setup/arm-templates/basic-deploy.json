@@ -48,9 +48,10 @@
         }
     },
     "variables": {
-        "deploymentName": "[if(empty(parameters('deploymentName')), uniqueString(resourceGroup().id), parameters('deploymentName'))]",
+        "deploymentName": "[toLower(if(empty(parameters('deploymentName')), uniqueString(resourceGroup().id), parameters('deploymentName')))]",
+        "deploymentNameUnique": "[uniqueString(resourceGroup().id, deployment().name, variables('deploymentName'))]",
         "appConfigName": "[concat('mona-config-', variables('deploymentName'))]",
-        "storageAccountName": "[concat('monastorage', toLower(variables('deploymentName')))]",
+        "storageAccountName": "[concat('monastorage', variables('deploymentNameUnique'))]",
         "blobServiceName": "default",
         "testSubContainerName": "test-subscriptions",
         "stageSubContainerName": "stage-subscriptions",
