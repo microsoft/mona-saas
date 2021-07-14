@@ -65,9 +65,9 @@ namespace Mona.SaaS.Web
         {
             services.AddAuthentication(AzureADDefaults.AuthenticationScheme).AddAzureAD(o =>
             {
-                o.Instance = "https://login.microsoftonline.com/common"; // Static for multi-tenant AAD apps.
+                o.Instance = "https://login.microsoftonline.com/"; // Static for multi-tenant AAD apps.
                 o.ClientId = Configuration["Identity:AppIdentity:AadClientId"];
-                o.TenantId = Configuration["Identity:AppIdentity:AadTenantId"];
+                o.TenantId = Configuration["common"]; // Static for multi-tenant AAD apps.
                 o.CallbackPath = "/signin-oidc";
             });
 
