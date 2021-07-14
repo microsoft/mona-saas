@@ -67,7 +67,7 @@ namespace Mona.SaaS.Web
             {
                 o.Instance = "https://login.microsoftonline.com/"; // Static for multi-tenant AAD apps.
                 o.ClientId = Configuration["Identity:AppIdentity:AadClientId"];
-                o.TenantId = Configuration["common"]; // Static for multi-tenant AAD apps.
+                o.TenantId = "common"; // Static for multi-tenant AAD apps.
                 o.CallbackPath = "/signin-oidc";
             });
 
