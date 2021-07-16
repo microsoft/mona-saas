@@ -343,7 +343,7 @@ az appconfig kv set --name "$app_config_name" --key "Subscriptions:Staging:Cache
 # Regardless of whether or not -j was set, add the current user to the admin role...
 
 sp_admin_role_id=$(az ad sp show --id "$aad_sp_id" --query "appRoles[0].id")
-graph_token=$(az account get-access-token --resource-type ms-graph)
+graph_token=$(az account get-access-token --resource-type ms-graph --query accessToken)
 
 curl -X POST \
     -H "Content-Type: application/json" \
