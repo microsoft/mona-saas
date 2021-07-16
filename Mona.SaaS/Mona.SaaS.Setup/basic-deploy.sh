@@ -331,7 +331,7 @@ az appconfig kv set --name "$app_config_name" --key "Subscriptions:Events:EventG
 az appconfig kv set --name "$app_config_name" --key "Subscriptions:Testing:Cache:BlobStorage:ConnectionString" --yes    --value "$blob_conn_str" >/dev/null
 az appconfig kv set --name "$app_config_name" --key "Subscriptions:Testing:Cache:BlobStorage:ContainerName" --yes       --value "$test_blob_sub_container_name"; 
 az appconfig kv set --name "$app_config_name" --key "Subscriptions:Staging:Cache:BlobStorage:ConnectionString" --yes    --value "$blob_conn_str" >/dev/null
-az appconfig kv set --name "$app_config_name" --key "Subscriptions:Sapptaging:Cache:BlobStorage:ContainerName" --yes       --value "$stage_blob_sub_container_name"; 
+az appconfig kv set --name "$app_config_name" --key "Subscriptions:Staging:Cache:BlobStorage:ContainerName" --yes       --value "$stage_blob_sub_container_name"; 
 
 # By default, only users that belong to the "Mona Administrators" role can access the admin center...
 
