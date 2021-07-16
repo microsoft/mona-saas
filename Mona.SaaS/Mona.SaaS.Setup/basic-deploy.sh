@@ -343,9 +343,11 @@ az appconfig kv set --name "$app_config_name" --key "Subscriptions:Staging:Cache
 # Regardless of whether or not -j was set, add the current user to the admin role...
 
 sp_admin_role_id=$(az ad sp show --id "$aad_sp_id" --query "appRoles[0].id")
+graph_token=$(az account get-access-token --resource-type ms-graph)
 
 curl -X POST \
     -H "Content-Type: application/json" \
+    -H "Authorization: Bearer $graph_token" \
     -d { "principalId": "$current_user_oid", "resourceId": "$aad_sp_id", "appRoleId": "$sp_admin_role_id" } \
     "https://graph.microsoft.com/v1.0/users/$current_user_oid/appRoleAssignments"
 
