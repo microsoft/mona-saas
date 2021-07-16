@@ -338,7 +338,7 @@ az appconfig kv set --name "$app_config_name" --key "Subscriptions:Staging:Cache
 
 # By default, only users that belong to the "Mona Administrators" role can access the admin center...
 
-[[ -z $no_rbac ]] && az app config kv set --name "$app_config_name" --key "Identity:AdminIdentity:RoleName" --yes --value "monaadmins"
+[[ -z $no_rbac ]] && az ad app config kv set --name "$app_config_name" --key "Identity:AdminIdentity:RoleName" --yes --value "monaadmins"
 
 # Regardless of whether or not -j was set, add the current user to the admin role...
 
@@ -348,7 +348,7 @@ graph_token=$(az account get-access-token --resource-type ms-graph --query acces
 curl -X POST \
     -H "Content-Type: application/json" \
     -H "Authorization: Bearer $graph_token" \
-    -d { "principalId": "$current_user_oid", "resourceId": "$aad_sp_id", "appRoleId": "$sp_admin_role_id" } \
+    -d '{ "principalId": "$current_user_oid", "resourceId": "$aad_sp_id", "appRoleId": "$sp_admin_role_id" }' \
     "https://graph.microsoft.com/v1.0/users/$current_user_oid/appRoleAssignments"
 
 # Configure AD app reply and ID URLs.
