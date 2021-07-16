@@ -138,6 +138,9 @@ while getopts "a:d:g:l:n:r:s:hp" opt; do
         p)
             no_publish=1
         ;;
+        j)
+            no_rbac=1 # Ill-advised. Only here for backward compatibility with early versions of Mona.
+        ;;
         \?)
             usage
             exit 1
@@ -239,6 +242,7 @@ aad_app_id=$(az ad app create \
     --password "$aad_app_secret" \
     --optional-claims @./aad/manifest.optional-claims.json \
     --required-resource-accesses @./aad/manifest.resource-access.json \
+    --app-roles @./aad/manifest.app-roles.json \
     --query appId \
     --output tsv);
 
@@ -331,6 +335,19 @@ az appconfig kv set --name "$app_config_name" --key "Subscriptions:Testing:Cache
 az appconfig kv set --name "$app_config_name" --key "Subscriptions:Testing:Cache:BlobStorage:ContainerName" --yes       --value "$test_blob_sub_container_name"; 
 az appconfig kv set --name "$app_config_name" --key "Subscriptions:Staging:Cache:BlobStorage:ConnectionString" --yes    --value "$blob_conn_str" >/dev/null
 az appconfig kv set --name "$app_config_name" --key "Subscriptions:Staging:Cache:BlobStorage:ContainerName" --yes       --value "$stage_blob_sub_container_name"; 
+
+# By default, only users that belong to the "Mona Administrators" role can access the admin center...
+
+[[ -z $no_rbac ]] && az app config kv set --name "$app_config_name" --key "Identity:AdminIdentity:RoleName" --yes --value "monaadmins"
+
+# Regardless of whether or not -j was set, add the current user to the admin role...
+
+sp_admin_role_id=$(az ad sp show --id "$aad_sp_id" --query "appRoles[0].id")
+
+curl -X POST \
+    -H "Content-Type: application/json" \
+    -d { "principalId": "$current_user_oid", "resourceId": "$aad_sp_id", "appRoleId": "$sp_admin_role_id" } \
+    "https://graph.microsoft.com/v1.0/users/$current_user_oid/appRoleAssignments"
 
 # Configure AD app reply and ID URLs.
 
