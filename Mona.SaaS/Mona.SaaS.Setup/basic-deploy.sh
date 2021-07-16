@@ -345,8 +345,6 @@ curl -X POST \
     -d '{ "principalId": "$current_user_oid", "resourceId": "$aad_sp_id", "appRoleId": "$sp_admin_role_id" }' \
     "https://graph.microsoft.com/v1.0/users/$current_user_oid/appRoleAssignments"
 
-    curl -X POST -H "Content-Type: application/json" -H "Authorization: $graph_token" -d '{ "principalId": "91ffea71-5518-480a-a51e-7cf0434202b9", "resourceId": "$8570792f-ff67-42b8-9818-8cf21af6c493", "appRoleId": "$sp_admin_role_id" }' https://graph.microsoft.com/v1.0/91ffea71-5518-480a-a51e-7cf0434202b9/appRoleAssignments
-
 # Configure AD app reply and ID URLs.
 
 echo "$lp Completing Mona configuration..."
