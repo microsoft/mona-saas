@@ -1,0 +1,9 @@
+[{
+    "allowedMemberTypes": [
+      "User"
+    ],
+    "description": "Mona administrators can access the Mona admin center and use the various test endpoints.",
+    "displayName": "Mona Administrators",
+    "isEnabled": "true",
+    "value": "monaadmins"
+}]
