@@ -64,144 +64,251 @@
 
 <html lang="@Localizer["en"]">
 <head>
+    <link rel="stylesheet" href="https://static2.sharepointonline.com/files/fabric/office-ui-fabric-js/1.4.0/css/fabric.min.css" />
+    <link rel="stylesheet" href="https://static2.sharepointonline.com/files/fabric/office-ui-fabric-js/1.4.0/css/fabric.components.min.css" />
+    <script src="https://static2.sharepointonline.com/files/fabric/office-ui-fabric-js/1.4.0/js/fabric.min.js"></script>
     <link href="~/lib/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <title>@Localizer["Mona setup"]</title>
     <title>@Localizer["Mona admin center"]</title>
     <style>
-        div.admin-section {
-            margin-bottom: 30px;
-            margin-top: 30px;
-        }
+        .ms-TextField-field{display: block;}
+        .ms-MessageBar{width: -webkit-fill-available; padding: 15px;}
+        .ms-Icon.ms-Icon--Asterisk {font-size: 10px;font-weight: bolder;color:darkred;}
+        .ms-Label{font-size:14px;}
+        .ms-font-xl{font-weight:bold;}
     </style>
 </head>
-<body style="display: flex; align-items: center; height: 100%; padding-top: 40px; padding-bottom: 40px">
-    <main style="width: 100%; max-width: 960px; padding: 15px; margin: auto">
-        <div class="container">
-            <h5 class="display-4">@Localizer["Mona admin center"]</h5>
-            <div class="admin-section" id="pc-tech-details-section">
-                <h5 class="display-5">@Localizer["Partner center technical details"]</h5><hr />
-                <p>
-                    @Localizer[
-                    "You'll need these technical details when you <a href=\"{0}\">publish your SaaS offer through the Partner Center</a>.",
-                    "https://docs.microsoft.com/azure/marketplace/create-new-saas-offer-technical"]
-                </p>
-                <table class="table table-bordered table-striped">
-                    <tbody>
-                        <tr>
-                            <th scope="row" style="width: 50%">@Localizer["Landing Page URL"]</th>
-                            <td style="width: 50%">@Model.PartnerCenterTechnicalDetails.LandingPageUrl</td>
-                        </tr>
-                        <tr>
-                            <th scope="row" style="width: 50%">@Localizer["Connection Webhook URL"]</th>
-                            <td style="width: 50%">@Model.PartnerCenterTechnicalDetails.WebhookUrl</td>
-                        </tr>
-                        <tr>
-                            <th scope="row" style="width: 50%">@Localizer["Azure Active Directory Tenant ID"]</th>
-                            <td style="width: 50%">@Model.PartnerCenterTechnicalDetails.AadTenantId</td>
-                        </tr>
-                        <tr>
-                            <th scope="row" style="width: 50%">@Localizer["Azure Active Directory Application ID"]</th>
-                            <td style="width: 50%">@Model.PartnerCenterTechnicalDetails.AadApplicationId</td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-            <div class="admin-section">
-                <h5 class="display-5">@Localizer["Testing"]</h5><hr />
-                @if (Model.IsTestModeEnabled)
-                {
-                    <div class="alert alert-primary">@Localizer["Mona test endpoints are currently enabled. To disable them, see <a class=\"alert-link\" href=\"#\">the Mona docs</a>."]</div>
-                    <p>
-                        @Localizer["These endpoints make it easy to test your SaaS subscription workflows before going live."]
-                    </p>
-                    <p>
+<body class="ms-Fabric" dir="ltr">
+    <main>
+        <div class="ms-Grid" dir="ltr" >
+            <div class="ms-Grid-row">
+                <div class="ms-Grid-col ms-sm12" style="float: inherit;text-align: center;">
+                    <span class="ms-font-su ms-fontColor-themePrimary">@Localizer["Mona admin center"]</span>
+                    <p class="ms-font-m">
                         @Localizer[
-                    "The behavior of these endpoints is identical to that of the live endpoints (defined in the technical details section above) " +
-                    "with the exception that subscriptions created/updated through these endpoints are only cached locally. AppSource/Azure Marketplace " +
-                    "is not aware of subscriptions created through these test endpoints."]
+                        "You'll need these technical details when you <a href=\"{0}\">publish your SaaS offer through the Partner Center</a>.",
+                        "https://docs.microsoft.com/azure/marketplace/create-new-saas-offer-technical"]
                     </p>
-                    <table class="table table-bordered table-striped">
-                        <tbody>
-                            <tr>
-                                <th scope="row" style="width: 50%">@Localizer["Test Landing Page URL"]</th>
-                                <td style="width: 50%"><a href="@Model.TestLandingPageUrl" target="_blank">@Model.TestLandingPageUrl</a></td>
-                            </tr>
-                            <tr>
-                                <th scope="row" style="width: 50%">@Localizer["Test Connection Webhook URL"]</th>
-                                <td style="width: 50%">@Model.TestWebhookUrl</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                }
-                else
-                {
-                    <div class="alert alert-secondary">@Localizer["Mona test endpoints are currently disabled. see <a class=\"alert-link\" href=\"#\">the Mona docs</a>."]</div>
-                }
-            </div>
-            <div class="admin-section" id="logic-apps-section">
-                <h5 class="display-5">@Localizer["Subscription event handlers"]</h5><hr />
-                <p>
-                    @Localizer[
-                    "These logic apps are automatically provisioned during the Mona setup process. Each logic app handles a " +
-                    "specific kind of subscription event (subscription purchased, cancelled, reinstated, etc.) From here, you can " +
-                    "see the state of each logic app, edit workflows, and manage other app resources."]
-                </p>
-                <div class="alert alert-primary">
-                    @Localizer[
-                    "New to logic apps? No problem! Check out <a class=\"alert-link\" href=\"{0}\">these docs</a> for more information on authoring your first workflows.",
-                    "https://docs.microsoft.com/en-us/azure/logic-apps/quickstart-create-first-logic-app-workflow"]
+                    <div class="ms-MessageBar ms-MessageBar--severeWarning">
+                        <div class="ms-MessageBar-content">
+                            <div class="ms-MessageBar-icon">
+                            <i class="ms-Icon ms-Icon--Warning"></i>
+                            </div>
+                            <div class="ms-MessageBar-text">
+                            This project is in Private Preview. Please do not use in production enviroments.
+                            <a class="ms-Link" href="#" title="More info about Example Link">Learn more</a> 
+                            </div>
+                        </div>
+                    </div>
+                </div>
 
+                <div class="ms-Grid-col ms-sm12" style="max-width: 50%;min-height: 70%;">
+                     <div class="ms-Pivot">
+                        <ul class="ms-Pivot-links">
+                            <li class="ms-Pivot-link is-selected" data-content="partner" title="Partner" tabindex="1">
+                            @Localizer["Partner center technical details"]
+                            </li>
+                            <li class="ms-Pivot-link" data-content="testing" title="Testing" tabindex="1">
+                            @Localizer["Testing"]
+                            </li>
+                            <li class="ms-Pivot-link" data-content="subscription" title="Subscription" tabindex="1">
+                            @Localizer["Subscription event handlers"]
+                            </li>
+                            <li class="ms-Pivot-link" data-content="configuration" title="Configuration" tabindex="1">
+                            @Localizer["Mona configuration settings"]
+                            </li>
+                        </ul>
+
+                        <div class="ms-Pivot-content" data-content="partner">
+                            <div class="ms-MessageBar">
+                                <div class="ms-MessageBar-content">
+                                    <div class="ms-MessageBar-icon"><i class="ms-Icon ms-Icon--Info"></i></div>
+                                    <div class="ms-MessageBar-text">
+                                        @Localizer["You'll need these technical details when you <a href=\"{0}\">publish your SaaS offer through the Partner Center</a>.",
+                                            "https://docs.microsoft.com/azure/marketplace/create-new-saas-offer-technical"]
+                                    </div>
+                                </div>
+                            </div><br/>
+                            <table class="table table-bordered table-striped">
+                                <tbody>
+                                    <tr>
+                                        <th>@Localizer["Landing Page URL"]</th>
+                                        <td>@Model.PartnerCenterTechnicalDetails.LandingPageUrl</td>
+                                    </tr>
+                                    <tr>
+                                        <th>@Localizer["Connection Webhook URL"]</th>
+                                        <td>@Model.PartnerCenterTechnicalDetails.WebhookUrl</td>
+                                    </tr>
+                                    <tr>
+                                        <th>@Localizer["Azure Active Directory Tenant ID"]</th>
+                                        <td>@Model.PartnerCenterTechnicalDetails.AadTenantId</td>
+                                    </tr>
+                                    <tr>
+                                        <th>@Localizer["Azure Active Directory Application ID"]</th>
+                                        <td>@Model.PartnerCenterTechnicalDetails.AadApplicationId</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+
+                            <button class="ms-Button ms-Button--primary">
+                                <span class="ms-Button-label">@Localizer["Testing"]</span>
+                                <i class="ms-Icon ms-Icon--DoubleChevronRight" style="font-size: 10px;padding-left: 5px;color:white;"></i>
+                            </button>
+                        </div>
+                      
+                        <div class="ms-Pivot-content" data-content="testing">
+                            @if (Model.IsTestModeEnabled)
+                            {
+                                <div class="ms-MessageBar">
+                                    <div class="ms-MessageBar-content">
+                                        <div class="ms-MessageBar-icon"><i class="ms-Icon ms-Icon--Info"></i></div>
+                                        <div class="ms-MessageBar-text">
+                                            @Localizer["Mona test endpoints are currently enabled. To disable them, see <a class=\"alert-link\" href=\"#\">the Mona docs</a>."]
+                                        </div>
+                                    </div>
+                                </div><br/>
+                                <p class="ms-font-m">@Localizer["These endpoints make it easy to test your SaaS subscription workflows before going live."] </p>
+                                <p class="ms-font-m">@Localizer["The behavior of these endpoints is identical to that of the live endpoints (defined in the technical details section above) " +
+                                    "with the exception that subscriptions created/updated through these endpoints are only cached locally. AppSource/Azure Marketplace " +
+                                    "is not aware of subscriptions created through these test endpoints."]
+                                </p>
+                                <table class="table table-bordered table-striped">
+                                    <tbody>
+                                        <tr>
+                                            <th scope="row" style="width: 50%">@Localizer["Test Landing Page URL"]</th>
+                                            <td style="width: 50%"><a href="@Model.TestLandingPageUrl" target="_blank">@Model.TestLandingPageUrl</a></td>
+                                        </tr>
+                                        <tr>
+                                            <th scope="row" style="width: 50%">@Localizer["Test Connection Webhook URL"]</th>
+                                            <td style="width: 50%">@Model.TestWebhookUrl</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            }
+                            else
+                            {
+                                <div class="alert alert-secondary">@Localizer["Mona test endpoints are currently disabled. see <a class=\"alert-link\" href=\"#\">the Mona docs</a>."]</div>
+                            }
+
+                            <button class="ms-Button  ms-Button--primary">
+                                <i class="ms-Icon ms-Icon--DoubleChevronLeft" style="font-size: 10px;padding-left: 5px;color:white;"></i>
+                                <span class="ms-Button-label">@Localizer["Partner Center"]</span>
+                            </button>
+                            <button class="ms-Button  ms-Button--primary">
+                                <span class="ms-Button-label">@Localizer["Subscription"]</span>
+                                <i class="ms-Icon ms-Icon--DoubleChevronRight" style="font-size: 10px;padding-left: 5px;color:white;"></i>
+                            </button>
+                    </div>
+
+                    <!--Subscription event handlers-->
+                    <div class="ms-Pivot-content" data-content="subscription">
+                        <p class="ms-font-m">
+                            @Localizer[
+                            "These logic apps are automatically provisioned during the Mona setup process. Each logic app handles a " +
+                            "specific kind of subscription event (subscription purchased, cancelled, reinstated, etc.) From here, you can " +
+                            "see the state of each logic app, edit workflows, and manage other app resources."]
+                        </p>
+                         <div class="ms-MessageBar">
+                            <div class="ms-MessageBar-content">
+                                <div class="ms-MessageBar-icon"><i class="ms-Icon ms-Icon--Info"></i></div>
+                                <div class="ms-MessageBar-text">
+                                        @Localizer[  "New to logic apps? No problem! Check out <a class=\"alert-link\" href=\"{0}\">these docs</a> for more information on authoring your first workflows.",
+                                        "https://docs.microsoft.com/en-us/azure/logic-apps/quickstart-create-first-logic-app-workflow"]
+                                </div>
+                            </div>
+                        </div><br/>
+                        
+                         <div class="ms-MessageBar">
+                            <div class="ms-MessageBar-content">
+                                <div class="ms-MessageBar-icon"><i class="ms-Icon ms-Icon--Info"></i></div>
+                                <div class="ms-MessageBar-text">
+                                    @Localizer[
+                                    "Want to handle these events somewhere other than logic apps? Subscribe to <a class=\"alert-link\" href=\"{0}\" target=\"_blank\">this event grid topic</a> from anywhere — " +
+                                    "<a class=\"alert-link\" href=\"{1}\">Azure Functions</a>, <a class=\"alert-link\" href=\"{2}\">Power Automate</a>, or even " +
+                                    "<a class=\"alert-link\" href=\"{3}\">your own code</a>.",
+                                    Model.EventGridTopicOverviewUrl,
+                                    "https://docs.microsoft.com/azure/azure-functions/functions-bindings-event-grid-trigger",
+                                    "https://flow.microsoft.com/connectors/shared_azureeventgrid/azure-event-grid/",
+                                    "https://docs.microsoft.com/azure/event-grid/webhook-event-delivery"]
+                                </div>
+                            </div>
+                        </div><br/>
+                        <table class="table">
+                            <tbody>
+                                @foreach (var plugin in Model.IntegrationPlugins.OrderBy(p => p.Status).ThenBy(p => p.DisplayName))
+                                {
+                                    <tr>
+                                        <td class="align-middle text-center">
+                                            <img src="@GetLogicAppStatusIconPath(plugin.Status)" alt="@GetLogicAppStatusIconAltText(plugin.Status)" width="32" height="32" class="mx-auto d-block" style="margin-bottom: 5px" />
+                                            <span class="badge bg-dark text-light">@GetPluginTypeName(plugin)</span><br/><p class="ms-font-s">@GetLogicAppStatusName(plugin.Status)</p>
+                                        </td>
+                                        <td class="align-middle">
+                                            <label class="ms-Label is-disabled">@GetSubscriptionEventTitle(plugin)</label>
+                                            <p class="ms-font-l">@plugin.DisplayName</p>
+                                            <p class="ms-font-m">@plugin.Description</p>
+                                            <a role="button" class="ms-Button  ms-Button--primary" href="@plugin.EditorUrl" target="_blank" style="color: transparent;">
+                                                <span class="ms-Button-label">@Localizer["Edit workflow"]</span>
+                                                <i class="ms-Icon ms-Icon--DoubleChevronRight" style="font-size: 10px;padding-left: 5px;color:white;"></i>
+                                            </a>
+                                            <a role="button" class="ms-Button" href="@plugin.ManagementUrl" target="_blank" style="color: transparent;">
+                                                <span class="ms-Button-label">@Localizer["Manage"]</span>
+                                                <i class="ms-Icon ms-Icon--DoubleChevronRight" style="font-size: 10px;padding-left: 5px;color:black;"></i>
+                                            </a>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                        <br/><br/>
+                        <button class="ms-Button  ms-Button--primary">
+                            <i class="ms-Icon ms-Icon--DoubleChevronLeft" style="font-size: 10px;padding-left: 5px;color:white;"></i>
+                            <span class="ms-Button-label">@Localizer["Testing"]</span>
+                        </button>
+                        <button class="ms-Button  ms-Button--primary">
+                            <span class="ms-Button-label">@Localizer["Mona configuration"]</span>
+                            <i class="ms-Icon ms-Icon--DoubleChevronRight" style="font-size: 10px;padding-left: 5px;color:white;"></i>
+                        </button>
+                        <br/><br/>
+                    </div>
+                    <div class="ms-Pivot-content" data-content="configuration">
+                        <p class="ms-font-m">
+                            @Localizer[
+                            "These configuration settings control nearly every aspect of how this Mona deployment behaves. " +
+                            "Most of these settings are automatically configured during the initial Mona setup. " +
+                            "For more information on these settings, please <a href=\"{0}\">visit the Mona docs</a>.",
+                            "https://github.com/azure"]
+                        </p>
+                        <a role="button" class="ms-Button  ms-Button--primary" href="@Model.ConfigurationSettingsEditorUrl" target="_blank">
+                             <span class="ms-Button-label">@Localizer["Manage configuration settings"]</span>
+                             <i class="ms-Icon ms-Icon--DoubleChevronRight" style="font-size: 10px;padding-left: 5px;color:white;"></i>
+                        </a>
+                        <br><br>
+                        <button class="ms-Button  ms-Button--primary">
+                            <i class="ms-Icon ms-Icon--DoubleChevronLeft" style="font-size: 10px;padding-left: 5px;color:white;"></i>
+                            <span class="ms-Button-label">@Localizer["Subscription"]</span>
+                        </button>
+                    </div>
                 </div>
-                <div class="alert alert-primary">
-                    @Localizer[
-                    "Want to handle these events somewhere other than logic apps? Subscribe to <a class=\"alert-link\" href=\"{0}\" target=\"_blank\">this event grid topic</a> from anywhere — " +
-                    "<a class=\"alert-link\" href=\"{1}\">Azure Functions</a>, <a class=\"alert-link\" href=\"{2}\">Power Automate</a>, or even " +
-                    "<a class=\"alert-link\" href=\"{3}\">your own code</a>.",
-                    Model.EventGridTopicOverviewUrl,
-                    "https://docs.microsoft.com/azure/azure-functions/functions-bindings-event-grid-trigger",
-                    "https://flow.microsoft.com/connectors/shared_azureeventgrid/azure-event-grid/",
-                    "https://docs.microsoft.com/azure/event-grid/webhook-event-delivery"]
-                </div>
-                <table class="table">
-                    <tbody>
-                        @foreach (var plugin in Model.IntegrationPlugins.OrderBy(p => p.Status).ThenBy(p => p.DisplayName))
-                        {
-                            <tr>
-                                <td class="align-middle text-center">
-                                    <img src="@GetLogicAppStatusIconPath(plugin.Status)" alt="@GetLogicAppStatusIconAltText(plugin.Status)" width="32" height="32" class="mx-auto d-block" style="margin-bottom: 5px" />
-                                    <small><span class="badge bg-dark text-light">@GetPluginTypeName(plugin)</span><br />@GetLogicAppStatusName(plugin.Status)</small>
-                                </td>
-                                <td class="align-middle">
-                                    <small><span class="text-muted">@GetSubscriptionEventTitle(plugin)</span></small><br />
-                                    <b>@plugin.DisplayName</b>
-                                    <p>
-                                        @plugin.Description
-                                    </p>
-                                    <a class="btn btn-primary" href="@plugin.EditorUrl" target="_blank">@Localizer["Edit workflow »"]</a>
-                                    <a class="btn btn-secondary" href="@plugin.ManagementUrl" target="_blank">@Localizer["Manage »"]</a>
-                                </td>
-                            </tr>
-                        }
-                    </tbody>
-                </table>
+             </div>
             </div>
-            <div class="admin-section" id="config-settings-section">
-                <h5 class="display-5">@Localizer["Mona configuration settings"]</h5><hr />
-                <p>
-                    @Localizer[
-                    "These configuration settings control nearly every aspect of how this Mona deployment behaves. " +
-                    "Most of these settings are automatically configured during the initial Mona setup. " +
-                    "For more information on these settings, please <a href=\"{0}\">visit the Mona docs</a>.",
-                    "https://github.com/azure"]
-                </p>
-                <a role="button" class="btn btn-primary" href="@Model.ConfigurationSettingsEditorUrl" target="_blank">@Localizer["Manage configuration settings »"]</a>
-            </div>
-            <div class="admin-section" id="about-section">
-                <h5 class="display-5">About Mona</h5><hr />
-                <h3>Mona for SaaS <small class="text-muted">@Model.MonaVersion</small></h3>
-                Copyright © Microsoft Corporation @DateTime.UtcNow.Year<br />
-                Licensed under the <a href="https://choosealicense.com/licenses/mit/">MIT License</a>
-            </div>
-        </div>
+       </div>
     </main>
+
+    <footer style="padding-top: 10px; position: absolute;">
+        <ul class="ms-List">
+            <li class="ms-ListItem ms-ListItem--image" tabindex="0">
+                <span class="ms-ListItem-primaryText">Mona for SaaS <small class="text-muted">@Model.MonaVersion</small></span>
+                <span class="ms-ListItem-secondaryText">Copyright © Microsoft Corporation @DateTime.UtcNow.Year</span>
+                <span class="ms-ListItem-tertiaryText">Licensed under the <a href="https://choosealicense.com/licenses/mit/">MIT License</a></span>
+            </li>
+        </ul>
+    </footer>
 </body>
+
+<script type="text/javascript">
+    var PivotElements = document.querySelectorAll(".ms-Pivot");
+    for (var i = 0; i < PivotElements.length; i++) {
+      new fabric['Pivot'](PivotElements[i]);
+    }
+ </script>
 </html>
