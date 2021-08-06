@@ -1,7 +1,6 @@
 ﻿@model SetupModel;
 
 @using Microsoft.AspNetCore.Mvc.Localization
-@using Mona.SaaS.Core.Constants
 
 @inject IViewLocalizer Localizer
 
@@ -11,223 +10,71 @@
 
 <html lang="@Localizer["en"]">
 <head>
-    <link rel="stylesheet" href="https://static2.sharepointonline.com/files/fabric/office-ui-fabric-js/1.4.0/css/fabric.min.css" />
-    <link rel="stylesheet" href="https://static2.sharepointonline.com/files/fabric/office-ui-fabric-js/1.4.0/css/fabric.components.min.css" />
-    <script src="https://static2.sharepointonline.com/files/fabric/office-ui-fabric-js/1.4.0/js/fabric.min.js"></script>
     <link href="~/lib/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet" />
     <title>@Localizer["Mona setup"]</title>
     <style>
-        .ms-TextField-field{display: block;}
-        .ms-MessageBar{width: -webkit-fill-available; padding: 15px;}
-        .ms-Icon.ms-Icon--Asterisk {font-size: 10px;font-weight: bolder;color:darkred;}
-        .ms-MessageBar-icon{font-size: 15px;}
-        .ms-Label{font-size:14px;text-align: left;}
+        div.setup-section {
+            margin-bottom: 60px;
+        }
+
+        span.required {
+            color: red;
+        }
     </style>
 </head>
-<body class="ms-Fabric" dir="ltr">
-    <main>
-        <div class="ms-Grid" dir="ltr" >
-            <div class="ms-Grid-row" style="height: 87%;">
-                <div class="ms-Grid-col ms-sm12" style="float: inherit;text-align: center;">
-                    <span class="ms-font-su ms-fontColor-themePrimary">@Localizer["Mona setup"]</span>
-                    <p class="ms-font-xl"> @Localizer["Tell us a little about yourself"]</p>
-                    <p class="ms-font-m">
-                        <b>@Localizer["Thank you for installing Mona."]</b>
-                        @Localizer["Before we go any further, we need some additional information about you so we can better customize the purchasing experience for your customers. " +
-                        "This shouldn't take long. Before you know it, you'll be up and running and transacting with Microsoft."]
-                        <a class="ms-fontColor-themePrimary" href="">Learn more <i class="ms-Icon ms-Icon--ChevronRightSmall"></i></a>
-                    </p>
-
-                    <div class="ms-MessageBar ms-MessageBar--severeWarning">
-                        <div class="ms-MessageBar-content">
-                          <div class="ms-MessageBar-icon">
-                            <i class="ms-Icon ms-Icon--Warning"></i>
-                          </div>
-                          <div class="ms-MessageBar-text">
-                            This project is in Private Preview. Please do not use in production enviroments.
-                            <a class="ms-Link" href="#" title="More info about Example Link">Learn more</a> 
-                          </div>
-                        </div>
-                    </div>
-                </div>
-            
+<body style="display: flex; align-items: center; height: 100%; padding-top: 40px; padding-bottom: 40px">
+    <main style="width: 100%; max-width: 960px; padding: 15px; margin: auto">
+        <div class="container">
+            <h4 class="display-4">@Localizer["Tell us a little about yourself"]</h4>
+            <p class="lead">
+                <b>@Localizer["Thank you for installing Mona."]</b>
+                @Localizer["Before we go any further, we need some additional information about you so we can better customize the purchasing experience for your customers. " +
+                "This shouldn't take long. Before you know it, you'll be up and running and transacting with Microsoft."]
+            </p>
             @using (Html.BeginForm())
             {
                 @Html.AntiForgeryToken();
-
-                <div class="ms-Grid-col ms-sm12" style="text-align: center;min-height: 70%;float: inherit;margin: auto;max-width: 50%;min-width: 45%;">
-                        
-                    <div class="ms-Pivot">
-
-                        <ul class="ms-Pivot-links">
-                            <li class="ms-Pivot-link is-selected" data-content="purchase" title="Purchase" tabindex="1">
-                            @Localizer["Purchase"]
-                            </li>
-                            <li class="ms-Pivot-link" data-content="configuration" title="Configuration" tabindex="1">
-                            @Localizer["Configuration"]
-                            </li>
-                            <li class="ms-Pivot-link" data-content="publisher" title="Publisher" tabindex="1">
-                            @Localizer["Publisher"]
-                            </li>
-                            <li class="ms-Pivot-link" data-content="review" title="Review" tabindex="1">
-                            @Localizer["Review + Submit"]
-                            </li>
-                            <li class="ms-Pivot-link" tabindex="1">
-                            <i class="ms-Pivot-ellipsis ms-Icon ms-Icon--More"></i>
-                            </li>
-                        </ul>
-
-                        <div class="ms-Pivot-content" data-content="purchase">
-                            <div class="ms-MessageBar">
-                                <div class="ms-MessageBar-content">
-                                    <div class="ms-MessageBar-icon"><i class="ms-Icon ms-Icon--Info"></i></div>
-                                    <div class="ms-MessageBar-text">
-                                        If you have any concern about this value, please check out this <a class="ms-Link" href="#" title="More info about Example Link">documantation page</a>.
-                                    </div>
-                                </div>
-                            </div><br/>
-                            <div class="ms-TextField">
-                                @Html.LabelFor(m => m.Publisher.SubscriptionPurchaseConfirmationUrl, new { @class = "ms-Label is-required" })
-                                @Html.TextBoxFor(m => m.Publisher.SubscriptionPurchaseConfirmationUrl, new { @class="ms-TextField-field", placeholder = "https://yourdomain.com/saas/purchased/{subscription-id}" })
-                                <div class="ms-MessageBar-icon" style="padding-right: 0px;"><i class="ms-Icon ms-Icon ms-Icon--Asterisk"></i></div>
-                                <span class="ms-font-xs" style="display: table-cell;">@Localizer["After your customer has confirmed their purchase through the landing page, they will automatically be redirected to this URL." +
-                                "Note that you can include the customer's subscription ID in the URL by using the <code>{{subscription-id}}</code> placeholder."]</span>
-                            </div><br/><br/>
-                           <button class="ms-Button">
-                                <span class="ms-Button-label">Configuration</span>
-                                <i class="ms-Icon ms-Icon--DoubleChevronRight" style="font-size: 10px;padding-left: 5px;"></i>
-                            </button>
-                        </div>
-
-                         <div class="ms-Pivot-content" data-content="configuration">
-                             <div class="ms-MessageBar">
-                                <div class="ms-MessageBar-content">
-                                    <div class="ms-MessageBar-icon"><i class="ms-Icon ms-Icon--Info"></i></div>
-                                    <div class="ms-MessageBar-text">
-                                        If you have any concern about this value, please check out this <a class="ms-Link" href="#" title="More info about Example Link">documantation page</a>.
-                                    </div>
-                                </div>
-                            </div><br/>
-                            <div class="ms-TextField" style="text-align: left;">
-                                @Html.LabelFor(m => m.Publisher.SubscriptionConfigurationUrl, new { @class = "ms-Label is-required" }) 
-                                @Html.TextBoxFor(m => m.Publisher.SubscriptionConfigurationUrl, new { @class="ms-TextField-field", placeholder = "https://yourdomain.com/saas/config/{subscription-id}" })
-                                <div class="ms-MessageBar-icon" style="padding-right: 0px;"><i class="ms-Icon ms-Icon ms-Icon--Asterisk"></i></div>
-                                <span class="ms-font-xs" style="display: table-cell;">@Localizer["If your customer chooses to configure their subscription through AppSource/Marketplace, they will be automatically redirected to this URL." + 
-                                "Note that you can include the customer's subscription ID in the URL by using the <code>{{subscription-id}}</code> placeholder."]</span>
-                            </div><br/><br/>
-                            <button class="ms-Button">
-                                <i class="ms-Icon ms-Icon--DoubleChevronLeft" style="font-size: 10px;padding-left: 5px;"></i>
-                                <span class="ms-Button-label">Purchase</span>
-                            </button>
-                            <button class="ms-Button">
-                                <span class="ms-Button-label">Publisher</span><i class="ms-Icon ms-Icon--DoubleChevronRight" style="font-size: 10px;padding-left: 5px;"></i>
-                            </button>
-                        </div>
-                            
-                        <div class="ms-Pivot-content" data-content="publisher">
-                            <div class="ms-TextField" style="text-align: left;">
-                                @Html.LabelFor(m => m.Publisher.PublisherDisplayName, new { @class = "ms-Label is-required" })
-                                @Html.TextBoxFor(m => m.Publisher.PublisherDisplayName, new { @class="ms-TextField-field" })
-                                <div class="ms-MessageBar-icon" style="padding-right: 0px;"><i class="ms-Icon ms-Icon ms-Icon--Asterisk"></i></div>
-                                <span class="ms-font-xs" style="display: table-cell;">@Localizer["The name of your company as it will appear on the landing page."]</span>
-                                    
-                                @Html.LabelFor(m => m.Publisher.PublisherHomePageUrl, new { @class = "ms-Label" })
-                                @Html.TextBoxFor(m => m.Publisher.PublisherHomePageUrl, new { @class="ms-TextField-field", placeholder = "https://yourdomain.com" })
-                                <span class="ms-font-xs">@Localizer["*Your company's home page."]</span>
-                                    
-                                @Html.LabelFor(m => m.Publisher.PublisherContactPageUrl, new { @class = "ms-Label" })
-                                @Html.TextBoxFor(m => m.Publisher.PublisherContactPageUrl, new { @class="ms-TextField-field", placeholder = $"https://yourdomain.com/contact-us" })
-                                <span class="ms-font-xs">@Localizer["*Your company's contact page."]</span>
-                                    
-                                @Html.LabelFor(m => m.Publisher.PublisherPrivacyNoticePageUrl, new { @class = "ms-Label" })
-                                @Html.TextBoxFor(m => m.Publisher.PublisherPrivacyNoticePageUrl, new { @class="ms-TextField-field", placeholder = $"https://yourdomain.com/privacy" })
-                                <span class="ms-font-xs">@Localizer["*Your company's private notice page."]</span>
-                                    
-                                @Html.LabelFor(m => m.Publisher.PublisherCopyrightNotice, new { @class = "ms-Label" })
-                                @Html.TextBoxFor(m => m.Publisher.PublisherCopyrightNotice, new { @class="ms-TextField-field", placeholder = $"© Awesome ISV {DateTime.UtcNow.Year}" })
-                                <span class="ms-font-xs">@Localizer["*Your copyright notice as it will appear on the landing page."]</span>
-                            </div><br/><br/>
-                            <button class="ms-Button">
-                                <i class="ms-Icon ms-Icon--DoubleChevronLeft" style="font-size: 10px;padding-left: 5px;"></i>
-                                <span class="ms-Button-label">Configuration</span>
-                            </button>
-                            <button class="ms-Button">
-                                <span class="ms-Button-label">Review + Submit</span><i class="ms-Icon ms-Icon--DoubleChevronRight" style="font-size: 10px;padding-left: 5px;"></i>
-                            </button>
-                        </div>
-                            
-                        <div class="ms-Pivot-content" data-content="review">
-                            <div class="ms-MessageBar">
-                                <div class="ms-MessageBar-content">
-                                    <div class="ms-MessageBar-icon">
-                                    <i class="ms-Icon ms-Icon--Info"></i>
-                                    </div>
-                                    <div class="ms-MessageBar-text">
-                                    Thank you for configuring Mona. Before complete review the information.
-                                    </div>
-                                </div>
-                            </div>
-                            <br><br>
-
-                            <table class="ms-Table">
-                              <tbody>
-                                <tr>
-                                  <td>@Html.LabelFor(m => m.Publisher.SubscriptionPurchaseConfirmationUrl, new { @class = "ms-Label is-required" })</td>
-                                  <td>Modified</td>
-                                </tr>
-                                <tr>
-                                  <td>@Html.LabelFor(m => m.Publisher.SubscriptionConfigurationUrl, new { @class = "ms-Label is-required" })</td>
-                                  <td>Modified</td>
-                                </tr>
-                                <tr>
-                                  <td>@Html.LabelFor(m => m.Publisher.PublisherDisplayName, new { @class = "ms-Label is-required" })</td>
-                                  <td>Modified</td>
-                                </tr>
-                                <tr>
-                                  <td>@Html.LabelFor(m => m.Publisher.PublisherHomePageUrl, new { @class = "ms-Label" })</td>
-                                  <td>Modified</td>
-                                </tr>
-                                <tr>
-                                  <td>@Html.LabelFor(m => m.Publisher.PublisherContactPageUrl, new { @class = "ms-Label" })</td>
-                                  <td>Modified</td>
-                                </tr>
-                                <tr>
-                                  <td>@Html.LabelFor(m => m.Publisher.PublisherPrivacyNoticePageUrl, new { @class = "ms-Label" })</td>
-                                  <td>Modified</td>
-                                </tr>
-                                <tr>
-                                  <td>@Html.LabelFor(m => m.Publisher.PublisherCopyrightNotice, new { @class = "ms-Label" })</td>
-                                  <td>Modified</td>
-                                </tr>
-                                <tr>
-                             </table>
-                            <br/><br/>
-                            <button class="ms-Button ms-Button--primary" type="submit">
-                                <span class="ms-Button-label">@Localizer["Complete setup"]</span>
-                            </button>
-                        </div>
+                <div style="margin-top: 45px">
+                    <div style="margin-bottom: 30px">
+                        @Html.LabelFor(m => m.Publisher.SubscriptionPurchaseConfirmationUrl, new { @class = "form-label" }) <span class="required">*</span>
+                        @Html.TextBoxFor(m => m.Publisher.SubscriptionPurchaseConfirmationUrl, new { @class = "form-control", placeholder = "https://yourdomain.com/saas/purchased/{subscription-id}" })
+                        <div class="form-text text-muted"><small>@Localizer["After your customer has confirmed their purchase through the landing page, they will automatically be redirected to this URL. Note that you can include the customer's subscription ID in the URL by using the <code>{{subscription-id}}</code> placeholder."]</small></div>
                     </div>
+                    <div style="margin-bottom: 30px">
+                        @Html.LabelFor(m => m.Publisher.SubscriptionConfigurationUrl, new { @class = "form-label" }) <span class="required">*</span>
+                        @Html.TextBoxFor(m => m.Publisher.SubscriptionConfigurationUrl, new { @class = "form-control", placeholder = "https://yourdomain.com/saas/config/{subscription-id}" })
+                        <div class="form-text text-muted"><small>@Localizer["If your customer chooses to configure their subscription through AppSource/Marketplace, they will be automatically redirected to this URL. Note that you can include the customer's subscription ID in the URL by using the <code>{{subscription-id}}</code> placeholder."]</small></div>
+                    </div>
+                    <div style="margin-bottom: 30px">
+                        @Html.LabelFor(m => m.Publisher.PublisherDisplayName, new { @class = "form-label" }) <span class="required">*</span>
+                        @Html.TextBoxFor(m => m.Publisher.PublisherDisplayName, new { @class = "form-control" })
+                        <div class="form-text text-muted"><small>@Localizer["The name of your company as it will appear on the landing page."]</small></div>
+                    </div>
+                    <div style="margin-bottom: 30px">
+                        @Html.LabelFor(m => m.Publisher.PublisherHomePageUrl, new { @class = "form-label" })
+                        @Html.TextBoxFor(m => m.Publisher.PublisherHomePageUrl, new { @class = "form-control", placeholder = "https://yourdomain.com" })
+                        <div class="form-text text-muted"><small>@Localizer["Your company's home page."]</small></div>
+                    </div>
+                    <div style="margin-bottom: 30px">
+                        @Html.LabelFor(m => m.Publisher.PublisherContactPageUrl, new { @class = "form-label" })
+                        @Html.TextBoxFor(m => m.Publisher.PublisherContactPageUrl, new { @class = "form-control", placeholder = $"https://yourdomain.com/contact-us" })
+                        <div class="form-text text-muted"><small>@Localizer["Your company's contact page."]</small></div>
+                    </div>
+                    <div style="margin-bottom: 30px">
+                        @Html.LabelFor(m => m.Publisher.PublisherPrivacyNoticePageUrl, new { @class = "form-label" })
+                        @Html.TextBoxFor(m => m.Publisher.PublisherPrivacyNoticePageUrl, new { @class = "form-control", placeholder = $"https://yourdomain.com/privacy" })
+                        <div class="form-text text-muted"><small>@Localizer["Your company's private notice page."]</small></div>
+                    </div>
+                    <div style="margin-bottom: 30px">
+                        @Html.LabelFor(m => m.Publisher.PublisherCopyrightNotice, new { @class = "form-label" })
+                        @Html.TextBoxFor(m => m.Publisher.PublisherCopyrightNotice, new { @class = "form-control", placeholder = $"© Awesome ISV {DateTime.UtcNow.Year}" })
+                        <div class="form-text text-muted"><small>@Localizer["Your copyright notice as it will appear on the landing page."]</small></div>
+                    </div>
+                    <hr />
+                    <button type="submit" class="btn btn-primary">@Localizer["Complete setup"]</button>
                 </div>
             }
-            </div>
-            <footer style="padding-top: 10px;text-align: center;">
-                <ul class="ms-List">
-                    <li class="ms-ListItem ms-ListItem--image" tabindex="0">
-                        <span class="ms-ListItem-primaryText" style="padding-right:30px">Mona for SaaS <small class="text-muted">1.0.0</small></span> 
-                        <span class="ms-ListItem-secondaryText">Copyright © Microsoft Corporation @DateTime.UtcNow.Year</span> 
-                        <span class="ms-ListItem-tertiaryText">Licensed under the <a href="https://choosealicense.com/licenses/mit/">MIT License</a></span> 
-                    </li>
-                </ul>
-            </footer>
-       </div>
+        </div>
     </main>
 </body>
-
-<script type="text/javascript">
-    var PivotElements = document.querySelectorAll(".ms-Pivot");
-    for (var i = 0; i < PivotElements.length; i++) {
-      new fabric['Pivot'](PivotElements[i]);
-    }
- </script>
-
 </html>
