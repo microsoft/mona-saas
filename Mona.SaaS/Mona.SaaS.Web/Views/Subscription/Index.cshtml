@@ -10,128 +10,149 @@
 
 <html lang="@Localizer["en"]">
 <head>
+    <link rel="stylesheet" href="https://static2.sharepointonline.com/files/fabric/office-ui-fabric-js/1.4.0/css/fabric.min.css" />
+    <link rel="stylesheet" href="https://static2.sharepointonline.com/files/fabric/office-ui-fabric-js/1.4.0/css/fabric.components.min.css" />
+    <script src="https://static2.sharepointonline.com/files/fabric/office-ui-fabric-js/1.4.0/js/fabric.min.js"></script>
     <link href="~/lib/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet" />
     <title>@Localizer["Confirm Purchase"]&nbsp;|&nbsp;@Model.OfferId</title>
     <style>
-        a.footer {
-            color: black;
-        }
+        .ms-TextField-field{display: block;}
+        .ms-MessageBar{width: -webkit-fill-available; padding: 15px;}
+        .ms-Label{font-size:14px;}
+        .ms-MessageBar-icon{font-size: 15px;}
     </style>
 </head>
-<body style="display: flex; align-items: center; height: 100%; padding-top: 40px; padding-bottom: 40px">
-    <main style="width: 100%; max-width: 960px; padding: 15px; margin: auto">
-        <div class="container">
-            @if (Model.InTestMode)
-            {
-            <div style="margin-bottom: 30px" class="alert alert-warning" role="alert">
-                <h5 class="alert-heading">@Localizer["Mona is currently running in test mode."]</h5>
-                @Localizer["In test mode, Mona will never try to reach out to any of"] <a href="https://docs.microsoft.com/azure/marketplace/partner-center-portal/pc-saas-fulfillment-api-v2" class="alert-link">@Localizer["the Microsoft Partner Center APIs"]</a>.
-                @Localizer["You can disable test mode through"] <a href=Url.RouteUrl("admin") class="alert-link"> @Localizer["the Mona admin center."]</a>
-                @Localizer["To learn more about test mode, please refer to"]<a href="https://github.com/azure" class="alert-link"> @Localizer["the Mona docs."]</a>
-            </div>
-            }
-            @if (string.IsNullOrEmpty(Model.ErrorCode))
-            {
-                if (string.IsNullOrEmpty(Model.UserFriendlyName))
-                {
-                    <h1 class="display-6">@Localizer["You're almost done."]</h1>
-                }
-                else
-                {
-                    <h1 class="display-6">@Localizer["You're almost done, {0}.", Model.UserFriendlyName]</h1>
-                }
-                <hr />
-                <p>@Localizer["Please review your purchase details below before confirming."]</p>
-                <table class="table table-bordered table-striped">
-                    <tbody>
-                        <tr>
-                            <th scope="row">@Localizer["Subscription"]</th>
-                            <td>
-                                @Model.SubscriptionName<br />
-                                <small class="text-muted">@Model.SubscriptionId</small>
-                            </td>
-                        </tr>
-                        <tr>
-                            <th scope="row">@Localizer["Offer"]</th>
-                            <td>@Model.OfferId</td>
-                        </tr>
-                        <tr>
-                            <th scope="row">@Localizer["Plan"]</th>
-                            <td>@Model.PlanId</td>
-                        </tr>
-                        @if (Model.SeatQuantity.HasValue)
-                        {
-                            <tr>
-                                <th scope="row">@Localizer["Seats"]</th>
-                                <td>@Model.SeatQuantity</td>
-                            </tr>
-                        }
-                        <tr>
-                            <th scope="row">@Localizer["Email"]</th>
-                            <td>@Model.BeneficiaryEmailAddress</td>
-                        </tr>
-                        @if (Model.BeneficiaryEmailAddress != Model.PurchaserEmailAddress)
-                        {
-                            <tr>
-                                <th scope="row">@Localizer["Purchaser Email"]</th>
-                                <td>@Model.PurchaserEmailAddress</td>
-                            </tr>
-                        }
-                    </tbody>
-                </table>
-                @using (Html.BeginForm())
-                {
-                    @Html.AntiForgeryToken()
-                    @Html.HiddenFor(m => m.SubscriptionId)
-                    <div style="margin-top: 30px">
-                        <button style="width: 100%" type="submit" class="btn btn-primary">@Localizer["Confirm Purchase"]</button>
-                    </div>
-                }
-            }
-            else
-            {
-                <div class="alert alert-danger" role="alert">
-                    <h4 class="alert-heading">@Localizer["Something went wrong."]</h4>
-                    @switch (Model.ErrorCode)
+<body class="ms-Fabric" dir="ltr">
+    <main>
+        <div class="ms-Grid" dir="ltr">
+            <div class="ms-Grid-row">
+                <div class="ms-Grid-col ms-sm12" style="float: inherit;text-align: center;min-height: 70%;">
+                    @if (Model.InTestMode)
                     {
-                        case Mona.SaaS.Web.Controllers.SubscriptionController.ErrorCodes.SubscriptionNotFound:
-                            <p>@Localizer["We were unable to activate your subscription. Please return to the original AppSource/Marketplace listing and try again."]</p>
-                            break;
-                        case Mona.SaaS.Web.Controllers.SubscriptionController.ErrorCodes.SubscriptionActivationFailed:
-                            <p>@Localizer["We were unable to activate your subscription. Please return to the original AppSource/Marketplace listing and try again."]</p>
-                            break;
-                        case Mona.SaaS.Web.Controllers.SubscriptionController.ErrorCodes.UnableToResolveMarketplaceToken:
-                            <p>@Localizer["We were unable to get your subscription information. Please return to the original AppSource/Marketplace listing and try again."]</p>
-                            break;
+                        <br/>
+                        <div class="ms-MessageBar ms-MessageBar--warning">
+                          <div class="ms-MessageBar-content">
+                            <div class="ms-MessageBar-icon">
+                              <i class="ms-Icon ms-Icon--Info"></i>
+                            </div>
+                            <div class="ms-MessageBar-text">
+                                <b> @Localizer["Mona is currently running in test mode."]</b>
+                                @Localizer["In test mode, Mona will never try to reach out to any of"] <a href="https://docs.microsoft.com/azure/marketplace/partner-center-portal/pc-saas-fulfillment-api-v2" class="alert-link">@Localizer["the Microsoft Partner Center APIs"]</a>.
+                                @Localizer["You can disable test mode through"] <a href=Url.RouteUrl("admin") class="alert-link"> @Localizer["the Mona admin center."]</a>
+                                @Localizer["To learn more about test mode, please refer to"]<a href="https://github.com/azure" class="alert-link"> @Localizer["the Mona docs."]</a>
+                            </div>
+                           </div>
+                         </div>
+                         <br/>
                     }
+                    @if (string.IsNullOrEmpty(Model.ErrorCode))
+                    {
+                        if (string.IsNullOrEmpty(Model.UserFriendlyName))
+                        {
+                            <span class="ms-font-su ms-fontColor-themePrimary">@Localizer["You're almost done."]</span>
+                        }
+                        else
+                        {
+                            <span class="ms-font-su ms-fontColor-themePrimary">@Localizer["You're almost done, {0}.", Model.UserFriendlyName]</span>
+                        }
+                        <hr />
+                        <p class="ms-font-xl">@Localizer["Please review your purchase details below before confirming."]</p>
+                        <table class="table table-bordered table-striped" style="max-width: 45%;margin: auto;">
+                            <tbody>
+                                <tr>
+                                    <th>@Localizer["Subscription"]</th>
+                                    <td>
+                                        @Model.SubscriptionName<br />
+                                        <small class="text-muted">@Model.SubscriptionId</small>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th>@Localizer["Offer"]</th>
+                                    <td>@Model.OfferId</td>
+                                </tr>
+                                <tr>
+                                    <th>@Localizer["Plan"]</th>
+                                    <td>@Model.PlanId</td>
+                                </tr>
+                                @if (Model.SeatQuantity.HasValue)
+                                {
+                                    <tr>
+                                        <th>@Localizer["Seats"]</th>
+                                        <td>@Model.SeatQuantity</td>
+                                    </tr>
+                                }
+                                <tr>
+                                    <th>@Localizer["Email"]</th>
+                                    <td>@Model.BeneficiaryEmailAddress</td>
+                                </tr>
+                                @if (Model.BeneficiaryEmailAddress != Model.PurchaserEmailAddress)
+                                {
+                                    <tr>
+                                        <th>@Localizer["Purchaser Email"]</th>
+                                        <td>@Model.PurchaserEmailAddress</td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                        @using (Html.BeginForm())
+                        {
+                            @Html.AntiForgeryToken()
+                            @Html.HiddenFor(m => m.SubscriptionId)
+                            <div style="margin: 30px auto;">
+                                <button class="ms-Button ms-Button--primary" type="submit" style="width: 45%;">
+                                    <span class="ms-Button-label">@Localizer["Complete setup"]</span>
+                                </button>
+                            </div>
+                        }
+                    }
+                    else
+                    {
+                        <div class="alert alert-danger" role="alert">
+                            <h4 class="alert-heading">@Localizer["Something went wrong."]</h4>
+                            @switch (Model.ErrorCode)
+                            {
+                                case Mona.SaaS.Web.Controllers.SubscriptionController.ErrorCodes.SubscriptionNotFound:
+                                    <p>@Localizer["We were unable to activate your subscription. Please return to the original AppSource/Marketplace listing and try again."]</p>
+                                    break;
+                                case Mona.SaaS.Web.Controllers.SubscriptionController.ErrorCodes.SubscriptionActivationFailed:
+                                    <p>@Localizer["We were unable to activate your subscription. Please return to the original AppSource/Marketplace listing and try again."]</p>
+                                    break;
+                                case Mona.SaaS.Web.Controllers.SubscriptionController.ErrorCodes.UnableToResolveMarketplaceToken:
+                                    <p>@Localizer["We were unable to get your subscription information. Please return to the original AppSource/Marketplace listing and try again."]</p>
+                                    break;
+                            }
+                        </div>
+                    }
+
                 </div>
-            }
-        </div>
-        <div class="container" style="margin-top: 30px">
-            <hr />
-            <p class="text-right">
-                @{
-                    if (string.IsNullOrEmpty(Model.PublisherHomePageUrl) == false)
-                    {
-                        <a class="footer" href="@Model.PublisherHomePageUrl">@Localizer["Home"]</a><span>&nbsp;|</span>
-                    }
 
-                    if (string.IsNullOrEmpty(Model.PublisherContactPageUrl) == false)
-                    {
-                        <a class="footer" href="@Model.PublisherContactPageUrl">@Localizer["Contact"]</a><span>&nbsp;|</span>
-                    }
+                <div class="container" style="margin-top: 30px">
+                    <hr />
+                    <p class="text-right">
+                        @{
+                            if (string.IsNullOrEmpty(Model.PublisherHomePageUrl) == false)
+                            {
+                                <a class="footer" href="@Model.PublisherHomePageUrl">@Localizer["Home"]</a><span>&nbsp;|</span>
+                            }
 
-                    if (string.IsNullOrEmpty(Model.PublisherPrivacyNoticePageUrl) == false)
-                    {
-                        <a class="footer" href="@Model.PublisherContactPageUrl">@Localizer["Privacy"]</a><span>&nbsp;|</span>
-                    }
+                            if (string.IsNullOrEmpty(Model.PublisherContactPageUrl) == false)
+                            {
+                                <a class="footer" href="@Model.PublisherContactPageUrl">@Localizer["Contact"]</a><span>&nbsp;|</span>
+                            }
 
-                    if (string.IsNullOrEmpty(Model.PublisherCopyrightNotice) == false)
-                    {
-                        <span class="footer">@Model.PublisherCopyrightNotice</span>
-                    }
-                }
-            </p>
+                            if (string.IsNullOrEmpty(Model.PublisherPrivacyNoticePageUrl) == false)
+                            {
+                                <a class="footer" href="@Model.PublisherContactPageUrl">@Localizer["Privacy"]</a><span>&nbsp;|</span>
+                            }
+
+                            if (string.IsNullOrEmpty(Model.PublisherCopyrightNotice) == false)
+                            {
+                                <span class="footer">@Model.PublisherCopyrightNotice</span>
+                            }
+                        }
+                    </p>
+                </>
+            </div>
         </div>
     </main>
 </body>

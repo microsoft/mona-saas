@@ -14,13 +14,14 @@
     <link rel="stylesheet" href="https://static2.sharepointonline.com/files/fabric/office-ui-fabric-js/1.4.0/css/fabric.min.css" />
     <link rel="stylesheet" href="https://static2.sharepointonline.com/files/fabric/office-ui-fabric-js/1.4.0/css/fabric.components.min.css" />
     <script src="https://static2.sharepointonline.com/files/fabric/office-ui-fabric-js/1.4.0/js/fabric.min.js"></script>
+    <link href="~/lib/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet" />
     <title>@Localizer["Mona setup"]</title>
     <style>
         .ms-TextField-field{display: block;}
         .ms-MessageBar{width: -webkit-fill-available; padding: 15px;}
         .ms-Icon.ms-Icon--Asterisk {font-size: 10px;font-weight: bolder;color:darkred;}
-        .ms-Label{font-size:14px;}
-        .ms-font-xl{font-weight:bold;}
+        .ms-MessageBar-icon{font-size: 15px;}
+        .ms-Label{font-size:14px;text-align: left;}
     </style>
 </head>
 <body class="ms-Fabric" dir="ltr">
@@ -28,9 +29,9 @@
         <div class="ms-Grid" dir="ltr" >
             <div class="ms-Grid-row" style="height: 87%;">
                 <div class="ms-Grid-col ms-sm12" style="float: inherit;text-align: center;">
-                    <span class="ms-font-su ms-fontColor-themePrimary">MONA SETUP</span>
+                    <span class="ms-font-su ms-fontColor-themePrimary">@Localizer["Mona setup"]</span>
                     <p class="ms-font-xl"> @Localizer["Tell us a little about yourself"]</p>
-                    <p class="ms-font-x">
+                    <p class="ms-font-m">
                         <b>@Localizer["Thank you for installing Mona."]</b>
                         @Localizer["Before we go any further, we need some additional information about you so we can better customize the purchasing experience for your customers. " +
                         "This shouldn't take long. Before you know it, you'll be up and running and transacting with Microsoft."]
@@ -54,22 +55,22 @@
             {
                 @Html.AntiForgeryToken();
 
-                <div class="ms-Grid-col ms-sm12" style="min-width: 45%;">
+                <div class="ms-Grid-col ms-sm12" style="text-align: center;min-height: 70%;float: inherit;margin: auto;max-width: 50%;min-width: 45%;">
                         
                     <div class="ms-Pivot">
 
                         <ul class="ms-Pivot-links">
                             <li class="ms-Pivot-link is-selected" data-content="purchase" title="Purchase" tabindex="1">
-                            Purchase
+                            @Localizer["Purchase"]
                             </li>
                             <li class="ms-Pivot-link" data-content="configuration" title="Configuration" tabindex="1">
-                            Configuration
+                            @Localizer["Configuration"]
                             </li>
                             <li class="ms-Pivot-link" data-content="publisher" title="Publisher" tabindex="1">
-                            Publisher
+                            @Localizer["Publisher"]
                             </li>
                             <li class="ms-Pivot-link" data-content="review" title="Review" tabindex="1">
-                            Review + Submit
+                            @Localizer["Review + Submit"]
                             </li>
                             <li class="ms-Pivot-link" tabindex="1">
                             <i class="ms-Pivot-ellipsis ms-Icon ms-Icon--More"></i>
@@ -107,7 +108,7 @@
                                     </div>
                                 </div>
                             </div><br/>
-                            <div class="ms-TextField">
+                            <div class="ms-TextField" style="text-align: left;">
                                 @Html.LabelFor(m => m.Publisher.SubscriptionConfigurationUrl, new { @class = "ms-Label is-required" }) 
                                 @Html.TextBoxFor(m => m.Publisher.SubscriptionConfigurationUrl, new { @class="ms-TextField-field", placeholder = "https://yourdomain.com/saas/config/{subscription-id}" })
                                 <div class="ms-MessageBar-icon" style="padding-right: 0px;"><i class="ms-Icon ms-Icon ms-Icon--Asterisk"></i></div>
@@ -124,7 +125,7 @@
                         </div>
                             
                         <div class="ms-Pivot-content" data-content="publisher">
-                            <div class="ms-TextField">
+                            <div class="ms-TextField" style="text-align: left;">
                                 @Html.LabelFor(m => m.Publisher.PublisherDisplayName, new { @class = "ms-Label is-required" })
                                 @Html.TextBoxFor(m => m.Publisher.PublisherDisplayName, new { @class="ms-TextField-field" })
                                 <div class="ms-MessageBar-icon" style="padding-right: 0px;"><i class="ms-Icon ms-Icon ms-Icon--Asterisk"></i></div>
@@ -209,10 +210,10 @@
                 </div>
             }
             </div>
-            <footer>
+            <footer style="padding-top: 10px;text-align: center;">
                 <ul class="ms-List">
                     <li class="ms-ListItem ms-ListItem--image" tabindex="0">
-                        <span class="ms-ListItem-primaryText">Mona for SaaS <small class="text-muted">1.0.0</small></span> 
+                        <span class="ms-ListItem-primaryText" style="padding-right:30px">Mona for SaaS <small class="text-muted">1.0.0</small></span> 
                         <span class="ms-ListItem-secondaryText">Copyright © Microsoft Corporation @DateTime.UtcNow.Year</span> 
                         <span class="ms-ListItem-tertiaryText">Licensed under the <a href="https://choosealicense.com/licenses/mit/">MIT License</a></span> 
                     </li>

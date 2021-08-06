@@ -76,6 +76,7 @@
         .ms-Icon.ms-Icon--Asterisk {font-size: 10px;font-weight: bolder;color:darkred;}
         .ms-Label{font-size:14px;}
         .ms-font-xl{font-weight:bold;}
+        .ms-MessageBar-icon{font-size: 15px;}
     </style>
 </head>
 <body class="ms-Fabric" dir="ltr">
@@ -102,7 +103,7 @@
                     </div>
                 </div>
 
-                <div class="ms-Grid-col ms-sm12" style="max-width: 50%;min-height: 70%;">
+                <div class="ms-Grid-col ms-sm12" style="text-align: center;min-height: 70%;float: inherit;margin: auto;max-width: 50%;">
                      <div class="ms-Pivot">
                         <ul class="ms-Pivot-links">
                             <li class="ms-Pivot-link is-selected" data-content="partner" title="Partner" tabindex="1">
@@ -294,10 +295,10 @@
        </div>
     </main>
 
-    <footer style="padding-top: 10px; position: absolute;">
+    <footer style="padding-top: 10px;text-align: center;">
         <ul class="ms-List">
-            <li class="ms-ListItem ms-ListItem--image" tabindex="0">
-                <span class="ms-ListItem-primaryText">Mona for SaaS <small class="text-muted">@Model.MonaVersion</small></span>
+            <li class="ms-ListItem" tabindex="0">
+                <span class="ms-ListItem-primaryText" style="padding-right:30px">Mona for SaaS <small class="text-muted">@Model.MonaVersion</small></span>
                 <span class="ms-ListItem-secondaryText">Copyright © Microsoft Corporation @DateTime.UtcNow.Year</span>
                 <span class="ms-ListItem-tertiaryText">Licensed under the <a href="https://choosealicense.com/licenses/mit/">MIT License</a></span>
             </li>
