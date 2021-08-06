@@ -159,6 +159,14 @@ Mona SaaS takes a dependency on the open source [Commercial Marketplace .NET Cli
 
 All other dependencies are automatically satisfied using [Nuget](https://docs.microsoft.com/nuget/what-is-nuget) during the Mona SaaS setup process. For more information on Mona SaaS' dependencies, [check out our dependency graph](https://github.com/microsoft/mona-saas/network/dependencies).
 
+## UI Design references
+* Frabic Core: [Fabric Core](https://developer.microsoft.com/en-us/fluentui#/get-started#fabric-core) is an open-source collection of CSS classes and Sass mixins that give you access to the colors, animations, fonts, icons and grid of the Fluent Design Language.
+
+* Fabric-JS: [Fabric-JS developer documentation](https://developer.microsoft.com/en-us/fluentui#/get-started#fabric-core)
+https://developer.microsoft.com/en-us/fabric-js/components/button/button
+
+* Fluent UI: [Styles](https://developer.microsoft.com/en-us/fluentui#/styles/web)
+
 ## Who supports Mona SaaS?
 
 > ⚠ __WARNING__ | Mona SaaS is currently in private preview. We do not yet recommend it for production scenarios.
