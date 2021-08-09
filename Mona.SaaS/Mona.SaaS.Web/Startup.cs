@@ -73,31 +73,13 @@ namespace Mona.SaaS.Web
 
             // Configuring Mona admin access...
 
-            if (string.IsNullOrEmpty(Configuration["Identity:AdminIdentity:RoleName"])) // Role based auth is the preferred route. If an admin role name is provided, we default to RBAC.
-            {
-                // By default, any user that belongs to the admin AAD tenant which is automatically configured during the setup process will have access to /admin.
+            services.AddSingleton<IAuthorizationHandler, AdminRoleAuthorizationHandler>();
 
-                services.AddSingleton<IAuthorizationHandler, AdminAuthorizationHandler>();
-
-                services.AddAuthorization(
-                    o => o.AddPolicy("admin",
-                    p => p.Requirements.Add(new AdminAuthorizationRequirement(
-                        Configuration["Identity:AdminIdentity:AadTenantId"],
-                        Configuration["Identity:AdminIdentity:AadUserId"],
-                        mustBeAdminUser: false)))); // Change this to [true] if *only* the original admin user should have access to /admin.
-            }
-            else
-            {
-                // However, if an admin role is specified, we'll use that role and the admin AAD tenant to control access to /admin.
-
-                services.AddSingleton<IAuthorizationHandler, AdminRoleAuthorizationHandler>();
-
-                services.AddAuthorization(
-                    o => o.AddPolicy("admin",
-                    p => p.Requirements.Add(new AdminRoleAuthorizationRequirement(
-                        Configuration["Identity:AdminIdentity:AadTenantId"],
-                        Configuration["Identity:AdminIdentity:RoleName"]))));
-            }
+            services.AddAuthorization(
+                o => o.AddPolicy("admin",
+                p => p.Requirements.Add(new AdminRoleAuthorizationRequirement(
+                    Configuration["Identity:AdminIdentity:AadTenantId"],
+                    Configuration["Identity:AdminIdentity:RoleName"]))));
 
             services.Configure<OpenIdConnectOptions>(AzureADDefaults.OpenIdScheme, options =>
             {
@@ -187,7 +169,6 @@ namespace Mona.SaaS.Web
             // Identity: AppIdentity: AadClientId                                   [Required] *
             // Identity: AppIdentity: AadClientSecret                               [Required] *
             // Identity: AdminIdentity: AadTenantId                                 [Required] *
-            // Identity: AdminIdentity: AadUserId                                   [Required] *
             // Identity: AdminIdentity: RoleName                                    [Optional]
 
             services.Configure<IdentityConfiguration>(this.Configuration.GetSection("Identity"));
