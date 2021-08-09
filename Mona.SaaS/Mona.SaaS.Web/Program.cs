@@ -1,6 +1,6 @@
 // MICROSOFT CONFIDENTIAL INFORMATION
 //
-// Copyright © Microsoft Corporation
+// Copyright ï¿½ Microsoft Corporation
 //
 // Microsoft Corporation (or based on where you live, one of its affiliates) licenses this preview code for your internal testing purposes only.
 //
@@ -26,16 +26,6 @@ namespace Mona.SaaS.Web
         }
 
         public static IHostBuilder CreateHostBuilder(string[] args) =>
-            Host.CreateDefaultBuilder(args)
-                .ConfigureWebHostDefaults(webBuilder =>
-                {
-                    webBuilder.UseStartup<Startup>();
-                    webBuilder.ConfigureAppConfiguration(c => c.AddAzureAppConfiguration(GetAppConfigurationServiceConnectionString()));
-                });
-
-        // In Azure, this environment variable should be set on the Azure Web App hosting this project.
-        // When testing locally, you'll need to manually set the environment variable.
-
-        private static string GetAppConfigurationServiceConnectionString() => Environment.GetEnvironmentVariable("APP_CONFIG_SERVICE_CONNECTION_STRING");
+            Host.CreateDefaultBuilder(args);
     }
 }
