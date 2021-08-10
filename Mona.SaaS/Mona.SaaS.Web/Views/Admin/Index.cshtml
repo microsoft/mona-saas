@@ -85,7 +85,7 @@
             <div class="ms-Grid-row">
                 <div class="ms-Grid-col ms-sm12" style="float: inherit;text-align: center;">
                     <span class="ms-font-su ms-fontColor-themePrimary">@Localizer["Mona admin center"]</span>
-                    <p class="ms-font-m">
+                    <p class="ms-font-l">
                         @Localizer[
                         "You'll need these technical details when you <a href=\"{0}\">publish your SaaS offer through the Partner Center</a>.",
                         "https://docs.microsoft.com/azure/marketplace/create-new-saas-offer-technical"]
@@ -125,7 +125,7 @@
                                 <div class="ms-MessageBar-content">
                                     <div class="ms-MessageBar-icon"><i class="ms-Icon ms-Icon--Info"></i></div>
                                     <div class="ms-MessageBar-text">
-                                        @Localizer["You'll need these technical details when you <a href=\"{0}\">publish your SaaS offer through the Partner Center</a>.",
+                                        @Localizer["You'll need these technical details when you <a class=\"alert-link\" href=\"{0}\">publish your SaaS offer through the Partner Center</a>.",
                                             "https://docs.microsoft.com/azure/marketplace/create-new-saas-offer-technical"]
                                     </div>
                                 </div>
@@ -150,11 +150,6 @@
                                     </tr>
                                 </tbody>
                             </table>
-
-                            <button class="ms-Button ms-Button--primary">
-                                <span class="ms-Button-label">@Localizer["Testing"]</span>
-                                <i class="ms-Icon ms-Icon--DoubleChevronRight" style="font-size: 10px;padding-left: 5px;color:white;"></i>
-                            </button>
                         </div>
                       
                         <div class="ms-Pivot-content" data-content="testing">
@@ -191,14 +186,6 @@
                                 <div class="alert alert-secondary">@Localizer["Mona test endpoints are currently disabled. see <a class=\"alert-link\" href=\"#\">the Mona docs</a>."]</div>
                             }
 
-                            <button class="ms-Button  ms-Button--primary">
-                                <i class="ms-Icon ms-Icon--DoubleChevronLeft" style="font-size: 10px;padding-left: 5px;color:white;"></i>
-                                <span class="ms-Button-label">@Localizer["Partner Center"]</span>
-                            </button>
-                            <button class="ms-Button  ms-Button--primary">
-                                <span class="ms-Button-label">@Localizer["Subscription"]</span>
-                                <i class="ms-Icon ms-Icon--DoubleChevronRight" style="font-size: 10px;padding-left: 5px;color:white;"></i>
-                            </button>
                     </div>
 
                     <!--Subscription event handlers-->
@@ -260,16 +247,6 @@
                                 }
                             </tbody>
                         </table>
-                        <br/><br/>
-                        <button class="ms-Button  ms-Button--primary">
-                            <i class="ms-Icon ms-Icon--DoubleChevronLeft" style="font-size: 10px;padding-left: 5px;color:white;"></i>
-                            <span class="ms-Button-label">@Localizer["Testing"]</span>
-                        </button>
-                        <button class="ms-Button  ms-Button--primary">
-                            <span class="ms-Button-label">@Localizer["Mona configuration"]</span>
-                            <i class="ms-Icon ms-Icon--DoubleChevronRight" style="font-size: 10px;padding-left: 5px;color:white;"></i>
-                        </button>
-                        <br/><br/>
                     </div>
                     <div class="ms-Pivot-content" data-content="configuration">
                         <p class="ms-font-m">
@@ -283,11 +260,6 @@
                              <span class="ms-Button-label">@Localizer["Manage configuration settings"]</span>
                              <i class="ms-Icon ms-Icon--DoubleChevronRight" style="font-size: 10px;padding-left: 5px;color:white;"></i>
                         </a>
-                        <br><br>
-                        <button class="ms-Button  ms-Button--primary">
-                            <i class="ms-Icon ms-Icon--DoubleChevronLeft" style="font-size: 10px;padding-left: 5px;color:white;"></i>
-                            <span class="ms-Button-label">@Localizer["Subscription"]</span>
-                        </button>
                     </div>
                 </div>
              </div>

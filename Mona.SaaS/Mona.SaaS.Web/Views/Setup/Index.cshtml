@@ -22,6 +22,7 @@
         .ms-Icon.ms-Icon--Asterisk {font-size: 10px;font-weight: bolder;color:darkred;}
         .ms-MessageBar-icon{font-size: 15px;}
         .ms-Label{font-size:14px;text-align: left;}
+        .ms-link{font-weight:600;}
     </style>
 </head>
 <body class="ms-Fabric" dir="ltr">
@@ -44,7 +45,7 @@
                             <i class="ms-Icon ms-Icon--Warning"></i>
                           </div>
                           <div class="ms-MessageBar-text">
-                            This project is in Private Preview. Please do not use in production enviroments.
+                             @Localizer["This project is in Private Preview. Please do not use in production enviroments."]
                             <a class="ms-Link" href="#" title="More info about Example Link">Learn more</a> 
                           </div>
                         </div>
@@ -82,7 +83,7 @@
                                 <div class="ms-MessageBar-content">
                                     <div class="ms-MessageBar-icon"><i class="ms-Icon ms-Icon--Info"></i></div>
                                     <div class="ms-MessageBar-text">
-                                        If you have any concern about this value, please check out this <a class="ms-Link" href="#" title="More info about Example Link">documantation page</a>.
+                                         @Localizer["If you have any concern about this value, please check out this "]<a class="ms-Link" href="#" title="More info about Example Link">@Localizer["documantation page"]</a>.
                                     </div>
                                 </div>
                             </div><br/>
@@ -90,11 +91,11 @@
                                 @Html.LabelFor(m => m.Publisher.SubscriptionPurchaseConfirmationUrl, new { @class = "ms-Label is-required" })
                                 @Html.TextBoxFor(m => m.Publisher.SubscriptionPurchaseConfirmationUrl, new { @class="ms-TextField-field", placeholder = "https://yourdomain.com/saas/purchased/{subscription-id}" })
                                 <div class="ms-MessageBar-icon" style="padding-right: 0px;"><i class="ms-Icon ms-Icon ms-Icon--Asterisk"></i></div>
-                                <span class="ms-font-xs" style="display: table-cell;">@Localizer["After your customer has confirmed their purchase through the landing page, they will automatically be redirected to this URL." +
+                                <span class="ms-font-xs" style="display: table-cell; text-align: left;">@Localizer["After your customer has confirmed their purchase through the landing page, they will automatically be redirected to this URL." +
                                 "Note that you can include the customer's subscription ID in the URL by using the <code>{{subscription-id}}</code> placeholder."]</span>
                             </div><br/><br/>
                            <button class="ms-Button">
-                                <span class="ms-Button-label">Configuration</span>
+                                <span class="ms-Button-label">@Localizer["Configuration"]</span>
                                 <i class="ms-Icon ms-Icon--DoubleChevronRight" style="font-size: 10px;padding-left: 5px;"></i>
                             </button>
                         </div>
@@ -104,7 +105,7 @@
                                 <div class="ms-MessageBar-content">
                                     <div class="ms-MessageBar-icon"><i class="ms-Icon ms-Icon--Info"></i></div>
                                     <div class="ms-MessageBar-text">
-                                        If you have any concern about this value, please check out this <a class="ms-Link" href="#" title="More info about Example Link">documantation page</a>.
+                                        @Localizer["If you have any concern about this value, please check out this "]<a class="ms-Link" href="#" title="More info about Example Link">@Localizer["documantation page"]</a>.
                                     </div>
                                 </div>
                             </div><br/>
@@ -117,10 +118,11 @@
                             </div><br/><br/>
                             <button class="ms-Button">
                                 <i class="ms-Icon ms-Icon--DoubleChevronLeft" style="font-size: 10px;padding-left: 5px;"></i>
-                                <span class="ms-Button-label">Purchase</span>
+                                <span class="ms-Button-label">@Localizer["Purchase"]</span>
                             </button>
                             <button class="ms-Button">
-                                <span class="ms-Button-label">Publisher</span><i class="ms-Icon ms-Icon--DoubleChevronRight" style="font-size: 10px;padding-left: 5px;"></i>
+                                <span class="ms-Button-label">@Localizer["Publisher"]</span>
+                                <i class="ms-Icon ms-Icon--DoubleChevronRight" style="font-size: 10px;padding-left: 5px;"></i>
                             </button>
                         </div>
                             
@@ -149,23 +151,19 @@
                             </div><br/><br/>
                             <button class="ms-Button">
                                 <i class="ms-Icon ms-Icon--DoubleChevronLeft" style="font-size: 10px;padding-left: 5px;"></i>
-                                <span class="ms-Button-label">Configuration</span>
+                                <span class="ms-Button-label">@Localizer["Configuration"]</span>
                             </button>
                             <button class="ms-Button">
-                                <span class="ms-Button-label">Review + Submit</span><i class="ms-Icon ms-Icon--DoubleChevronRight" style="font-size: 10px;padding-left: 5px;"></i>
+                                <span class="ms-Button-label">@Localizer["Review + Submit"]</span><i class="ms-Icon ms-Icon--DoubleChevronRight" style="font-size: 10px;padding-left: 5px;"></i>
                             </button>
                         </div>
                             
                         <div class="ms-Pivot-content" data-content="review">
-                            <div class="ms-MessageBar">
-                                <div class="ms-MessageBar-content">
-                                    <div class="ms-MessageBar-icon">
-                                    <i class="ms-Icon ms-Icon--Info"></i>
-                                    </div>
-                                    <div class="ms-MessageBar-text">
-                                    Thank you for configuring Mona. Before complete review the information.
-                                    </div>
-                                </div>
+                            <div class="ms-MessageBar ms-MessageBar--success">
+                              <div class="ms-MessageBar-content">
+                                <div class="ms-MessageBar-icon"><i class="ms-Icon ms-Icon--Completed"></i></div>
+                                <div class="ms-MessageBar-text">@Localizer["Thank you for configuring Mona. Before complete review the information."]</div>
+                              </div>
                             </div>
                             <br><br>
 
@@ -228,6 +226,11 @@
     for (var i = 0; i < PivotElements.length; i++) {
       new fabric['Pivot'](PivotElements[i]);
     }
+
+    var ButtonElements = document.querySelectorAll(".ms-Button");
+      for (var i = 0; i < ButtonElements.length; i++) {
+        new fabric['Button'](ButtonElements[i], function() {});
+      }
  </script>
 
 </html>
