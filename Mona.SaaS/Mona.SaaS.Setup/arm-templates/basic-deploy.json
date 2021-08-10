@@ -48,11 +48,12 @@
         }
     },
     "variables": {
-        "monaVersion": "0.1-prerelease",
+        "monaVersion": "0.1-prerelease", // TODO: We need to get better at bumping this...
         "deploymentName": "[toLower(if(empty(parameters('deploymentName')), uniqueString(resourceGroup().id), parameters('deploymentName')))]",
         "deploymentNameUnique": "[uniqueString(resourceGroup().id, deployment().name, variables('deploymentName'))]",
         "storageAccountName": "[concat('monastorage', variables('deploymentNameUnique'))]",
         "blobServiceName": "default",
+        "configContainerName": "configuration",
         "testSubContainerName": "test-subscriptions",
         "stageSubContainerName": "stage-subscriptions",
         "eventGridTopicName": "[concat('mona-events-', variables('deploymentName'))]",
@@ -309,6 +310,18 @@
             }
         },
         {
+            "type": "Microsoft.Storage/storageAccounts/blobServices/containers",
+            "apiVersion": "2021-01-01",
+            "name": "[concat(variables('storageAccountName'), '/', variables('blobServiceName'), '/', variables('configContainerName'))]",
+            "dependsOn": [
+                "[variables('storageAccountName')]",
+                "[resourceId('Microsoft.Storage/storageAccounts/blobServices', variables('storageAccountName'), variables('blobServiceName'))]"
+            ],
+            "properties": {
+                "publicAccess": "None"
+            }
+        },
+        {
             "type": "Microsoft.EventGrid/topics",
             "apiVersion": "2020-06-01",
             "name": "[variables('eventGridTopicName')]",
@@ -385,7 +398,9 @@
                 "Subscriptions:Staging:Cache:BlobStorage:ConnectionString": "[concat('DefaultEndpointsProtocol=https;AccountName=', variables('storageAccountName'), ';AccountKey=', listKeys(resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName')), '2021-01-01').keys[0].value, ';EndpointSuffix=core.windows.net')]",
                 "Subscriptions:Testing:Cache:BlobStorage:ConnectionString": "[concat('DefaultEndpointsProtocol=https;AccountName=', variables('storageAccountName'), ';AccountKey=', listKeys(resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName')), '2021-01-01').keys[0].value, ';EndpointSuffix=core.windows.net')]",
                 "Subscriptions:Staging:Cache:BlobStorage:ContainerName": "[variables('stageSubContainerName')]",
-                "Subscriptions:Testing:Cache:BlobStorage:ContainerName": "[variables('testSubContainerName')]"
+                "Subscriptions:Testing:Cache:BlobStorage:ContainerName": "[variables('testSubContainerName')]",
+                "PublisherConfiguration:Store:BlobStorage:ConnectionString": "[concat('DefaultEndpointsProtocol=https;AccountName=', variables('storageAccountName'), ';AccountKey=', listKeys(resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName')), '2021-01-01').keys[0].value, ';EndpointSuffix=core.windows.net')]",
+                "PublisherConfiguration:Store:BlobStorage:ContainerName": "[variables('configContainerName')]"
             }
         },
         {

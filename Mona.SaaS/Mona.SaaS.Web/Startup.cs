@@ -124,73 +124,17 @@ namespace Mona.SaaS.Web
             services.AddTransient<ISubscriptionEventPublisher, EventGridSubscriptionEventPublisher>();
             services.AddTransient<ISubscriptionStagingCache, BlobStorageSubscriptionStagingCache>();
             services.AddTransient<ISubscriptionTestingCache, BlobStorageSubscriptionTestingCache>();
+            services.AddTransient<IPublisherConfigurationStore, BlobStoragePublisherConfigurationStore>();
         }
 
         public void ConfigureOptions(IServiceCollection services)
         {
-            services.AddAzureAppConfiguration();
-
-            // Default Configuration Settings Reference
-            // =========================================================================
-            // NOTE: Many of these settings are automatically configured during setup.
-            // -------------------------------------------------------------------------
-            // Publisher: PublisherDisplayName                              [Required] *
-            // Publisher: PublisherHomePageUrl                              [Optional]
-            // Publisher: PublisherPrivacyNoticePageUrl                     [Optional]
-            // Publisher: PublisherContactPageUrl                           [Optional]
-            // Publisher: PublisherCopyrightNotice                          [Optional]
-            // Publisher: SubscriptionConfigurationUrl                      [Required] *
-            // Publisher: SubscriptionPurchaseConfirmationUrl               [Required] *
-
-            // Injecting as a regular singleton object that is pre-loaded with values from
-            // App Configuration Service but is also mutable upon installation by the
-            // setup wizard. This *should* only be needed once right upon installation so 
-            // not too worried about concurrency.
-
-            var publisherConfig = new PublisherConfiguration();
-
-            this.Configuration.GetSection("Publisher").Bind(publisherConfig);
-
-            services.AddSingleton(publisherConfig);
-
-            // ---------------------------------------------------------------------------------
-            // Deployment: AppInsightsConnectionString                              [Required] *
-            // Deployment: AzureSubscriptionId                                      [Required] * 
-            // Deployment: AzureResourceGroupName                                   [Required] *
-            // Deployment: MarketplaceLandingPageUrl                                [Required] *
-            // Deployment: MarketplaceWebhookUrl                                    [Required] *
-            // Deployment: InTestMode                                               [Optional]
-            // Deployment: Name                                                     [Required] *
-
             services.Configure<DeploymentConfiguration>(this.Configuration.GetSection("Deployment"));
-
-            // ---------------------------------------------------------------------------------
-            // Identity: AppIdentity: AadTenantId                                   [Required] *
-            // Identity: AppIdentity: AadClientId                                   [Required] *
-            // Identity: AppIdentity: AadClientSecret                               [Required] *
-            // Identity: AdminIdentity: AadTenantId                                 [Required] *
-            // Identity: AdminIdentity: RoleName                                    [Optional]
-
             services.Configure<IdentityConfiguration>(this.Configuration.GetSection("Identity"));
-
-            // ---------------------------------------------------------------------------------
-            // Subscriptions: Events: EventGrid: TopicEndpoint                      [Required] *
-            // Subscriptions: Events: EventGrid: TopicKey                           [Required] *
-
             services.Configure<EventGridSubscriptionEventPublisher.Configuration>(this.Configuration.GetSection("Subscriptions:Events:EventGrid"));
-
-            // ---------------------------------------------------------------------------------
-            // Subscriptions: Testing: Cache: BlobStorage: ConnectionString         [Required] *
-            // Subscriptions: Testing: Cache: BlobStorage: ContainerName            [Optional]
-
             services.Configure<BlobStorageSubscriptionTestingCache.Configuration>(this.Configuration.GetSection("Subscriptions:Testing:Cache:BlobStorage"));
-
-            // ---------------------------------------------------------------------------------
-            // Subscriptions: Staging: Cache: BlobStorage: ConnectionString         [Required] *
-            // Subscriptions: Staging: Cache: BlobStorage: ContainerName            [Optional]
-            // Subscriptions: Staging: Cache: BlobStorage: TokenExpirationInSeconds [Optional]
-
             services.Configure<BlobStorageSubscriptionStagingCache.Configuration>(this.Configuration.GetSection("Subscriptions:Staging:Cache:BlobStorage"));
+            services.Configure<BlobStoragePublisherConfigurationStore.Configuration>(this.Configuration.GetSection("PublisherConfig:Store:BlobStorage"));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -212,7 +156,6 @@ namespace Mona.SaaS.Web
             app.UseHttpsRedirection();
             app.UseStaticFiles();
             app.UseRouting();
-            app.UseAzureAppConfiguration();
             app.UseAuthentication();
             app.UseAuthorization();
 

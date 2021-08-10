@@ -12,16 +12,22 @@
 
 namespace Mona.SaaS.Core.Interfaces
 {
-    using Mona.SaaS.Core.Models;
+    using Mona.SaaS.Core.Models.Configuration;
     using System.Threading.Tasks;
 
-    public interface ISubscriptionStagingCache
+    public interface IPublisherConfigurationStore
     {
         /// <summary>
-        /// Puts/stages a <see cref="Subscription"/> into the staging repository.
+        /// Gets the current <see cref="PublisherConfiguration"/> from the configuration store.
         /// </summary>
-        /// <param name="subscription">The <see cref="Subscription"/> to put/stage.</param>
-        /// <returns>A bearer URL which provides time-limited, scoped access to the staged <see cref="Subscription"/>.</returns>
-        Task<string> PutSubscriptionAsync(Subscription subscription); 
+        /// <returns>The current <see cref="PublisherConfiguration"/></returns>
+        Task<PublisherConfiguration> GetPublisherConfiguration();
+
+        /// <summary>
+        /// Puts the current <see cref="PublisherConfiguration"/> into the configuration store.
+        /// </summary>
+        /// <param name="publisherConfig">The current <see cref="PublisherConfiguration"/></param>
+        /// <returns>A <see cref="Task"/> representing the put operation</returns>
+        Task PutPublisherConfiguration(PublisherConfiguration publisherConfig);
     }
 }
