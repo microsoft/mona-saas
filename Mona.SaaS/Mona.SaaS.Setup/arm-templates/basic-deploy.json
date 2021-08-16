@@ -399,8 +399,8 @@
                 "Subscriptions:Testing:Cache:BlobStorage:ConnectionString": "[concat('DefaultEndpointsProtocol=https;AccountName=', variables('storageAccountName'), ';AccountKey=', listKeys(resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName')), '2021-01-01').keys[0].value, ';EndpointSuffix=core.windows.net')]",
                 "Subscriptions:Staging:Cache:BlobStorage:ContainerName": "[variables('stageSubContainerName')]",
                 "Subscriptions:Testing:Cache:BlobStorage:ContainerName": "[variables('testSubContainerName')]",
-                "PublisherConfiguration:Store:BlobStorage:ConnectionString": "[concat('DefaultEndpointsProtocol=https;AccountName=', variables('storageAccountName'), ';AccountKey=', listKeys(resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName')), '2021-01-01').keys[0].value, ';EndpointSuffix=core.windows.net')]",
-                "PublisherConfiguration:Store:BlobStorage:ContainerName": "[variables('configContainerName')]"
+                "PublisherConfig:Store:BlobStorage:ConnectionString": "[concat('DefaultEndpointsProtocol=https;AccountName=', variables('storageAccountName'), ';AccountKey=', listKeys(resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName')), '2021-01-01').keys[0].value, ';EndpointSuffix=core.windows.net')]",
+                "PublisherConfig:Store:BlobStorage:ContainerName": "[variables('configContainerName')]"
             }
         },
         {
