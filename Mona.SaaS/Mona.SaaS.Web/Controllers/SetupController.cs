@@ -10,13 +10,11 @@
 //
 // In no event shall Microsoft be liable for any damages whatsoever (including, without limitation, damages for loss of business profits, business interruption, loss of business information, or other pecuniary loss) arising out of the use of or inability to use the preview code, even if Microsoft has been advised of the possibility of such damages.
 
-using Azure.Data.AppConfiguration;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using Mona.SaaS.Core.Models.Configuration;
+using Mona.SaaS.Core.Interfaces;
 using Mona.SaaS.Web.Models;
-using System;
 using System.Threading.Tasks;
 
 namespace Mona.SaaS.Web.Controllers
@@ -25,25 +23,24 @@ namespace Mona.SaaS.Web.Controllers
     public class SetupController : Controller
     {
         private readonly ILogger logger;
-        private readonly PublisherConfiguration publisherConfig;
+        private readonly IPublisherConfigurationStore publisherConfigStore;
 
         public SetupController(
             ILogger<SetupController> logger,
-            PublisherConfiguration publisherConfig)
+            IPublisherConfigurationStore publisherConfigStore)
         {
             this.logger = logger;
-            this.publisherConfig = publisherConfig;
+            this.publisherConfigStore = publisherConfigStore;
         }
 
         [HttpGet, Route("setup", Name = "setup")]
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
-            if (this.publisherConfig.IsSetupComplete)
-            {
-                return new RedirectToRouteResult("admin", null);
-            }
+            // TODO: When/where can the setup screen be accessed?
 
-            return View(new SetupModel());
+            var publisherConfig = await this.publisherConfigStore.GetPublisherConfiguration();
+
+            return View(new SetupModel(publisherConfig));
         }
 
         [HttpPost, Route("setup", Name = "setup"), ValidateAntiForgeryToken]
@@ -54,35 +51,9 @@ namespace Mona.SaaS.Web.Controllers
                 return View(setupModel);
             }
 
-            var offerModel = setupModel.Publisher;
-            var configClient = new ConfigurationClient(GetAppConfigurationServiceConnectionString());
-
-            Task.WaitAll(new[]
-            {
-                (configClient.SetConfigurationSettingAsync("Publisher:PublisherDisplayName", offerModel.PublisherDisplayName)),
-                (configClient.SetConfigurationSettingAsync("Publisher:PublisherHomePageUrl", offerModel.PublisherHomePageUrl)),
-                (configClient.SetConfigurationSettingAsync("Publisher:PublisherPrivacyNoticePageUrl", offerModel.PublisherPrivacyNoticePageUrl)),
-                (configClient.SetConfigurationSettingAsync("Publisher:PublisherContactPageUrl", offerModel.PublisherPrivacyNoticePageUrl)),
-                (configClient.SetConfigurationSettingAsync("Publisher:PublisherCopyrightNotice", offerModel.PublisherCopyrightNotice)),
-                (configClient.SetConfigurationSettingAsync("Publisher:SubscriptionConfigurationUrl", offerModel.SubscriptionConfigurationUrl)),
-                (configClient.SetConfigurationSettingAsync("Publisher:SubscriptionPurchaseConfirmationUrl", offerModel.SubscriptionPurchaseConfirmationUrl))
-            });
-
-            await configClient.SetConfigurationSettingAsync("Publisher:IsSetupComplete", true.ToString());
-
-            this.publisherConfig.PublisherDisplayName = offerModel.PublisherDisplayName;
-            this.publisherConfig.PublisherHomePageUrl = offerModel.PublisherHomePageUrl;
-            this.publisherConfig.PublisherPrivacyNoticePageUrl = offerModel.PublisherPrivacyNoticePageUrl;
-            this.publisherConfig.PublisherContactPageUrl = offerModel.PublisherContactPageUrl;
-            this.publisherConfig.PublisherCopyrightNotice = offerModel.PublisherCopyrightNotice;
-            this.publisherConfig.SubscriptionConfigurationUrl = offerModel.SubscriptionConfigurationUrl;
-            this.publisherConfig.SubscriptionPurchaseConfirmationUrl = offerModel.SubscriptionPurchaseConfirmationUrl;
-
-            this.publisherConfig.IsSetupComplete = true;
+            await this.publisherConfigStore.PutPublisherConfiguration(setupModel.Publisher);
 
             return RedirectToRoute("admin");
         }
-
-        private static string GetAppConfigurationServiceConnectionString() => Environment.GetEnvironmentVariable("APP_CONFIG_SERVICE_CONNECTION_STRING");
     }
 }

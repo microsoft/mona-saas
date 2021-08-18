@@ -297,45 +297,13 @@ az group deployment create \
         
 # Get ARM deployment output variables.
 
-blob_conn_str=$(az deployment group show --resource-group "$resource_group_name" --name "$az_deployment_name" --query properties.outputs.storageConnectionString.value --output tsv);
 storage_account_name=$(az deployment group show --resource-group "$resource_group_name" --name "$az_deployment_name" --query properties.outputs.storageAccountName.value --output tsv);
-stage_blob_sub_container_name=$(az deployment group show --resource-group "$resource_group_name" --name "$az_deployment_name" --query properties.outputs.stagingSubscriptionContainerName.value --output tsv);
-test_blob_sub_container_name=$(az deployment group show --resource-group "$resource_group_name" --name "$az_deployment_name" --query properties.outputs.testingSubscriptionContainerName.value --output tsv);
-event_grid_id=$(az deployment group show --resource-group "$resource_group_name" --name "$az_deployment_name" --query properties.outputs.eventGridTopicId.value --output tsv);
-event_grid_topic_endpoint=$(az deployment group show --resource-group "$resource_group_name" --name "$az_deployment_name" --query properties.outputs.eventGridTopicEndpoint.value --output tsv);
-event_grid_topic_key=$(az deployment group show --resource-group "$resource_group_name" --name "$az_deployment_name" --query properties.outputs.eventGridTopicKey.value --output tsv);
-app_config_connection_string=$(az deployment group show --resource-group "$resource_group_name" --name "$az_deployment_name" --query properties.outputs.appConfigServiceConnectionString.value --output tsv);
-app_config_name=$(az deployment group show --resource-group "$resource_group_name" --name "$az_deployment_name" --query properties.outputs.appConfigServiceName.value --output tsv);
 web_app_base_url=$(az deployment group show --resource-group "$resource_group_name" --name "$az_deployment_name" --query properties.outputs.webAppBaseUrl.value --output tsv);
 web_app_name=$(az deployment group show --resource-group "$resource_group_name" --name "$az_deployment_name" --query properties.outputs.webAppName.value --output tsv);
-app_insights_key=$(az deployment group show --resource-group "$resource_group_name" --name "$az_deployment_name" --query properties.outputs.appInsightsInstrumentationKey.value --output tsv);
 
 # Configure Mona.
 
 echo "$lp Configuring Mona settings...";
-
-az appconfig kv set --name "$app_config_name" --key "Deployment:MonaVersion" --yes                                      --value "$mona_version";               
-az appconfig kv set --name "$app_config_name" --key "Deployment:AppInsightsInstrumentationKey" --yes                    --value "$app_insights_key";       
-az appconfig kv set --name "$app_config_name" --key "Deployment:AzureResourceGroupName" --yes                           --value "$resource_group_name";         
-az appconfig kv set --name "$app_config_name" --key "Deployment:AzureSubscriptionId" --yes                              --value "$subscription_id";             
-az appconfig kv set --name "$app_config_name" --key "Deployment:IsTestModeEnabled" --yes                                --value "true";                         
-az appconfig kv set --name "$app_config_name" --key "Deployment:Name" --yes                                             --value "$deployment_name";             
-az appconfig kv set --name "$app_config_name" --key "Identity:AdminIdentity:AadTenantId" --yes                          --value "$current_user_tid";
-az appconfig kv set --name "$app_config_name" --key "Identity:AdminIdentity:AadUserId" --yes                            --value "$current_user_oid";
-az appconfig kv set --name "$app_config_name" --key "Identity:AppIdentity:AadClientId" --yes                            --value "$aad_app_id";
-az appconfig kv set --name "$app_config_name" --key "Identity:AppIdentity:AadClientSecret" --yes                        --value "$aad_app_secret" >/dev/null
-az appconfig kv set --name "$app_config_name" --key "Identity:AppIdentity:AadTenantId" --yes                            --value "$current_user_tid";
-az appconfig kv set --name "$app_config_name" --key "Publisher:IsSetupComplete" --yes                                   --value "false";
-az appconfig kv set --name "$app_config_name" --key "Subscriptions:Events:EventGrid:TopicEndpoint" --yes                --value "$event_grid_topic_endpoint"; 
-az appconfig kv set --name "$app_config_name" --key "Subscriptions:Events:EventGrid:TopicKey" --yes                     --value "$event_grid_topic_key" >/dev/null
-az appconfig kv set --name "$app_config_name" --key "Subscriptions:Testing:Cache:BlobStorage:ConnectionString" --yes    --value "$blob_conn_str" >/dev/null
-az appconfig kv set --name "$app_config_name" --key "Subscriptions:Testing:Cache:BlobStorage:ContainerName" --yes       --value "$test_blob_sub_container_name"; 
-az appconfig kv set --name "$app_config_name" --key "Subscriptions:Staging:Cache:BlobStorage:ConnectionString" --yes    --value "$blob_conn_str" >/dev/null
-az appconfig kv set --name "$app_config_name" --key "Subscriptions:Staging:Cache:BlobStorage:ContainerName" --yes       --value "$stage_blob_sub_container_name"; 
-
-# By default, only users that belong to the "Mona Administrators" role can access the admin center...
-
-[[ -z $no_rbac ]] && az appconfig kv set --name "$app_config_name" --key "Identity:AdminIdentity:RoleName" --yes --value "monaadmins"
 
 # Regardless of whether or not -j was set, add the current user to the admin role...
 
@@ -355,13 +323,6 @@ echo "$lp Completing Mona configuration..."
 az ad app update \
     --id "$aad_app_id" \
     --reply-urls "$web_app_base_url/signin-oidc";
-
-# Set web app configuration service connection string.
-
-az webapp config appsettings set \
-    --resource-group "$resource_group_name" \
-    --name "$web_app_name" \
-    --settings APP_CONFIG_SERVICE_CONNECTION_STRING="$app_config_connection_string" >/dev/null # Sensitive
 
 if [[ -z $no_publish ]]; then
     # Deploy Mona web application...

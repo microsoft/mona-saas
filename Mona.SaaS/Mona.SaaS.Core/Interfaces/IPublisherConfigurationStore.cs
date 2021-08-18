@@ -1,6 +1,6 @@
-// MICROSOFT CONFIDENTIAL INFORMATION
+﻿// MICROSOFT CONFIDENTIAL INFORMATION
 //
-// Copyright � Microsoft Corporation
+// Copyright © Microsoft Corporation
 //
 // Microsoft Corporation (or based on where you live, one of its affiliates) licenses this preview code for your internal testing purposes only.
 //
@@ -10,22 +10,24 @@
 //
 // In no event shall Microsoft be liable for any damages whatsoever (including, without limitation, damages for loss of business profits, business interruption, loss of business information, or other pecuniary loss) arising out of the use of or inability to use the preview code, even if Microsoft has been advised of the possibility of such damages.
 
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
-using System;
-
-namespace Mona.SaaS.Web
+namespace Mona.SaaS.Core.Interfaces
 {
-    public class Program
-    {
-        public static void Main(string[] args)
-        {
-            CreateHostBuilder(args).Build().Run();
-        }
+    using Mona.SaaS.Core.Models.Configuration;
+    using System.Threading.Tasks;
 
-        public static IHostBuilder CreateHostBuilder(string[] args) =>
-            Host.CreateDefaultBuilder(args).ConfigureWebHostDefaults(wb => wb.UseStartup<Startup>());
+    public interface IPublisherConfigurationStore
+    {
+        /// <summary>
+        /// Gets the current <see cref="PublisherConfiguration"/> from the configuration store.
+        /// </summary>
+        /// <returns>The current <see cref="PublisherConfiguration"/></returns>
+        Task<PublisherConfiguration> GetPublisherConfiguration();
+
+        /// <summary>
+        /// Puts the current <see cref="PublisherConfiguration"/> into the configuration store.
+        /// </summary>
+        /// <param name="publisherConfig">The current <see cref="PublisherConfiguration"/></param>
+        /// <returns>A <see cref="Task"/> representing the put operation</returns>
+        Task PutPublisherConfiguration(PublisherConfiguration publisherConfig);
     }
 }

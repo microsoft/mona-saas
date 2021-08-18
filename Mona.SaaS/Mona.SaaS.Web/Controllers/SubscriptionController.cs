@@ -42,21 +42,21 @@ namespace Mona.SaaS.Web.Controllers
         }
 
         private readonly DeploymentConfiguration deploymentConfig;
-        private readonly PublisherConfiguration publisherConfig;
 
         private readonly ILogger logger;
         private readonly IMarketplaceOperationService mpOperationService;
         private readonly IMarketplaceSubscriptionService mpSubscriptionService;
+        private readonly IPublisherConfigurationStore publisherConfigStore;
         private readonly ISubscriptionEventPublisher subscriptionEventPublisher;
         private readonly ISubscriptionStagingCache subscriptionStagingCache;
         private readonly ISubscriptionTestingCache subscriptionTestingCache;
 
         public SubscriptionController(
             IOptionsSnapshot<DeploymentConfiguration> deploymentConfig,
-            PublisherConfiguration publisherConfig,
             ILogger<SubscriptionController> logger,
             IMarketplaceOperationService mpOperationService,
             IMarketplaceSubscriptionService mpSubscriptionService,
+            IPublisherConfigurationStore publisherConfigStore,
             ISubscriptionEventPublisher subscriptionEventPublisher,
             ISubscriptionStagingCache subscriptionStagingCache,
             ISubscriptionTestingCache subscriptionTestingCache)
@@ -64,7 +64,7 @@ namespace Mona.SaaS.Web.Controllers
             this.mpOperationService = mpOperationService;
             this.deploymentConfig = deploymentConfig.Value;
             this.logger = logger;
-            this.publisherConfig = publisherConfig;
+            this.publisherConfigStore = publisherConfigStore;
             this.mpSubscriptionService = mpSubscriptionService;
             this.subscriptionEventPublisher = subscriptionEventPublisher;
             this.subscriptionStagingCache = subscriptionStagingCache;
@@ -135,6 +135,8 @@ namespace Mona.SaaS.Web.Controllers
 
         private async Task<IActionResult> PostLandingPageAsync(LandingPageModel landingPageModel, bool inTestMode = false)
         {
+            var publisherConfig = await this.publisherConfigStore.GetPublisherConfiguration();
+
             try
             {
                 var subscription = await TryGetSubscriptionAsync(landingPageModel.SubscriptionId, inTestMode);
@@ -149,7 +151,7 @@ namespace Mona.SaaS.Web.Controllers
 
                     return View("Index", new LandingPageModel(inTestMode)
                         .WithCurrentUserInformation(User)
-                        .WithPublisherInformation(this.publisherConfig)
+                        .WithPublisherInformation(publisherConfig)
                         .WithErrorCode(ErrorCodes.SubscriptionNotFound));
                 }
                 else
@@ -158,14 +160,14 @@ namespace Mona.SaaS.Web.Controllers
 
                     await this.subscriptionEventPublisher.PublishEventAsync(new SubscriptionPurchased(subscription));
 
-                    var redirectUrl = this.publisherConfig.SubscriptionPurchaseConfirmationUrl
+                    var redirectUrl = publisherConfig.SubscriptionPurchaseConfirmationUrl
                         .WithSubscriptionId(subscription.SubscriptionId);
 
                     if (this.deploymentConfig.SendSubscriptionDetailsToPurchaseConfirmationPage)
                     {
                         // Stage the subscription so we can pass the details along to the purchase confirmation page...
 
-                        var subToken = await this.subscriptionStagingCache.StageSubscriptionAsync(subscription);
+                        var subToken = await this.subscriptionStagingCache.PutSubscriptionAsync(subscription);
 
                         // The web app being redirected to must know the name of the storage account (https://*.blob.core.windows.net) to be
                         // able to use the SAS fragment that we provide. This prevents bad actors from either reading the subscription details
@@ -189,14 +191,16 @@ namespace Mona.SaaS.Web.Controllers
 
                 return View("Index", new LandingPageModel(inTestMode)
                     .WithCurrentUserInformation(User)
-                    .WithPublisherInformation(this.publisherConfig)
+                    .WithPublisherInformation(publisherConfig)
                     .WithErrorCode(ErrorCodes.SubscriptionActivationFailed));
             }
         }
 
         private async Task<IActionResult> GetLandingPageAsync(string token = null, bool inTestMode = false)
         {
-            if (this.publisherConfig.IsSetupComplete == false)
+            var publisherConfig = await this.publisherConfigStore.GetPublisherConfiguration();
+
+            if (publisherConfig == null)
             {
                 // Not so fast... you need to complete the setup wizard before you can access the landing page.           
                 // TODO: Need to think about what happens if a non-admin user accesses the landing page but Mona has not yet been set up. Just return a 404 I guess? Feels kind of clunky...
@@ -210,7 +214,7 @@ namespace Mona.SaaS.Web.Controllers
 
                 this.logger.LogWarning("Landing page reached but no subscription token was provided. Attempting to redirect to service marketing page...");
 
-                return TryToRedirectToServiceMarketingPageUrl();
+                return TryToRedirectToServiceMarketingPageUrl(publisherConfig);
             }
             else
             {
@@ -231,7 +235,7 @@ namespace Mona.SaaS.Web.Controllers
 
                         return View("Index", new LandingPageModel(inTestMode)
                             .WithCurrentUserInformation(User)
-                            .WithPublisherInformation(this.publisherConfig)
+                            .WithPublisherInformation(publisherConfig)
                             .WithErrorCode(ErrorCodes.UnableToResolveMarketplaceToken));
                     }
                     else
@@ -257,20 +261,20 @@ namespace Mona.SaaS.Web.Controllers
 
                             return View("Index", new LandingPageModel(inTestMode)
                                 .WithCurrentUserInformation(User)
-                                .WithPublisherInformation(this.publisherConfig)
+                                .WithPublisherInformation(publisherConfig)
                                 .WithSubscriptionInformation(subscription));
                         }
                         else
                         {
                             // We already know about this subscription. Redirecting to publisher-defined subscription configuration UI...
 
-                            var redirectUrl = this.publisherConfig.SubscriptionConfigurationUrl.WithSubscriptionId(subscription.SubscriptionId);
+                            var redirectUrl = publisherConfig.SubscriptionConfigurationUrl.WithSubscriptionId(subscription.SubscriptionId);
 
                             if (this.deploymentConfig.SendSubscriptionDetailsToSubscriptionConfigurationPage)
                             {
                                 // Stage the subscription so we can pass the details along to the configuration page...
 
-                                var subToken = await this.subscriptionStagingCache.StageSubscriptionAsync(subscription);
+                                var subToken = await this.subscriptionStagingCache.PutSubscriptionAsync(subscription);
 
                                 // The web app being redirected to must know the name of the storage account (https://*.blob.core.windows.net) to be
                                 // able to use the SAS fragment that we provide. This prevents bad actors from either reading the subscription details
@@ -379,7 +383,8 @@ namespace Mona.SaaS.Web.Controllers
             }
         }
 
-        private IActionResult TryToRedirectToServiceMarketingPageUrl() => string.IsNullOrEmpty(this.publisherConfig.PublisherHomePageUrl) ? NotFound() as IActionResult : Redirect(this.publisherConfig.PublisherHomePageUrl);
+        private IActionResult TryToRedirectToServiceMarketingPageUrl(PublisherConfiguration publisherConfig) => 
+            string.IsNullOrEmpty(publisherConfig.PublisherHomePageUrl) ? NotFound() as IActionResult : Redirect(publisherConfig.PublisherHomePageUrl);
 
         private async Task<Subscription> TryGetSubscriptionAsync(string subscriptionId, bool inTestMode = false)
         {

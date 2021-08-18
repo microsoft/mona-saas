@@ -16,6 +16,7 @@ using Microsoft.Azure.Management.ResourceManager.Fluent;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Mona.AutoIntegration.Interrogators;
+using Mona.SaaS.Core.Interfaces;
 using Mona.SaaS.Core.Models.Configuration;
 using Mona.SaaS.Web.Models;
 using Mona.SaaS.Web.Models.Admin;
@@ -32,18 +33,18 @@ namespace Mona.SaaS.Web.Controllers
     {
         private readonly DeploymentConfiguration deploymentConfig;
         private readonly IdentityConfiguration identityConfig;
-        private readonly PublisherConfiguration publisherConfig;
         private readonly ILogger logger;
+        private readonly IPublisherConfigurationStore publisherConfigStore;
 
         public AdminController(
             IOptionsSnapshot<DeploymentConfiguration> deploymentConfig,
             IOptionsSnapshot<IdentityConfiguration> identityConfig,
-            PublisherConfiguration publisherConfig,
-            ILogger<AdminController> logger)
+            ILogger<AdminController> logger,
+            IPublisherConfigurationStore publisherConfigStore)
         {
             this.deploymentConfig = deploymentConfig.Value;
             this.identityConfig = identityConfig.Value;
-            this.publisherConfig = publisherConfig;
+            this.publisherConfigStore = publisherConfigStore;
             this.logger = logger;
         }
 
@@ -52,7 +53,9 @@ namespace Mona.SaaS.Web.Controllers
         {
             try
             {
-                if (this.publisherConfig.IsSetupComplete == false)
+                var publisherConfig = await this.publisherConfigStore.GetPublisherConfiguration();
+
+                if (publisherConfig == null) // No publisher config. Publisher needs to complete setup.
                 {
                     return RedirectToRoute("setup");
                 }
