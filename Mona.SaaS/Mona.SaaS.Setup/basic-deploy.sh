@@ -287,6 +287,7 @@ az group deployment create \
     --parameters \
         deploymentName="$deployment_name" \
         aadTenantId="$current_user_tid" \
+        aadPrincipalId="$aad_sp_id" \
         aadClientId="$aad_app_id" \
         aadClientSecret="$aad_app_secret" \
         language="$language" \

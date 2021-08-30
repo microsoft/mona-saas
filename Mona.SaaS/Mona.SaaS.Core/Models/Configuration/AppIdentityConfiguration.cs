@@ -36,5 +36,11 @@ namespace Mona.SaaS.Core.Models.Configuration
         /// </summary>
         [Required]
         public string AadTenantId { get; set; }
+
+        /// <summary>
+        /// Gets/sets this Mona application's AAD enterprise application/service principal object ID.
+        /// </summary>
+        [Required]
+        public string AadPrincipalId { get; set; }
     }
 }
