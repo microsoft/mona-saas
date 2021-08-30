@@ -184,6 +184,17 @@
                     </tbody>
                 </table>
             </div>
+            <div class="admin-section" id="user-management-section">
+                <h5 class="display-5">@Localizer["User management"]</h5>
+                <p>
+                    @Localizer[
+                    "Only users that belong to the <b>Mona Administrators</b> <a href=\"{0}\">Azure Active Directory application role</a> " +
+                    "can access the admin center (this screen) and the various test endpoints. The user that originally " +
+                    "set up this Mona deployment is automatically added to this role.", 
+                    "https://docs.microsoft.com/azure/architecture/multitenant-identity/app-roles"]
+                </p>
+                <a role="button" class="btn btn-primary" href="@Model.UserManagementUrl" target="_blank">@Localizer["Manage users »"]</a>
+            </div>
             <div class="admin-section" id="config-settings-section">
                 <h5 class="display-5">@Localizer["Mona configuration settings"]</h5><hr />
                 <p>
@@ -193,11 +204,11 @@
                     "For more information on these settings, please <a href=\"{0}\">visit the Mona docs</a>.",
                     "https://github.com/azure"]
                 </p>
-                <a role="button" class="btn btn-primary" href="@Model.ConfigurationSettingsEditorUrl" target="_blank">@Localizer["Manage configuration settings »"]</a>
+                <a role="button" class="btn btn-primary" href="@Model.ConfigurationSettingsUrl" target="_blank">@Localizer["Manage settings »"]</a>
             </div>
             <div class="admin-section" id="about-section">
                 <h5 class="display-5">About Mona</h5><hr />
-                <h3>Mona for SaaS <small class="text-muted">@Model.MonaVersion</small></h3>
+                <h3>Mona SaaS <small class="text-muted">Prerelease | Private Preview</small></h3>
                 Copyright © Microsoft Corporation @DateTime.UtcNow.Year<br />
                 Licensed under the <a href="https://choosealicense.com/licenses/mit/">MIT License</a>
             </div>

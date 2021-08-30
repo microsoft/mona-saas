@@ -22,6 +22,12 @@
                 "description": "This Mona deployment's Azure Active Directory (AAD) client ID."
             }
         },
+        "aadPrincipalId": {
+            "type": "string",
+            "metadata": {
+                "description": "This Mona deployment's Azure Active Directory (AAD) enterprise application/principal object ID."
+            }
+        },
         "aadClientSecret": {
             "type": "securestring",
             "metadata": {
@@ -392,6 +398,7 @@
                 "Identity:AdminIdentity:RoleName": "monaadmins",
                 "Identity:AppIdentity:AadClientId": "[parameters('aadClientId')]",
                 "Identity:AppIdentity:AadClientSecret": "[parameters('aadClientSecret')]",
+                "Identity:AppIdentity:AadPrincipalId": "[parameters('aadPrincipalId')]",
                 "Identity:AppIdentity:AadTenantId": "[parameters('aadTenantId')]",
                 "Subscriptions:Events:EventGrid:TopicEndpoint": "[reference(variables('eventGridTopicName')).endpoint]",
                 "Subscriptions:Events:EventGrid:TopicKey": "[listKeys(resourceId('Microsoft.EventGrid/topics/', variables('eventGridTopicName')), '2020-04-01-preview').key1]",

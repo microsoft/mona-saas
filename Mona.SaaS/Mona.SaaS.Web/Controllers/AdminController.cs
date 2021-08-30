@@ -68,11 +68,12 @@ namespace Mona.SaaS.Web.Controllers
                     AzureResourceGroupName = this.deploymentConfig.AzureResourceGroupName,
                     EventGridTopicOverviewUrl = GetEventGridTopicUrl(),
                     IntegrationPlugins = (await GetAvailableIntegrationPluginModels()).ToList(),
-                    ConfigurationSettingsEditorUrl = GetConfigurationSettingsEditorUrl(),
+                    ConfigurationSettingsUrl = GetConfigurationSettingsEditorUrl(),
                     PartnerCenterTechnicalDetails = GetPartnerCenterTechnicalDetails(),
                     ResourceGroupOverviewUrl = GetResourceGroupUrl(),
                     TestLandingPageUrl = Url.RouteUrl("landing/test", null, Request.Scheme),
-                    TestWebhookUrl = Url.RouteUrl("webhook/test", null, Request.Scheme)
+                    TestWebhookUrl = Url.RouteUrl("webhook/test", null, Request.Scheme),
+                    UserManagementUrl = GetUserManagementUrl()
                 };
 
                 return View(adminModel);
@@ -85,10 +86,15 @@ namespace Mona.SaaS.Web.Controllers
             }
         }
 
+        private string GetUserManagementUrl() =>
+            $"https://portal.azure.com/#blade/Microsoft_AAD_IAM/ManagedAppMenuBlade/Users" +
+            $"/objectId/{this.identityConfig.AppIdentity.AadPrincipalId}/" +
+            $"/appId/{this.identityConfig.AppIdentity.AadClientId}";
+
         private string GetConfigurationSettingsEditorUrl() =>
             $"https://portal.azure.com/#@{this.identityConfig.AppIdentity.AadTenantId}/resource/subscriptions/{this.deploymentConfig.AzureSubscriptionId}" +
-            $"/resourceGroups/{this.deploymentConfig.AzureResourceGroupName}/providers/Microsoft.AppConfiguration" +
-            $"/configurationStores/mona-config-{this.deploymentConfig.Name.ToLower()}/kvs";
+            $"/resourceGroups/{this.deploymentConfig.AzureResourceGroupName}/providers/Microsoft.Web" +
+            $"/sites/mona-web-{this.deploymentConfig.Name.ToLower()}/configuration";
 
         private string GetEventGridTopicUrl() =>
             $"https://portal.azure.com/#@{this.identityConfig.AppIdentity.AadTenantId}/resource/subscriptions/{this.deploymentConfig.AzureSubscriptionId}" +
