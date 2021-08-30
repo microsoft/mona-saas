@@ -88,7 +88,7 @@ namespace Mona.SaaS.Web.Controllers
 
         private string GetUserManagementUrl() =>
             $"https://portal.azure.com/#blade/Microsoft_AAD_IAM/ManagedAppMenuBlade/Users" +
-            $"/objectId/{this.identityConfig.AppIdentity.AadPrincipalId}/" +
+            $"/objectId/{this.identityConfig.AppIdentity.AadPrincipalId}" +
             $"/appId/{this.identityConfig.AppIdentity.AadClientId}";
 
         private string GetConfigurationSettingsEditorUrl() =>
