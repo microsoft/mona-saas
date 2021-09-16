@@ -10,37 +10,24 @@
 //
 // In no event shall Microsoft be liable for any damages whatsoever (including, without limitation, damages for loss of business profits, business interruption, loss of business information, or other pecuniary loss) arising out of the use of or inability to use the preview code, even if Microsoft has been advised of the possibility of such damages.
 
-using System.ComponentModel.DataAnnotations;
-
-namespace Mona.SaaS.Core.Models.Configuration
+namespace Mona.SaaS.Core.Interfaces
 {
-    /// <summary>
-    /// This Mona application's Azure Active Directory (AAD) configuration information.
-    /// </summary>
-    public class AppIdentityConfiguration
+    using Mona.SaaS.Core.Models.Configuration;
+    using System.Threading.Tasks;
+
+    public interface IPublisherConfigurationStore
     {
         /// <summary>
-        /// Gets/sets this Mona application's AAD client ID.
+        /// Gets the current <see cref="PublisherConfiguration"/> from the configuration store.
         /// </summary>
-        [Required]
-        public string AadClientId { get; set; }
+        /// <returns>The current <see cref="PublisherConfiguration"/></returns>
+        Task<PublisherConfiguration> GetPublisherConfiguration();
 
         /// <summary>
-        /// Gets/sets this Mona application's AAD client secret.
+        /// Puts the current <see cref="PublisherConfiguration"/> into the configuration store.
         /// </summary>
-        [Required]
-        public string AadClientSecret { get; set; }
-
-        /// <summary>
-        /// Gets/sets this Mona application's AAD tenant ID.
-        /// </summary>
-        [Required]
-        public string AadTenantId { get; set; }
-
-        /// <summary>
-        /// Gets/sets this Mona application's AAD enterprise application/service principal object ID.
-        /// </summary>
-        [Required]
-        public string AadPrincipalId { get; set; }
+        /// <param name="publisherConfig">The current <see cref="PublisherConfiguration"/></param>
+        /// <returns>A <see cref="Task"/> representing the put operation</returns>
+        Task PutPublisherConfiguration(PublisherConfiguration publisherConfig);
     }
 }

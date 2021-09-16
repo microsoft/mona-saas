@@ -13,11 +13,11 @@
 namespace Mona.SaaS.Services.Default
 {
     using Azure.Storage.Blobs;
-    using Azure.Storage.Sas;
+    using Azure.Storage.Blobs.Models;
     using Microsoft.Extensions.Logging;
     using Microsoft.Extensions.Options;
     using Mona.SaaS.Core.Interfaces;
-    using Mona.SaaS.Core.Models;
+    using Mona.SaaS.Core.Models.Configuration;
     using Newtonsoft.Json;
     using System;
     using System.ComponentModel.DataAnnotations;
@@ -25,15 +25,17 @@ namespace Mona.SaaS.Services.Default
     using System.Text;
     using System.Threading.Tasks;
 
-    public class BlobStorageSubscriptionStagingCache : ISubscriptionStagingCache
+    public class BlobStoragePublisherConfigurationStore : IPublisherConfigurationStore
     {
+        public const string ConfigurationBlobName = "publisher-config.json";
+
         private readonly Configuration config;
         private readonly BlobContainerClient containerClient;
         private readonly ILogger logger;
 
-        public BlobStorageSubscriptionStagingCache(
+        public BlobStoragePublisherConfigurationStore(
             IOptionsSnapshot<Configuration> configSnapshot,
-            ILogger<BlobStorageSubscriptionTestingCache> logger)
+            ILogger<BlobStoragePublisherConfigurationStore> logger)
         {
             this.config = configSnapshot.Value;
 
@@ -43,36 +45,50 @@ namespace Mona.SaaS.Services.Default
             this.logger = logger;
         }
 
-        public async Task<string> PutSubscriptionAsync(Subscription subscription)
+        public async Task<PublisherConfiguration> GetPublisherConfiguration()
         {
-            if (subscription == null)
+            try
             {
-                throw new ArgumentNullException(nameof(subscription));
+                var blobClient = containerClient.GetBlobClient(ConfigurationBlobName);
+
+                if (await blobClient.ExistsAsync()) // Has the publisher set up this Mona deployment yet?
+                {
+                    BlobDownloadInfo blobDownload = await blobClient.DownloadAsync();
+
+                    using (var streamReader = new StreamReader(blobDownload.Content, Encoding.UTF8))
+                    {
+                        return JsonConvert.DeserializeObject<PublisherConfiguration>(streamReader.ReadToEnd());
+                    }
+                }
+                else
+                {
+                    return null; // The publisher has not set up this Mona deployment yet. No big deal.
+                }
+            }
+            catch (Exception ex)
+            {
+                logger.LogError(ex, "An error occurred while trying to get publisher configuration. See exception for more details.");
+
+                throw;
+            }
+        }
+
+        public async Task PutPublisherConfiguration(PublisherConfiguration publisherConfig)
+        {
+            if (publisherConfig == null)
+            {
+                throw new ArgumentNullException(nameof(publisherConfig));
             }
 
             try
             {
-                var blobClient = containerClient.GetBlobClient(subscription.SubscriptionId);
-                var expiryTime = DateTime.UtcNow.AddSeconds(this.config.TokenExpirationInSeconds);
+                var blobClient = containerClient.GetBlobClient(ConfigurationBlobName);
 
-                await blobClient.UploadAsync(new MemoryStream(Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(subscription))), overwrite: true);
-
-                var sasBuilder = new BlobSasBuilder(BlobContainerSasPermissions.Read, expiryTime)
-                {
-                    BlobContainerName = this.config.ContainerName,
-                    BlobName = blobClient.Name,
-                    Resource = "b"
-                };
-
-                var sasToken = blobClient.GenerateSasUri(sasBuilder).ToString();
-
-                return sasToken.Substring(sasToken.IndexOf($"/{this.config.ContainerName.ToLower()}"));
+                await blobClient.UploadAsync(new MemoryStream(Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(publisherConfig))), overwrite: true);
             }
             catch (Exception ex)
             {
-                logger.LogError(ex,
-                    $"An error occurred while attempting to put subscription [{subscription.SubscriptionId}] into blob storage. " +
-                    $"For more details see exception.");
+                logger.LogError(ex, "An error occurred while trying to put publisher configuration. See exception for more details.");
 
                 throw;
             }
@@ -83,9 +99,7 @@ namespace Mona.SaaS.Services.Default
             [Required]
             public string ConnectionString { get; set; }
 
-            public string ContainerName { get; set; } = "staged-subscriptions";
-
-            public double TokenExpirationInSeconds { get; set; } = TimeSpan.FromMinutes(5).TotalSeconds;
+            public string ContainerName { get; set; } = "configuration";
         }
     }
 }

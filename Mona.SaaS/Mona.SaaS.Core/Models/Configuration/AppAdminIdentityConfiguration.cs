@@ -30,14 +30,5 @@ namespace Mona.SaaS.Core.Models.Configuration
         /// </remarks>
         [Required]
         public string AadTenantId { get; set; }
-
-        /// <summary>
-        /// Gets/sets this Mona application's administrative AAD user ID.
-        /// </summary>
-        /// <remarks>
-        /// AAD claim is [oid].
-        /// </remarks>
-        [Required]
-        public string AadUserId { get; set; }
     }
 }

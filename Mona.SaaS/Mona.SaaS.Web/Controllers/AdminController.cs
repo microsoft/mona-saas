@@ -16,6 +16,7 @@ using Microsoft.Azure.Management.ResourceManager.Fluent;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Mona.AutoIntegration.Interrogators;
+using Mona.SaaS.Core.Interfaces;
 using Mona.SaaS.Core.Models.Configuration;
 using Mona.SaaS.Web.Models;
 using Mona.SaaS.Web.Models.Admin;
@@ -32,18 +33,18 @@ namespace Mona.SaaS.Web.Controllers
     {
         private readonly DeploymentConfiguration deploymentConfig;
         private readonly IdentityConfiguration identityConfig;
-        private readonly PublisherConfiguration publisherConfig;
         private readonly ILogger logger;
+        private readonly IPublisherConfigurationStore publisherConfigStore;
 
         public AdminController(
             IOptionsSnapshot<DeploymentConfiguration> deploymentConfig,
             IOptionsSnapshot<IdentityConfiguration> identityConfig,
-            PublisherConfiguration publisherConfig,
-            ILogger<AdminController> logger)
+            ILogger<AdminController> logger,
+            IPublisherConfigurationStore publisherConfigStore)
         {
             this.deploymentConfig = deploymentConfig.Value;
             this.identityConfig = identityConfig.Value;
-            this.publisherConfig = publisherConfig;
+            this.publisherConfigStore = publisherConfigStore;
             this.logger = logger;
         }
 
@@ -52,7 +53,9 @@ namespace Mona.SaaS.Web.Controllers
         {
             try
             {
-                if (this.publisherConfig.IsSetupComplete == false)
+                var publisherConfig = await this.publisherConfigStore.GetPublisherConfiguration();
+
+                if (publisherConfig == null) // No publisher config. Publisher needs to complete setup.
                 {
                     return RedirectToRoute("setup");
                 }
@@ -65,11 +68,12 @@ namespace Mona.SaaS.Web.Controllers
                     AzureResourceGroupName = this.deploymentConfig.AzureResourceGroupName,
                     EventGridTopicOverviewUrl = GetEventGridTopicUrl(),
                     IntegrationPlugins = (await GetAvailableIntegrationPluginModels()).ToList(),
-                    ConfigurationSettingsEditorUrl = GetConfigurationSettingsEditorUrl(),
+                    ConfigurationSettingsUrl = GetConfigurationSettingsEditorUrl(),
                     PartnerCenterTechnicalDetails = GetPartnerCenterTechnicalDetails(),
                     ResourceGroupOverviewUrl = GetResourceGroupUrl(),
                     TestLandingPageUrl = Url.RouteUrl("landing/test", null, Request.Scheme),
-                    TestWebhookUrl = Url.RouteUrl("webhook/test", null, Request.Scheme)
+                    TestWebhookUrl = Url.RouteUrl("webhook/test", null, Request.Scheme),
+                    UserManagementUrl = GetUserManagementUrl()
                 };
 
                 return View(adminModel);
@@ -82,10 +86,15 @@ namespace Mona.SaaS.Web.Controllers
             }
         }
 
+        private string GetUserManagementUrl() =>
+            $"https://portal.azure.com/#blade/Microsoft_AAD_IAM/ManagedAppMenuBlade/Users" +
+            $"/objectId/{this.identityConfig.AppIdentity.AadPrincipalId}" +
+            $"/appId/{this.identityConfig.AppIdentity.AadClientId}";
+
         private string GetConfigurationSettingsEditorUrl() =>
             $"https://portal.azure.com/#@{this.identityConfig.AppIdentity.AadTenantId}/resource/subscriptions/{this.deploymentConfig.AzureSubscriptionId}" +
-            $"/resourceGroups/{this.deploymentConfig.AzureResourceGroupName}/providers/Microsoft.AppConfiguration" +
-            $"/configurationStores/mona-config-{this.deploymentConfig.Name.ToLower()}/kvs";
+            $"/resourceGroups/{this.deploymentConfig.AzureResourceGroupName}/providers/Microsoft.Web" +
+            $"/sites/mona-web-{this.deploymentConfig.Name.ToLower()}/configuration";
 
         private string GetEventGridTopicUrl() =>
             $"https://portal.azure.com/#@{this.identityConfig.AppIdentity.AadTenantId}/resource/subscriptions/{this.deploymentConfig.AzureSubscriptionId}" +

@@ -22,6 +22,12 @@
                 "description": "This Mona deployment's Azure Active Directory (AAD) client ID."
             }
         },
+        "aadPrincipalId": {
+            "type": "string",
+            "metadata": {
+                "description": "This Mona deployment's Azure Active Directory (AAD) enterprise application/principal object ID."
+            }
+        },
         "aadClientSecret": {
             "type": "securestring",
             "metadata": {
@@ -48,11 +54,12 @@
         }
     },
     "variables": {
+        "monaVersion": "0.1-prerelease", // TODO: We need to get better at bumping this...
         "deploymentName": "[toLower(if(empty(parameters('deploymentName')), uniqueString(resourceGroup().id), parameters('deploymentName')))]",
         "deploymentNameUnique": "[uniqueString(resourceGroup().id, deployment().name, variables('deploymentName'))]",
-        "appConfigName": "[concat('mona-config-', variables('deploymentName'))]",
         "storageAccountName": "[concat('monastorage', variables('deploymentNameUnique'))]",
         "blobServiceName": "default",
+        "configContainerName": "configuration",
         "testSubContainerName": "test-subscriptions",
         "stageSubContainerName": "stage-subscriptions",
         "eventGridTopicName": "[concat('mona-events-', variables('deploymentName'))]",
@@ -261,15 +268,6 @@
             }
         },
         {
-            "type": "Microsoft.AppConfiguration/configurationStores",
-            "apiVersion": "2020-06-01",
-            "name": "[variables('appConfigName')]",
-            "location": "[resourceGroup().location]",
-            "sku": {
-                "name": "free"
-            }
-        },
-        {
             "type": "Microsoft.Storage/storageAccounts",
             "apiVersion": "2021-01-01",
             "name": "[variables('storageAccountName')]",
@@ -309,6 +307,18 @@
             "type": "Microsoft.Storage/storageAccounts/blobServices/containers",
             "apiVersion": "2021-01-01",
             "name": "[concat(variables('storageAccountName'), '/', variables('blobServiceName'), '/', variables('stageSubContainerName'))]",
+            "dependsOn": [
+                "[variables('storageAccountName')]",
+                "[resourceId('Microsoft.Storage/storageAccounts/blobServices', variables('storageAccountName'), variables('blobServiceName'))]"
+            ],
+            "properties": {
+                "publicAccess": "None"
+            }
+        },
+        {
+            "type": "Microsoft.Storage/storageAccounts/blobServices/containers",
+            "apiVersion": "2021-01-01",
+            "name": "[concat(variables('storageAccountName'), '/', variables('blobServiceName'), '/', variables('configContainerName'))]",
             "dependsOn": [
                 "[variables('storageAccountName')]",
                 "[resourceId('Microsoft.Storage/storageAccounts/blobServices', variables('storageAccountName'), variables('blobServiceName'))]"
@@ -366,6 +376,38 @@
             "kind": "app",
             "properties": {
                 "serverFarmId": "[if(empty(parameters('appServicePlanId')), resourceId('Microsoft.Web/serverfarms', variables('appPlanName')), parameters('appServicePlanId'))]"
+            }
+        },
+        {
+            "type": "Microsoft.Web/sites/config",
+            "apiVersion": "2020-12-01",
+            "name": "[concat(variables('webAppName'), '/appsettings')]",
+            "dependsOn": [
+                "[variables('webAppName')]",
+                "[variables('storageAccountName')]",
+                "[variables('eventGridTopicName')]"
+            ],
+            "properties": {
+                "Deployment:AppInsightsInstrumentationKey": "[reference(resourceId('microsoft.insights/components', variables('appInsightsName')), '2014-04-01').InstrumentationKey]",
+                "Deployment:AzureResourceGroupName": "[resourceGroup().name]",
+                "Deployment:AzureSubscriptionId": "[subscription().subscriptionId]",
+                "Deployment:IsTestModeEnabled": "true",
+                "Deployment:MonaVersion": "[variables('monaVersion')]",
+                "Deployment:Name": "[variables('deploymentName')]",
+                "Identity:AdminIdentity:AadTenantId": "[parameters('aadTenantId')]",
+                "Identity:AdminIdentity:RoleName": "monaadmins",
+                "Identity:AppIdentity:AadClientId": "[parameters('aadClientId')]",
+                "Identity:AppIdentity:AadClientSecret": "[parameters('aadClientSecret')]",
+                "Identity:AppIdentity:AadPrincipalId": "[parameters('aadPrincipalId')]",
+                "Identity:AppIdentity:AadTenantId": "[parameters('aadTenantId')]",
+                "Subscriptions:Events:EventGrid:TopicEndpoint": "[reference(variables('eventGridTopicName')).endpoint]",
+                "Subscriptions:Events:EventGrid:TopicKey": "[listKeys(resourceId('Microsoft.EventGrid/topics/', variables('eventGridTopicName')), '2020-04-01-preview').key1]",
+                "Subscriptions:Staging:Cache:BlobStorage:ConnectionString": "[concat('DefaultEndpointsProtocol=https;AccountName=', variables('storageAccountName'), ';AccountKey=', listKeys(resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName')), '2021-01-01').keys[0].value, ';EndpointSuffix=core.windows.net')]",
+                "Subscriptions:Testing:Cache:BlobStorage:ConnectionString": "[concat('DefaultEndpointsProtocol=https;AccountName=', variables('storageAccountName'), ';AccountKey=', listKeys(resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName')), '2021-01-01').keys[0].value, ';EndpointSuffix=core.windows.net')]",
+                "Subscriptions:Staging:Cache:BlobStorage:ContainerName": "[variables('stageSubContainerName')]",
+                "Subscriptions:Testing:Cache:BlobStorage:ContainerName": "[variables('testSubContainerName')]",
+                "PublisherConfig:Store:BlobStorage:ConnectionString": "[concat('DefaultEndpointsProtocol=https;AccountName=', variables('storageAccountName'), ';AccountKey=', listKeys(resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName')), '2021-01-01').keys[0].value, ';EndpointSuffix=core.windows.net')]",
+                "PublisherConfig:Store:BlobStorage:ContainerName": "[variables('configContainerName')]"
             }
         },
         {
@@ -1896,49 +1938,13 @@
         }
     ],
     "outputs": {
-        "resourceGroupName": {
-            "type": "string",
-            "value": "[resourceGroup().name]"
-        },
-        "subscriptionId": {
-            "type": "string",
-            "value": "[subscription().subscriptionId]"
-        },
         "deploymentName": {
             "type": "string",
             "value": "[variables('deploymentName')]"
         },
-        "eventGridTopicEndpoint": {
-            "type": "string",
-            "value": "[reference(variables('eventGridTopicName')).endpoint]"
-        },
-        "eventGridTopicKey": {
-            "type": "string",
-            "value": "[listKeys(resourceId('Microsoft.EventGrid/topics/', variables('eventGridTopicName')), '2020-04-01-preview').key1]"
-        },
-        "storageConnectionString": {
-            "type": "string",
-            "value": "[concat('DefaultEndpointsProtocol=https;AccountName=', variables('storageAccountName'), ';AccountKey=', listKeys(resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName')), '2021-01-01').keys[0].value, ';EndpointSuffix=core.windows.net')]"
-        },
         "storageAccountName": {
             "type": "string",
             "value": "[variables('storageAccountName')]"
-        },
-        "stagingSubscriptionContainerName": {
-            "type": "string",
-            "value": "[variables('stageSubContainerName')]"
-        },
-        "testingSubscriptionContainerName": {
-            "type": "string",
-            "value": "[variables('testSubContainerName')]"
-        },
-        "appConfigServiceConnectionString": {
-            "type": "string",
-            "value": "[listKeys(resourceId('Microsoft.AppConfiguration/configurationStores', variables('appConfigName')), '2019-11-01-preview').value[0].connectionString]"
-        },
-        "appConfigServiceName": {
-            "type": "string",
-            "value": "[variables('appConfigName')]"
         },
         "webAppBaseUrl": {
             "type": "string",
@@ -1947,14 +1953,6 @@
         "webAppName": {
             "type": "string",
             "value": "[variables('webAppName')]"
-        },
-        "appInsightsInstrumentationKey": {
-            "type": "string",
-            "value": "[reference(resourceId('microsoft.insights/components', variables('appInsightsName')), '2014-04-01').InstrumentationKey]"
-        },
-        "eventGridTopicId": {
-            "type": "string",
-            "value": "[resourceId('Microsoft.EventGrid/topics', variables('eventGridTopicName'))]"
         }
     }
 }
