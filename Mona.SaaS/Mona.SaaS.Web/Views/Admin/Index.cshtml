@@ -176,10 +176,6 @@
                                             <td style="width: 50%"><a href="@Model.TestLandingPageUrl" target="_blank">@Model.TestLandingPageUrl</a></td>
                                         </tr>
                                         <tr>
-                                            <th scope="row" style="width: 50%">@Localizer["Test Landing Page URL"]</th>
-                                            <td style="width: 50%"><a href="@Model.TestLandingPageUrl" target="_blank">@Model.TestLandingPageUrl</a></td>
-                                        </tr>
-                                        <tr>
                                             <th scope="row" style="width: 50%">@Localizer["Test Connection Webhook URL"]</th>
                                             <td style="width: 50%">@Model.TestWebhookUrl</td>
                                         </tr>
@@ -188,24 +184,16 @@
                             }
                             else
                             {
-                                <div class="alert alert-secondary">@Localizer["Mona test endpoints are currently disabled. see <a class=\"alert-link\" href=\"#\">the Mona docs</a>."]</div>
+                                <div class="alert alert-secondary">@Localizer["Mona SaaS test endpoints are currently disabled. see <a class=\"alert-link\" href=\"#\">the Mona SaaS docs</a>."]</div>
                             }
 
-                            <button class="ms-Button  ms-Button--primary">
-                                <i class="ms-Icon ms-Icon--DoubleChevronLeft" style="font-size: 10px;padding-left: 5px;color:white;"></i>
-                                <span class="ms-Button-label">@Localizer["Partner Center"]</span>
-                            </button>
-                            <button class="ms-Button  ms-Button--primary">
-                                <span class="ms-Button-label">@Localizer["Subscription"]</span>
-                                <i class="ms-Icon ms-Icon--DoubleChevronRight" style="font-size: 10px;padding-left: 5px;color:white;"></i>
-                            </button>
                     </div>
 
                     <!--Subscription event handlers-->
                     <div class="ms-Pivot-content" data-content="subscription">
                         <p class="ms-font-m">
                             @Localizer[
-                            "These logic apps are automatically provisioned during the Mona setup process. Each logic app handles a " +
+                            "These logic apps are automatically provisioned during the Mona SaaS setup process. Each logic app handles a " +
                             "specific kind of subscription event (subscription purchased, cancelled, reinstated, etc.) From here, you can " +
                             "see the state of each logic app, edit workflows, and manage other app resources."]
                         </p>
@@ -260,34 +248,19 @@
                                 }
                             </tbody>
                         </table>
-                        <br/><br/>
-                        <button class="ms-Button  ms-Button--primary">
-                            <i class="ms-Icon ms-Icon--DoubleChevronLeft" style="font-size: 10px;padding-left: 5px;color:white;"></i>
-                            <span class="ms-Button-label">@Localizer["Testing"]</span>
-                        </button>
-                        <button class="ms-Button  ms-Button--primary">
-                            <span class="ms-Button-label">@Localizer["Mona configuration"]</span>
-                            <i class="ms-Icon ms-Icon--DoubleChevronRight" style="font-size: 10px;padding-left: 5px;color:white;"></i>
-                        </button>
-                        <br/><br/>
                     </div>
                     <div class="ms-Pivot-content" data-content="configuration">
                         <p class="ms-font-m">
                             @Localizer[
-                            "These configuration settings control nearly every aspect of how this Mona deployment behaves. " +
-                            "Most of these settings are automatically configured during the initial Mona setup. " +
-                            "For more information on these settings, please <a href=\"{0}\">visit the Mona docs</a>.",
+                            "These configuration settings control nearly every aspect of how this Mona SaaS deployment behaves. " +
+                            "Most of these settings are automatically configured during the initial Mona SaaS setup. " +
+                            "For more information on these settings, please <a href=\"{0}\">visit the Mona SaaS docs</a>.",
                             "https://github.com/azure"]
                         </p>
-                        <a role="button" class="ms-Button  ms-Button--primary" href="@Model.ConfigurationSettingsEditorUrl" target="_blank">
+                        <a role="button" class="ms-Button  ms-Button--primary" href="@Model.ConfigurationSettingsUrl" target="_blank">
                              <span class="ms-Button-label">@Localizer["Manage configuration settings"]</span>
                              <i class="ms-Icon ms-Icon--DoubleChevronRight" style="font-size: 10px;padding-left: 5px;color:white;"></i>
                         </a>
-                        <br><br>
-                        <button class="ms-Button  ms-Button--primary">
-                            <i class="ms-Icon ms-Icon--DoubleChevronLeft" style="font-size: 10px;padding-left: 5px;color:white;"></i>
-                            <span class="ms-Button-label">@Localizer["Subscription"]</span>
-                        </button>
                     </div>
                 </div>
              </div>
@@ -298,7 +271,7 @@
     <footer style="padding-top: 10px;text-align: center;">
         <ul class="ms-List">
             <li class="ms-ListItem" tabindex="0">
-                <span class="ms-ListItem-primaryText" style="padding-right:30px">Mona for SaaS <small class="text-muted">@Model.MonaVersion</small></span>
+                <span class="ms-ListItem-primaryText" style="padding-right:30px">Mona SaaS <small class="text-muted">@Model.MonaVersion</small></span>
                 <span class="ms-ListItem-secondaryText">Copyright © Microsoft Corporation @DateTime.UtcNow.Year</span>
                 <span class="ms-ListItem-tertiaryText">Licensed under the <a href="https://choosealicense.com/licenses/mit/">MIT License</a></span>
             </li>
