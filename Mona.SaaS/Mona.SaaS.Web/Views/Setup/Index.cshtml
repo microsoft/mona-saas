@@ -32,24 +32,24 @@
     <main>
         <div class="ms-Grid" dir="ltr" >
             <div class="ms-Grid-row" style="height: 87%;">
-                <div class="ms-Grid-col ms-sm12" style="float: inherit;text-align: center;">
+                <div class="ms-Grid-col ms-sm12" style="float: inherit;text-align: center; margin: auto; max-width: 50%">
                     <span class="ms-font-su ms-fontColor-themePrimary">@Localizer["Mona SaaS setup"]</span>
-                    <p class="ms-font-xl"> @Localizer["Tell us a little about yourself"]</p>
+                    <p class="ms-font-xl"> @Localizer["Tell us a little about your solution"]</p>
                     <p class="ms-font-m">
                         <b>@Localizer["Thank you for installing Mona SaaS."]</b>
                         @Localizer["Before we go any further, we need some additional information to customize the purchasing experience for your customers." + 
                         "This set up form should take approximately 5 minutes to fill out. " + 
                         "Before you know it, you'll be up and running and transacting with Microsoft."]
-                        <a class="ms-fontColor-themePrimary" href="">Learn more <i class="ms-Icon ms-Icon--ChevronRightSmall"></i></a>
+                        <a class="ms-fontColor-themePrimary" style ="color: 0072cc" href="">Learn more <i class="ms-Icon ms-Icon--ChevronRightSmall"></i></a>
                     </p>
 
-                    <div class="ms-MessageBar ms-MessageBar--severeWarning">
+                    <div class="ms-MessageBar ms-MessageBar--warning">
                         <div class="ms-MessageBar-content">
                           <div class="ms-MessageBar-icon">
                             <i class="ms-Icon ms-Icon--Warning"></i>
                           </div>
                           <div class="ms-MessageBar-text">
-                             <b>@Localizer["Mona SaaS is currently in Private Preview. Please do not use in production enviroments."]</b>
+                             <b>@Localizer["Mona SaaS is currently open source. Please use at your discretion"]</b>
                             <a class="ms-Link" href="#" title="More info about Example Link">Learn more</a> 
                           </div>
                         </div>
@@ -83,7 +83,7 @@
                             <div class="ms-MessageBar">
                                 <div class="ms-MessageBar-content">
                                     <div class="ms-MessageBar-icon"><i class="ms-Icon ms-Icon--Info"></i></div>
-                                    <div class="ms-MessageBar-text">
+                                    <div class="ms-MessageBar-text" style="color:#006cc1">
                                         @Localizer["If you have any concern about this value, please check out this "]<a class="ms-Link" href="#" title="More info about Example Link">@Localizer["documentation page"]</a>.
                                     </div>
                                 </div>
@@ -94,7 +94,7 @@
                                 <div class="ms-MessageBar-icon" style="padding-right: 1px;font-size: 11px;"><i class="ms-Icon ms-Icon ms-Icon--Info"></i></div>
                                 <span class="ms-font-xs" style="display: table-cell; text-align: left;">
                                     @Localizer["After your customer has confirmed their purchase through the landing page, they will automatically be redirected to this URL." +
-"Note that you can include the customer's subscription ID in the URL by using the <code>{{subscription-id}}</code> placeholder."]
+								"Note that you can include the customer's subscription ID in the URL by using the <code >{{subscription-id}}</code> placeholder."]
                                 </span>
                             </div>
                             <button class="ms-Button">
@@ -107,7 +107,7 @@
                         <div class="ms-MessageBar">
                             <div class="ms-MessageBar-content">
                                 <div class="ms-MessageBar-icon"><i class="ms-Icon ms-Icon--Info"></i></div>
-                                <div class="ms-MessageBar-text">
+                                <div class="ms-MessageBar-text" style="color: #006cc1">
                                     @Localizer["If you have any concern about this value, please check out this "]<a class="ms-Link" href="#" title="More info about Example Link">@Localizer["documentation page"]</a>.
                                 </div>
                             </div>
@@ -222,10 +222,10 @@
 
     <footer style="padding-top: 10px;text-align: center;">
         <ul class="ms-List">
-            <li class="ms-ListItem ms-ListItem--image" tabindex="0">
-                <span class="ms-ListItem-primaryText" style="padding-right:30px">Mona SaaS <small class="text-muted">1.0.0</small></span> 
+            <li class="ms-ListItem ms-ListItem--image" tabindex="0" >
+                <span class="ms-ListItem-primaryText" style="padding-right:30px; color: #006ee5 ">Mona SaaS <small class="text-muted">1.0.0</small></span> 
                 <span class="ms-ListItem-secondaryText">Copyright © Microsoft Corporation @DateTime.UtcNow.Year</span> 
-                <span class="ms-ListItem-tertiaryText">Licensed under the <a href="https://choosealicense.com/licenses/mit/">MIT License</a></span> 
+                <span class="ms-ListItem-tertiaryText">Licensed under the <a href="https://www.microsoft.com/en-us/licensing/default">Microsoft License</a></span> 
             </li>
         </ul>
     </footer>
