@@ -78,15 +78,31 @@
         .ms-font-xl{font-weight:bold;}
         .ms-MessageBar-icon{font-size: 15px;}
         .ms-link{font-weight:600;}
+        a{
+            color: #006cc1; 
+        }
+         .ms-Button.ms-Button--primary{
+            color: #0072cc; 
+            background-color:0072cc;
+            
+        }
+        ms-Button.ms-Button--primary {
+            color: 0072cc;
+
+        }
+        .ms-Label.is-disabled{
+            color: #717171;
+        }
+    
     </style>
 </head>
 <body class="ms-Fabric" dir="ltr">
     <main>
         <div class="ms-Grid" dir="ltr" >
             <div class="ms-Grid-row">
-                <div class="ms-Grid-col ms-sm12" style="float: inherit;text-align: center;">
+                <div class="ms-Grid-col ms-sm12" style="float: inherit;text-align: center;margin: auto; max-width:50%"">
                     <span class="ms-font-su ms-fontColor-themePrimary">@Localizer["Mona SaaS admin center"]</span>
-                    <p class="ms-font-l">
+                    <p class="ms-font-l" style="color: #006ee5">
                         @Localizer[
                         "You'll need these technical details when you <a href=\"{0}\">publish your SaaS offer through the Partner Center</a>.",
                         "https://docs.microsoft.com/azure/marketplace/create-new-saas-offer-technical"]
@@ -98,7 +114,7 @@
                             </div>
                             <div class="ms-MessageBar-text">
                             <b>Mona SaaS is Open Source. Please use at your discretion</b>
-                            <a class="ms-Link" href="#" title="More info about Example Link">Learn more</a> 
+                            <a class="ms-Link" href="#" title="More info about Example Link" style ="color:#006cc1">Learn more</a> 
                             </div>
                         </div>
                     </div>
@@ -273,7 +289,7 @@
             <li class="ms-ListItem" tabindex="0">
                 <span class="ms-ListItem-primaryText" style="padding-right:30px">Mona SaaS <small class="text-muted">@Model.MonaVersion</small></span>
                 <span class="ms-ListItem-secondaryText">Copyright © Microsoft Corporation @DateTime.UtcNow.Year</span>
-                <span class="ms-ListItem-tertiaryText">Licensed under the <a href="https://choosealicense.com/licenses/mit/">MIT License</a></span>
+                <span class="ms-ListItem-tertiaryText">Licensed under the <a href="https://www.microsoft.com/en-us/licensing/default">Microsoft License</a></span> 
             </li>
         </ul>
     </footer>
