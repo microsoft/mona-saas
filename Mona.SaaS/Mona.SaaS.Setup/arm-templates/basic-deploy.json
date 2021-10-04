@@ -281,6 +281,64 @@
             }
         },
         {
+            "type": "Microsoft.Storage/storageAccounts/managementPolicies",
+            "apiVersion": "2019-06-01",
+            "name": "[concat(variables('storageAccountName'), '/default')]",
+            "dependsOn": [
+                "[variables('storageAccountName')]"
+            ],
+            "properties": {
+                "policy": {
+                    "rules": [
+                        {
+                            "name": "AgeOffStagedSubscriptions",
+                            "enabled": true,
+                            "type": "Lifecycle",
+                            "definition": {
+                                "filters": {
+                                    "blobTypes": [
+                                        "blockBlob"
+                                    ],
+                                    "prefixMatch": [
+                                        "[variables('stageSubContainerName')]"
+                                    ]
+                                },
+                                "actions": {
+                                    "baseBlob": {
+                                        "delete": {
+                                            "daysAfterModificationGreaterThan": 30
+                                        }
+                                    }
+                                }
+                            }
+                        },
+                        {
+                            "name": "AgeOffTestSubscriptions",
+                            "enabled": true,
+                            "type": "Lifecycle",
+                            "definition": {
+                                "filters": {
+                                    "blobTypes": [
+                                        "blockBlob"
+                                    ],
+                                    "prefixMatch": [
+                                        "[variables('testSubContainerName')]"
+                                    ]
+                                },
+                                "actions": {
+                                    "baseBlob": {
+                                        "delete": {
+                                            "daysAfterModificationGreaterThan": 30
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    ]
+                }
+            }
+        },
+        {
             "type": "Microsoft.Storage/storageAccounts/blobServices",
             "apiVersion": "2021-01-01",
             "name": "[concat(variables('storageAccountName'), '/', variables('blobServiceName'))]",
@@ -657,7 +715,7 @@
                                         "method": "POST",
                                         "uri": "https://marketplaceapi.microsoft.com/api/saas/subscriptions/@{body('Parse_event_information_(1)')?['Subscription ID']}/activate?api-version=2018-08-31"
                                     },
-                                    "runAfter": { },
+                                    "runAfter": {},
                                     "type": "Http"
                                 }
                             },
@@ -1143,7 +1201,7 @@
                                         "method": "PATCH",
                                         "uri": "https://marketplaceapi.microsoft.com/api/saas/subscriptions/@{body('Parse_event_information_(1)')?['Subscription ID']}/operations/@{body('Parse_event_information_(1)')?['Operation ID']}?api-version=2018-08-31"
                                     },
-                                    "runAfter": { },
+                                    "runAfter": {},
                                     "type": "Http"
                                 }
                             },
@@ -1412,7 +1470,7 @@
                                         "method": "PATCH",
                                         "uri": "https://marketplaceapi.microsoft.com/api/saas/subscriptions/@{body('Parse_event_information_(1)')?['Subscription ID']}/operations/@{body('Parse_event_information_(1)')?['Operation ID']}?api-version=2018-08-31"
                                     },
-                                    "runAfter": { },
+                                    "runAfter": {},
                                     "type": "Http"
                                 }
                             },
@@ -1894,7 +1952,7 @@
                                         "method": "PATCH",
                                         "uri": "https://marketplaceapi.microsoft.com/api/saas/subscriptions/@{body('Parse_event_information_(1)')?['Subscription ID']}/operations/@{body('Parse_event_information_(1)')?['Operation ID']}?api-version=2018-08-31"
                                     },
-                                    "runAfter": { },
+                                    "runAfter": {},
                                     "type": "Http"
                                 }
                             },
