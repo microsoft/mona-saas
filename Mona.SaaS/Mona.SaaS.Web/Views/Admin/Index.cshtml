@@ -99,8 +99,8 @@
 <body class="ms-Fabric" dir="ltr">
     <main>
         <div class="ms-Grid" dir="ltr" >
-            <div class="ms-Grid-row">
-                <div class="ms-Grid-col ms-sm12" style="float: inherit;text-align: center;margin: auto; max-width:50%"">
+            <div class="ms-Grid-row" style="min-height: 87%;padding: 20px;">
+                <div class="ms-Grid-col ms-sm6" style="float: left;max-width: 55%;min-width: 55%">
                     <span class="ms-font-su ms-fontColor-themePrimary">@Localizer["Mona SaaS admin center"]</span>
                     <p class="ms-font-l" style="color: #006ee5">
                         @Localizer[
@@ -120,7 +120,7 @@
                     </div>
                 </div>
 
-                <div class="ms-Grid-col ms-sm12" style="text-align: center;min-height: 70%;float: inherit;margin: auto;max-width: 50%;">
+                <div class="ms-Grid-col ms-sm6" style="float: left;max-width: 55%;min-width: 55%">
                      <div class="ms-Pivot">
                         <ul class="ms-Pivot-links">
                             <li class="ms-Pivot-link is-selected" data-content="partner" title="Partner" tabindex="1">
@@ -146,7 +146,7 @@
                                             "https://docs.microsoft.com/azure/marketplace/create-new-saas-offer-technical"]
                                     </div>
                                 </div>
-                            </div><br/>
+                            </div><br />
                             <table class="table table-bordered table-striped">
                                 <tbody>
                                     <tr>
@@ -179,7 +179,7 @@
                                             @Localizer["Mona SaaS test endpoints are currently enabled. To disable them, see <a class=\"alert-link\" href=\"#\">the Mona SaaS docs</a>."]
                                         </div>
                                     </div>
-                                </div><br/>
+                                </div><br />
                                 <p class="ms-font-m">@Localizer["These endpoints make it easy to test your SaaS subscription workflows before going live."] </p>
                                 <p class="ms-font-m">@Localizer["The behavior of these endpoints is identical to that of the live endpoints (defined in the technical details section above) " +
                                     "with the exception that subscriptions created/updated through these endpoints are only cached locally. AppSource/Azure Marketplace " +
@@ -221,7 +221,7 @@
                                         "https://docs.microsoft.com/en-us/azure/logic-apps/quickstart-create-first-logic-app-workflow"]
                                 </div>
                             </div>
-                        </div><br/>
+                        </div><br />
                         
                          <div class="ms-MessageBar">
                             <div class="ms-MessageBar-content">
@@ -237,7 +237,7 @@
                                     "https://docs.microsoft.com/azure/event-grid/webhook-event-delivery"]
                                 </div>
                             </div>
-                        </div><br/>
+                        </div><br />
                         <table class="table">
                             <tbody>
                                 @foreach (var plugin in Model.IntegrationPlugins.OrderBy(p => p.Status).ThenBy(p => p.DisplayName))
@@ -272,7 +272,7 @@
                             "Most of these settings are automatically configured during the initial Mona SaaS setup. " +
                             "For more information on these settings, please <a href=\"{0}\">visit the Mona SaaS docs</a>.",
                             "https://github.com/azure"]
-                        </p>
+                        </p><br />
                         <a role="button" class="ms-Button  ms-Button--primary" href="@Model.ConfigurationSettingsUrl" target="_blank">
                              <span class="ms-Button-label">@Localizer["Manage configuration settings"]</span>
                              <i class="ms-Icon ms-Icon--DoubleChevronRight" style="font-size: 10px;padding-left: 5px;color:white;"></i>
@@ -284,16 +284,17 @@
        </div>
     </main>
 
-    <footer style="padding-top: 10px;text-align: center;">
+    <footer style="padding-top: 10px;">
         <ul class="ms-List">
-            <li class="ms-ListItem" tabindex="0">
-                <span class="ms-ListItem-primaryText" style="padding-right:30px">Mona SaaS <small class="text-muted">@Model.MonaVersion</small></span>
-                <span class="ms-ListItem-secondaryText">Copyright © Microsoft Corporation @DateTime.UtcNow.Year</span>
+            <li class="ms-ListItem ms-ListItem--image" tabindex="0" >
+                <span class="ms-ListItem-primaryText" style="padding-right:30px; color: #006ee5 ">Mona SaaS <small class="text-muted">1.0.0</small></span> 
+                <span class="ms-ListItem-secondaryText">Copyright © Microsoft Corporation @DateTime.UtcNow.Year</span> 
                 <span class="ms-ListItem-tertiaryText">Licensed under the <a href="https://www.microsoft.com/en-us/licensing/default">Microsoft License</a></span> 
             </li>
         </ul>
     </footer>
 </body>
+</html>
 
 <script type="text/javascript">
     var PivotElements = document.querySelectorAll(".ms-Pivot");
@@ -301,4 +302,3 @@
       new fabric['Pivot'](PivotElements[i]);
     }
  </script>
-</html>
