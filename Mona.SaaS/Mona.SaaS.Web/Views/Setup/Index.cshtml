@@ -16,6 +16,29 @@
     <script src="https://static2.sharepointonline.com/files/fabric/office-ui-fabric-js/1.4.0/js/fabric.min.js"></script>
     <link href="~/lib/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet" />
     <title>@Localizer["Mona SaaS setup"]</title>
+
+    <script type="text/javascript">
+        function savetext () {
+	        var s = document.getElementById('textField').value;
+	        if (s != localStorage.savedtext) {
+		        localStorage.savedtext = s;
+		    }
+            document.getElementById('showValue').innerHTML = s;
+	    }
+        function startup () {
+	        if (typeof (Storage) == undefined) {
+		        alert("This use localStorage feature to save your data in memory, which unfortunately is not available in this browser");
+		    }
+	        else {
+		        if (localStorage.savedtext == undefined) {
+			        localStorage.savedtext = "";
+			    }
+		        document.getElementById('textField').value = localStorage.savedtext;
+		        self.setInterval (function () {savetext ()}, 1000); //call every second
+		    }
+	    }
+			
+     </script>
     <style>
         .ms-TextField-field{display: block;}
         .ms-MessageBar{width: -webkit-fill-available; padding: 15px;}
@@ -58,7 +81,7 @@
                           </div>
                           <div class="ms-MessageBar-text">
                              <b>@Localizer["Mona SaaS is currently open source. Please use at your discretion"]</b>
-                            <a class="ms-Link" style="color: #006cc1"  href="#" title="More info about Example Link">Learn more</a> 
+                            <a class="ms-Link" style="color: #006cc1"  href="#" title="More info about Example Link">Learn more</a>
                           </div>
                         </div>
                     </div>
@@ -98,7 +121,7 @@
                             </div><br />
                             <div class="ms-TextField">
                                 @Html.LabelFor(m => m.Publisher.SubscriptionPurchaseConfirmationUrl, new { @class = "ms-Label is-required" })
-                                @Html.TextBoxFor(m => m.Publisher.SubscriptionPurchaseConfirmationUrl, new { @class = "ms-TextField-field", placeholder = "https://yourdomain.com/saas/purchased/{subscription-id}" })
+                                @Html.TextBoxFor(m => m.Publisher.SubscriptionPurchaseConfirmationUrl, new { @id = "textField", @class = "ms-TextField-field", placeholder = "https://yourdomain.com/saas/purchased/{subscription-id}" })
                                 <div class="ms-MessageBar-icon" style="padding-right: 1px;font-size: 11px;"><i class="ms-Icon ms-Icon ms-Icon--Info"></i></div>
                                 <span class="ms-font-xs" style="display: table-cell; text-align: left;">
                                     @Localizer["After your customer has confirmed their purchase through the landing page, they will automatically be redirected to this URL." +
@@ -188,7 +211,7 @@
                                     <tbody>
                                         <tr>
                                             <td>@Html.LabelFor(m => m.Publisher.SubscriptionPurchaseConfirmationUrl, new { @class = "ms-Label is-required" })</td>
-                                            <td>@Model.Publisher.SubscriptionPurchaseConfirmationUrl</td>
+                                            <td id="showValue"></td>
                                         </tr>
                                         <tr>
                                             <td>@Html.LabelFor(m => m.Publisher.SubscriptionConfigurationUrl, new { @class = "ms-Label is-required" })</td>
@@ -226,6 +249,7 @@
                     }
             </div>
        </div>
+       <script type="text/javascript">startup ();</script>
     </main>
 
     <footer style="padding-top: 10px;">
@@ -238,7 +262,6 @@
         </ul>
     </footer>
 </body>
-</html>
 
 <script type="text/javascript">
     var PivotElements = document.querySelectorAll(".ms-Pivot");
@@ -246,9 +269,9 @@
         new fabric['Pivot'](PivotElements[i]);
     }
     var tabs = document.getElementById('pivotTabs');
-    var linksCollection = tabs.getElementsByClassName('ms-Pivot-link')
+    var linksCollection = tabs.getElementsByClassName('ms-Pivot-link');
     var links = Array.prototype.slice.call(linksCollection);
-    var contentsCollection = tabs.getElementsByClassName('ms-Pivot-content')
+    var contentsCollection = tabs.getElementsByClassName('ms-Pivot-content');
     var contents = Array.prototype.slice.call(contentsCollection);
     function goToTab(goTo) {
         links.map(function (link) {
@@ -262,6 +285,9 @@
             content.style.display = content.dataset.content == goTo ? 'block' : 'none'
         })
     }
- </script>
+</script>
+</html>
+
+
 
 
