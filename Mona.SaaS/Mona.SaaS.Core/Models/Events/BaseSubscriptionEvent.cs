@@ -32,26 +32,40 @@ namespace Mona.SaaS.Core.Models.Events
                 throw new ArgumentNullException(nameof(eventVersion));
             }
 
+            EventId = Guid.NewGuid().ToString();
             EventType = eventType;
             EventVersion = eventVersion;
         }
 
-        [JsonProperty("eventId")]
-        public string EventId { get; set; } = Guid.NewGuid().ToString();
+        public BaseSubscriptionEvent(string eventType, string eventVersion, Subscription subscription, string operationId, DateTime operationDateTimeUtc)
+            : this(eventType, eventVersion)
+        {
+            if (subscription == null)
+            {
+                throw new ArgumentNullException(nameof(subscription));
+            }
 
-        [JsonProperty("eventType")]
+            Subscription = new FlatSubscription(subscription);
+            OperationId = operationId;
+            OperationDateTimeUtc = operationDateTimeUtc;
+        }
+
+        [JsonProperty("Event ID")]
+        public string EventId { get; set; }
+
+        [JsonProperty("Event Type")]
         public string EventType { get; set; }
 
-        [JsonProperty("eventVersion")]
+        [JsonProperty("Event Version")]
         public string EventVersion { get; set; }
 
-        [JsonProperty("operationId")]
+        [JsonProperty("Operation ID")]
         public string OperationId { get; set; }
 
-        [JsonProperty("subscription")]
-        public Subscription Subscription { get; set; }
+        [JsonProperty("Subscription")]
+        public FlatSubscription Subscription { get; set; }
 
-        [JsonProperty("operationDateTimeUtc")]
-        public DateTime OperationDateTimeUtc { get; set; } = DateTime.UtcNow;
+        [JsonProperty("Operation Date/Time UTC")]
+        public DateTime OperationDateTimeUtc { get; set; }
     }
 }

@@ -20,23 +20,11 @@ namespace Mona.SaaS.Core.Models.Events
     /// </summary>
     public class SubscriptionSuspended : BaseSubscriptionEvent
     {
-        public SubscriptionSuspended() : base(CoreEventTypes.SubscriptionSuspended, "2021-05-01") { }
+        public SubscriptionSuspended() 
+            : base(EventTypes.SubscriptionSuspended, EventVersions.V_2021_10_01) { }
 
-        public SubscriptionSuspended(Subscription subscription, string operationId, DateTime? operationDateTimeUtc = null) : this()
-        {
-            if (subscription == null)
-            {
-                throw new ArgumentNullException(nameof(subscription));
-            }
-
-            if (string.IsNullOrEmpty(operationId))
-            {
-                throw new ArgumentNullException(nameof(operationId));
-            }
-
-            Subscription = subscription;
-            OperationId = operationId;
-            OperationDateTimeUtc = (operationDateTimeUtc ?? DateTime.UtcNow);
-        }
+        public SubscriptionSuspended(Subscription subscription, string operationId, DateTime? operationDateTimeUtc = null)
+            : base(EventTypes.SubscriptionSuspended, EventVersions.V_2021_10_01, subscription, operationId, 
+                  (operationDateTimeUtc ?? DateTime.UtcNow)) { }
     }
 }

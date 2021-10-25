@@ -21,32 +21,17 @@ namespace Mona.SaaS.Core.Models.Events
     /// </summary>
     public class SubscriptionPlanChanged : BaseSubscriptionEvent
     {
-        public SubscriptionPlanChanged() : base(CoreEventTypes.SubscriptionPlanChanged, "2021-05-01") { }
+        public SubscriptionPlanChanged() 
+            : base(EventTypes.SubscriptionPlanChanged, EventVersions.V_2021_10_01) { }
 
-        public SubscriptionPlanChanged(Subscription subscription, string operationId, string newPlanId, DateTime? operationDateTimeUtc = null) : this()
+        public SubscriptionPlanChanged(Subscription subscription, string operationId, string newPlanId, DateTime? operationDateTimeUtc = null)
+            : base(EventTypes.SubscriptionPlanChanged, EventVersions.V_2021_10_01, subscription, operationId,
+                  (operationDateTimeUtc ?? DateTime.UtcNow))
         {
-            if (subscription == null)
-            {
-                throw new ArgumentNullException(nameof(subscription));
-            }
-
-            if (string.IsNullOrEmpty(operationId))
-            {
-                throw new ArgumentNullException(nameof(operationId));
-            }
-
-            if (string.IsNullOrEmpty(newPlanId))
-            {
-                throw new ArgumentNullException(nameof(newPlanId));
-            }
-
-            Subscription = subscription;
-            OperationId = operationId;
-            OperationDateTimeUtc = (operationDateTimeUtc ?? DateTime.UtcNow);
             NewPlanId = newPlanId;
         }
 
-        [JsonProperty("newPlanId")]
+        [JsonProperty("New Plan ID")]
         public string NewPlanId { get; set; }
     }
 }

@@ -99,9 +99,9 @@ namespace Mona.SaaS.Web.Tests
             (actionResult as RedirectResult).Url.Should().Be(expectedRedirectUrl);
 
             purchasedEvent.Should().NotBeNull();
-            purchasedEvent.EventType = CoreEventTypes.SubscriptionPurchased;
+            purchasedEvent.EventType = EventTypes.SubscriptionPurchased;
             purchasedEvent.Subscription.Should().NotBeNull();
-            purchasedEvent.Subscription.Should().BeEquivalentTo(testSubscription);
+            purchasedEvent.Subscription.Should().BeEquivalentTo(new FlatSubscription(testSubscription));
         }
 
         [Fact]
@@ -152,9 +152,9 @@ namespace Mona.SaaS.Web.Tests
             (actionResult as RedirectResult).Url.Should().Be(expectedRedirectUrl);
 
             purchasedEvent.Should().NotBeNull();
-            purchasedEvent.EventType = CoreEventTypes.SubscriptionPurchased;
+            purchasedEvent.EventType = EventTypes.SubscriptionPurchased;
             purchasedEvent.Subscription.Should().NotBeNull();
-            purchasedEvent.Subscription.Should().BeEquivalentTo(testSubscription);
+            purchasedEvent.Subscription.Should().BeEquivalentTo(new FlatSubscription(testSubscription));
         }
 
         [Fact]
@@ -812,9 +812,9 @@ namespace Mona.SaaS.Web.Tests
             actionResult.Should().BeOfType<OkResult>();
 
             reinstatedEvent.Should().NotBeNull();
-            reinstatedEvent.EventType.Should().Be(CoreEventTypes.SubscriptionReinstated);
+            reinstatedEvent.EventType.Should().Be(EventTypes.SubscriptionReinstated);
             reinstatedEvent.OperationId.Should().Be(testWhNotification.OperationId);
-            reinstatedEvent.Subscription.Should().BeEquivalentTo(testSubscription);
+            reinstatedEvent.Subscription.Should().BeEquivalentTo(new FlatSubscription(testSubscription));
         }
 
         [Fact]
@@ -918,9 +918,9 @@ namespace Mona.SaaS.Web.Tests
             actionResult.Should().BeOfType<OkResult>();
 
             suspendedEvent.Should().NotBeNull();
-            suspendedEvent.EventType.Should().Be(CoreEventTypes.SubscriptionSuspended);
+            suspendedEvent.EventType.Should().Be(EventTypes.SubscriptionSuspended);
             suspendedEvent.OperationId.Should().Be(testWhNotification.OperationId);
-            suspendedEvent.Subscription.Should().BeEquivalentTo(testSubscription);
+            suspendedEvent.Subscription.Should().BeEquivalentTo(new FlatSubscription(testSubscription));
         }
 
         [Fact]
@@ -982,9 +982,9 @@ namespace Mona.SaaS.Web.Tests
             actionResult.Should().BeOfType<OkResult>();
 
             cancelledEvent.Should().NotBeNull();
-            cancelledEvent.EventType.Should().Be(CoreEventTypes.SubscriptionCancelled);
+            cancelledEvent.EventType.Should().Be(EventTypes.SubscriptionCancelled);
             cancelledEvent.OperationId.Should().Be(testWhNotification.OperationId);
-            cancelledEvent.Subscription.Should().BeEquivalentTo(testSubscription);
+            cancelledEvent.Subscription.Should().BeEquivalentTo(new FlatSubscription(testSubscription));
         }
 
         [Fact]
@@ -1048,10 +1048,10 @@ namespace Mona.SaaS.Web.Tests
             actionResult.Should().BeOfType<OkResult>();
 
             seatQtyChangedEvent.Should().NotBeNull();
-            seatQtyChangedEvent.EventType.Should().Be(CoreEventTypes.SubscriptionSeatQuantityChanged);
+            seatQtyChangedEvent.EventType.Should().Be(EventTypes.SubscriptionSeatQuantityChanged);
             seatQtyChangedEvent.NewSeatQuantity.Should().Be(newSeatQty);
             seatQtyChangedEvent.OperationId.Should().Be(testWhNotification.OperationId);
-            seatQtyChangedEvent.Subscription.Should().BeEquivalentTo(testSubscription);
+            seatQtyChangedEvent.Subscription.Should().BeEquivalentTo(new FlatSubscription(testSubscription));
         }
 
         [Fact]
@@ -1107,10 +1107,10 @@ namespace Mona.SaaS.Web.Tests
             actionResult.Should().BeOfType<OkResult>();
 
             planChangeEvent.Should().NotBeNull();
-            planChangeEvent.EventType.Should().Be(CoreEventTypes.SubscriptionPlanChanged);
+            planChangeEvent.EventType.Should().Be(EventTypes.SubscriptionPlanChanged);
             planChangeEvent.NewPlanId.Should().Be(newPlanId);
             planChangeEvent.OperationId.Should().Be(testWhNotification.OperationId);
-            planChangeEvent.Subscription.Should().BeEquivalentTo(testSubscription);
+            planChangeEvent.Subscription.Should().BeEquivalentTo(new FlatSubscription(testSubscription));
         }
 
         [Fact]
@@ -1249,9 +1249,9 @@ namespace Mona.SaaS.Web.Tests
             actionResult.Should().BeOfType<OkResult>();
 
             reinstatedEvent.Should().NotBeNull();
-            reinstatedEvent.EventType.Should().Be(CoreEventTypes.SubscriptionReinstated);
+            reinstatedEvent.EventType.Should().Be(EventTypes.SubscriptionReinstated);
             reinstatedEvent.OperationId.Should().Be(testWhNotification.OperationId);
-            reinstatedEvent.Subscription.Should().BeEquivalentTo(testSubscription);
+            reinstatedEvent.Subscription.Should().BeEquivalentTo(new FlatSubscription(testSubscription));
         }
 
         [Fact]
@@ -1311,9 +1311,9 @@ namespace Mona.SaaS.Web.Tests
             actionResult.Should().BeOfType<OkResult>();
 
             suspendedEvent.Should().NotBeNull();
-            suspendedEvent.EventType.Should().Be(CoreEventTypes.SubscriptionSuspended);
+            suspendedEvent.EventType.Should().Be(EventTypes.SubscriptionSuspended);
             suspendedEvent.OperationId.Should().Be(testWhNotification.OperationId);
-            suspendedEvent.Subscription.Should().BeEquivalentTo(testSubscription);
+            suspendedEvent.Subscription.Should().BeEquivalentTo(new FlatSubscription(testSubscription));
         }
 
         [Fact]
@@ -1373,9 +1373,9 @@ namespace Mona.SaaS.Web.Tests
             actionResult.Should().BeOfType<OkResult>();
 
             cancelledEvent.Should().NotBeNull();
-            cancelledEvent.EventType.Should().Be(CoreEventTypes.SubscriptionCancelled);
+            cancelledEvent.EventType.Should().Be(EventTypes.SubscriptionCancelled);
             cancelledEvent.OperationId.Should().Be(testWhNotification.OperationId);
-            cancelledEvent.Subscription.Should().BeEquivalentTo(testSubscription);
+            cancelledEvent.Subscription.Should().BeEquivalentTo(new FlatSubscription(testSubscription));
         }
 
         [Fact]
@@ -1437,10 +1437,10 @@ namespace Mona.SaaS.Web.Tests
             actionResult.Should().BeOfType<OkResult>();
 
             seatQtyChangedEvent.Should().NotBeNull();
-            seatQtyChangedEvent.EventType.Should().Be(CoreEventTypes.SubscriptionSeatQuantityChanged);
+            seatQtyChangedEvent.EventType.Should().Be(EventTypes.SubscriptionSeatQuantityChanged);
             seatQtyChangedEvent.NewSeatQuantity.Should().Be(newSeatQty);
             seatQtyChangedEvent.OperationId.Should().Be(testWhNotification.OperationId);
-            seatQtyChangedEvent.Subscription.Should().BeEquivalentTo(testSubscription);
+            seatQtyChangedEvent.Subscription.Should().BeEquivalentTo(new FlatSubscription(testSubscription));
         }
 
         [Fact]
@@ -1497,10 +1497,10 @@ namespace Mona.SaaS.Web.Tests
             actionResult.Should().BeOfType<OkResult>();
 
             planChangeEvent.Should().NotBeNull();
-            planChangeEvent.EventType.Should().Be(CoreEventTypes.SubscriptionPlanChanged);
+            planChangeEvent.EventType.Should().Be(EventTypes.SubscriptionPlanChanged);
             planChangeEvent.NewPlanId.Should().Be(newPlanId);
             planChangeEvent.OperationId.Should().Be(testWhNotification.OperationId);
-            planChangeEvent.Subscription.Should().BeEquivalentTo(testSubscription);
+            planChangeEvent.Subscription.Should().BeEquivalentTo(new FlatSubscription(testSubscription));
         }
 
         [Fact]
