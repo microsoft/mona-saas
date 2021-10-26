@@ -10,6 +10,7 @@
 //
 // In no event shall Microsoft be liable for any damages whatsoever (including, without limitation, damages for loss of business profits, business interruption, loss of business information, or other pecuniary loss) arising out of the use of or inability to use the preview code, even if Microsoft has been advised of the possibility of such damages.
 
+using Mona.SaaS.Core.Constants;
 using System.ComponentModel.DataAnnotations;
 
 namespace Mona.SaaS.Core.Models.Configuration
@@ -24,6 +25,8 @@ namespace Mona.SaaS.Core.Models.Configuration
         /// </summary>
         [Required]
         public string Name { get; set; }
+
+        public string EventVersion { get; set; } = EventVersions.V_2021_10_01;
 
         /// <summary>
         /// Gets/sets this deployment's Mona version.
@@ -48,6 +51,16 @@ namespace Mona.SaaS.Core.Models.Configuration
         /// </summary>
         [Required]
         public string AzureResourceGroupName { get; set; }
+
+        /// <summary>
+        /// Gets/sets the Azure resource group name where Mona core components reside.
+        /// </summary>
+        public string MonaResourceGroupName { get; set; }
+
+        /// <summary>
+        /// Gets/sets the Azure resource group name where Mona integrations reside.
+        /// </summary>
+        public string IntegrationResourceGroupName { get; set; }
 
         /// <summary>
         /// Gets/sets whether or not this Mona deployment currently supports test mode.
