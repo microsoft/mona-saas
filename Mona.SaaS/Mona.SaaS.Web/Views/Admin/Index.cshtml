@@ -78,22 +78,10 @@
         .ms-font-xl{font-weight:bold;}
         .ms-MessageBar-icon{font-size: 15px;}
         .ms-link{font-weight:600;}
-        a{
-            color: #006cc1; 
-        }
-         .ms-Button.ms-Button--primary{
-            color: #0072cc; 
-            background-color:0072cc;
-            
-        }
-        ms-Button.ms-Button--primary {
-            color: 0072cc;
-
-        }
-        .ms-Label.is-disabled{
-            color: #717171;
-        }
-    
+        a{color: #006cc1; }
+        .ms-Button.ms-Button--primary{color: #0072cc;background-color:0072cc;}
+        ms-Button.ms-Button--primary { color: 0072cc;}
+        .ms-Label.is-disabled{color: #717171;}
     </style>
 </head>
 <body class="ms-Fabric" dir="ltr">
@@ -102,12 +90,12 @@
             <div class="ms-Grid-row" style="min-height: 87%;padding: 20px;">
                 <div class="ms-Grid-col ms-sm6" style="float: left;max-width: 55%;min-width: 55%">
                     <span class="ms-font-su ms-fontColor-themePrimary">@Localizer["Mona SaaS admin center"]</span>
-                    <p class="ms-font-l" style="color: #006ee5">
+                    <p class="ms-font-l">
                         @Localizer[
                         "You'll need these technical details when you <a href=\"{0}\">publish your SaaS offer through the Partner Center</a>.",
                         "https://docs.microsoft.com/azure/marketplace/create-new-saas-offer-technical"]
                     </p>
-                    <div class="ms-MessageBar ms-MessageBar--warning">
+                    <!-- div class="ms-MessageBar ms-MessageBar--warning">
                         <div class="ms-MessageBar-content">
                             <div class="ms-MessageBar-icon">
                             <i class="ms-Icon ms-Icon--Warning"></i>
@@ -117,7 +105,7 @@
                             <a class="ms-Link" href="#" title="More info about Example Link" style ="color:#006cc1">Learn more</a> 
                             </div>
                         </div>
-                    </div>
+                    </div-->
                 </div>
 
                 <div class="ms-Grid-col ms-sm6" style="float: left;max-width: 55%;min-width: 55%">
@@ -284,7 +272,7 @@
        </div>
     </main>
 
-    <footer style="padding-top: 10px;">
+    <footer style="padding-top: 18px;text-align: center;background-color: #f4f4f4;padding-bottom: 18px;">
         <ul class="ms-List">
             <li class="ms-ListItem ms-ListItem--image" tabindex="0" >
                 <span class="ms-ListItem-primaryText" style="padding-right:30px; color: #006ee5 ">Mona SaaS <small class="text-muted">1.0.0</small></span> 
