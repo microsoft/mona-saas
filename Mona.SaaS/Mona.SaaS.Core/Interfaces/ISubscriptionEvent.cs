@@ -10,26 +10,18 @@
 //
 // In no event shall Microsoft be liable for any damages whatsoever (including, without limitation, damages for loss of business profits, business interruption, loss of business information, or other pecuniary loss) arising out of the use of or inability to use the preview code, even if Microsoft has been advised of the possibility of such damages.
 
-namespace Mona.SaaS.Core.Constants
+namespace Mona.SaaS.Core.Interfaces
 {
-    /// <summary>
-    /// Common Mona subscription event versions (with notes).
-    /// </summary>
-    public static class EventVersions
+    using System;
+
+    public interface ISubscriptionEvent
     {
-        // TODO: Bump this when we release new event versions.
-        public const string CurrentEventVersion = V_2021_10_01;
+         string EventId { get; set; }
+         string EventType { get; set; }
+         string EventVersion { get; set; }
+         string OperationId { get; set; }
+         string SubscriptionId { get; set; }
 
-        /// <remarks>
-        /// Hierarchical subscription model; 
-        /// camel-cased JSON property names; 
-        /// </remarks>
-        public const string V_2021_05_01 = "2021-05-01";
-
-        /// <summary>
-        /// Flattened subscription model (for simpler Logic Apps consumption); 
-        /// human-readable, pascal-cased JSON property names;
-        /// </summary>
-        public const string V_2021_10_01 = "2021-10-01";
+         DateTime OperationDateTimeUtc { get; set; }
     }
 }

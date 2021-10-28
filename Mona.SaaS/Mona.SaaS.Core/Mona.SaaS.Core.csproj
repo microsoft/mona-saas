@@ -9,8 +9,4 @@
     <PackageReference Include="System.ComponentModel.Annotations" Version="5.0.0" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Models\Events\V_2021_05_01\" />
-  </ItemGroup>
-
 </Project>

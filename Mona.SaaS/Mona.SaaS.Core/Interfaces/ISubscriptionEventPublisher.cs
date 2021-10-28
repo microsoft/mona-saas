@@ -10,10 +10,10 @@
 //
 // In no event shall Microsoft be liable for any damages whatsoever (including, without limitation, damages for loss of business profits, business interruption, loss of business information, or other pecuniary loss) arising out of the use of or inability to use the preview code, even if Microsoft has been advised of the possibility of such damages.
 
-using Mona.SaaS.Core.Models.Events;
+using Mona.SaaS.Core.Models.Events.V_2021_10_01;
 using System.Threading.Tasks;
 
-namespace Mona.SaaS.EventProcessing.Interfaces
+namespace Mona.SaaS.Core.Interfaces
 {
     /// <summary>
     /// Defines an interface for publishing subscription-related events.
@@ -26,6 +26,6 @@ namespace Mona.SaaS.EventProcessing.Interfaces
         /// <typeparam name="T">The type of event to publish.</typeparam>
         /// <param name="subscriptionEvent">The event to publish.</param>
         /// <returns></returns>
-        Task PublishEventAsync<T>(T subscriptionEvent) where T : BaseSubscriptionEvent;
+        Task PublishEventAsync<T>(T subscriptionEvent) where T : ISubscriptionEvent;
     }
 }

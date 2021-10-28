@@ -20,8 +20,7 @@ using Mona.SaaS.Core.Extensions;
 using Mona.SaaS.Core.Interfaces;
 using Mona.SaaS.Core.Models;
 using Mona.SaaS.Core.Models.Configuration;
-using Mona.SaaS.Core.Models.Events;
-using Mona.SaaS.EventProcessing.Interfaces;
+using Events = Mona.SaaS.Core.Models.Events;
 using Mona.SaaS.Web.Extensions;
 using Mona.SaaS.Web.Models;
 using System;
@@ -34,9 +33,6 @@ namespace Mona.SaaS.Web.Controllers
     public class SubscriptionController : Controller
     {
         public const string SubscriptionDetailQueryParameter = "_sub";
-
-        // TODO: Make this configurable...
-        public const string CurrentEventVersion = EventVersions.V_2021_10_01;
 
         public static class ErrorCodes
         {
@@ -54,8 +50,6 @@ namespace Mona.SaaS.Web.Controllers
         private readonly ISubscriptionEventPublisher subscriptionEventPublisher;
         private readonly ISubscriptionStagingCache subscriptionStagingCache;
         private readonly ISubscriptionTestingCache subscriptionTestingCache;
-
-        private readonly Dictionary<string, Func<SubscriptionOperationType, Subscription, WebhookNotification, Task>> eventPublishers;
 
         public SubscriptionController(
             IOptionsSnapshot<DeploymentConfiguration> deploymentConfig,
@@ -75,11 +69,6 @@ namespace Mona.SaaS.Web.Controllers
             this.subscriptionEventPublisher = subscriptionEventPublisher;
             this.subscriptionStagingCache = subscriptionStagingCache;
             this.subscriptionTestingCache = subscriptionTestingCache;
-
-            eventPublishers = new Dictionary<string, Func<SubscriptionOperationType, Subscription, WebhookNotification, Task>>();
-
-            eventPublishers[EventVersions.V_2021_05_01] = (opType, s, wh) => PublishSubscriptionEvent_V_2021_05_01(opType, s, wh);
-            eventPublishers[EventVersions.V_2021_10_01] = (opType, s, wh) => PublishSubscriptionEvent_V_2021_10_01(opType, s, wh);
         }
 
         [Authorize]
@@ -169,7 +158,7 @@ namespace Mona.SaaS.Web.Controllers
                 {
                     // Alright, we're done here. Redirect the user to their subscription...
 
-                    await this.subscriptionEventPublisher.PublishEventAsync(new SubscriptionPurchased(subscription));
+                    await PublishSubscriptionPurchasedEvent(subscription);
 
                     var redirectUrl = publisherConfig.SubscriptionPurchaseConfirmationUrl
                         .WithSubscriptionId(subscription.SubscriptionId);
@@ -346,7 +335,7 @@ namespace Mona.SaaS.Web.Controllers
 
                     // Depending on the type of action, publish an appropriate event...
 
-                    await eventPublishers[this.deploymentConfig.EventVersion](opType, subscription, whNotification);
+                    await PublishWebhookSubscriptionEvent(opType, subscription, whNotification);
 
                     // If we're in test mode, cache the subscription model for later.
 
@@ -372,41 +361,83 @@ namespace Mona.SaaS.Web.Controllers
             }
         }
 
-        private async Task PublishSubscriptionEvent_V_2021_10_01(
-            SubscriptionOperationType opType, Subscription subscription, WebhookNotification whNotification)
-        {
-            switch (opType)
+        private Task PublishSubscriptionPurchasedEvent(Subscription subscription) =>
+            this.deploymentConfig.EventVersion switch
             {
-                case SubscriptionOperationType.Cancel:
-                    await this.subscriptionEventPublisher.PublishEventAsync(
-                        new SubscriptionCancelled(subscription, whNotification.OperationId));
-                    break;
-                case SubscriptionOperationType.ChangePlan:
-                    await this.subscriptionEventPublisher.PublishEventAsync(
-                        new SubscriptionPlanChanged(subscription, whNotification.OperationId, whNotification.PlanId));
-                    break;
-                case SubscriptionOperationType.ChangeSeatQuantity:
-                    await this.subscriptionEventPublisher.PublishEventAsync(
-                        new SubscriptionSeatQuantityChanged(subscription, whNotification.OperationId, whNotification.SeatQuantity));
-                    break;
-                case SubscriptionOperationType.Reinstate:
-                    await this.subscriptionEventPublisher.PublishEventAsync(
-                        new SubscriptionReinstated(subscription, whNotification.OperationId));
-                    break;
-                case SubscriptionOperationType.Suspend:
-                    await this.subscriptionEventPublisher.PublishEventAsync(
-                        new SubscriptionSuspended(subscription, whNotification.OperationId));
-                    break;
-            }
-        }
+                EventVersions.V_2021_05_01 =>
+                this.subscriptionEventPublisher.PublishEventAsync(new Events.V_2021_05_01.SubscriptionPurchased(subscription)),
 
-        private async Task PublishSubscriptionEvent_V_2021_05_01(
-           SubscriptionOperationType opType, Subscription subscription, WebhookNotification whNotification)
-        {
-            // TODO: Use legacy event models.
-        }
+                EventVersions.V_2021_10_01 =>
+                this.subscriptionEventPublisher.PublishEventAsync(new Events.V_2021_10_01.SubscriptionPurchased(subscription)),
 
-        private IActionResult TryToRedirectToServiceMarketingPageUrl(PublisherConfiguration publisherConfig) => 
+                _ => throw new NotSupportedException($"Subscription event version [{this.deploymentConfig.EventVersion}] not supported.")
+            };
+
+        private Task PublishWebhookSubscriptionEvent(SubscriptionOperationType opType, Subscription subscription, WebhookNotification whNotification) =>
+            this.deploymentConfig.EventVersion switch
+            {
+                EventVersions.V_2021_05_01 =>
+                PublishSubscriptionEvent_V_2021_05_01(opType, subscription, whNotification),
+
+                EventVersions.V_2021_10_01 =>
+                PublishSubscriptionEvent_V_2021_10_01(opType, subscription, whNotification),
+
+                _ => throw new NotSupportedException($"Subscription event version [{this.deploymentConfig.EventVersion}] not supported.")
+            };
+
+        private Task PublishSubscriptionEvent_V_2021_05_01(SubscriptionOperationType opType, Subscription subscription, WebhookNotification whNotification) =>
+            opType switch
+            {
+                SubscriptionOperationType.Cancel =>
+                this.subscriptionEventPublisher.PublishEventAsync(
+                    new Events.V_2021_05_01.SubscriptionCancelled(subscription, whNotification.OperationId)),
+
+                SubscriptionOperationType.ChangePlan =>
+                this.subscriptionEventPublisher.PublishEventAsync(
+                    new Events.V_2021_05_01.SubscriptionPlanChanged(subscription, whNotification.OperationId, whNotification.PlanId)),
+
+                SubscriptionOperationType.ChangeSeatQuantity =>
+                this.subscriptionEventPublisher.PublishEventAsync(
+                    new Events.V_2021_05_01.SubscriptionSeatQuantityChanged(subscription, whNotification.OperationId, whNotification.SeatQuantity)),
+
+                SubscriptionOperationType.Reinstate =>
+                this.subscriptionEventPublisher.PublishEventAsync(
+                    new Events.V_2021_05_01.SubscriptionReinstated(subscription, whNotification.OperationId)),
+
+                SubscriptionOperationType.Suspend =>
+                this.subscriptionEventPublisher.PublishEventAsync(
+                    new Events.V_2021_05_01.SubscriptionSuspended(subscription, whNotification.OperationId)),
+
+                _ => throw new NotSupportedException($"Subscription operation type [{opType}] is unknown.")
+            };
+
+        private Task PublishSubscriptionEvent_V_2021_10_01(SubscriptionOperationType opType, Subscription subscription, WebhookNotification whNotification) =>
+           opType switch
+           {
+               SubscriptionOperationType.Cancel =>
+               this.subscriptionEventPublisher.PublishEventAsync(
+                   new Events.V_2021_10_01.SubscriptionCancelled(subscription, whNotification.OperationId)),
+
+               SubscriptionOperationType.ChangePlan =>
+               this.subscriptionEventPublisher.PublishEventAsync(
+                   new Events.V_2021_10_01.SubscriptionPlanChanged(subscription, whNotification.OperationId, whNotification.PlanId)),
+
+               SubscriptionOperationType.ChangeSeatQuantity =>
+               this.subscriptionEventPublisher.PublishEventAsync(
+                   new Events.V_2021_10_01.SubscriptionSeatQuantityChanged(subscription, whNotification.OperationId, whNotification.SeatQuantity)),
+
+               SubscriptionOperationType.Reinstate =>
+               this.subscriptionEventPublisher.PublishEventAsync(
+                   new Events.V_2021_10_01.SubscriptionReinstated(subscription, whNotification.OperationId)),
+
+               SubscriptionOperationType.Suspend =>
+               this.subscriptionEventPublisher.PublishEventAsync(
+                   new Events.V_2021_10_01.SubscriptionSuspended(subscription, whNotification.OperationId)),
+
+               _ => throw new NotSupportedException($"Subscription operation type [{opType}] is unknown.")
+           };
+
+        private IActionResult TryToRedirectToServiceMarketingPageUrl(PublisherConfiguration publisherConfig) =>
             string.IsNullOrEmpty(publisherConfig.PublisherHomePageUrl) ? NotFound() as IActionResult : Redirect(publisherConfig.PublisherHomePageUrl);
 
         private async Task<Subscription> TryGetSubscriptionAsync(string subscriptionId, bool inTestMode = false)
@@ -486,18 +517,26 @@ namespace Mona.SaaS.Web.Controllers
             }
         }
 
-        private SubscriptionOperationType ToCoreOperationType(string mpActionType)
-        {
-            return mpActionType switch
+        private SubscriptionOperationType ToCoreOperationType(string mpActionType) =>
+            mpActionType switch
             {
-                MarketplaceActionTypes.ChangePlan => SubscriptionOperationType.ChangePlan,
-                MarketplaceActionTypes.ChangeQuantity => SubscriptionOperationType.ChangeSeatQuantity,
-                MarketplaceActionTypes.Reinstate => SubscriptionOperationType.Reinstate,
-                MarketplaceActionTypes.Suspend => SubscriptionOperationType.Suspend,
-                MarketplaceActionTypes.Unsubscribe => SubscriptionOperationType.Cancel,
+                MarketplaceActionTypes.ChangePlan =>
+                SubscriptionOperationType.ChangePlan,
+
+                MarketplaceActionTypes.ChangeQuantity =>
+                SubscriptionOperationType.ChangeSeatQuantity,
+
+                MarketplaceActionTypes.Reinstate =>
+                SubscriptionOperationType.Reinstate,
+
+                MarketplaceActionTypes.Suspend =>
+                SubscriptionOperationType.Suspend,
+
+                MarketplaceActionTypes.Unsubscribe =>
+                SubscriptionOperationType.Cancel,
+
                 _ => throw new ArgumentException($"Action type [{mpActionType}] unknown.")
             };
-        }
 
         private Subscription CreateTestSubscription() => new Subscription
         {
