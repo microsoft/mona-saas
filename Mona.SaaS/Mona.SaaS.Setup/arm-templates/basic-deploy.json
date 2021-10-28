@@ -41,6 +41,17 @@
                 "description": "If provided, specifies the ID of an existing app service plan that the Mona web app should be deployed to."
             }
         },
+        "eventVersion": {
+            "type": "string",
+            "allowedValues": [
+                "2021-05-01",
+                "2021-10-01"
+            ],
+            "defaultValue": "2021-10-01",
+            "metadata": {
+                "description": "The version of events that this Mona deployment will publish to Event Grid."
+            }
+        },
         "language": {
             "type": "string",
             "defaultValue": "en",
@@ -62,6 +73,7 @@
         "configContainerName": "configuration",
         "testSubContainerName": "test-subscriptions",
         "stageSubContainerName": "stage-subscriptions",
+        "akvName": "[concat('mona-akv-', variables('deploymentName'))]",
         "eventGridTopicName": "[concat('mona-events-', variables('deploymentName'))]",
         "appInsightsName": "[concat('mona-app-insights-', variables('deploymentName'))]",
         "appPlanName": "[concat('mona-plan-', variables('deploymentName'))]",
@@ -341,6 +353,7 @@
                 "Deployment:AppInsightsInstrumentationKey": "[reference(resourceId('microsoft.insights/components', variables('appInsightsName')), '2014-04-01').InstrumentationKey]",
                 "Deployment:AzureResourceGroupName": "[resourceGroup().name]",
                 "Deployment:AzureSubscriptionId": "[subscription().subscriptionId]",
+                "Deployment:EventVersion": "[parameters('eventVersion')]",
                 "Deployment:IsTestModeEnabled": "true",
                 "Deployment:MonaVersion": "[variables('monaVersion')]",
                 "Deployment:Name": "[variables('deploymentName')]",

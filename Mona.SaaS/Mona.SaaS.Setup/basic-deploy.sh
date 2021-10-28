@@ -4,7 +4,7 @@ mona_version="0.1-prerelease"
 
 exec 3>&2 # Grabbing a reliable stderr handle...
 
-usage() { printf "\nUsage: $0 <-n deployment-name> <-r deployment-region> [-a app-service-plan-id] [-d display-name] [-g resource-group] [-l ui-language] [-s subscription-id] [-h] [-p]\n"; }
+usage() { printf "\nUsage: $0 <-n deployment-name> <-r deployment-region> [-a app-service-plan-id] [-d display-name] [-g resource-group] [-l ui-language] [-s subscription-id] [-e event-version] [-h] [-p]\n"; }
 
 check_az() {
     exec 3>&2
@@ -83,6 +83,19 @@ check_deployment_region() {
     fi
 }
 
+check_event_version() {
+    lp=$1
+    event_version=$2
+    supported_versions=("2021-10-01" "2021-05-01")
+
+    if [[ " ${supported_versions[*]} " == *"$event_version"* ]]; then
+        echo "$lp ✔   [$event_version] subscription event version is supported."
+    else
+        echo "$lp ❌   [$event_version] subscription event version is not supported."
+        return 1
+    fi
+}
+
 check_language() {
     lp=$1
     language=$2
@@ -107,6 +120,7 @@ check_deployment_name() {
     fi
 }
 
+event_version="2021-10-01" # Default event version is always the latest one. Can be overridden using [-e] flag below for backward compatibility.
 language="en" # Default UI language is English ("en"). Can be overridden using [-l] flag below.
 
 while getopts "a:d:g:l:n:r:s:hp" opt; do
@@ -131,6 +145,9 @@ while getopts "a:d:g:l:n:r:s:hp" opt; do
         ;;
         s)
             subscription_id=$OPTARG
+        ;;
+        e)
+            event_version=$OPTARG
         ;;
         h)
             no_splash=1
@@ -180,6 +197,7 @@ fi
 # Check parameter values.
 
 check_deployment_region "$lp" "$deployment_region"; if [[ $? -ne 0 ]]; then param_valid_failed=1; fi;
+check_event_version "$lp" "$event_version"; if [[ $? -ne 0 ]]; then param_valid_failed=1; fi;
 check_language "$lp" "$language"; if [[ $? -ne 0 ]]; then param_valid_failed=1; fi;
 
 if [[ -n $app_service_plan_id ]]; then
@@ -291,7 +309,8 @@ az group deployment create \
         aadClientId="$aad_app_id" \
         aadClientSecret="$aad_app_secret" \
         language="$language" \
-        appServicePlanId="$app_service_plan_id"
+        appServicePlanId="$app_service_plan_id" \
+        eventVersion="$event_version"
 
 [[ $? -eq 0 ]] && echo "$lp ✔   Mona resources successfully deployed [$az_deployment_name] to resource group [$resource_group_name].";
 [[ $? -ne 0 ]] && echo "$lp ❌   Mona resource group [$resource_group_name] deployment [$az_deployment_name] has failed. Aborting setup..." && exit 1;
