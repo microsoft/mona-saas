@@ -6,9 +6,9 @@ These configuration settings are part of the Mona web app. For more information 
 
 > ⚠️ __Warning:__ These configuration settings control nearly every aspect of how Mona functions. Most of these settings are automatically configured during Mona setup. Exercise extreme caution when modifying these settings (especially in production). Updating any of these settings will automatically restart the Mona web app.
 
-## Settings
+## Deployment settings (`Deployment:*`)
 
-| Setting name | Description |
+| Name | Description |
 | --- | --- |
 | `Deployment:AppInsightsInstrumentationKey` | This is the [instrumentation key](https://docs.microsoft.com/azure/azure-monitor/app/create-new-resource#copy-the-instrumentation-key) that Mona uses to publish telemetry to Application Insights. |
 | `Deployment:AzureResourceGroupName` | This is the resource group that Mona has been deployed into. |
@@ -17,6 +17,11 @@ These configuration settings are part of the Mona web app. For more information 
 | `Deployment:IsTestModeEnabled ` | Are the test landing page and webhook endpoints enabled? |
 | `Deployment:MonaVersion ` | This is the version of Mona that you're running. |
 | `Deployment:Name ` | This is the name of your Mona deployment as configured via the `-n` flag during setup. This name must be globally unique, contain only lower-case alphanumeric characters, and be between 3 and 13 characters long. |
+
+## Identity settings (`Identity:*`)
+
+| Name | Description |
+| --- | --- |
 | `Identity:AdminIdentity:AadTenantId` | This is the Azure Active Directory (AAD) [tenant ID](https://docs.microsoft.com/azure/active-directory/fundamentals/active-directory-how-to-find-tenant) that Mona Administrators must belong to. By default, this is the Azure Active Directory tenant that the user that set up Mona belongs to and is the same as `Identity:AppIdentity:AadTenantId`. |
 | `Identity:AdminIdentity:RoleName` | This is the name of the AAD [app role](https://docs.microsoft.com/azure/active-directory/develop/howto-add-app-roles-in-azure-ad-apps#declare-roles-for-an-application) that Mona administrators must belong to. By default, the role name is `Mona Administrators`. |
 | `Identity:AppIdentity:AadClientId` | This is Mona's AAD [app registration](https://docs.microsoft.com/azure/active-directory/develop/app-objects-and-service-principals#application-object) [client ID](https://docs.microsoft.com/azure/active-directory/develop/quickstart-register-app#register-an-application). Mona uses this information to securely authenticate to the various Marketplace APIs on your SaaS app's behalf. |
