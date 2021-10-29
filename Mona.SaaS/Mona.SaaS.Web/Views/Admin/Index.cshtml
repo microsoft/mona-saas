@@ -42,12 +42,12 @@
     {
         switch (pluginModel.TriggerEventType)
         {
-            case CoreEventTypes.SubscriptionCancelled: return Localizer["On subscription cancelled"];
-            case CoreEventTypes.SubscriptionPlanChanged: return Localizer["On subscription plan changed"];
-            case CoreEventTypes.SubscriptionPurchased: return Localizer["On subscription purchased"];
-            case CoreEventTypes.SubscriptionReinstated: return Localizer["On subscription reinstated"];
-            case CoreEventTypes.SubscriptionSeatQuantityChanged: return Localizer["On subscription seat quantity changed"];
-            case CoreEventTypes.SubscriptionSuspended: return Localizer["On subscription suspended"];
+            case EventTypes.SubscriptionCancelled: return Localizer["On subscription cancelled"];
+            case EventTypes.SubscriptionPlanChanged: return Localizer["On subscription plan changed"];
+            case EventTypes.SubscriptionPurchased: return Localizer["On subscription purchased"];
+            case EventTypes.SubscriptionReinstated: return Localizer["On subscription reinstated"];
+            case EventTypes.SubscriptionSeatQuantityChanged: return Localizer["On subscription seat quantity changed"];
+            case EventTypes.SubscriptionSuspended: return Localizer["On subscription suspended"];
             default: return null;
         }
     }

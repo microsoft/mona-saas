@@ -10,30 +10,40 @@
 //
 // In no event shall Microsoft be liable for any damages whatsoever (including, without limitation, damages for loss of business profits, business interruption, loss of business information, or other pecuniary loss) arising out of the use of or inability to use the preview code, even if Microsoft has been advised of the possibility of such damages.
 
+using Mona.SaaS.Core.Constants;
+using Mona.SaaS.Core.Interfaces;
 using Newtonsoft.Json;
 using System;
 
-namespace Mona.SaaS.Core.Models.Events
+namespace Mona.SaaS.Core.Models.Events.V_2021_05_01
 {
     /// <summary>
     /// Represents a base subscription-level event.
     /// </summary>
-    public abstract class BaseSubscriptionEvent
+    public abstract class BaseSubscriptionEvent : ISubscriptionEvent
     {
-        protected BaseSubscriptionEvent(string eventType, string eventVersion)
+        protected BaseSubscriptionEvent(string eventType)
         {
             if (string.IsNullOrEmpty(eventType))
             {
                 throw new ArgumentNullException(nameof(eventType));
             }
 
-            if (string.IsNullOrEmpty(eventVersion))
+            EventType = eventType;
+        }
+
+        public BaseSubscriptionEvent(string eventType, Subscription subscription, string operationId = null, DateTime? operationDateTimeUtc = null)
+            : this(eventType)
+        {
+            if (subscription == null)
             {
-                throw new ArgumentNullException(nameof(eventVersion));
+                throw new ArgumentNullException(nameof(subscription));
             }
 
-            EventType = eventType;
-            EventVersion = eventVersion;
+            Subscription = subscription;
+            SubscriptionId = subscription.SubscriptionId;
+            OperationId = operationId ?? Guid.NewGuid().ToString();
+            OperationDateTimeUtc = operationDateTimeUtc ?? DateTime.UtcNow;
         }
 
         [JsonProperty("eventId")]
@@ -43,10 +53,13 @@ namespace Mona.SaaS.Core.Models.Events
         public string EventType { get; set; }
 
         [JsonProperty("eventVersion")]
-        public string EventVersion { get; set; }
+        public string EventVersion { get; set; } = EventVersions.V_2021_05_01;
 
         [JsonProperty("operationId")]
         public string OperationId { get; set; }
+
+        [JsonProperty("subscriptionId")]
+        public string SubscriptionId { get; set; }
 
         [JsonProperty("subscription")]
         public Subscription Subscription { get; set; }
