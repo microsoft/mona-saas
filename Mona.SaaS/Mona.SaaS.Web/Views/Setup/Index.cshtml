@@ -28,6 +28,7 @@
         ::-webkit-input-placeholder {color: #a6a6a6 !important;}
         code{color: #d1377e;}
         a{ color: #006cc1; }
+        .ms-Pivot-link:before { transition: none !important;}
     </style>
 </head>
 
@@ -157,7 +158,7 @@
                             <span class="ms-font-xs" style="display: table-cell;">@Localizer["Your company's private notice page."]</span>
                             <br />
                             @Html.LabelFor(m => m.Publisher.PublisherCopyrightNotice, new { @class = "ms-Label" })
-                            @Html.TextBoxFor(m => m.Publisher.PublisherCopyrightNotice, "©", new {@id = "textFieldPublisherCopyrightNotice", @class = "ms-TextField-field", placeholder = $"© Awesome ISV {DateTime.UtcNow.Year}" })
+                            @Html.TextBoxFor(m => m.Publisher.PublisherCopyrightNotice, new {@id = "textFieldPublisherCopyrightNotice", @class = "ms-TextField-field", placeholder = $"© Awesome ISV {DateTime.UtcNow.Year}" })
                             <div class="ms-MessageBar-icon" style="padding-right: 1px;font-size: 11px;"><i class="ms-Icon ms-Icon ms-Icon--Info"></i></div>
                             <span class="ms-font-xs" style="display: table-cell;">@Localizer["Your copyright notice as it will appear on the landing page."]</span>
                         </div><br /><br />
@@ -222,8 +223,7 @@
             </div>
        </div>
     </main>
-
-    <footer style="padding-top: 18px;text-align: center;background-color: #f4f4f4;padding-bottom: 18px;">
+    <footer style="padding-top: 18px;text-align: left;background-color: #f4f4f4;padding-bottom: 18px;">
         <ul class="ms-List">
             <li class="ms-ListItem ms-ListItem--image" tabindex="0" >
                 <span class="ms-ListItem-primaryText" style="padding-right:30px; color: #006ee5 ">Mona SaaS <small class="text-muted">1.0.0</small></span> 
@@ -259,6 +259,21 @@
             content.style.display = content.dataset.content == goTo ? 'block' : 'none'
         })
     }
+
+    var purchaseConfirmation = $('#textFieldPurchaseConfirmationUrl').val();
+    $('#showValuePurchaseConfirmationUrl').html(purchaseConfirmation);
+    var subscriptionConfigurationUrl = $('#textFieldSubscriptionConfigurationUrl').val();
+    $('#showValueSubscriptionConfigurationUrl').html(subscriptionConfigurationUrl);
+    var publisherDisplayName = $('#textFieldPublisherDisplayName').val();
+    $('#showValuePurchasePublisherDisplayName').html(publisherDisplayName); 
+    var publisherHomePageUrl = $('#textFieldPublisherHomePageUrl').val();
+    $('#showValuePurchasePublisherHomePageUrl').html(publisherHomePageUrl); 
+    var publisherContactPageUrl = $('#textFielPublisherContactPageUrl').val();
+    $('#showValuePurchasePublisherContactPageUrl').html(publisherContactPageUrl);
+    var publisherPrivacyNoticePageUrl = $('#textFieldPublisherPrivacyNoticePageUrl').val();
+    $('#showValuePublisherPrivacyNoticePageUrl').html(publisherPrivacyNoticePageUrl); 
+    var publisherCopyrightNotice = $('#textFieldPublisherCopyrightNotice').val();
+    $('#showValuePublisherCopyrightNotice').html(publisherCopyrightNotice); 
 
     $('.ms-TextField-field').blur(function() {
         var purchaseConfirmation = $('#textFieldPurchaseConfirmationUrl').val();

@@ -68,7 +68,6 @@
     <link rel="stylesheet" href="https://static2.sharepointonline.com/files/fabric/office-ui-fabric-js/1.4.0/css/fabric.components.min.css" />
     <script src="https://static2.sharepointonline.com/files/fabric/office-ui-fabric-js/1.4.0/js/fabric.min.js"></script>
     <link href="~/lib/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet" />
-    <title>@Localizer["Mona SaaS setup"]</title>
     <title>@Localizer["Mona SaaS admin center"]</title>
     <style>
         .ms-TextField-field{display: block;}
@@ -82,6 +81,8 @@
         .ms-Button.ms-Button--primary{color: #0072cc;background-color:0072cc;}
         ms-Button.ms-Button--primary { color: 0072cc;}
         .ms-Label.is-disabled{color: #717171;}
+        .ms-Pivot-link:before { transition: none !important;}
+        .admin-section{margin-top:25px;}
     </style>
 </head>
 <body class="ms-Fabric" dir="ltr">
@@ -260,11 +261,24 @@
                             "Most of these settings are automatically configured during the initial Mona SaaS setup. " +
                             "For more information on these settings, please <a href=\"{0}\">visit the Mona SaaS docs</a>.",
                             "https://github.com/azure"]
-                        </p><br />
+                        </p>
                         <a role="button" class="ms-Button  ms-Button--primary" href="@Model.ConfigurationSettingsUrl" target="_blank">
                              <span class="ms-Button-label">@Localizer["Manage configuration settings"]</span>
                              <i class="ms-Icon ms-Icon--DoubleChevronRight" style="font-size: 10px;padding-left: 5px;color:white;"></i>
                         </a>
+                        <div class="admin-section" id="user-management-section">
+                            <p class="ms-font-m">
+                                @Localizer[
+                                "Only users that belong to the <b>Mona Administrators</b> <a href=\"{0}\">Azure Active Directory application role</a> " +
+                                "can access the admin center (this screen) and the various test endpoints. The user that originally " +
+                                "set up this Mona deployment is automatically added to this role.", 
+                                "https://docs.microsoft.com/azure/architecture/multitenant-identity/app-roles"]
+                            </p>
+                            <a role="button" class="ms-Button  ms-Button--primary" href="@Model.UserManagementUrl" target="_blank">
+                                <span class="ms-Button-label">@Localizer["Manage users configuration"]</span>
+                                <i class="ms-Icon ms-Icon--DoubleChevronRight" style="font-size: 10px;padding-left: 5px;color:white;"></i>
+                            </a>
+                        </div>
                     </div>
                 </div>
              </div>
@@ -272,7 +286,7 @@
        </div>
     </main>
 
-    <footer style="padding-top: 18px;text-align: center;background-color: #f4f4f4;padding-bottom: 18px;">
+    <footer style="padding-top: 18px;text-align: left;background-color: #f4f4f4;padding-bottom: 18px;">
         <ul class="ms-List">
             <li class="ms-ListItem ms-ListItem--image" tabindex="0" >
                 <span class="ms-ListItem-primaryText" style="padding-right:30px; color: #006ee5 ">Mona SaaS <small class="text-muted">1.0.0</small></span> 

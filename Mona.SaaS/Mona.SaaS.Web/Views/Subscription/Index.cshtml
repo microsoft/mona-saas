@@ -20,11 +20,12 @@
         .ms-MessageBar{width: -webkit-fill-available; padding: 15px;}
         .ms-Label{font-size:14px;}
         .ms-MessageBar-icon{font-size: 15px;}
+        .ms-ListItem-primaryText{font-size: 18px !important;}
     </style>
 </head>
 <body class="ms-Fabric" dir="ltr">
     <main>
-        <div class="ms-Grid" dir="ltr" style="padding: 20px;">
+        <div class="ms-Grid" dir="ltr" style="min-height: 90%;padding: 20px;">
             <div class="ms-Grid-row">
                 <div class="ms-Grid-col ms-sm6" style="float: left;max-width: 55%;min-width: 55%">
                     @if (Model.InTestMode)
@@ -127,21 +128,21 @@
             </div>
         </div>
     </main>
-    <footer style="padding-top: 10px;padding-left: 28px;float: left;">
+    <footer style="padding: 20px;">
             @{
                 if (string.IsNullOrEmpty(Model.PublisherHomePageUrl) == false)
                 {
-                    <span class="ms-ListItem-primaryText" style="padding-right: 10px;float: left;"><a class="footer" href="@Model.PublisherHomePageUrl">@Localizer["Home"]</a><span>&nbsp;|</span></span>
+                    <span class="ms-ListItem-primaryText" style="padding-right: 10px;float: left;"><a href="@Model.PublisherHomePageUrl">@Localizer["Home"]</a><span>&nbsp;|</span></span>
                 }
 
                 if (string.IsNullOrEmpty(Model.PublisherContactPageUrl) == false)
                 {
-                    <span class="ms-ListItem-primaryText" style="padding-right: 10px;float: left;"><a class="footer" href="@Model.PublisherContactPageUrl">@Localizer["Contact"]</a><span>&nbsp;|</span></span>
+                    <span class="ms-ListItem-primaryText" style="padding-right: 10px;float: left;"><a href="@Model.PublisherContactPageUrl">@Localizer["Contact"]</a><span>&nbsp;|</span></span>
                 }
 
                 if (string.IsNullOrEmpty(Model.PublisherPrivacyNoticePageUrl) == false)
                 {
-                   <span class="ms-ListItem-primaryText" style="padding-right: 10px;float: left;"><a class="footer" href="@Model.PublisherContactPageUrl">@Localizer["Privacy"]</a><span>&nbsp;|</span></span>
+                   <span class="ms-ListItem-primaryText" style="padding-right: 10px;float: left;"><a href="@Model.PublisherContactPageUrl">@Localizer["Privacy"]</a><span>&nbsp;|</span></span>
                 }
 
                 if (string.IsNullOrEmpty(Model.PublisherCopyrightNotice) == false)
