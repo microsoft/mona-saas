@@ -12,6 +12,6 @@ These configuration settings are part of the Mona web app. For more information 
 | `Deployment:EventVersion ` | The subscription event model version that Mona is currently publishing to Event Grid. Supported event model versions are [`2021-05-01`](https://github.com/microsoft/mona-saas/tree/main/Mona.SaaS/Mona.SaaS.Core/Models/Events/V_2021_05_01) and [`2021-10-01`](https://github.com/microsoft/mona-saas/tree/main/Mona.SaaS/Mona.SaaS.Core/Models/Events/V_2021_10_01) (current). |
 | `Deployment:IsTestModeEnabled ` | Indicates whether or not the test landing page and webhook endpoints are enabled |
 | `Deployment:MonaVersion ` | This is the version of Mona you're currently running. |
-| `Deployment:Name ` | This Mona deployment's name as configured via the `-n` flag during setup. |
+| `Deployment:Name ` | This Mona deployment's name as configured via the `-n` flag during setup. This name must be globally unique, contain only lower-case alphanumeric characters, and be between 3 and 13 characters long. |
 | `Identity:AdminIdentity:AadTenantId` | The Azure Active Directory tenant ID that Mona Administrators must belong to. By default, this is the Azure Active Directory tenant that the user that set up Mona belongs to. |
 | `Identity:AdminIdentity:RoleName` | The name of the Azure Active Directory application role that Mona administrators must belong to. By default, the role name is `Mona Administrators`. |
