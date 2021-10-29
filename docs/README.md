@@ -35,6 +35,12 @@ When you create a new SaaS offer within Partner Center you will be prompted to p
 
 ## Subscription workflow
 
+### How do I edit my subscription lifecycle workflows?
+
+1. Navigate to the Mona admin center (`/admin`).
+2. Open the __Subscription event handlers__ tab.
+3. Locate the workflow that you wish to edit and click __Edit workflow__.
+
 ### Can I retrieve subscription details from the purchase confirmation page?
 
 After a customer has confirmed their AppSource/Marketplace purchase through the Mona landing page, they are automatically redirected to a publisher-managed (ISV) purchase confirmation page to complete their subscription configuration.
