@@ -39,4 +39,7 @@ These settings control how Mona is secured using Azure Active Directory (AAD).
 
 These settings control how Mona accesses publisher configuration information initially configured through the Mona setup wizard (`/setup`). These settings are stored within Mona's dedicated storage account.
 
-
+| Name | Description |
+| --- | --- |
+| `PublisherConfig:Store:BlobStorage:ConnectionString` | This is the connection string needed to access the storage account where the publisher configuration document (`publisher-config.json`) is stored. |
+| `PublisherConfig:Store:BlobStorage:ContainerName` | This is the name of the blob storage container where the publisher configuration document (`publisher-config.json`) is stored. By default, the container name is `configuration`. |
