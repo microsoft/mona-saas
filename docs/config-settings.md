@@ -44,8 +44,13 @@ These settings control how Mona accesses publisher configuration information ini
 | `PublisherConfig:Store:BlobStorage:ConnectionString` | This is the [connection string needed to access the storage account](https://docs.microsoft.com/azure/storage/common/storage-configure-connection-string) where the publisher configuration [blob](https://docs.microsoft.com/azure/storage/blobs/storage-blobs-introduction#blobs) (`publisher-config.json`) is stored. |
 | `PublisherConfig:Store:BlobStorage:ContainerName` | This is the [name of the blob storage container](https://docs.microsoft.com/1azure/storage/blobs/storage-blobs-introduction#containers) where the publisher configuration [blob](https://docs.microsoft.com/azure/storage/blobs/storage-blobs-introduction#blobs) (`publisher-config.json`) is stored. By default, the container name is `configuration`. |
 
-## `Subscription` settings
+## `Subscriptions` settings
 
 These settings control how Mona accesses its underlying Azure resources to manage SaaS subscriptions.
+
+| Name | Description |
+| --- | --- |
+| `Subscriptions:Events:EventGrid:TopicEndpoint` | The Event Grid topic endpoint that Mona should publish subscription events to. |
+| `Subscriptions:Events:EventGrid:TopicKey` | The Event Grid topic access key that Mona uses to publish subscription events. |
 
 
