@@ -35,6 +35,11 @@ When you first install Mona, you're directed to a setup wizard where you provide
 
 Navigate to `/admin` (e.g., `https://mona-web-*.azurewebsites.net/admin`).
 
+### Where can I find my Mona test endpoints?
+
+1. Navigate to the Mona admin center (`/admin`).
+2. Open the __Testing_ tab. Note both the landing page and webhook URLs.
+
 ### Where can I find my Partner Center technical configuration details?
 
 When you create a new SaaS offer within Partner Center you will be prompted to provide some [technical configuration information about your SaaS app](https://docs.microsoft.com/azure/marketplace/create-new-saas-offer-technical). You can _always_ find this information within the __Partner center technical details__ tab of the Mona admin center (`/admin`).
