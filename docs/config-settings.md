@@ -8,6 +8,8 @@ These configuration settings are part of the Mona web app. For more information 
 
 ## `Deployment` settings
 
+All these settings are automatically configured during setup.
+
 | Name | Description |
 | --- | --- |
 | `Deployment:AppInsightsInstrumentationKey` | This is the [instrumentation key](https://docs.microsoft.com/azure/azure-monitor/app/create-new-resource#copy-the-instrumentation-key) that Mona uses to publish telemetry to Application Insights. |
@@ -20,9 +22,11 @@ These configuration settings are part of the Mona web app. For more information 
 
 ## `Identity` settings
 
+These settings control how Mona is secured using Azure Active Directory (AAD).
+
 | Name | Description |
 | --- | --- |
-| `Identity:AdminIdentity:AadTenantId` | This is the Azure Active Directory (AAD) [tenant ID](https://docs.microsoft.com/azure/active-directory/fundamentals/active-directory-how-to-find-tenant) that Mona Administrators must belong to. By default, this is the Azure Active Directory tenant that the user that set up Mona belongs to and is the same as `Identity:AppIdentity:AadTenantId`. |
+| `Identity:AdminIdentity:AadTenantId` | This is the AAD [tenant ID](https://docs.microsoft.com/azure/active-directory/fundamentals/active-directory-how-to-find-tenant) that Mona Administrators must belong to. By default, this is the Azure Active Directory tenant that the user that set up Mona belongs to and is the same as `Identity:AppIdentity:AadTenantId`. |
 | `Identity:AdminIdentity:RoleName` | This is the name of the AAD [app role](https://docs.microsoft.com/azure/active-directory/develop/howto-add-app-roles-in-azure-ad-apps#declare-roles-for-an-application) that Mona administrators must belong to. By default, the role name is `Mona Administrators`. |
 | `Identity:AppIdentity:AadClientId` | This is Mona's AAD [app registration](https://docs.microsoft.com/azure/active-directory/develop/app-objects-and-service-principals#application-object) [client ID](https://docs.microsoft.com/azure/active-directory/develop/quickstart-register-app#register-an-application). Mona uses this information to securely authenticate to the various Marketplace APIs on your SaaS app's behalf. |
 | `Identity:AppIdentity:AadClientSecret` | This is Mona's AAD [app registration](https://docs.microsoft.com/azure/active-directory/develop/app-objects-and-service-principals#application-object) [client secret](https://docs.microsoft.com/azure/active-directory/develop/quickstart-register-app#add-a-client-secret). Mona uses this information to securely authenticate to the various Marketplace APIs on your SaaS app's behalf. |
