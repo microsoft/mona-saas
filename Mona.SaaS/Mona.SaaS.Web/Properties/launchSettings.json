@@ -12,7 +12,6 @@
       "commandName": "IISExpress",
       "launchBrowser": true,
       "environmentVariables": {
-        "APP_CONFIG_SERVICE_CONNECTION_STRING": "Endpoint=https://mona-config-monatest10.azconfig.io;Id=VWV4-l8-s0:QFkka8yWt9DXW9gJ8nAH;Secret=hBsA+cpUq6Sgr+5YjR3RegQtyXIFpcWrsZtKuptYpYY=",
         "ASPNETCORE_ENVIRONMENT": "Development"
       }
     },
