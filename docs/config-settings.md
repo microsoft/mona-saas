@@ -52,5 +52,10 @@ These settings control how Mona accesses its underlying Azure resources to manag
 | --- | --- |
 | `Subscriptions:Events:EventGrid:TopicEndpoint` | The [event grid topic](https://docs.microsoft.com/azure/event-grid/custom-topics) endpoint that Mona should publish subscription events to. |
 | `Subscriptions:Events:EventGrid:TopicKey` | The [event grid topic](https://docs.microsoft.com/azure/event-grid/custom-topics) access key that Mona uses to publish subscription events. |
+| `Subscriptions:Staging:Cache:BlobStorage:ConnectionString` | |
+| `Subscriptions:Staging:Cache:BlobStorage:ContainerName` | |
+| `Subscriptions:Testing:Cache:BlobStorage:ConnectionString` | |
+| `Subscriptions:Testing:Cache:BlobStorage:ContainerName` | |
+
 
 
