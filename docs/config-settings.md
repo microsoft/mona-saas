@@ -6,7 +6,7 @@ These configuration settings are part of the Mona web app. For more information 
 
 | Setting name | Description |
 | --- | --- |
-| `Deployment:AppInsightsInstrumentationKey` | This is the instrumentation key that Mona uses to publish telemetry to Application Insights. |
+| `Deployment:AppInsightsInstrumentationKey` | This is the [instrumentation key](https://docs.microsoft.com/azure/azure-monitor/app/create-new-resource#copy-the-instrumentation-key) that Mona uses to publish telemetry to Application Insights. |
 | `Deployment:AzureResourceGroupName` | This is the resource group that Mona has been deployed into. |
 | `Deployment:AzureSubscriptionId` | The is the Azure subscription that Mona has been deployed into. |
 | `Deployment:EventVersion ` | This is the identifier for the version of subscription events that Mona will publish to Event Grid. Supported event model versions are [`2021-05-01`](https://github.com/microsoft/mona-saas/tree/main/Mona.SaaS/Mona.SaaS.Core/Models/Events/V_2021_05_01) and [`2021-10-01`](https://github.com/microsoft/mona-saas/tree/main/Mona.SaaS/Mona.SaaS.Core/Models/Events/V_2021_10_01) (current). |
