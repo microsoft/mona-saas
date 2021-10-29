@@ -10,7 +10,7 @@ See [this section.](#user-management)
 
 Navigate to the Mona admin center (`/admin`), open the __Mona SaaS configuration settings__ tab, and click __Manage configuration settings__. This will redirect you to the Azure portal where you can [manage configuration settings for the Mona web app](https://docs.microsoft.com/azure/app-service/configure-common#configure-app-settings).
 
-Refer to this doc for more information on each configuration setting.
+[Refer to this doc](./config-settings.md) for more information on each configuration setting.
 
 > Note that updating any of these settings will cause the Mona web app to restart.
 
