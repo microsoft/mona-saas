@@ -2,13 +2,13 @@
 
 These configuration settings are part of the Mona web app. For more information on how these settings are managed, see [this article](https://docs.microsoft.com/azure/app-service/configure-common#configure-app-settings). You can access these settings at any time by navigating to the Mona admin center (`/admin`), opening the __Mona SaaS configuration settings__ tab, and clicking __Manage configuration settings__.
 
-## Read first
+## ⚠️ Read first
 
-> ⚠️ __Warning:__ These configuration settings control nearly every aspect of how Mona functions. Most of these settings are automatically configured during Mona setup. Exercise extreme caution when modifying these settings (especially in production). Updating any of these settings will automatically restart the Mona web app.
+These configuration settings control nearly every aspect of how Mona functions. Most of these settings are automatically configured during Mona setup. Exercise extreme caution when modifying these settings (especially in production). Updating any of these settings will automatically restart the Mona web app.
 
 ## `Deployment` settings
 
-All these settings are automatically configured during setup.
+These settings are automatically configured during setup.
 
 | Name | Description |
 | --- | --- |
@@ -32,3 +32,9 @@ These settings control how Mona is secured using Azure Active Directory (AAD).
 | `Identity:AppIdentity:AadClientSecret` | This is Mona's AAD [app registration](https://docs.microsoft.com/azure/active-directory/develop/app-objects-and-service-principals#application-object) [client secret](https://docs.microsoft.com/azure/active-directory/develop/quickstart-register-app#add-a-client-secret). Mona uses this information to securely authenticate to the various Marketplace APIs on your SaaS app's behalf. |
 | `Identity:AppIdentity:AadPrincipalId` | This is Mona's AAD [enterprise application/service principal](https://docs.microsoft.com/azure/active-directory/develop/app-objects-and-service-principals#service-principal-object) object ID. Mona uses this information to securely authenticate to the various Marketplace API's on your SaaS app's behalf. |
 | `Identity:AppIdentity:AadTenantId` | This is Mona's AAD [app registration](https://docs.microsoft.com/azure/active-directory/develop/app-objects-and-service-principals#application-object) [tenant ID](https://docs.microsoft.com/azure/active-directory/fundamentals/active-directory-how-to-find-tenant). Mona uses this information to securely authenticate to the various Marketplace APIs on your SaaS app's behalf. By default, this is the same as `Identity:AdminIdentity:AadTenantId`. |
+
+## `PublisherConfig` settings
+
+These settings control how Mona accesses publisher configuration information initially configured through the Mona setup wizard (`/setup`). These settings are stored within Mona's dedicated storage account.
+
+
