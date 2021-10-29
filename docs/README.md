@@ -31,6 +31,10 @@ See [this section.](#user-management)
 
 When you first install Mona, you're directed to a setup wizard where you provide some basic information about your business and SaaS app. Should you ever need to change these values, simply return to the setup screen (`/setup`).
 
+### Where can I find the Mona admin center?
+
+Navigate to `/admin` (e.g., `https://mona-web-*.azurewebsites.net/admin`).
+
 ### Where can I find my Partner Center technical configuration details?
 
 When you create a new SaaS offer within Partner Center you will be prompted to provide some [technical configuration information about your SaaS app](https://docs.microsoft.com/azure/marketplace/create-new-saas-offer-technical). You can _always_ find this information within the __Partner center technical details__ tab of the Mona admin center (`/admin`).
