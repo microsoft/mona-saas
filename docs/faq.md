@@ -8,11 +8,19 @@ See [this section.](#user-management)
 
 ### How do I manage Mona configuration settings?
 
-Navigate to your Mona admin center, open the configuration settings tab, and click __Manage configuration settings__. This will redirect you to the Azure portal where you can [manage configuration settings for the Mona web app](https://docs.microsoft.com/azure/app-service/configure-common#configure-app-settings).
+Navigate to the Mona admin center (`/admin`), open the __Mona SaaS configuration settings__ tab, and click __Manage configuration settings__. This will redirect you to the Azure portal where you can [manage configuration settings for the Mona web app](https://docs.microsoft.com/azure/app-service/configure-common#configure-app-settings).
 
 Refer to this doc for more information on each configuration setting.
 
-> Note that modifying these configuration settings will cause the Mona web app to restart.
+> Note that updating any of these settings will cause the Mona web app to restart.
+
+### How do I modify my publisher configuration after setup?
+
+When you first install Mona, you're directed to a setup wizard where you provide some basic information about your business and SaaS app. Should you ever need to change these values, simply return to the setup screen (`/setup`).
+
+### Where can I find my Partner Center technical configuration details?
+
+When you create a new SaaS offer within Partner Center you will be prompted to provide some [technical configuration information about your SaaS app](https://docs.microsoft.com/azure/marketplace/create-new-saas-offer-technical). You can _always_ find this information within the __Partner center technical details__ tab of the Mona admin center (`/admin`).
 
 ## Subscription workflow
 
