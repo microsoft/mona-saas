@@ -50,10 +50,10 @@ These settings control how Mona accesses its underlying Azure resources to manag
 
 | Name | Description |
 | --- | --- |
-| `Subscriptions:Events:EventGrid:TopicEndpoint` | The [event grid topic](https://docs.microsoft.com/azure/event-grid/custom-topics) endpoint that Mona should publish subscription events to. |
-| `Subscriptions:Events:EventGrid:TopicKey` | The [event grid topic](https://docs.microsoft.com/azure/event-grid/custom-topics) access key that Mona uses to publish subscription events. |
-| `Subscriptions:Staging:Cache:BlobStorage:ConnectionString` | |
-| `Subscriptions:Staging:Cache:BlobStorage:ContainerName` | |
+| `Subscriptions:Events:EventGrid:TopicEndpoint` | This is the [event grid topic](https://docs.microsoft.com/azure/event-grid/custom-topics) endpoint that Mona should publish subscription events to. |
+| `Subscriptions:Events:EventGrid:TopicKey` | This is the [event grid topic](https://docs.microsoft.com/azure/event-grid/custom-topics) access key that Mona uses to publish subscription events. |
+| `Subscriptions:Staging:Cache:BlobStorage:ConnectionString` | This is the [connection string needed to access the storage account](https://docs.microsoft.com/azure/storage/common/storage-configure-connection-string) where staged subscripton [blobs](https://docs.microsoft.com/azure/storage/blobs/storage-blobs-introduction#blobs) are [temporarily cached and passed synchronously to your SaaS app's purchase confirmation page](./faq.md#can-i-retrieve-subscription-details-from-the-purchase-confirmation-page). |
+| `Subscriptions:Staging:Cache:BlobStorage:ContainerName` | This is the [name of the blob storage container](https://docs.microsoft.com/1azure/storage/blobs/storage-blobs-introduction#containers) where staged subscripton [blobs](https://docs.microsoft.com/azure/storage/blobs/storage-blobs-introduction#blobs) are [temporarily cached and passed synchronously to your SaaS app's purchase confirmation page](./faq.md#can-i-retrieve-subscription-details-from-the-purchase-confirmation-page). |
 | `Subscriptions:Testing:Cache:BlobStorage:ConnectionString` | |
 | `Subscriptions:Testing:Cache:BlobStorage:ContainerName` | |
 
