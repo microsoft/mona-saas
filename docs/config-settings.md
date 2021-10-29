@@ -50,7 +50,7 @@ These settings control how Mona accesses its underlying Azure resources to manag
 
 | Name | Description |
 | --- | --- |
-| `Subscriptions:Events:EventGrid:TopicEndpoint` | The Event Grid topic endpoint that Mona should publish subscription events to. |
-| `Subscriptions:Events:EventGrid:TopicKey` | The Event Grid topic access key that Mona uses to publish subscription events. |
+| `Subscriptions:Events:EventGrid:TopicEndpoint` | The [event grid topic](https://docs.microsoft.com/azure/event-grid/custom-topics) endpoint that Mona should publish subscription events to. |
+| `Subscriptions:Events:EventGrid:TopicKey` | The [event grid topic](https://docs.microsoft.com/azure/event-grid/custom-topics) access key that Mona uses to publish subscription events. |
 
 
