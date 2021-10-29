@@ -4,7 +4,7 @@
 
 ### How do I set up Mona?
 
-See [this section.](../#how-do-i-get-started-with-mona-saas)
+See [this section.](../README.md/#how-do-i-get-started-with-mona-saas)
 
 ### How do I manage Mona administrators?
 
