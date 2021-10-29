@@ -6,10 +6,12 @@ These configuration settings are part of the Mona web app. For more information 
 
 | Setting name | Description |
 | --- | --- |
-| `Deployment : AppInsightsInstrumentationKey` | |
-| `Deployment : AzureResourceGroupName` | |
-| `Deployment : AzureSubscriptionId` | |
-| `Deployment : EventVersion ` | |
-| `Deployment : IsTestModeEnabled ` | |
-| `Deployment : MonaVersion ` | |
-| `Deployment : Name ` | |
+| `Deployment:AppInsightsInstrumentationKey` | Mona uses this key to publish telemetry to Application Insights. |
+| `Deployment:AzureResourceGroupName` | Mona is deployed within this resource group. |
+| `Deployment:AzureSubscriptionId` | Mona is deployed within this Azure subscription. |
+| `Deployment:EventVersion ` | The subscription event model version that Mona is currently publishing to Event Grid. Supported event model versions are `2021-05-01` and `2021-10-01` (current). |
+| `Deployment:IsTestModeEnabled ` | Indicates whether or not the test landing page and webhook endpoints are enabled |
+| `Deployment:MonaVersion ` | This is the version of Mona you're currently running. |
+| `Deployment:Name ` | This Mona deployment's name as configured via the `-n` flag during setup. |
+| `Identity:AdminIdentity:AadTenantId` | The Azure Active Directory tenant ID that Mona Administrators must belong to. By default, this is the Azure Active Directory tenant that the user that set up Mona belongs to. |
+| `Identity:AdminIdentity:RoleName` | The name of the Azure Active Directory application role that Mona administrators must belong to. By default, the role name is `Mona Administrators`. |
