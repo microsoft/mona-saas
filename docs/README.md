@@ -2,11 +2,11 @@
 
 ## Configuration
 
-## How do I set up Mona?
+### How do I set up Mona?
 
 See [this section.](../#how-do-i-get-started-with-mona-saas)
 
-### How do I manage users?
+### How do I manage Mona administrators?
 
 See [this section.](#user-management)
 
