@@ -19,7 +19,9 @@ See [this section.](#user-management)
 
 ### How do I manage Mona configuration settings?
 
-Navigate to the Mona admin center (`/admin`), open the __Mona SaaS configuration settings__ tab, and click __Manage configuration settings__. This will redirect you to the Azure portal where you can [manage configuration settings for the Mona web app](https://docs.microsoft.com/azure/app-service/configure-common#configure-app-settings).
+1.  Navigate to the Mona admin center (`/admin`).
+2.  Open the __Mona SaaS configuration settings__ tab.
+3.  Click __Manage configuration settings__. This will redirect you to the Azure portal where you can [manage configuration settings for the Mona web app](https://docs.microsoft.com/azure/app-service/configure-common#configure-app-settings).
 
 [Refer to this doc](./config-settings.md) for more information on each configuration setting.
 
@@ -73,7 +75,9 @@ Only users that belong to your Mona deployment's Azure Active Directory tenant a
 
 ### How do I manage Mona administrators?
 
-Navigate to your Mona admin center, open the configuration settings tab, and click __Manage users__. This will redirect you to the Azure portal where you can add/remove users from the Mona Administrators application role.
+1. Navigate to your Mona admin center (`/admin`).
+2. Open the __Mona SaaS configuration settings__ tab.
+3. Click __Manage users__. This will redirect you to the Azure portal where you can add/remove users from the Mona Administrators application role.
 
 
 
