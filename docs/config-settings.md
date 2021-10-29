@@ -24,7 +24,7 @@ These settings are automatically configured during setup.
 
 ## `Identity` settings
 
-These settings control how Mona is secured using Azure Active Directory (AAD).
+These settings control how Mona is secured using [Azure Active Directory (AAD)](https://docs.microsoft.com/azure/active-directory/fundamentals/active-directory-whatis).
 
 | Name | Description |
 | --- | --- |
@@ -37,9 +37,9 @@ These settings control how Mona is secured using Azure Active Directory (AAD).
 
 ## `PublisherConfig` settings
 
-These settings control how Mona accesses publisher configuration information initially configured through the Mona setup wizard (`/setup`). These settings are stored within Mona's dedicated storage account.
+These settings control how Mona accesses publisher configuration information initially configured through the Mona setup wizard (`/setup`). These settings are stored within Mona's dedicated [blob storage account](https://docs.microsoft.com/azure/storage/blobs/storage-blobs-overview).
 
 | Name | Description |
 | --- | --- |
-| `PublisherConfig:Store:BlobStorage:ConnectionString` | This is the connection string needed to access the storage account where the publisher configuration document (`publisher-config.json`) is stored. |
-| `PublisherConfig:Store:BlobStorage:ContainerName` | This is the name of the blob storage container where the publisher configuration document (`publisher-config.json`) is stored. By default, the container name is `configuration`. |
+| `PublisherConfig:Store:BlobStorage:ConnectionString` | This is the [connection string needed to access the storage account](https://docs.microsoft.com/azure/storage/common/storage-configure-connection-string) where the publisher configuration [blob](https://docs.microsoft.com/azure/storage/blobs/storage-blobs-introduction#blobs) (`publisher-config.json`) is stored. |
+| `PublisherConfig:Store:BlobStorage:ContainerName` | This is the [name of the blob storage container](https://docs.microsoft.com/1azure/storage/blobs/storage-blobs-introduction#containers) where the publisher configuration [blob](https://docs.microsoft.com/azure/storage/blobs/storage-blobs-introduction#blobs) (`publisher-config.json`) is stored. By default, the container name is `configuration`. |
