@@ -1,5 +1,19 @@
 # Frequently asked questions
 
+## Configuration
+
+### How do I manage users?
+
+See [this section.](#user-management)
+
+### How do I manage Mona configuration settings?
+
+Navigate to your Mona admin center, open the configuration settings tab, and click __Manage configuration settings__. This will redirect you to the Azure portal where you can [manage configuration settings for the Mona web app](https://docs.microsoft.com/azure/app-service/configure-common#configure-app-settings).
+
+Refer to this doc for more information on each configuration setting.
+
+> Note that modifying these configuration settings will cause the Mona web app to restart.
+
 ## Subscription workflow
 
 ### Can I retrieve subscription details from the purchase confirmation page?
@@ -23,6 +37,10 @@ This design prevents outside actors from either spoofing the subscription detail
 ### Who can access the Mona admin center?
 
 Only users that belong to your Mona deployment's Azure Active Directory tenant and Mona Administrators application role can access the Mona admin center. For more information on managing Mona administrators, see [this question](#how-do-i-manage-mona-administrators).
+
+### Who can access the Mona setup wizard?
+
+Only users that belong to your Mona deployment's Azure Active Directory tenant and Mona Administrators application role can access the Mona setup wizard. For more information on managing Mona administrators, see [this question](#how-do-i-manage-mona-administrators).
 
 ### Who can access the Mona test endoints?
 
