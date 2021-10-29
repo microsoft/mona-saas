@@ -1,6 +1,8 @@
 # Frequently asked questions
 
-## Can I retrieve subscription details from the purchase confirmation page?
+## Subscription workflow
+
+### Can I retrieve subscription details from the purchase confirmation page?
 
 After a customer has confirmed their AppSource/Marketplace purchase through the Mona landing page, they are automatically redirected to a publisher-managed (ISV) purchase confirmation page to complete their subscription configuration.
 
@@ -15,6 +17,20 @@ When you issue an HTTP GET request against the combined URL, the full subscripti
 This design prevents outside actors from either spoofing the subscription details or reading the subscription details since you need both pieces of information (the base storage URL and the `_sub` parameter value) in order to access the information.
 
 > This functionality is enabled by default. You can disable it by setting the `Deployment:SendSubscriptionDetailsToPurchaseConfirmationPage` configuration value to `false` and restarting the web app.
+
+## User management
+
+### Who can access the Mona admin center?
+
+Only users that belong to your Mona deployment's Azure Active Directory tenant and Mona Administrators application role can access the Mona admin center. For more information on managing Mona administrators, see [this question](#how-do-i-manage-mona-administrators).
+
+### Who can access the Mona test endoints?
+
+Only users that belong to your Mona deployment's Azure Active Directory tenant and Mona Administrators application role can access the Mona landing page and webhook test endpoints. For more information on managing Mona administrators, see [this question](#how-do-i-manage-mona-administrators).
+
+### How do I manage Mona administrators?
+
+Navigate to your Mona admin center, open the configuration settings tab, and click __Manage users__. This will redirect you to the Azure portal where you can add/remove users from the Mona Administrators application role.
 
 
 
