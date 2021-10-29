@@ -171,7 +171,6 @@ Please see [our security docs](SECURITY.md) for more information.
 
 ## Considerations and limitations
 
-* Due to various Azure resource limitations, you can only have one Mona SaaS deployment per Azure region at a time. We plan on addressing this in future releases.
 * The deployment name (`-n` setup script switch) mentioned in [this section](#setup-script-parameters) _must be_ globally unique.
 
 ## How can I contribute?

@@ -15,7 +15,7 @@ namespace Mona.SaaS.Core.Constants
     /// <summary>
     /// Event types originating from the Azure Marketplace.
     /// </summary>
-    public static class CoreEventTypes
+    public static class EventTypes
     {
         public const string SubscriptionPurchased = "Mona.SaaS.Marketplace.SubscriptionPurchased";
         public const string SubscriptionPlanChanged = "Mona.SaaS.Marketplace.SubscriptionPlanChanged";

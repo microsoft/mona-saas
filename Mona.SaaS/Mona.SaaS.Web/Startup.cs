@@ -24,7 +24,6 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Tokens;
 using Mona.SaaS.Core.Interfaces;
 using Mona.SaaS.Core.Models.Configuration;
-using Mona.SaaS.EventProcessing.Interfaces;
 using Mona.SaaS.Services.Default;
 using Mona.SaaS.Web.Authorization;
 using System.Threading.Tasks;

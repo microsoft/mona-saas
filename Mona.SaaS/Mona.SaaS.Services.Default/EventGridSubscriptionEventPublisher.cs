@@ -14,8 +14,8 @@ using Microsoft.Azure.EventGrid;
 using Microsoft.Azure.EventGrid.Models;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using Mona.SaaS.Core.Models.Events;
-using Mona.SaaS.EventProcessing.Interfaces;
+using Mona.SaaS.Core.Interfaces;
+using Mona.SaaS.Core.Models.Events.V_2021_10_01;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -47,7 +47,7 @@ namespace Mona.SaaS.Services.Default
         /// <typeparam name="T">The type of subscription event.</typeparam>
         /// <param name="subscriptionEvent">The subscription event.</param>
         /// <returns></returns>
-        public async Task PublishEventAsync<T>(T subscriptionEvent) where T : BaseSubscriptionEvent
+        public async Task PublishEventAsync<T>(T subscriptionEvent) where T : ISubscriptionEvent
         {
             if (subscriptionEvent == null)
             {
@@ -58,7 +58,7 @@ namespace Mona.SaaS.Services.Default
             {
                 var eventGridEvent = new EventGridEvent(
                     subscriptionEvent.EventId,
-                    $"mona/saas/subscriptions/{subscriptionEvent.Subscription.SubscriptionId}",
+                    $"mona/saas/subscriptions/{subscriptionEvent.SubscriptionId}",
                     subscriptionEvent,
                     subscriptionEvent.EventType,
                     DateTime.UtcNow,

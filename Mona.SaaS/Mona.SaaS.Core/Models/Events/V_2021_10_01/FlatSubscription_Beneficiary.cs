@@ -10,22 +10,33 @@
 //
 // In no event shall Microsoft be liable for any damages whatsoever (including, without limitation, damages for loss of business profits, business interruption, loss of business information, or other pecuniary loss) arising out of the use of or inability to use the preview code, even if Microsoft has been advised of the possibility of such damages.
 
-using Mona.SaaS.Core.Models.Events.V_2021_10_01;
-using System.Threading.Tasks;
+using Newtonsoft.Json;
 
-namespace Mona.SaaS.Core.Interfaces
+namespace Mona.SaaS.Core.Models.Events
 {
-    /// <summary>
-    /// Defines an interface for publishing subscription-related events.
-    /// </summary>
-    public interface ISubscriptionEventPublisher
+    public partial class FlatSubscription
     {
-        /// <summary>
-        /// Publishes a subscription-related event.
-        /// </summary>
-        /// <typeparam name="T">The type of event to publish.</typeparam>
-        /// <param name="subscriptionEvent">The event to publish.</param>
-        /// <returns></returns>
-        Task PublishEventAsync<T>(T subscriptionEvent) where T : ISubscriptionEvent;
+        [JsonProperty("Beneficiary User ID")]
+        public string BeneficiaryUserId { get; set; }
+
+        [JsonProperty("Beneficiary Email Address")]
+        public string BeneficiaryEmailAddress { get; set; }
+
+        [JsonProperty("Beneficiary AAD Object ID")]
+        public string BeneficiaryAadObjectId { get; set; }
+
+        [JsonProperty("Beneficiary AAD Tenant ID")]
+        public string BeneficiaryAadTenantId { get; set; }
+
+        private void ApplyBeneficiaryInfo(MarketplaceUser user)
+        {
+            if (user != null)
+            {
+                BeneficiaryUserId = user.UserId;
+                BeneficiaryEmailAddress = user.UserEmail;
+                BeneficiaryAadObjectId = user.AadObjectId;
+                BeneficiaryAadTenantId = user.AadTenantId;
+            }
+        }
     }
 }
