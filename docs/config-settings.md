@@ -6,7 +6,7 @@ These configuration settings are part of the Mona web app. For more information 
 
 > ⚠️ __Warning:__ These configuration settings control nearly every aspect of how Mona functions. Most of these settings are automatically configured during Mona setup. Exercise extreme caution when modifying these settings (especially in production). Updating any of these settings will automatically restart the Mona web app.
 
-## Deployment settings (`Deployment:*`)
+## `Deployment` settings
 
 | Name | Description |
 | --- | --- |
@@ -18,7 +18,7 @@ These configuration settings are part of the Mona web app. For more information 
 | `Deployment:MonaVersion ` | This is the version of Mona that you're running. |
 | `Deployment:Name ` | This is the name of your Mona deployment as configured via the `-n` flag during setup. This name must be globally unique, contain only lower-case alphanumeric characters, and be between 3 and 13 characters long. |
 
-## Identity settings (`Identity:*`)
+## `Identity` settings
 
 | Name | Description |
 | --- | --- |
