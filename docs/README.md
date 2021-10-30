@@ -1,17 +1,22 @@
 # Frequently asked questions
 
-## Configuration
+* [How do I install Mona?](#how-do-i-install-mona)
+* [How do I uninstall Mona?](#how-do-i-uninstall-mona)
 
-### How do I install Mona?
+## How do I install Mona?
 
-See [this section.](../README.md/#how-do-i-get-started-with-mona-saas)
+See [this doc](../README.md/#how-do-i-get-started-with-mona-saas).
 
-### How do I uninstall Mona?
+## How do I uninstall Mona?
 
 > ⚠️ __Warning!__ These actions are irreversible.
 
-1. [Delete the resource group](https://docs.microsoft.com/azure/azure-resource-manager/management/delete-resource-group?tabs=azure-portal#delete-resource-group) that Mona has been deployed within. The resource group name is provided as part of the `Mona Deployment Summary` at the end of the setup script.
-2. [Delete the Mona Azure Active Directory (AAD) app registration](https://docs.microsoft.com/azure/active-directory/develop/howto-remove-app#remove-an-application-authored-by-you-or-your-organization) created during the setup process. The AAD app registration client and tenant IDs are provided as part of the `Mona Deployment Summary` at the end of the setup script.
+* [Delete Mona's Azure Active Directory (AAD) app registration.](https://docs.microsoft.com/azure/active-directory/develop/howto-remove-app#remove-an-application-authored-by-you-or-your-organization) Client ID can be found on Mona resource group tag `AAD App ID`.
+* [Delete Mona's resource group.](https://docs.microsoft.com/azure/azure-resource-manager/management/delete-resource-group?tabs=azure-portal#delete-resource-group)
+
+## Where is the admin center?
+
+In your browser, navigate to `/admin` (e.g., `https://mona-web-***/admin`).
 
 ### How do I manage Mona administrators?
 
