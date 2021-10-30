@@ -4,9 +4,7 @@ Mona configuration settings are, by default, [stored within the Mona web app's s
 
 ## ⚠️ Warning
 
-Exercise __extreme caution__ when modifying these configuration settings. These settings are automatically configured during the setup process.
-
-> Updating these settings will automatically restart the Mona web app.
+Exercise __extreme caution__ when modifying these configuration settings. Updating these settings will automatically restart the Mona web app. These settings are automatically configured during setup.
 
 ## `Deployment` settings
 
@@ -17,10 +15,10 @@ General information about this Mona deployment.
 | `Deployment:AppInsightsInstrumentationKey` | [Instrumentation key](https://docs.microsoft.com/azure/azure-monitor/app/create-new-resource#copy-the-instrumentation-key) used to publish telemetry to Application Insights (deployed, by default, within `Deployment:AzureResourceGroupName`). |
 | `Deployment:AzureResourceGroupName` | |
 | `Deployment:AzureSubscriptionId` | |
-| `Deployment:EventVersion ` | Subscription event version Mona should publish; supported event model versions are [`2021-05-01`](https://github.com/microsoft/mona-saas/tree/main/Mona.SaaS/Mona.SaaS.Core/Models/Events/V_2021_05_01) and [`2021-10-01`](https://github.com/microsoft/mona-saas/tree/main/Mona.SaaS/Mona.SaaS.Core/Models/Events/V_2021_10_01) (current) |
+| `Deployment:EventVersion ` | Subscription event version Mona should publish; supported versions are [`2021-05-01`](https://github.com/microsoft/mona-saas/tree/main/Mona.SaaS/Mona.SaaS.Core/Models/Events/V_2021_05_01) and [`2021-10-01`](https://github.com/microsoft/mona-saas/tree/main/Mona.SaaS/Mona.SaaS.Core/Models/Events/V_2021_10_01) (current) |
 | `Deployment:IsTestModeEnabled ` | |
 | `Deployment:MonaVersion ` | |
-| `Deployment:Name ` | Configured via the name (`-n`) flag during setup |
+| `Deployment:Name ` | Configured via the name (`-n`) flag during setup; must contain only lowercase alphanumeric customers and be between 3-13 characters in length |
 
 ## `Identity` settings
 
