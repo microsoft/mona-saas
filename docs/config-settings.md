@@ -1,26 +1,26 @@
 # Configuration settings reference
 
-These configuration settings are part of the Mona web app. For more information on how these settings are managed, see [this article](https://docs.microsoft.com/azure/app-service/configure-common#configure-app-settings). You can access these settings at any time by navigating to the Mona admin center (`/admin`), opening the __Mona SaaS configuration settings__ tab, and clicking __Manage configuration settings__.
+Mona configuration settings are, by default, [stored within the Mona web app's settings](https://docs.microsoft.com/azure/app-service/configure-common#configure-app-settings). 
 
 ## ⚠️ Warning
 
-These configuration settings control nearly every aspect of how Mona functions. Most of these settings are automatically configured during Mona setup. Exercise extreme caution when modifying these settings (especially in production).
+Exercise __extreme caution__ when modifying these configuration settings. These settings are automatically configured during the setup process.
 
-> Updating any of these settings will automatically restart the Mona web app.
+> Updating these settings will automatically restart the Mona web app.
 
 ## `Deployment` settings
 
-These settings are automatically configured during setup.
+General information about this Mona deployment.
 
-| Name | Description |
+| Name | Notes |
 | --- | --- |
-| `Deployment:AppInsightsInstrumentationKey` | This is the [instrumentation key](https://docs.microsoft.com/azure/azure-monitor/app/create-new-resource#copy-the-instrumentation-key) that Mona uses to publish telemetry to Application Insights. |
-| `Deployment:AzureResourceGroupName` | This is the resource group that Mona has been deployed into. |
-| `Deployment:AzureSubscriptionId` | The is the Azure subscription that Mona has been deployed into. |
-| `Deployment:EventVersion ` | This is the identifier for the version of subscription events that Mona will publish to Event Grid. Supported event model versions are [`2021-05-01`](https://github.com/microsoft/mona-saas/tree/main/Mona.SaaS/Mona.SaaS.Core/Models/Events/V_2021_05_01) and [`2021-10-01`](https://github.com/microsoft/mona-saas/tree/main/Mona.SaaS/Mona.SaaS.Core/Models/Events/V_2021_10_01) (current). |
-| `Deployment:IsTestModeEnabled ` | Are the test landing page and webhook endpoints enabled? |
-| `Deployment:MonaVersion ` | This is the version of Mona that you're running. |
-| `Deployment:Name ` | This is the name of your Mona deployment as configured via the `-n` flag during setup. This name must be globally unique, contain only lower-case alphanumeric characters, and be between 3 and 13 characters long. |
+| `Deployment:AppInsightsInstrumentationKey` | [Instrumentation key](https://docs.microsoft.com/azure/azure-monitor/app/create-new-resource#copy-the-instrumentation-key) used to publish telemetry to Application Insights (deployed, by default, within `Deployment:AzureResourceGroupName`). |
+| `Deployment:AzureResourceGroupName` | |
+| `Deployment:AzureSubscriptionId` | |
+| `Deployment:EventVersion ` | Subscription event version Mona should publish; supported event model versions are [`2021-05-01`](https://github.com/microsoft/mona-saas/tree/main/Mona.SaaS/Mona.SaaS.Core/Models/Events/V_2021_05_01) and [`2021-10-01`](https://github.com/microsoft/mona-saas/tree/main/Mona.SaaS/Mona.SaaS.Core/Models/Events/V_2021_10_01) (current) |
+| `Deployment:IsTestModeEnabled ` | |
+| `Deployment:MonaVersion ` | |
+| `Deployment:Name ` | Configured via the name (`-n`) flag during setup |
 
 ## `Identity` settings
 
