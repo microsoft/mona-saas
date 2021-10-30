@@ -4,7 +4,7 @@
 * [How do I uninstall Mona?](#how-do-i-uninstall-mona)
 * [Where is the admin center?](#where-is-the-admin-center)
 * [Who can access the admin center, setup wizard, and test endpoints?](#who-can-access-the-admin-center-setup-wizard-and-test-endpoints)
-* 
+* [How do I manage Mona administrators?](#how-do-i-manage-mona-administrators)
 
 ## How do I install Mona?
 
@@ -32,6 +32,19 @@ Only Mona Administrators can access the admin center, setup wizard, and test end
 3. Click __Manage users__. 
 
 You will be redirected to Mona's Azure Active Directory (AAD) Mona Administrators app role where you can add/remove users.
+
+## What is the purchase confirmation page?
+
+Mona acts as a proxy between the Microsoft commercial marketplace by implenting the required landing page and webhook endpoints. Once your customer confirms that they wish to purchase a subscription by clicking the __Confirm purchase__ button on the landing page, Mona must redirect them somewhere.
+
+The purchase confirmation page is where users are redirected after they've confirmed their purchase.
+
+* Mona will automatically replace `{subscription-id}` with the purchased subscription ID on redirect.
+* Mona provides time-limited, bearer URL access to full subscription details through the `_sub` query string parameter on redirect.
+
+
+# ###
+
 
 See [this section.](#user-management)
 
