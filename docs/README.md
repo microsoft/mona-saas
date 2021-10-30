@@ -2,6 +2,7 @@
 
 * [How do I install Mona?](#how-do-i-install-mona)
 * [How do I uninstall Mona?](#how-do-i-uninstall-mona)
+* [Where is the admin center?](#where-is-the-admin-center)
 
 ## How do I install Mona?
 
