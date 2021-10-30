@@ -1,4 +1,4 @@
-# Configuration settings
+# Mona configuration settings
 
 Mona configuration settings are, by default, [stored within the Mona web app's settings](https://docs.microsoft.com/azure/app-service/configure-common#configure-app-settings). 
 
@@ -31,15 +31,8 @@ Exercise __extreme caution__ when modifying these configuration settings. Updati
 | `Identity:AppIdentity:AadTenantId` | AAD Mona web [app registration](https://docs.microsoft.com/azure/active-directory/develop/app-objects-and-service-principals#application-object) [tenant ID](https://docs.microsoft.com/azure/active-directory/fundamentals/active-directory-how-to-find-tenant); by default, same as `Identity:AdminIdentity:AadTenantId`  |
 | `PublisherConfig:Store:BlobStorage:ConnectionString` | [Connection string for storage account](https://docs.microsoft.com/azure/storage/common/storage-configure-connection-string) where publisher configuration [blob](https://docs.microsoft.com/azure/storage/blobs/storage-blobs-introduction#blobs) (`publisher-config.json`) is stored; configured via setup wizard (`/setup`) |
 | `PublisherConfig:Store:BlobStorage:ContainerName` | [Blob storage container name](https://docs.microsoft.com/1azure/storage/blobs/storage-blobs-introduction#containers) where publisher configuration [blob](https://docs.microsoft.com/azure/storage/blobs/storage-blobs-introduction#blobs) (`publisher-config.json`) is stored; configured via setup wizard (`/setup`); by default, `configuration` |
-
-## `Subscriptions` settings
-
-These settings control how Mona accesses its underlying Azure resources to manage SaaS subscriptions.
-
-| Name | Description |
-| --- | --- |
-| `Subscriptions:Events:EventGrid:TopicEndpoint` | This is the [event grid topic](https://docs.microsoft.com/azure/event-grid/custom-topics) endpoint that Mona should publish subscription events to. |
-| `Subscriptions:Events:EventGrid:TopicKey` | This is the [event grid topic](https://docs.microsoft.com/azure/event-grid/custom-topics) access key that Mona uses to publish subscription events. |
+| `Subscriptions:Events:EventGrid:TopicEndpoint` | [Event grid topic](https://docs.microsoft.com/azure/event-grid/custom-topics) endpoint URL where Mona should publish subscription events |
+| `Subscriptions:Events:EventGrid:TopicKey` | Access key for [event grid topic](https://docs.microsoft.com/azure/event-grid/custom-topics) where Mona should publish subscription events |
 | `Subscriptions:Staging:Cache:BlobStorage:ConnectionString` | This is the [connection string needed to access the storage account](https://docs.microsoft.com/azure/storage/common/storage-configure-connection-string) where staged subscription [blobs](https://docs.microsoft.com/azure/storage/blobs/storage-blobs-introduction#blobs) are [temporarily cached and passed synchronously to your SaaS app's purchase confirmation page](./faq.md#can-i-retrieve-subscription-details-from-the-purchase-confirmation-page). |
 | `Subscriptions:Staging:Cache:BlobStorage:ContainerName` | This is the [name of the blob storage container](https://docs.microsoft.com/1azure/storage/blobs/storage-blobs-introduction#containers) where staged subscription [blobs](https://docs.microsoft.com/azure/storage/blobs/storage-blobs-introduction#blobs) are [temporarily cached and passed synchronously to your SaaS app's purchase confirmation page](./faq.md#can-i-retrieve-subscription-details-from-the-purchase-confirmation-page). |
 | `Subscriptions:Testing:Cache:BlobStorage:ConnectionString` | This is the [connection string needed to access the storage account](https://docs.microsoft.com/azure/storage/common/storage-configure-connection-string) where test subscription [blobs](https://docs.microsoft.com/azure/storage/blobs/storage-blobs-introduction#blobs) (created and manipulated via the test landing page and webhook endpoints) are temporarily cached. |
