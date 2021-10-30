@@ -19,7 +19,17 @@ See [this doc](../README.md/#how-do-i-get-started-with-mona-saas).
 
 In your browser, navigate to `/admin` (e.g., `https://mona-web-***/admin`).
 
-### How do I manage Mona administrators?
+## Who can access the admin center, setup wizard, and test endpoints?
+
+Only Mona Administrators can access the admin center, setup wizard, and test endpoints. 
+
+## How do I manage Mona administrators?
+
+1. Navigate to the admin center (`/admin`)
+2. Open the __Mona SaaS configuration settings__ tab.
+3. Click __Manage users__. 
+
+You will be redirected to Mona's Azure Active Directory (AAD) Mona Administrators app role where you can add/remove users.
 
 See [this section.](#user-management)
 
