@@ -81,7 +81,7 @@ You can use tools like cURL or Postman and the Mona test webhook endpoint (`/web
 
 ## How do I debug Mona?
 
-[Follow instructions here to remotely debug your Mona web app using Visual Studio.](https://docs.microsoft.com/en-us/azure/app-service/troubleshoot-dotnet-visual-studio#remotedebug)
+[Follow instructions here to remotely debug your Mona web app using Visual Studio.](https://docs.microsoft.com/en-us/azure/app-service/troubleshoot-dotnet-visual-studio#remotedebug) You can also review logs published to Mona's Application Insights resource.
 
 
 
