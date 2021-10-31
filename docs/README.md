@@ -14,6 +14,7 @@
 * [What is the subscription configuration page?](#what-is-the-subscription-configuration-page)
 * [How can I test my Marketplace integration logic before going live with an offer?](#how-can-i-test-my-marketplace-integration-logic-before-going-live-with-an-offer)
 * [How can I modify Mona's configuration settings?](#how-can-i-modify-monas-configuration-settings)
+* [Where can I find Mona's diagnostic logs?](#where-can-find-monas-diagnostic-logs)
 * [How do I debug Mona?](#how-do-i-debug-mona)
 
 ## How do I install Mona?
@@ -110,10 +111,12 @@ You can use tools like [cURL](https://curl.se/) (scriptable; great for automated
 
 See [this doc](config-settings.md).
 
+## Where can I find Mona's diagnostic logs?
+
+By default, Mona pulishes telemetry (including logs) to an [Application Insights](https://docs.microsoft.com/azure/azure-monitor/app/app-insights-overview) resource automatically deployed into your Mona resource group on setup. From here, you can search logs and configure alerts as needed.
+
 ## How do I debug Mona?
 
-Most issues are easy to diagnose using the [Application Insights](https://docs.microsoft.com/azure/azure-monitor/app/app-insights-overview) resource automatically deployed into your Mona resource group on setup.
-
-Given the numerous dependencies that Mona takes on Azure, the easiest way to debug it is to you deploy it into your Azure environment (using the provided setup script) and [use Visual Studio to remotely debug the Mona web app](https://docs.microsoft.com/azure/app-service/troubleshoot-dotnet-visual-studio#remotedebug) directly. This will require you opening the Mona solution that you previously cloned in Visual Studio and use Visual Studio's Cloud Explorer to attach the debugger.
+Given the numerous dependencies that Mona takes on Azure, the easiest way to debug it is to deploy it into your Azure environment (using the provided setup script) and [use Visual Studio to remotely debug the Mona web app](https://docs.microsoft.com/azure/app-service/troubleshoot-dotnet-visual-studio#remotedebug) directly. This will require you to open the Mona solution that you previously cloned in Visual Studio and use Visual Studio's Cloud Explorer to attach the debugger.
 
 Remotely debugging the Mona web app using the method described above requires that the app be deployed in [`debug` configuration](https://docs.microsoft.com/visualstudio/debugger/how-to-set-debug-and-release-configurations). By default, the Mona web app is deployed in __release__ configuration for performance reasons. When debugging, we recommend that you [use Visual Studio to publish the Mona web app in __debug__ configuration](https://docs.microsoft.com/azure/app-service/quickstart-dotnetcore?tabs=netcore31&pivots=development-environment-vs#publish-your-web-app) to its own [App Service deployment slot](https://docs.microsoft.com/azure/app-service/deploy-staging-slots). Doing so will prevent your production customers from being interrupted and give you a clean, easily disposed environment for your debugging needs.
