@@ -45,7 +45,7 @@ Mona acts as a proxy between the Microsoft commercial marketplace by implenting 
 Mona administrators can configure the purchase confirmation page URL at any time by navigating to the setup wizard (`/setup`).
 
 * Mona will automatically replace the URL token `{subscription-id}` with the applicable subscription ID on redirect.
-* Mona provides time-limited, bearer URL access to full subscription details through the `_sub` query string parameter on redirect.
+* Mona provides time-limited, bearer URL access to full subscription details through the `_sub` query string parameter on redirect. [For more information on how this works, see this question.](#can-i-retrieve-subscription-details-from-the-purchase-confirmation-page)
 
 ## Can I retrieve subscription details from the purchase confirmation page?
 
