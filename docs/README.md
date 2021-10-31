@@ -61,7 +61,7 @@ Only Mona Administrators can access the admin center, setup wizard, and test end
 2. Open the __Mona SaaS configuration settings__ tab.
 3. Click __Manage users__. 
 
-You will be redirected to [Mona's Azure Active Directory (AAD) Mona Administrators app role where you can add/remove users](https://docs.microsoft.com/azure/active-directory/develop/howto-add-app-roles-in-azure-ad-apps).
+You will be redirected to [Mona's Azure Active Directory (AAD) Mona Administrators app role where you can add/remove users](https://docs.microsoft.com/azure/active-directory/develop/howto-add-app-roles-in-azure-ad-apps#assign-users-and-groups-to-roles).
 
 ## What is the subscription purchase confirmation page?
 
