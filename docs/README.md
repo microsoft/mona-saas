@@ -33,15 +33,22 @@ Only Mona Administrators can access the admin center, setup wizard, and test end
 
 You will be redirected to Mona's Azure Active Directory (AAD) Mona Administrators app role where you can add/remove users.
 
-## What is the purchase confirmation page?
+## What is the subscription purchase confirmation page?
 
 Mona acts as a proxy between the Microsoft commercial marketplace by implenting the required landing page and webhook endpoints. Once your customer confirms that they wish to purchase a subscription by clicking the __Confirm purchase__ button on the landing page, Mona must redirect them somewhere.
 
-The purchase confirmation page is where users are redirected after they've confirmed their purchase.
+The purchase confirmation page is where customers are redirected after they've confirmed their purchase through the Mona landing page.
 
 * Mona will automatically replace `{subscription-id}` with the purchased subscription ID on redirect.
 * Mona provides time-limited, bearer URL access to full subscription details through the `_sub` query string parameter on redirect.
 
+## What is the subscription configuration page?
+
+The Microsoft commercial marketplace provides your customers with a link to manage their subscription. In practice, this link redirects the customer to the same landing page that was used to initially purchase the subscription. It is on you, the publisher, to determine whether or not the subscription already exists and, if so, to redirect the customer to a page where they can configure their subscription.
+
+The subscription configuration page is where customers are redirected if they reach the landing page and their subscription already exists.
+
+* Mona will automatically replace `{subscription-id}` with the applicable subscription ID on redirect.
 
 # ###
 
