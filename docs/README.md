@@ -7,6 +7,7 @@
 * [How do I manage Mona administrators?](#how-do-i-manage-mona-administrators)
 * [What is the subscription purchase confirmation page?](#what-is-the-subscription-purchase-confirmation-page)
 * [What is the subscription configuration page?](#what-is-the-subscription-configuration-page)
+* [How can I test my Marketplace integration logic before going live with an offer?](#)
 
 ## How do I install Mona?
 
@@ -46,9 +47,17 @@ Mona administrators can configure the purchase confirmation page URL at any time
 
 ## What is the subscription configuration page?
 
-Microsoft provides a link to your subscribers allowing them to manage their subscriptions. In practice, this link redirects the user to the landing page (that Mona exposes) with a token that resolves to a subscription that already exists. As SaaS provider, it's your responsibility to check for this condition and, if necessary, provide a subscription management experience. Mona always checks for this condition and, if the subscription already exists, the user is redirected to the _subscription configuration page_.
+Microsoft provides a link to your subscribers allowing them to manage their subscriptions. In practice, this link redirects the user to the landing page (that Mona exposes) with a token that resolves to a subscription that already exists. As SaaS provider, it's your responsibility to check for this condition and provide a subscription management experience. Mona always checks for this condition and, if the subscription already exists, the user is redirected to the _subscription configuration page_.
 
 * Mona will automatically replace `{subscription-id}` with the applicable subscription ID on redirect.
+
+## How can I test my Marketplace integration logic before going live with an offer?
+
+By default, Mona provides a set of test landing page and webhook endpoints that Mona administrators can use to test integration logic while bypassing the marketplace before going live with an offer. You can find both test endpoints in the __Testing__ tab of the Mona admin center (`/admin`).
+
+The test landing page (`/test`) can only be accessed by Mona administrators. The test landing page behaves and looks just like the live landing page except for a warning banner across the top of the page. You can customize every property of the test subscription that Mona generates by using [these query string parameters](https://github.com/microsoft/mona-saas/blob/357aa09039f9c8c0dfd324cdd7903b3dbdef88c6/Mona.SaaS/Mona.SaaS.Web/Controllers/SubscriptionController.cs#L591).
+
+You can use tools like cURL or Postman and the Mona test webhook endpoint (`/webhook/test`) to test Marketplace webhook invocations against subscriptions previously created through the test landing page (`/test`). These test subscriptions automatically expire (you can no longer perform webhook operations against them) after 30 days of inactivity. Like the live webhook, the test webhook requires no authentication but operations succeed only for existing test subscriptions.
 
 # ###
 
