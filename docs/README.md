@@ -27,15 +27,11 @@ See [this doc](../README.md/#how-do-i-get-started-with-mona-saas).
 
 ## Where is the admin center?
 
-In your browser, navigate to `/admin`.
-
-> i.e., https://mona-web-*.azurewebsites.net/admin
+In your browser, navigate to `[Mona base URL]/admin`.
 
 ## How can I return to the setup wizard?
 
-In your browser, navigate to `/setup`.
-
-> i.e., https://mona-web-*.azurewebsites.net/setup
+In your browser, navigate to `[Mona base URL]/setup`.
 
 ## Where can I learn more about the various events that Mona publishes?
 
