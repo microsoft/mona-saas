@@ -6,6 +6,7 @@
 * [Who can access the admin center, setup wizard, and test endpoints?](#who-can-access-the-admin-center-setup-wizard-and-test-endpoints)
 * [How do I manage Mona administrators?](#how-do-i-manage-mona-administrators)
 * [What is the subscription purchase confirmation page?](#what-is-the-subscription-purchase-confirmation-page)
+* [Can I retrieve subscription details from the purchase confirmation page?](#can-i-retrieve-subscription-details-from-the-purchase-confirmation-page)
 * [What is the subscription configuration page?](#what-is-the-subscription-configuration-page)
 * [How can I test my Marketplace integration logic before going live with an offer?](#what-is-the-subscription-configuration-page)
 
@@ -45,7 +46,7 @@ Mona administrators can configure the purchase confirmation page URL at any time
 * Mona will automatically replace the URL token `{subscription-id}` with the applicable subscription ID on redirect.
 * Mona provides time-limited, bearer URL access to full subscription details through the `_sub` query string parameter on redirect.
 
-### Can I retrieve subscription details from the purchase confirmation page?
+## Can I retrieve subscription details from the purchase confirmation page?
 
 After a customer has confirmed their AppSource/Marketplace purchase through the Mona landing page, they are automatically redirected to a publisher-managed (ISV) purchase confirmation page to complete their subscription configuration.
 
