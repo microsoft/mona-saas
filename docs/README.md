@@ -45,6 +45,22 @@ Mona administrators can configure the purchase confirmation page URL at any time
 * Mona will automatically replace the URL token `{subscription-id}` with the applicable subscription ID on redirect.
 * Mona provides time-limited, bearer URL access to full subscription details through the `_sub` query string parameter on redirect.
 
+### Can I retrieve subscription details from the purchase confirmation page?
+
+After a customer has confirmed their AppSource/Marketplace purchase through the Mona landing page, they are automatically redirected to a publisher-managed (ISV) purchase confirmation page to complete their subscription configuration.
+
+By default, Mona will also include a partial link (via the `_sub` query parameter highilghted in the below image) that, when combined with the base storage URL (provided during Mona setup), can be used to efficiently and securely pull the subscription details. Note that the `_sub` parameter is URL encoded. In order to use it, you must first URL decode it before combining it with the base storage URL.
+
+![Subscription details URL construction](images/complete-redirect-url.PNG)
+
+> By default, subscription definitions are staged in Azure blob storage. The URL that you construct is actually a [shared access signature (SAS) token](https://docs.microsoft.comazure/storage/common/storage-sas-overview#sas-token) granting time-limited, read-only access to the subscription definition blob.
+
+When you issue an HTTP GET request against the combined URL, the full subscription details will be returned as a JSON object. The URL itself is valid only for a short period of time (by default, five (5) minutes). After that time, the URL is useless.
+
+This design prevents outside actors from either spoofing the subscription details or reading the subscription details since you need both pieces of information (the base storage URL and the `_sub` parameter value) in order to access the information.
+
+> This functionality is enabled by default. You can disable it by setting the `Deployment:SendSubscriptionDetailsToPurchaseConfirmationPage` configuration value to `false` and restarting the web app.
+
 ## What is the subscription configuration page?
 
 Microsoft provides a link to your subscribers allowing them to manage their subscriptions. In practice, this link redirects the user to the landing page (that Mona exposes) with a token that resolves to a subscription that already exists. As SaaS provider, it's your responsibility to check for this condition and provide a subscription management experience. Mona always checks for this condition and, if the subscription already exists, the user is redirected to the _subscription configuration page_.
@@ -53,7 +69,9 @@ Microsoft provides a link to your subscribers allowing them to manage their subs
 
 ## How can I test my Marketplace integration logic before going live with an offer?
 
-By default, Mona provides a set of test landing page and webhook endpoints that Mona administrators can use to test integration logic while bypassing the marketplace before going live with an offer. You can find both test endpoints in the __Testing__ tab of the Mona admin center (`/admin`).
+By default, Mona provides a set of test landing page and webhook endpoints that Mona administrators can use to test integration logic while bypassing the marketplace before going live with an offer.
+
+You can find both test endpoints in the __Testing__ tab of the Mona admin center (`/admin`).
 
 The test landing page (`/test`) can only be accessed by Mona administrators. The test landing page behaves and looks just like the live landing page except for a warning banner across the top of the page. You can customize every property of the test subscription that Mona generates by using [these query string parameters](https://github.com/microsoft/mona-saas/blob/357aa09039f9c8c0dfd324cdd7903b3dbdef88c6/Mona.SaaS/Mona.SaaS.Web/Controllers/SubscriptionController.cs#L591).
 
@@ -99,21 +117,7 @@ When you create a new SaaS offer within Partner Center you will be prompted to p
 2. Open the __Subscription event handlers__ tab.
 3. Locate the workflow that you wish to edit and click __Edit workflow__.
 
-### Can I retrieve subscription details from the purchase confirmation page?
 
-After a customer has confirmed their AppSource/Marketplace purchase through the Mona landing page, they are automatically redirected to a publisher-managed (ISV) purchase confirmation page to complete their subscription configuration.
-
-By default, Mona will also include a partial link (via the `_sub` query parameter highilghted in the below image) that, when combined with the base storage URL (provided during Mona setup), can be used to efficiently and securely pull the subscription details. Note that the `_sub` parameter is URL encoded. In order to use it, you must first URL decode it before combining it with the base storage URL.
-
-![Subscription details URL construction](images/complete-redirect-url.PNG)
-
-> By default, subscription definitions are staged in Azure blob storage. The URL that you construct is actually a [shared access signature (SAS) token](https://docs.microsoft.comazure/storage/common/storage-sas-overview#sas-token) granting time-limited, read-only access to the subscription definition blob.
-
-When you issue an HTTP GET request against the combined URL, the full subscription details will be returned as a JSON object. The URL itself is valid only for a short period of time (by default, five (5) minutes). After that time, the URL is useless.
-
-This design prevents outside actors from either spoofing the subscription details or reading the subscription details since you need both pieces of information (the base storage URL and the `_sub` parameter value) in order to access the information.
-
-> This functionality is enabled by default. You can disable it by setting the `Deployment:SendSubscriptionDetailsToPurchaseConfirmationPage` configuration value to `false` and restarting the web app.
 
 ## User management
 
