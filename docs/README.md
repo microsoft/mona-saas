@@ -7,7 +7,7 @@
 * [How do I manage Mona administrators?](#how-do-i-manage-mona-administrators)
 * [What is the subscription purchase confirmation page?](#what-is-the-subscription-purchase-confirmation-page)
 * [What is the subscription configuration page?](#what-is-the-subscription-configuration-page)
-* [How can I test my Marketplace integration logic before going live with an offer?](#)
+* [How can I test my Marketplace integration logic before going live with an offer?](#what-is-the-subscription-configuration-page)
 
 ## How do I install Mona?
 
