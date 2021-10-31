@@ -12,7 +12,7 @@
 * [What is the subscription purchase confirmation page?](#what-is-the-subscription-purchase-confirmation-page)
 * [Can I retrieve subscription details from the purchase confirmation page?](#can-i-retrieve-subscription-details-from-the-purchase-confirmation-page)
 * [What is the subscription configuration page?](#what-is-the-subscription-configuration-page)
-* [How can I test my Marketplace integration logic before going live with an offer?](#what-is-the-subscription-configuration-page)
+* [How can I test my Marketplace integration logic before going live with an offer?](#how-can-i-test-my-marketplace-integration-logic-before-going-live-with-an-offer)
 * [How can I modify Mona's configuration settings?](#how-can-i-modify-monas-configuration-settings)
 * [How do I debug Mona?](#how-do-i-debug-mona)
 
