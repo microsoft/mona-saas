@@ -97,8 +97,7 @@
                                 @Html.TextBoxFor(m => m.Publisher.SubscriptionPurchaseConfirmationUrl, new { @id = "textFieldPurchaseConfirmationUrl", @class = "ms-TextField-field", placeholder = "https://yourdomain.com/saas/purchased/{subscription-id}" })
                                 <div class="ms-MessageBar-icon" style="padding-right: 1px;font-size: 11px;"><i class="ms-Icon ms-Icon ms-Icon--Info"></i></div>
                                 <span class="ms-font-xs" style="display: table-cell; text-align: left;">
-                                    @Localizer["After your customer has confirmed their purchase through the landing page, they will automatically be redirected to this URL." +
-"Note that you can include the customer's subscription ID in the URL by using the <code>{{subscription-id}}</code> placeholder."]
+                                    <a target="_blank" href="https://github.com/microsoft/mona-saas/blob/main/docs/README.md#what-is-the-subscription-purchase-confirmation-page">What is this?</a>
                                 </span>
                             </div><br />
                             <button class="ms-Button" onclick="goToTab('configuration')" type="button">
@@ -121,8 +120,9 @@
                             @Html.TextBoxFor(m => m.Publisher.SubscriptionConfigurationUrl, new {@id = "textFieldSubscriptionConfigurationUrl", @class = "ms-TextField-field", placeholder = "https://yourdomain.com/saas/config/{subscription-id}" })
                             <div class="ms-MessageBar-icon" style="padding-right: 1px;font-size: 11px;"><i class="ms-Icon ms-Icon ms-Icon--Info"></i></div>
                             <span class="ms-font-xs" style="display: table-cell;">
-                                @Localizer["If your customer chooses to configure their subscription through AppSource/Marketplace, they will be automatically redirected to this URL." +
-"Note that you can include the customer's subscription ID in the URL by using the <code>{{subscription-id}}</code> placeholder."]
+                                <span class="ms-font-xs" style="display: table-cell; text-align: left;">
+                                    <a target="_blank" href="https://github.com/microsoft/mona-saas/blob/main/docs/README.md#what-is-the-subscription-configuration-page">What is this?</a>
+                                </span>
                         </span>
                     </div><br />
                     <button class="ms-Button" onclick="goToTab('purchase')" type="button">
