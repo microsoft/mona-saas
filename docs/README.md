@@ -78,5 +78,9 @@ The test landing page (`/test`) can only be accessed by Mona administrators. The
 
 You can use tools like cURL or Postman and the Mona test webhook endpoint (`/webhook/test`) to test [Marketplace webhook invocations](https://docs.microsoft.com/azure/marketplace/partner-center-portal/pc-saas-fulfillment-api-v2#implementing-a-webhook-on-the-saas-service) against subscriptions previously created through the test landing page (`/test`). These test subscriptions automatically expire (you can no longer perform webhook operations against them) after 30 days of inactivity. Like the live webhook, the test webhook requires no authentication but operations succeed only for existing test subscriptions.
 
+## How can I debug the Mona web app?
+
+[Follow instructions here to remotely debug your Mona web app using Visual Studio.](https://docs.microsoft.com/en-us/azure/app-service/troubleshoot-dotnet-visual-studio#remotedebug)
+
 
 
