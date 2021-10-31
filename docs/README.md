@@ -81,7 +81,6 @@ You can use tools like cURL or Postman and the Mona test webhook endpoint (`/web
 
 ## How do I debug Mona?
 
-[Follow instructions here to remotely debug your Mona web app using Visual Studio.](https://docs.microsoft.com/en-us/azure/app-service/troubleshoot-dotnet-visual-studio#remotedebug) You can also review logs published to Mona's Application Insights resource.
+[Most issues are easy to diagnose using the Application Insights resource automatically deployed into your Mona resource group on setup.](https://docs.microsoft.com/en-us/azure/azure-monitor/app/diagnostic-search)
 
-
-
+Mona runs only in Azure. Since it takes several dependencies on several Azure-native resources, it can't be run entirely locally. While you can configure and run the web app locally, the easiest way to debug it is to you deploy it into your Azure environment and [use Visual Studio to remotely debug the Mona web app](https://docs.microsoft.com/en-us/azure/app-service/troubleshoot-dotnet-visual-studio#remotedebug). This will require you opening the Mona solution that you previously cloned in Visual Studio then using the Cloud Explorer to attach the debugger.
