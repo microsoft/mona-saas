@@ -35,11 +35,11 @@ You will be redirected to Mona's Azure Active Directory (AAD) Mona Administrator
 
 ## What is the subscription purchase confirmation page?
 
-Mona acts as a proxy between the Microsoft commercial marketplace by implenting the required landing page and webhook endpoints. Once your customer confirms that they wish to purchase a subscription by clicking the __Confirm purchase__ button on the landing page, Mona must redirect them somewhere.
+Mona acts as a proxy between the Microsoft commercial marketplace by implenting the required landing page and webhook endpoints. Once your customer confirms that they wish to purchase a subscription by clicking the __Confirm purchase__ button on the landing page, Mona redirects them to the _purchase confirmation page_. Essentially, this is where Mona hands new Microsoft commercial marketplace subscription purchases off to your app.
 
-The purchase confirmation page is where customers are redirected after they've confirmed their purchase through the Mona landing page.
+Mona administrators can configure the purchase confirmation page URL at any time by navigating to the setup wizard (`/setup`).
 
-* Mona will automatically replace `{subscription-id}` with the purchased subscription ID on redirect.
+* Mona will automatically replace the URL token `{subscription-id}` with the applicable subscription ID on redirect.
 * Mona provides time-limited, bearer URL access to full subscription details through the `_sub` query string parameter on redirect.
 
 ## What is the subscription configuration page?
