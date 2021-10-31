@@ -3,6 +3,7 @@
 * [How do I install Mona?](#how-do-i-install-mona)
 * [How do I uninstall Mona?](#how-do-i-uninstall-mona)
 * [Where is the admin center?](#where-is-the-admin-center)
+* [How can I return to the setup wizard?](#how-can-i-return-to-the-setup-wizard)
 * [Where can I learn more about the various events that Mona publishes?](#where-can-i-learn-more-about-the-various-events-that-mona-publishes)
 * [Can I handle subscription events somewhere other than Logic Apps?](#can-i-handle-subscription-events-somewhere-other-than-logic-apps)
 * [Who can access the admin center, setup wizard, and test endpoints?](#who-can-access-the-admin-center-setup-wizard-and-test-endpoints)
@@ -26,7 +27,15 @@ See [this doc](../README.md/#how-do-i-get-started-with-mona-saas).
 
 ## Where is the admin center?
 
-In your browser, navigate to `/admin` (e.g., `https://mona-web-***/admin`).
+In your browser, navigate to `/admin`.
+
+> i.e., https://mona-web-*.azurewebsites.net/admin
+
+## How can I return to the setup wizard?
+
+In your browser, navigate to `/setup`.
+
+> i.e., https://mona-web-*.azurewebsites.net/setup
 
 ## Where can I learn more about the various events that Mona publishes?
 
@@ -52,7 +61,7 @@ You will be redirected to [Mona's Azure Active Directory (AAD) Mona Administrato
 
 ## What is the subscription purchase confirmation page?
 
-Mona acts as a proxy between the Microsoft commercial marketplace by implenting the required landing page and webhook endpoints. When your customer confirms that they wish to purchase a subscription by clicking the __Confirm purchase__ button on the landing page, Mona redirects them to the _purchase confirmation page_. Essentially, this is where Mona hands new Microsoft commercial marketplace subscription purchases off to your app.
+Mona acts as a proxy between the Microsoft commercial marketplace and your SaaS app by implenting the required landing page and webhook endpoints. When your customer confirms that they wish to purchase a subscription by clicking the __Confirm purchase__ button on the landing page, Mona redirects them to the _purchase confirmation page_. Essentially, this is where Mona hands new Microsoft commercial marketplace subscription purchases off to your app.
 
 Mona administrators can configure the purchase confirmation page URL at any time by navigating to the setup wizard (`/setup`).
 
