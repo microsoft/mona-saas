@@ -65,19 +65,21 @@ This design prevents outside actors from either spoofing the subscription detail
 
 ## What is the subscription configuration page?
 
-Microsoft provides a link to your subscribers allowing them to manage their subscriptions. In practice, this link redirects the user to the landing page (that Mona exposes) with a token that resolves to a subscription that already exists. As SaaS provider, it's your responsibility to check for this condition and provide a subscription management experience. Mona always checks for this condition and, if the subscription already exists, the user is redirected to the _subscription configuration page_.
+Microsoft provides a link (through the various commercial marketplace web interfaces) to your subscribers allowing them to manage their subscription. In practice, this link redirects the user to your landing page (the same one Mona exposes to support new subscription purchases) with a token that resolves to an existing subscription. As the SaaS provider, it's your responsibility to check for this condition and, if needed, redirect the customer to a subscription management experience. To simplify things, Mona always checks for this condition and, if the subscription already exists, automatically redirects the user to the _subscription configuration page_.
 
-* Mona will automatically replace `{subscription-id}` with the applicable subscription ID on redirect.
+* Mona will automatically replace the URL token `{subscription-id}` with the applicable subscription ID on redirect.
 
 ## How can I test my Marketplace integration logic before going live with an offer?
 
-By default, Mona provides a set of test landing page and webhook endpoints that Mona administrators can use to test integration logic while bypassing the marketplace before going live with an offer.
+By default, Mona exposes a set of test landing page and webhook endpoints that Mona administrators can use to test integration logic without the need for an actual Microsoft commercial marketplace offer.
+
+> These endpoints can be disabled by [setting the `Deployment:IsTestModeEnabled` configuration setting to `false`](config-settings.md).
 
 You can find both test endpoints in the __Testing__ tab of the Mona admin center (`/admin`).
 
-The test landing page (`/test`) can only be accessed by Mona administrators. The test landing page behaves and looks just like the live landing page except for a warning banner across the top of the page. You can customize every property of the test subscription that Mona generates by using [these query string parameters](https://github.com/microsoft/mona-saas/blob/357aa09039f9c8c0dfd324cdd7903b3dbdef88c6/Mona.SaaS/Mona.SaaS.Web/Controllers/SubscriptionController.cs#L591).
+The test landing page (`/test`) can only be accessed by Mona administrators. The test landing page behaves and looks just like the live landing page except for a warning banner across the top of the page indicating that you're running in test mode. You can customize the test subscription that Mona automatically generates of the test subscription by using [these query string parameters](https://github.com/microsoft/mona-saas/blob/357aa09039f9c8c0dfd324cdd7903b3dbdef88c6/Mona.SaaS/Mona.SaaS.Web/Controllers/SubscriptionController.cs#L591).
 
-You can use tools like cURL or Postman and the Mona test webhook endpoint (`/webhook/test`) to test [Marketplace webhook invocations](https://docs.microsoft.com/azure/marketplace/partner-center-portal/pc-saas-fulfillment-api-v2#implementing-a-webhook-on-the-saas-service) against subscriptions previously created through the test landing page (`/test`). These test subscriptions automatically expire (you can no longer perform webhook operations against them) after 30 days of inactivity. Like the live webhook, the test webhook requires no authentication but operations succeed only for existing test subscriptions.
+You can use tools like cURL or Postman and the Mona test webhook endpoint (`/webhook/test`) to test [all Marketplace webhook invocations](https://docs.microsoft.com/azure/marketplace/partner-center-portal/pc-saas-fulfillment-api-v2#implementing-a-webhook-on-the-saas-service) against subscriptions previously created through the test landing page (`/test`). These test subscriptions automatically expire (you can no longer perform webhook operations against them) after 30 days of inactivity. Like the live webhook, the test webhook requires no authentication but operations succeed only when executed against existing test subscriptions.
 
 ## How do I debug Mona?
 
