@@ -4,6 +4,7 @@
 * [How do I uninstall Mona?](#how-do-i-uninstall-mona)
 * [Where is the admin center?](#where-is-the-admin-center)
 * [How can I return to the setup wizard?](#how-can-i-return-to-the-setup-wizard)
+* [Where can I find my offer's Partner Center technical configuration details?](#where-can-i-learn-more-about-the-various-events-that-mona-publishes)
 * [Where can I learn more about the various events that Mona publishes?](#where-can-i-learn-more-about-the-various-events-that-mona-publishes)
 * [Can I handle subscription events somewhere other than Logic Apps?](#can-i-handle-subscription-events-somewhere-other-than-logic-apps)
 * [Who can access the admin center, setup wizard, and test endpoints?](#who-can-access-the-admin-center-setup-wizard-and-test-endpoints)
@@ -32,6 +33,10 @@ In your browser, navigate to `[Mona base URL]/admin`.
 ## How can I return to the setup wizard?
 
 In your browser, navigate to `[Mona base URL]/setup`.
+
+## Where can I find my offer's Partner Center technical configuration details?
+
+When you create a SaaS offer through the Partner Center, you have to tell the Partner Center how to connect to you SaaS app to enable transactability with the Microsoft commercial marketplace. This is accomplished through your [offer's technical configuration details](https://docs.microsoft.com/en-us/azure/marketplace/create-new-saas-offer-technical). These values always be found in the Mona admin center (`/admin`).
 
 ## Where can I learn more about the various events that Mona publishes?
 
