@@ -76,70 +76,7 @@ You can find both test endpoints in the __Testing__ tab of the Mona admin center
 
 The test landing page (`/test`) can only be accessed by Mona administrators. The test landing page behaves and looks just like the live landing page except for a warning banner across the top of the page. You can customize every property of the test subscription that Mona generates by using [these query string parameters](https://github.com/microsoft/mona-saas/blob/357aa09039f9c8c0dfd324cdd7903b3dbdef88c6/Mona.SaaS/Mona.SaaS.Web/Controllers/SubscriptionController.cs#L591).
 
-You can use tools like cURL or Postman and the Mona test webhook endpoint (`/webhook/test`) to test Marketplace webhook invocations against subscriptions previously created through the test landing page (`/test`). These test subscriptions automatically expire (you can no longer perform webhook operations against them) after 30 days of inactivity. Like the live webhook, the test webhook requires no authentication but operations succeed only for existing test subscriptions.
-
-# ###
-
-
-See [this section.](#user-management)
-
-### How do I manage Mona configuration settings?
-
-1.  Navigate to the Mona admin center (`/admin`).
-2.  Open the __Mona SaaS configuration settings__ tab.
-3.  Click __Manage configuration settings__. This will redirect you to the Azure portal where you can [manage configuration settings for the Mona web app](https://docs.microsoft.com/azure/app-service/configure-common#configure-app-settings).
-
-[Refer to this doc](./config-settings.md) for more information on each configuration setting.
-
-> Note that updating any of these settings will cause the Mona web app to restart.
-
-### How do I modify my publisher configuration after setup?
-
-When you first install Mona, you're directed to a setup wizard where you provide some basic information about your business and SaaS app. Should you ever need to change these values, simply return to the setup screen (`/setup`).
-
-### Where can I find the Mona admin center?
-
-Navigate to `/admin` (e.g., `https://mona-web-*.azurewebsites.net/admin`).
-
-### Where can I find my Mona test endpoints?
-
-1. Navigate to the Mona admin center (`/admin`).
-2. Open the __Testing_ tab. Note both the landing page and webhook URLs.
-
-### Where can I find my Partner Center technical configuration details?
-
-When you create a new SaaS offer within Partner Center you will be prompted to provide some [technical configuration information about your SaaS app](https://docs.microsoft.com/azure/marketplace/create-new-saas-offer-technical). You can _always_ find this information within the __Partner center technical details__ tab of the Mona admin center (`/admin`).
-
-## Subscription workflow
-
-### How do I edit my subscription lifecycle workflows?
-
-1. Navigate to the Mona admin center (`/admin`).
-2. Open the __Subscription event handlers__ tab.
-3. Locate the workflow that you wish to edit and click __Edit workflow__.
-
-
-
-## User management
-
-### Who can access the Mona admin center?
-
-Only users that belong to your Mona deployment's Azure Active Directory tenant and Mona Administrators application role can access the Mona admin center. For more information on managing Mona administrators, see [this question](#how-do-i-manage-mona-administrators).
-
-### Who can access the Mona setup wizard?
-
-Only users that belong to your Mona deployment's Azure Active Directory tenant and Mona Administrators application role can access the Mona setup wizard. For more information on managing Mona administrators, see [this question](#how-do-i-manage-mona-administrators).
-
-### Who can access the Mona test endoints?
-
-Only users that belong to your Mona deployment's Azure Active Directory tenant and Mona Administrators application role can access the Mona landing page and webhook test endpoints. For more information on managing Mona administrators, see [this question](#how-do-i-manage-mona-administrators).
-
-### How do I manage Mona administrators?
-
-1. Navigate to your Mona admin center (`/admin`).
-2. Open the __Mona SaaS configuration settings__ tab.
-3. Click __Manage users__. This will redirect you to the Azure portal where you can add/remove users from the Mona Administrators application role.
-
+You can use tools like cURL or Postman and the Mona test webhook endpoint (`/webhook/test`) to test [Marketplace webhook invocations](https://docs.microsoft.com/azure/marketplace/partner-center-portal/pc-saas-fulfillment-api-v2#implementing-a-webhook-on-the-saas-service) against subscriptions previously created through the test landing page (`/test`). These test subscriptions automatically expire (you can no longer perform webhook operations against them) after 30 days of inactivity. Like the live webhook, the test webhook requires no authentication but operations succeed only for existing test subscriptions.
 
 
 
