@@ -2,7 +2,7 @@
 
 ![CI Build](https://github.com/microsoft/mona-saas/actions/workflows/dotnet.yml/badge.svg)
 
-> ⚠ __WARNING__ | Mona SaaS is currently in private preview. We do not yet recommend it for production scenarios.
+> Mona SaaS is currently in private preview.
 
  Mona SaaS is a [__M__]arketplace [__On__]boarding [__A__]ccelerator designed to make it easier for Microsoft's [ISV partners](https://partner.microsoft.com/community/my-partner-hub/isv) to rapidly onboard transactable SaaS solutions to [Azure Marketplace](https://azure.microsoft.com/marketplace) and [AppSource](https://appsource.microsoft.com). It includes lightweight, reusable code modules that ISVs deploy in their own Azure subscription, and [low/no-code integration templates](https://azure.microsoft.com/en-us/solutions/low-code-application-development) featuring [Azure Logic Apps](https://azure.microsoft.com/services/logic-apps).
 
@@ -160,8 +160,6 @@ Mona SaaS takes a dependency on the open source [Commercial Marketplace .NET Cli
 All other dependencies are automatically satisfied using [Nuget](https://docs.microsoft.com/nuget/what-is-nuget) during the Mona SaaS setup process. For more information on Mona SaaS' dependencies, [check out our dependency graph](https://github.com/microsoft/mona-saas/network/dependencies).
 
 ## Who supports Mona SaaS?
-
-> ⚠ __WARNING__ | Mona SaaS is currently in private preview. We do not yet recommend it for production scenarios.
 
 Please see [our support docs](SUPPORT.md) for more information.
 
