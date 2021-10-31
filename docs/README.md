@@ -3,7 +3,7 @@
 * [How do I install Mona?](#how-do-i-install-mona)
 * [How do I uninstall Mona?](#how-do-i-uninstall-mona)
 * [Where is the admin center?](#where-is-the-admin-center)
-* [Where can I learn more about the various events that Mona publishes?](#)
+* [Where can I learn more about the various events that Mona publishes?](#where-can-i-learn-more-about-the-various-events-that-mona-publishes)
 * [Who can access the admin center, setup wizard, and test endpoints?](#who-can-access-the-admin-center-setup-wizard-and-test-endpoints)
 * [How do I manage Mona administrators?](#how-do-i-manage-mona-administrators)
 * [What is the subscription purchase confirmation page?](#what-is-the-subscription-purchase-confirmation-page)
