@@ -14,7 +14,7 @@
 * [What is the subscription configuration page?](#what-is-the-subscription-configuration-page)
 * [How can I test my Marketplace integration logic before going live with an offer?](#how-can-i-test-my-marketplace-integration-logic-before-going-live-with-an-offer)
 * [How can I modify Mona's configuration settings?](#how-can-i-modify-monas-configuration-settings)
-* [Where can I find Mona's diagnostic logs?](#where-can-find-monas-diagnostic-logs)
+* [Where can I find Mona's diagnostic logs?](#where-can-i-find-monas-diagnostic-logs)
 * [How do I debug Mona?](#how-do-i-debug-mona)
 
 ## How do I install Mona?
