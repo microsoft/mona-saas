@@ -35,7 +35,7 @@ You will be redirected to Mona's Azure Active Directory (AAD) Mona Administrator
 
 ## What is the subscription purchase confirmation page?
 
-Mona acts as a proxy between the Microsoft commercial marketplace by implenting the required landing page and webhook endpoints. Once your customer confirms that they wish to purchase a subscription by clicking the __Confirm purchase__ button on the landing page, Mona redirects them to the _purchase confirmation page_. Essentially, this is where Mona hands new Microsoft commercial marketplace subscription purchases off to your app.
+Mona acts as a proxy between the Microsoft commercial marketplace by implenting the required landing page and webhook endpoints. When your customer confirms that they wish to purchase a subscription by clicking the __Confirm purchase__ button on the landing page, Mona redirects them to the _purchase confirmation page_. Essentially, this is where Mona hands new Microsoft commercial marketplace subscription purchases off to your app.
 
 Mona administrators can configure the purchase confirmation page URL at any time by navigating to the setup wizard (`/setup`).
 
@@ -44,9 +44,7 @@ Mona administrators can configure the purchase confirmation page URL at any time
 
 ## What is the subscription configuration page?
 
-The Microsoft commercial marketplace provides your customers with a link to manage their subscription. In practice, this link redirects the customer to the same landing page that was used to initially purchase the subscription. It is on you, the publisher, to determine whether or not the subscription already exists and, if so, to redirect the customer to a page where they can configure their subscription.
-
-The subscription configuration page is where customers are redirected if they reach the landing page and their subscription already exists.
+Microsoft provides a link to your subscribers allowing them to manage their subscriptions. In practice, this link redirects the user to the landing page (that Mona exposes) with a token that resolves to a subscription that already exists. As SaaS provider, it's your responsibility to check for this condition and, if necessary, provide a subscription management experience. Mona always checks for this condition and, if the subscription already exists, the user is redirected to the _subscription configuration page_.
 
 * Mona will automatically replace `{subscription-id}` with the applicable subscription ID on redirect.
 
