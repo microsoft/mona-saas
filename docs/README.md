@@ -3,6 +3,7 @@
 * [How do I install Mona?](#how-do-i-install-mona)
 * [How do I uninstall Mona?](#how-do-i-uninstall-mona)
 * [Where is the admin center?](#where-is-the-admin-center)
+* [Where can I learn more about the various events that Mona publishes?](#)
 * [Who can access the admin center, setup wizard, and test endpoints?](#who-can-access-the-admin-center-setup-wizard-and-test-endpoints)
 * [How do I manage Mona administrators?](#how-do-i-manage-mona-administrators)
 * [What is the subscription purchase confirmation page?](#what-is-the-subscription-purchase-confirmation-page)
@@ -25,6 +26,10 @@ See [this doc](../README.md/#how-do-i-get-started-with-mona-saas).
 ## Where is the admin center?
 
 In your browser, navigate to `/admin` (e.g., `https://mona-web-***/admin`).
+
+## Where can I learn more about the various events that Mona publishes?
+
+See [this doc](event-models/README.md).
 
 ## Who can access the admin center, setup wizard, and test endpoints?
 
