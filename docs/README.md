@@ -13,6 +13,7 @@
 * [Can I retrieve subscription details from the purchase confirmation page?](#can-i-retrieve-subscription-details-from-the-purchase-confirmation-page)
 * [What is the subscription configuration page?](#what-is-the-subscription-configuration-page)
 * [How can I test my Marketplace integration logic before going live with an offer?](#what-is-the-subscription-configuration-page)
+* [How can I modify Mona's configuration settings?](#how-can-i-modify-monas-configuration-settings)
 * [How do I debug Mona?](#how-do-i-debug-mona)
 
 ## How do I install Mona?
@@ -104,6 +105,10 @@ You can find both test endpoints in the __Testing__ tab of the Mona admin center
 The test landing page (`/test`) can only be accessed by Mona administrators. The test landing page behaves and looks just like the live landing page except for a warning banner across the top of the page indicating that you're running in test mode. You can customize the test subscription that Mona automatically generates of the test subscription by using [these query string parameters](https://github.com/microsoft/mona-saas/blob/357aa09039f9c8c0dfd324cdd7903b3dbdef88c6/Mona.SaaS/Mona.SaaS.Web/Controllers/SubscriptionController.cs#L591).
 
 You can use tools like cURL or Postman and the Mona test webhook endpoint (`/webhook/test`) to test [all Marketplace webhook invocations](https://docs.microsoft.com/azure/marketplace/partner-center-portal/pc-saas-fulfillment-api-v2#implementing-a-webhook-on-the-saas-service) against subscriptions previously created through the test landing page (`/test`). These test subscriptions automatically expire (you can no longer perform webhook operations against them) after 30 days of inactivity. Like the live webhook, the test webhook requires no authentication but operations succeed only when executed against existing test subscriptions.
+
+## How can I modify Mona's configuration settings?
+
+See [this doc](config-settings.md).
 
 ## How do I debug Mona?
 
