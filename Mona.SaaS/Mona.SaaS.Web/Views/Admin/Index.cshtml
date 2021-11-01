@@ -93,7 +93,7 @@
                     <span class="ms-font-su ms-fontColor-themePrimary">@Localizer["Mona SaaS admin center"]</span>
                     <p class="ms-font-l">
                         @Localizer[
-                        "You'll need these technical details when you <a href=\"{0}\">publish your SaaS offer through the Partner Center</a>.",
+                        "You'll need these technical details when you <a target=\"_blank\" href=\"{0}\">publish your SaaS offer through the Partner Center</a>.",
                         "https://docs.microsoft.com/azure/marketplace/create-new-saas-offer-technical"]
                     </p>
                     <!-- div class="ms-MessageBar ms-MessageBar--warning">
@@ -131,7 +131,7 @@
                                 <div class="ms-MessageBar-content">
                                     <div class="ms-MessageBar-icon"><i class="ms-Icon ms-Icon--Info"></i></div>
                                     <div class="ms-MessageBar-text">
-                                        @Localizer["You'll need these technical details when you <a class=\"alert-link\" href=\"{0}\">publish your SaaS offer through the Partner Center</a>.",
+                                        @Localizer["You'll need these technical details when you <a class=\"alert-link\" target=\"_blank\" href=\"{0}\">publish your SaaS offer through the Partner Center</a>.",
                                             "https://docs.microsoft.com/azure/marketplace/create-new-saas-offer-technical"]
                                     </div>
                                 </div>
@@ -165,7 +165,7 @@
                                     <div class="ms-MessageBar-content">
                                         <div class="ms-MessageBar-icon"><i class="ms-Icon ms-Icon--Info"></i></div>
                                         <div class="ms-MessageBar-text">
-                                            @Localizer["Mona SaaS test endpoints are currently enabled. To disable them, see <a class=\"alert-link\" href=\"#\">the Mona SaaS docs</a>."]
+                                            @Localizer["Mona SaaS test endpoints are currently enabled. To disable them, see <a class=\"alert-link\" target=\"_blank\" href=\"https://github.com/microsoft/mona-saas/tree/main/docs\">the Mona SaaS docs</a>."]
                                         </div>
                                     </div>
                                 </div><br />
@@ -189,7 +189,7 @@
                             }
                             else
                             {
-                                <div class="alert alert-secondary">@Localizer["Mona SaaS test endpoints are currently disabled. see <a class=\"alert-link\" href=\"#\">the Mona SaaS docs</a>."]</div>
+                                <div class="alert alert-secondary">@Localizer["Mona SaaS test endpoints are currently disabled. see <a class=\"alert-link\" target=\"_blank\" href=\"https://github.com/microsoft/mona-saas/tree/main/docs\">the Mona SaaS docs</a>."]</div>
                             }
 
                     </div>
@@ -206,7 +206,7 @@
                             <div class="ms-MessageBar-content">
                                 <div class="ms-MessageBar-icon"><i class="ms-Icon ms-Icon--Info"></i></div>
                                 <div class="ms-MessageBar-text">
-                                        @Localizer[  "New to logic apps? No problem! Check out <a class=\"alert-link\" href=\"{0}\">these docs</a> for more information on authoring your first workflows.",
+                                        @Localizer[  "New to logic apps? No problem! Check out <a class=\"alert-link\" target=\"_blank\" href=\"{0}\">these docs</a> for more information on authoring your first workflows.",
                                         "https://docs.microsoft.com/en-us/azure/logic-apps/quickstart-create-first-logic-app-workflow"]
                                 </div>
                             </div>
@@ -218,8 +218,8 @@
                                 <div class="ms-MessageBar-text">
                                     @Localizer[
                                     "Want to handle these events somewhere other than logic apps? Subscribe to <a class=\"alert-link\" href=\"{0}\" target=\"_blank\">this event grid topic</a> from anywhere — " +
-                                    "<a class=\"alert-link\" href=\"{1}\">Azure Functions</a>, <a class=\"alert-link\" href=\"{2}\">Power Automate</a>, or even " +
-                                    "<a class=\"alert-link\" href=\"{3}\">your own code</a>.",
+                                    "<a class=\"alert-link\" target=\"_blank\" href=\"{1}\">Azure Functions</a>, <a class=\"alert-link\" target=\"_blank\" href=\"{2}\">Power Automate</a>, or even " +
+                                    "<a class=\"alert-link\" target=\"_blank\" href=\"{3}\">your own code</a>.",
                                     Model.EventGridTopicOverviewUrl,
                                     "https://docs.microsoft.com/azure/azure-functions/functions-bindings-event-grid-trigger",
                                     "https://flow.microsoft.com/connectors/shared_azureeventgrid/azure-event-grid/",
@@ -259,7 +259,7 @@
                             @Localizer[
                             "These configuration settings control nearly every aspect of how this Mona SaaS deployment behaves. " +
                             "Most of these settings are automatically configured during the initial Mona SaaS setup. " +
-                            "For more information on these settings, please <a href=\"{0}\">visit the Mona SaaS docs</a>.",
+                            "For more information on these settings, please <a target=\"_blank\" href=\"{0}\">visit the Mona SaaS docs</a>.",
                             "https://github.com/azure"]
                         </p>
                         <a role="button" class="ms-Button  ms-Button--primary" href="@Model.ConfigurationSettingsUrl" target="_blank">
@@ -269,7 +269,7 @@
                         <div class="admin-section" id="user-management-section">
                             <p class="ms-font-m">
                                 @Localizer[
-                                "Only users that belong to the <b>Mona Administrators</b> <a href=\"{0}\">Azure Active Directory application role</a> " +
+                                "Only users that belong to the <b>Mona Administrators</b> <a target=\"_blank\" href=\"{0}\">Azure Active Directory application role</a> " +
                                 "can access the admin center (this screen) and the various test endpoints. The user that originally " +
                                 "set up this Mona deployment is automatically added to this role.", 
                                 "https://docs.microsoft.com/azure/architecture/multitenant-identity/app-roles"]
@@ -291,7 +291,7 @@
             <li class="ms-ListItem ms-ListItem--image" tabindex="0" >
                 <span class="ms-ListItem-primaryText" style="padding-right:30px; color: #006ee5 ">Mona SaaS <small class="text-muted">1.0.0</small></span> 
                 <span class="ms-ListItem-secondaryText">Copyright © Microsoft Corporation @DateTime.UtcNow.Year</span> 
-                <span class="ms-ListItem-tertiaryText">Licensed under the <a href="https://www.microsoft.com/en-us/licensing/default">Microsoft License</a></span> 
+                <span class="ms-ListItem-tertiaryText">Licensed under the <a target="_blank" href="https://www.microsoft.com/en-us/licensing/default">Microsoft License</a></span> 
             </li>
         </ul>
     </footer>
