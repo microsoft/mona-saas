@@ -4,6 +4,8 @@
 
 > Mona SaaS is currently in private preview.
 
+> Questions? [Check out our FAQ!](docs/README.md)
+
  Mona SaaS is a [__M__]arketplace [__On__]boarding [__A__]ccelerator designed to make it easier for Microsoft's [ISV partners](https://partner.microsoft.com/community/my-partner-hub/isv) to rapidly onboard transactable SaaS solutions to [Azure Marketplace](https://azure.microsoft.com/marketplace) and [AppSource](https://appsource.microsoft.com). It includes lightweight, reusable code modules that ISVs deploy in their own Azure subscription, and [low/no-code integration templates](https://azure.microsoft.com/en-us/solutions/low-code-application-development) featuring [Azure Logic Apps](https://azure.microsoft.com/services/logic-apps).
 
  ## How does Mona SaaS work?
@@ -15,8 +17,6 @@
 Each of these operations is exposed to your SaaS application by Mona SaaS through events published to [a custom Event Grid topic](https://docs.microsoft.com/azure/event-grid/custom-topics) automatically provisioned during setup. By default, we deploy a set of "stub" Logic Apps into your Azure subscription that are enabled by default and configured to be triggered by these subscription events.
  
  Since Mona SaaS exposes these subscription-related events to your SaaS application through an Event Grid topic, [you have lots of options for handling them](https://docs.microsoft.com/azure/event-grid/overview#event-handlers). Because we're using Event Grid, multiple event subscribers can handle the same events simultaneously. These flows can be easily modified in production with no downtime.
- 
-> Still have more questions? [Check out our FAQ!](docs/README.md)
 
 ## How do I get started with Mona SaaS?
 
@@ -106,6 +106,7 @@ The setup script supports additional optional parameters detailed in the table b
 | `-a` | Existing App Service plan ID | No | N/A | The complete resource ID (i.e., `/subscriptions/{subscriptionId}/...`) of an existing [App Service plan](https://docs.microsoft.com/azure/app-service/overview-hosting-plans) to publish the Mona web app to. If provided, the App Service plan must exist in the same region (see `-l`) and Azure subscription (see `-s`) where Mona is being deployed. If not provided, the setup script will automatically provision a new App Service plan (S1) within the same resource group (see `-r`) where Mona is being deployed. It must also be a Windows-based App Service plan. |
 | `-g` | Deployment Azure resource group name | No | `mona-[deployment name (-n)]` | The Azure resource group to deploy Mona SaaS into. If the resource group already exists, it must be empty. If the group doesn't exist, it will be automatically created during setup. |
 | `-s` | Deployment Azure subscription ID | No | The current subscription | The ID of the Azure subscription to deploy Mona SaaS into. |
+| `-e` | Subscription event version identifier | No | Current (`2021-10-01`) | When set, specifies the version of subscription events Mona should publish. [Learn more here.](docs/event-models/README.md) |
 | `-h` | __Flag__ - Don't show script splash screen. | No | N/A | When set, the setup script will not display the standard Mona setup splash screen. |
 | `-p` | __Flag__ - Don't publish the web app. | No | N/A | When set, the setup script will provision all Azure and Azure Active Directory reources as usual _but_ won't actually publish the Mona web app. |
 
