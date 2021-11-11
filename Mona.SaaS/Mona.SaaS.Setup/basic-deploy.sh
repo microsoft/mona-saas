@@ -11,11 +11,11 @@ check_az() {
 
     az version >/dev/null 2>&1
 
-    lp=$1
+    # lp=$1 TODO: Need to check why this variable `lp` is used throughout the script. Maybe for formatting reasons?
 
     # TODO: Should we be more specific about which version of az is required?
 
-    if [[ $? -ne 0 ]]; then 
+    if [[ $? -ne 0 ]]; then
         echo "$lp ❌   Please install the Azure CLI before continuing. See [https://docs.microsoft.com/cli/azure/install-azure-cli] for more information."
         return 1
     else
@@ -28,11 +28,11 @@ check_dotnet() {
 
     dotnet --version >/dev/null 2>&1
 
-    lp=$1
+    # lp=$1 TODO: Need to check why this variable `lp` is used throughout the script. Maybe for formatting reasons?
 
    # TODO: Should we be more specific about which version of dotnet is required?
 
-    if [[ $? -ne 0 ]]; then 
+    if [[ $? -ne 0 ]]; then
         echo "$lp ❌   Please install .NET before continuing. See [https://dotnet.microsoft.com/download] for more information."
         return 1
     else
@@ -45,7 +45,7 @@ check_prereqs() {
 
     echo "$lp Checking Mona setup prerequisites...";
 
-    check_az "$lp";         if [[ $? -ne 0 ]]; then prereq_check_failed=1; fi; 
+    check_az "$lp";         if [[ $? -ne 0 ]]; then prereq_check_failed=1; fi;
     check_dotnet "$lp";     if [[ $? -ne 0 ]]; then prereq_check_failed=1; fi;
 
     if [[ -z $prereq_check_failed ]]; then
@@ -205,12 +205,12 @@ if [[ -n $app_service_plan_id ]]; then
     if [[ $? -ne 0 ]]; then exit 1; fi;
 fi
 
-if [[ -n $param_valid_failed ]]; then 
+if [[ -n $param_valid_failed ]]; then
     echo "$lp ❌   Parameter validation failed. Please review then try again. Setup failed."
     exit 1
 fi
 
-while [[ -z $current_user_oid ]]; do 
+while [[ -z $current_user_oid ]]; do
     current_user_oid=$(az ad signed-in-user show --query objectId --output tsv 2>/dev/null);
     if [[ -z $current_user_oid ]]; then az login; fi;
 done
@@ -229,7 +229,7 @@ if [[ $(az group exists --resource-group "$resource_group_name" --output tsv) -e
     echo "$lp Creating resource group [$resource_group_name]..."
     az group create --location "$deployment_region" --name "$resource_group_name"
 
-    if [[ $? -eq 0 ]]; then 
+    if [[ $? -eq 0 ]]; then
         echo "$lp ✔   Resource group [$resource_group_name] created."
     else
         echo "$lp ❌   Unable to create resource group [$resource_group_name]. See above output for details. Setup failed."
@@ -268,7 +268,7 @@ sleep 30 # Give AAD a chance to catch up...
 
 aad_sp_id=$(az ad sp create --id "$aad_app_id" --query objectId --output tsv);
 
-if [[ -z $aad_sp_id ]]; then 
+if [[ -z $aad_sp_id ]]; then
     echo "$lp ❌   Unable to create service principal for AAD app [$aad_app_name ($aad_app_id)]. See above output for details. Setup failed."
     exit 1
 fi
@@ -314,7 +314,7 @@ az group deployment create \
 
 [[ $? -eq 0 ]] && echo "$lp ✔   Mona resources successfully deployed [$az_deployment_name] to resource group [$resource_group_name].";
 [[ $? -ne 0 ]] && echo "$lp ❌   Mona resource group [$resource_group_name] deployment [$az_deployment_name] has failed. Aborting setup..." && exit 1;
-        
+
 # Get ARM deployment output variables.
 
 storage_account_name=$(az deployment group show --resource-group "$resource_group_name" --name "$az_deployment_name" --query properties.outputs.storageAccountName.value --output tsv);
