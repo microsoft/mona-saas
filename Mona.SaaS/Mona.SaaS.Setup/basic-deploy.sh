@@ -225,7 +225,7 @@ fi
 # Create the resource group if it doesn't already exist.
 # If it already exists confirm that it's empty.
 
-if [[ $(az group exists --resource-group "$resource_group_name" --output tsv) -eq false ]]; then
+if [[ $(az group exists --resource-group "$resource_group_name" --output tsv) == false ]]; then
     echo "$lp Creating resource group [$resource_group_name]..."
     az group create --location "$deployment_region" --name "$resource_group_name"
 
