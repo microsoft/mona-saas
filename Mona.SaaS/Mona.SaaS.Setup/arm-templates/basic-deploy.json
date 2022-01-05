@@ -85,7 +85,8 @@
             "onPlanChanged": "mona-on-subscription-plan-changed-",
             "onSeatQtyChanged": "mona-on-subscription-seat-qty-changed-",
             "onSuspended": "mona-on-subscription-suspended-",
-            "onReinstated": "mona-on-subscription-reinstated-"
+            "onReinstated": "mona-on-subscription-reinstated-",
+            "onRenewed": "mona-on-subscription-renewed-"
         },
         "logicApps_ui": {
             "en": {
@@ -96,7 +97,8 @@
                     "onPlanChanged": "On subscription plan changed",
                     "onSeatQtyChanged": "On subscription seat quantity changed",
                     "onSuspended": "On subscription suspended",
-                    "onReinstated": "On subscription reinstated"
+                    "onReinstated": "On subscription reinstated",
+                    "onRenewed": "On subscription renewed"
                 },
                 "appDescriptions": {
                     "onCancelled": "This workflow is automatically triggered after Mona has been notified by the AppSource/Marketplace that a subscription has been cancelled.",
@@ -104,7 +106,8 @@
                     "onPlanChanged": "This workflow is automatically triggered after Mona has been notified by the AppSource/Marketplace that a subscription plan has been changed.",
                     "onSeatQtyChanged": "This workflow is automatically triggered after Mona has been notified by the AppSource/Marketplace that a subscription seat quantity has been changed.",
                     "onSuspended": "This workflow is automatically triggered after Mona has been notified by the AppSource/Marketplace that a subscription has been suspended.",
-                    "onReinstated": "This workflow is automatically triggered after Mona has been notified by the AppSource/Marketplace that a subscription has been reinstated."
+                    "onReinstated": "This workflow is automatically triggered after Mona has been notified by the AppSource/Marketplace that a subscription has been reinstated.",
+                    "onRenewed": "This workflow is automatically triggered after Mona has been notified by the AppSource/Marketplace that a subscription has been renewed."
                 },
                 "triggerNames": {
                     "onCancelled": "When_a_subscription_is_cancelled",
@@ -112,7 +115,8 @@
                     "onPlanChanged": "When_a_subscription_plan_is_changed",
                     "onSeatQtyChanged": "When_subscription_seats_are_changed",
                     "onSuspended": "When_a_subscription_is_suspended",
-                    "onReinstated": "When_a_subscription_is_reinstated"
+                    "onReinstated": "When_a_subscription_is_reinstated",
+                    "onRenewed": "When_a_subscription_is_renewed"
                 },
                 "actionNames": {
                     "parseEventInfo": "Parse_event_information",
@@ -166,6 +170,13 @@
                 "resourceId": "[resourceId('Microsoft.Logic/workflows', concat(variables('logicApps_prefixes').onReinstated, variables('deploymentName')))]",
                 "defaultState": "Enabled",
                 "triggerEventType": "Mona.SaaS.Marketplace.SubscriptionReinstated"
+            },
+            "onRenewed": {
+                "name": "[concat(variables('logicApps_prefixes').onRenewed, variables('deploymentName'))]",
+                "triggerId": "[resourceId('Microsoft.Logic/workflows/triggers', concat(variables('logicApps_prefixes').onRenewed, variables('deploymentName')), variables('logicApps_ui')[parameters('language')].triggerNames.onReinstated)]",
+                "resourceId": "[resourceId('Microsoft.Logic/workflows', concat(variables('logicApps_prefixes').onRenewed, variables('deploymentName')))]",
+                "defaultState": "Enabled",
+                "triggerEventType": "Mona.SaaS.Marketplace.SubscriptionRenewed"
             }
         }
     },
@@ -672,6 +683,192 @@
                                         "filter": {
                                             "includedEventTypes": [
                                                 "[variables('logicApps').onCancelled.triggerEventType]"
+                                            ]
+                                        },
+                                        "topic": "[resourceId('Microsoft.EventGrid/topics', variables('eventGridTopicName'))]"
+                                    }
+                                },
+                                "host": {
+                                    "connection": {
+                                        "name": "@parameters('$connections')['eventGrid']['connectionId']"
+                                    }
+                                },
+                                "path": "[concat(subscription().id, '/providers/Microsoft.EventGrid.Topics/resource/eventSubscriptions')]",
+                                "queries": {
+                                    "x-ms-api-version": "2017-06-15-preview"
+                                }
+                            }
+                        }
+                    },
+                    "actions": {
+                        "[variables('logicApps_ui')[parameters('language')].actionNames.parseEventInfo]": {
+                            "inputs": {
+                                "content": "@triggerBody()?['data']",
+                                "schema": {
+                                    "properties": {
+                                        "Event ID": {
+                                            "type": "string"
+                                        },
+                                        "Event Type": {
+                                            "type": "string"
+                                        },
+                                        "Event Version": {
+                                            "type": "string"
+                                        },
+                                        "Operation Date/Time UTC": {
+                                            "type": "string"
+                                        },
+                                        "Operation ID": {
+                                            "type": "string"
+                                        },
+                                        "Subscription": {
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            },
+                            "runAfter": {},
+                            "type": "ParseJson"
+                        },
+                        "[variables('logicApps_ui')[parameters('language')].actionNames.parseSubscriptionInfo]": {
+                            "inputs": {
+                                "content": "@body('Parse_event_information')?['Subscription']",
+                                "schema": {
+                                    "properties": {
+                                        "Beneficiary AAD Object ID": {
+                                            "type": "string"
+                                        },
+                                        "Beneficiary AAD Tenant ID": {
+                                            "type": "string"
+                                        },
+                                        "Beneficiary Email Address": {
+                                            "type": "string"
+                                        },
+                                        "Beneficiary User ID": {
+                                            "type": "string"
+                                        },
+                                        "Is Free Trial Subscription?": {
+                                            "type": "boolean"
+                                        },
+                                        "Is Test Subscription?": {
+                                            "type": "boolean"
+                                        },
+                                        "Offer ID": {
+                                            "type": "string"
+                                        },
+                                        "Plan ID": {
+                                            "type": "string"
+                                        },
+                                        "Purchaser AAD Object ID": {
+                                            "type": "string"
+                                        },
+                                        "Purchaser AAD Tenant ID": {
+                                            "type": "string"
+                                        },
+                                        "Purchaser Email Address": {
+                                            "type": "string"
+                                        },
+                                        "Purchaser User ID": {
+                                            "type": "string"
+                                        },
+                                        "Subscription End Date": {
+                                            "type": "string"
+                                        },
+                                        "Subscription ID": {
+                                            "type": "string"
+                                        },
+                                        "Subscription Name": {
+                                            "type": "string"
+                                        },
+                                        "Subscription Start Date": {
+                                            "type": "string"
+                                        },
+                                        "Subscription Status": {
+                                            "type": "string"
+                                        },
+                                        "Subscription Term Unit": {
+                                            "type": "string"
+                                        },
+                                        "Seat Quantity": {
+                                            "type": "number"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            },
+                            "runAfter": {
+                                "[variables('logicApps_ui')[parameters('language')].actionNames.parseEventInfo]": [
+                                    "Succeeded"
+                                ]
+                            },
+                            "type": "ParseJson"
+                        },
+                        "[variables('logicApps_ui')[parameters('language')].actionNames.yourIntegrationLogic]": {
+                            "actions": {},
+                            "runAfter": {
+                                "[variables('logicApps_ui')[parameters('language')].actionNames.parseSubscriptionInfo]": [
+                                    "Succeeded"
+                                ]
+                            },
+                            "type": "Scope"
+                        }
+                    }
+                },
+                "parameters": {
+                    "$connections": {
+                        "value": {
+                            "eventGrid": {
+                                "connectionId": "[resourceId('Microsoft.web/connections', variables('logicApps').eventGridConnectionName)]",
+                                "connectionName": "[variables('logicApps').eventGridConnectionName]",
+                                "id": "[concat(subscription().id, '/providers/Microsoft.Web/locations/', resourceGroup().location, '/managedApis/azureeventgrid')]"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        {
+            "type": "Microsoft.Logic/workflows",
+            "apiVersion": "2017-07-01",
+            "name": "[variables('logicApps').onRenewed.name]",
+            "location": "[resourceGroup().location]",
+            "tags": {
+                "mona:name": "[variables('logicApps_ui')[parameters('language')].appNames.onRenewed]",
+                "mona:description": "[variables('logicApps_ui')[parameters('language')].appDescriptions.onRenewed]",
+                "mona:event-type": "[variables('logicApps').onCancelled.triggerEventType]"
+            },
+            "dependsOn": [
+                "[variables('eventGridTopicName')]",
+                "[variables('logicApps').eventGridConnectionName]"
+            ],
+            "properties": {
+                "state": "[variables('logicApps').onRenewed.defaultState]",
+                "definition": {
+                    "$schema": "https://schema.management.azure.com/providers/Microsoft.Logic/schemas/2016-06-01/workflowdefinition.json#",
+                    "contentVersion": "1.0.0.0",
+                    "parameters": {
+                        "$connections": {
+                            "defaultValue": {},
+                            "type": "Object"
+                        }
+                    },
+                    "triggers": {
+                        "[variables('logicApps_ui')[parameters('language')].triggerNames.onRenewed]": {
+                            "splitOn": "@triggerBody()",
+                            "type": "ApiConnectionWebhook",
+                            "inputs": {
+                                "body": {
+                                    "properties": {
+                                        "destination": {
+                                            "endpointType": "webhook",
+                                            "properties": {
+                                                "endpointUrl": "@{listCallbackUrl()}"
+                                            }
+                                        },
+                                        "filter": {
+                                            "includedEventTypes": [
+                                                "[variables('logicApps').onRenewed.triggerEventType]"
                                             ]
                                         },
                                         "topic": "[resourceId('Microsoft.EventGrid/topics', variables('eventGridTopicName'))]"

@@ -24,6 +24,7 @@ namespace Mona.SaaS.Web.Models
             public const string Suspend = "Suspend";
             public const string Unsubscribe = "Unsubscribe";
             public const string Reinstate = "Reinstate";
+            public const string Renew = "Renew";
         }
 
         public static class Statuses

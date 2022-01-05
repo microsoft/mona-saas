@@ -20,13 +20,12 @@ using Mona.SaaS.Core.Extensions;
 using Mona.SaaS.Core.Interfaces;
 using Mona.SaaS.Core.Models;
 using Mona.SaaS.Core.Models.Configuration;
-using Events = Mona.SaaS.Core.Models.Events;
 using Mona.SaaS.Web.Extensions;
 using Mona.SaaS.Web.Models;
 using System;
-using System.Collections.Generic;
 using System.Net;
 using System.Threading.Tasks;
+using Events = Mona.SaaS.Core.Models.Events;
 
 namespace Mona.SaaS.Web.Controllers
 {
@@ -408,6 +407,10 @@ namespace Mona.SaaS.Web.Controllers
                 this.subscriptionEventPublisher.PublishEventAsync(
                     new Events.V_2021_05_01.SubscriptionSuspended(subscription, whNotification.OperationId)),
 
+                SubscriptionOperationType.Renew =>
+                this.subscriptionEventPublisher.PublishEventAsync(
+                    new Events.V_2021_05_01.SubscriptionRenewed(subscription, whNotification.OperationId)),
+
                 _ => throw new NotSupportedException($"Subscription operation type [{opType}] is unknown.")
             };
 
@@ -433,6 +436,10 @@ namespace Mona.SaaS.Web.Controllers
                SubscriptionOperationType.Suspend =>
                this.subscriptionEventPublisher.PublishEventAsync(
                    new Events.V_2021_10_01.SubscriptionSuspended(subscription, whNotification.OperationId)),
+
+               SubscriptionOperationType.Renew =>
+               this.subscriptionEventPublisher.PublishEventAsync(
+                   new Events.V_2021_10_01.SubscriptionRenewed(subscription, whNotification.OperationId)),
 
                _ => throw new NotSupportedException($"Subscription operation type [{opType}] is unknown.")
            };
