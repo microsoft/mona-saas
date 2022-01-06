@@ -81,6 +81,10 @@ namespace Mona.SaaS.Services.Default
 
         public async Task<SubscriptionOperation> GetSubscriptionOperationAsync(string subscriptionId, string operationId)
         {
+            // This method calls the Marketplace APIs directly using HttpClient since the .NET Marketplace SDK
+            // does not yet include support for the [renew] operation. On a related note, I'm really glad that I created
+            // an abstraction here!
+
             if (string.IsNullOrEmpty(subscriptionId))
             {
                 throw new ArgumentNullException(nameof(subscriptionId));

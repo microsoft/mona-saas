@@ -585,7 +585,6 @@
                                         "authentication": {
                                             "audience": "[variables('marketplaceApiAuthAudience')]",
                                             "clientId": "[parameters('aadClientId')]",
-                                            "credentialType": "Secret",
                                             "secret": "[parameters('aadClientSecret')]",
                                             "tenant": "[parameters('aadTenantId')]",
                                             "type": "ActiveDirectoryOAuth"
@@ -1195,7 +1194,6 @@
                                         "authentication": {
                                             "audience": "[variables('marketplaceApiAuthAudience')]",
                                             "clientId": "[parameters('aadClientId')]",
-                                            "credentialType": "Secret",
                                             "secret": "[parameters('aadClientSecret')]",
                                             "tenant": "[parameters('aadTenantId')]",
                                             "type": "ActiveDirectoryOAuth"
@@ -1432,7 +1430,6 @@
                                         "authentication": {
                                             "audience": "[variables('marketplaceApiAuthAudience')]",
                                             "clientId": "[parameters('aadClientId')]",
-                                            "credentialType": "Secret",
                                             "secret": "[parameters('aadClientSecret')]",
                                             "tenant": "[parameters('aadTenantId')]",
                                             "type": "ActiveDirectoryOAuth"
@@ -1852,7 +1849,6 @@
                                         "authentication": {
                                             "audience": "[variables('marketplaceApiAuthAudience')]",
                                             "clientId": "[parameters('aadClientId')]",
-                                            "credentialType": "Secret",
                                             "secret": "[parameters('aadClientSecret')]",
                                             "tenant": "[parameters('aadTenantId')]",
                                             "type": "ActiveDirectoryOAuth"
