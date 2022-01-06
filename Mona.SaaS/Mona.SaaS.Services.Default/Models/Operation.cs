@@ -10,31 +10,23 @@
 //
 // In no event shall Microsoft be liable for any damages whatsoever (including, without limitation, damages for loss of business profits, business interruption, loss of business information, or other pecuniary loss) arising out of the use of or inability to use the preview code, even if Microsoft has been advised of the possibility of such damages.
 
-using Newtonsoft.Json;
-using System;
-
-namespace Mona.SaaS.Web.Models
+namespace Mona.SaaS.Services.Default.Models
 {
-    public class WebhookNotification
+    using Newtonsoft.Json;
+    using System;
+
+    /// <summary>
+    /// Represents a subscription operation as defined by the Marketplace API.
+    /// </summary>
+    /// <remarks>
+    /// Since the .NET Marketplace SDK doesn't yet support the renew operation (as of 1/6/2022), we're using this model instead to directly
+    /// call the Marketplace API operation endpoints inside [<see cref="DefaultMarketplaceClient"/>]. More information on this model can be found at 
+    /// [https://docs.microsoft.com/en-us/azure/marketplace/partner-center-portal/pc-saas-fulfillment-operations-api].
+    /// </remarks>
+    public class Operation
     {
-        public static class ActionTypes
-        {
-            public const string ChangePlan = "ChangePlan";
-            public const string ChangeQuantity = "ChangeQuantity";
-            public const string Suspend = "Suspend";
-            public const string Unsubscribe = "Unsubscribe";
-            public const string Reinstate = "Reinstate";
-            public const string Renew = "Renew";
-        }
-
-        public static class Statuses
-        {
-            public const string InProgress = "InProgress";
-            public const string Success = "Success";
-        }
-
         [JsonProperty("id")]
-        public string OperationId { get; set; }
+        public string Id { get; set; }
 
         [JsonProperty("activityId")]
         public string ActivityId { get; set; }
@@ -42,25 +34,31 @@ namespace Mona.SaaS.Web.Models
         [JsonProperty("subscriptionId")]
         public string SubscriptionId { get; set; }
 
-        [JsonProperty("publisherId")]
-        public string PublisherId { get; set; }
-
         [JsonProperty("offerId")]
         public string OfferId { get; set; }
+
+        [JsonProperty("publisherId")]
+        public string PublisherId { get; set; }
 
         [JsonProperty("planId")]
         public string PlanId { get; set; }
 
         [JsonProperty("quantity")]
-        public int? SeatQuantity { get; set; }
-
-        [JsonProperty("timeStamp")]
-        public DateTimeOffset? Timestamp { get; set; }
+        public int? Quantity { get; set; }
 
         [JsonProperty("action")]
-        public string ActionType { get; set; }
+        public string Action { get; set; }
+
+        [JsonProperty("timeStamp")]
+        public DateTime? TimeStamp { get; set; }
 
         [JsonProperty("status")]
         public string Status { get; set; }
+
+        [JsonProperty("errorStatusCode")]
+        public string ErrorStatusCode { get; set; }
+
+        [JsonProperty("errorMessage")]
+        public string ErrorMessage { get; set; }
     }
 }

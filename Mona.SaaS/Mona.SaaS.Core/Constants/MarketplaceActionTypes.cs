@@ -23,5 +23,6 @@ namespace Mona.SaaS.Core.Constants
         public const string Suspend = "Suspend";
         public const string Reinstate = "Reinstate";
         public const string Unsubscribe = "Unsubscribe";
+        public const string Renew = "Renew";
     }
 }
