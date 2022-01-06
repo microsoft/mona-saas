@@ -10,6 +10,8 @@
 //
 // In no event shall Microsoft be liable for any damages whatsoever (including, without limitation, damages for loss of business profits, business interruption, loss of business information, or other pecuniary loss) arising out of the use of or inability to use the preview code, even if Microsoft has been advised of the possibility of such damages.
 
+using Azure.Core;
+using Azure.Identity;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.Marketplace.SaaS;
@@ -20,20 +22,25 @@ using Mona.SaaS.Core.Enumerations;
 using Mona.SaaS.Core.Interfaces;
 using Mona.SaaS.Core.Models;
 using Mona.SaaS.Core.Models.Configuration;
+using Newtonsoft.Json;
 using Polly;
 using Polly.Retry;
 using System;
 using System.Collections.Generic;
 using System.Net;
+using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Threading.Tasks;
 
 namespace Mona.SaaS.Services.Default
 {
     public class DefaultMarketplaceClient : IMarketplaceOperationService, IMarketplaceSubscriptionService, IDisposable
     {
-        // Thin wrapper around https://github.com/Azure/commercial-marketplace-client-dotnet.
+        // [Originally] a thin wrapper around https://github.com/Azure/commercial-marketplace-client-dotnet.
 
         private const int maxRetries = 3; // Max # of retries for exponential backoff retry policy.
+
+        private static readonly HttpClient httpClient; // When the Marketplace SDK doesn't support an operation we need, fall back to using just a regular HttpClient.
 
         private readonly ILogger logger;
         private readonly IdentityConfiguration identityConfig;
@@ -50,6 +57,14 @@ namespace Mona.SaaS.Services.Default
             };
 
         private bool disposedValue;
+
+        static DefaultMarketplaceClient()
+        {
+            httpClient = new HttpClient { BaseAddress = new Uri("https://marketplaceapi.microsoft.com") };
+
+            httpClient.DefaultRequestHeaders.Accept.Clear();
+            httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+        }
 
         public DefaultMarketplaceClient(
             ILogger<DefaultMarketplaceClient> logger,
@@ -78,13 +93,33 @@ namespace Mona.SaaS.Services.Default
 
             try
             {
-                var retryPolicy = CreateAsyncHttpRetryPolicy<AzureOperationResponse<Operation>>();
+                var retryPolicy = Policy
+                    .HandleResult<HttpResponseMessage>(r => ShouldRetry(r.StatusCode))
+                    .WaitAndRetryAsync(maxRetries, a => TimeSpan.FromSeconds(Math.Pow(2, a)));
 
-                var pollyResult = await retryPolicy.ExecuteAndCaptureAsync(() =>
-                    innerClient.SubscriptionOperations.GetOperationStatusWithHttpMessagesAsync(
-                        Guid.Parse(subscriptionId), Guid.Parse(operationId)));
+                var relativeUrl = $"api/saas/subscriptions/{subscriptionId}/operations/{operationId}?api-version=2018-08-31";
 
-                return ToCoreModel(GetResult(pollyResult).Body);
+                var pollyResult = await retryPolicy.ExecuteAndCaptureAsync(async () =>
+                {
+                    using (var request = new HttpRequestMessage(HttpMethod.Get, relativeUrl))
+                    {
+                        var bearerToken = await GetMarketplaceApiBearerToken();
+
+                        request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", bearerToken);
+
+                        return await httpClient.SendAsync(request);
+                    }
+                });
+
+                var response = GetResult(pollyResult);
+
+                response.EnsureSuccessStatusCode();
+
+                var jsonString = await response.Content.ReadAsStringAsync();
+                var apiOperation = JsonConvert.DeserializeObject<Models.Operation>(jsonString);
+                var coreOperation = ToCoreModel(apiOperation);
+
+                return coreOperation;
             }
             catch (Exception ex)
             {
@@ -104,7 +139,7 @@ namespace Mona.SaaS.Services.Default
             }
 
             try
-            {
+            { 
                 var retryPolicy = CreateAsyncHttpRetryPolicy<AzureOperationResponse<Microsoft.Marketplace.SaaS.Models.Subscription>>();
 
                 var pollyResult = await retryPolicy.ExecuteAndCaptureAsync(() =>
@@ -206,7 +241,7 @@ namespace Mona.SaaS.Services.Default
             }
         }
 
-        private SubscriptionOperation ToCoreModel(Operation operation)
+        private SubscriptionOperation ToCoreModel(Models.Operation operation)
         {
             if (operation == null)
             {
@@ -226,7 +261,7 @@ namespace Mona.SaaS.Services.Default
             }
         }
 
-        private SubscriptionOperationType ToCoreSubscriptionOperationType(OperationActionEnum? actionType)
+        private SubscriptionOperationType ToCoreSubscriptionOperationType(string actionType)
         {
             if (actionType == null)
             {
@@ -235,11 +270,13 @@ namespace Mona.SaaS.Services.Default
 
             return actionType switch
             {
-                OperationActionEnum.ChangePlan => SubscriptionOperationType.ChangePlan,
-                OperationActionEnum.ChangeQuantity => SubscriptionOperationType.ChangeSeatQuantity,
-                OperationActionEnum.Reinstate => SubscriptionOperationType.Reinstate,
-                OperationActionEnum.Suspend => SubscriptionOperationType.Suspend,
-                OperationActionEnum.Unsubscribe => SubscriptionOperationType.Cancel,
+                "ChangePlan" => SubscriptionOperationType.ChangePlan,
+                "ChangeQuantity" => SubscriptionOperationType.ChangeSeatQuantity,
+                "Reinstate" => SubscriptionOperationType.Reinstate,
+                "Renew" => SubscriptionOperationType.Renew,
+                "Suspend" => SubscriptionOperationType.Suspend,
+                "Unsubscribe" => SubscriptionOperationType.Cancel,
+
                 _ => throw new ArgumentException($"Operation action type [{actionType}] is unknown."),
             };
         }
@@ -272,12 +309,29 @@ namespace Mona.SaaS.Services.Default
             }
         }
 
-        private AsyncRetryPolicy<T> CreateAsyncHttpRetryPolicy<T>() where T : IHttpOperationResponse =>
-            Policy.Handle<CloudException>().OrResult<T>(t => ShouldRetry(t)).WaitAndRetryAsync(maxRetries, a => TimeSpan.FromSeconds(Math.Pow(2, a))); // Exponential backoff retry.
+        private AsyncRetryPolicy<T> CreateAsyncHttpRetryPolicy<T>() where T : IHttpOperationResponse => Policy
+            .Handle<CloudException>()
+            .OrResult<T>(t => ShouldRetry(t.Response.StatusCode))
+            .WaitAndRetryAsync(maxRetries, a => TimeSpan.FromSeconds(Math.Pow(2, a))); // Exponential backoff retry.
 
-        private bool ShouldRetry(IHttpOperationResponse httpResponse) =>
-            httpResponse.Response.StatusCode == HttpStatusCode.TooManyRequests ||   // 429 -- Too many requests. We're being throttled.
-            httpResponse.Response.StatusCode >= HttpStatusCode.InternalServerError; // 5xx -- Internal server error. Let's try again.
+        private bool ShouldRetry(HttpStatusCode httpStatusCode) =>
+            httpStatusCode == HttpStatusCode.TooManyRequests ||   // 429 -- Too many requests. We're being throttled.
+            httpStatusCode >= HttpStatusCode.InternalServerError; // 5xx -- Internal server error. Let's try again.
+
+        private async Task<string> GetMarketplaceApiBearerToken()
+        {
+            var tokenRequestContext = new TokenRequestContext(
+                new string[] { "20e940b3-4c77-4b0b-9a53-9e16a1b010a7/.default" });
+
+            var credential = new ClientSecretCredential(
+                identityConfig.AppIdentity.AadTenantId,
+                identityConfig.AppIdentity.AadClientId,
+                identityConfig.AppIdentity.AadClientSecret);
+
+            var tokenResponse = await credential.GetTokenAsync(tokenRequestContext);
+
+            return tokenResponse.Token;
+        }
 
         protected virtual void Dispose(bool disposing)
         {

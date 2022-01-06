@@ -542,6 +542,9 @@ namespace Mona.SaaS.Web.Controllers
                 MarketplaceActionTypes.Unsubscribe =>
                 SubscriptionOperationType.Cancel,
 
+                MarketplaceActionTypes.Renew =>
+                SubscriptionOperationType.Renew,
+
                 _ => throw new ArgumentException($"Action type [{mpActionType}] unknown.")
             };
 
