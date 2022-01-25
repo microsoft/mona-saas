@@ -39,12 +39,57 @@ upgrade_mona_rg() {
             --configuration-source "$web_app_name" \
             --subscription "$subscription_id"
 
-        
+        # Alright, let's build the new version of Mona...
+
+        echo "Packaging upgraded Mona web app for deployment to web app [$web_app_name] slot [$upgrade_slot_name]..."
+
+        dotnet publish -c Release -o ./topublish ../Mona.SaaS.Web/Mona.SaaS.Web.csproj
+
+        echo "Zipping upgraded Mona web app deployment package..."
+
+        cd ./topublish
+        zip -r ../topublish.zip . >/dev/null
+        cd ..
+
+        echo "Deploying upgraded Mona web app to [$web_app_name] slot [$upgrade_slot_name]..."
+
+        az webapp deployment source config-zip \
+            --src ./topublish.zip \
+            --name "$web_app_name" \
+            --resource-group "$rg_name" \
+            --slot "$upgrade_slot_name" \
+            --subscription "$subscription_id"
+
+        # Clean up after ourselves...
+
+        rm -rf ./topublish >/dev/null
+        rm -rf ./topublish.zip >/dev/null
+
+        echo "Upgrade Mona web app has been deployed to [$web_app_name] slot [$upgrade_slot_name]."
+
+        read -p "Complete Mona deployment [$deployment_name] production upgrade now? [y/N]" complete_upgrade
+
+        case "$complete_upgrade" in
+            [yY1]   )
+                
+                echo "Promoting upgrade slot [$upgrade_slot_name] to production..."
+
+                az webapp deployment slot swap \
+                    --slot "$upgrade_slot_name" \
+                    --action "swap" \
+                    --name "$web_app_name" \
+                    --resource-group "$rg_name" \
+                    --subscription "$subscription_id" \
+                    --target-slot "production"
+            ;;
+            *       )
+
+            ;;
+        esac 
     fi
 }
 
 echo "Scanning subscriptions for upgradeable Mona deployments..."
-echo
 
 subscriptions_ids=$(az account subscription list \
     --query "[].subscriptionId" \
@@ -87,14 +132,12 @@ for subscription_id in subscription_ids; do
             # presumably contains a Mona deployment but doesn't have a "Deployment Name" tag. We need to 
             # know the name of the deployment in order to upgrade it so we'll have to skip this one. Bummer.
 
-            echo
             echo "Azure resource group [$mona_rg_name] in subscription [$subscription_id] is tagged with Mona version [$rg_mona_version] but has no \"Deployment Name\" tag. Unable to upgrade Mona without a deployment name." >&2
 
         elif [[ "$THIS_MONA_VERSION" -ne "$rg_mona_version" ]]; then # Different Mona version so potentially upgradeable.
 
             # TODO: Add additional logic here to actually compare Mona versions to prevent downgrade?
 
-            echo
             echo "Potentially upgradeable Mona deployment found."
             echo
             echo "Deployment Name:      [$rg_mona_name]"
@@ -105,9 +148,9 @@ for subscription_id in subscription_ids; do
             echo "Upgrade to Version?:  [$THIS_MONA_VERSION]"
             echo
 
-            read -p "Upgrade Mona deployment [$rg_mona_name] to version [$THIS_MONA_VERSION]? [y/N]" confirm_upgrade
+            read -p "Upgrade Mona deployment [$rg_mona_name] to version [$THIS_MONA_VERSION]? [y/N]" initiate_upgrade
 
-            case "$confirm_upgrade" in
+            case "$initiate_upgrade" in
                 [yY1]   ) upgrade_mona_rg "$subscription_id" "$mona_rg_name" "$rg_mona_name";; # We have a winner!
                 *       ) ;;
             esac
