@@ -152,7 +152,7 @@ for subscription_id in subscription_ids; do
 
             case "$initiate_upgrade" in
                 [yY1]   ) upgrade_mona_rg "$subscription_id" "$mona_rg_name" "$rg_mona_name";; # We have a winner!
-                *       ) ;;
+                *       ) ;; # Move along now. Nothing to see here...
             esac
         fi
     done
