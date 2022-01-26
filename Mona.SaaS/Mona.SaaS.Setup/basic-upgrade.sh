@@ -41,7 +41,7 @@ upgrade_mona_rg() {
 
         # Alright, let's build the new version of Mona...
 
-        echo "Packaging upgraded Mona web app for deployment to web app [$web_app_name] slot [$upgrade_slot_name]..."
+        echo "Packaging upgraded Mona web app for deployment to [$web_app_name] slot [$upgrade_slot_name]..."
 
         dotnet publish -c Release -o ./topublish ../Mona.SaaS.Web/Mona.SaaS.Web.csproj
 
@@ -65,13 +65,13 @@ upgrade_mona_rg() {
         rm -rf ./topublish >/dev/null
         rm -rf ./topublish.zip >/dev/null
 
-        echo "Upgrade Mona web app has been deployed to [$web_app_name] slot [$upgrade_slot_name]."
+        echo "Upgraded Mona web app has been deployed to [$web_app_name] slot [$upgrade_slot_name]."
+        echo "Checking upgraded Mona web app health..."
 
         read -p "Complete Mona deployment [$deployment_name] production upgrade now? [y/N]" complete_upgrade
 
         case "$complete_upgrade" in
-            [yY1]   )
-                
+            [yY1]   )    
                 echo "Promoting upgrade slot [$upgrade_slot_name] to production..."
 
                 az webapp deployment slot swap \
@@ -132,7 +132,7 @@ for subscription_id in subscription_ids; do
             # presumably contains a Mona deployment but doesn't have a "Deployment Name" tag. We need to 
             # know the name of the deployment in order to upgrade it so we'll have to skip this one. Bummer.
 
-            echo "Azure resource group [$mona_rg_name] in subscription [$subscription_id] is tagged with Mona version [$rg_mona_version] but has no \"Deployment Name\" tag. Unable to upgrade Mona without a deployment name." >&2
+            echo "Azure resource group [$mona_rg_name (subscription: $subscription_id)] is tagged with Mona version [$rg_mona_version] but has no \"Deployment Name\" tag. Unable to upgrade Mona without a deployment name." >&2
 
         elif [[ "$THIS_MONA_VERSION" -ne "$rg_mona_version" ]]; then # Different Mona version so potentially upgradeable.
 
@@ -154,6 +154,8 @@ for subscription_id in subscription_ids; do
                 [yY1]   ) upgrade_mona_rg "$subscription_id" "$mona_rg_name" "$rg_mona_name";; # We have a winner!
                 *       ) ;; # Move along now. Nothing to see here...
             esac
+        else
+            echo "Mona deployment [$rg_mona_name (subscription: $subscription_id; resource group: $mona_rg_name)] is already version [$THIS_MONA_VERSION]."
         fi
     done
 done
