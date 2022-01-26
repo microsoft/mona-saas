@@ -28,17 +28,6 @@ upgrade_mona_rg() {
 
         local upgrade_slot_name="mona-upgrade-$(date +%s)"
 
-        # Create a temporary slot to push the new version of Mona to...
-
-        echo "Creating temporary upgrade deployment slot [$upgrade_slot_name]..."
-
-        az webapp deployment slot create \
-            --name "$web_app_name" \
-            --resource-group "$rg_name" \
-            --slot "$upgrade_slot_name" \
-            --configuration-source "$web_app_name" \
-            --subscription "$subscription_id"
-
         # Alright, let's build the new version of Mona...
 
         echo "Packaging upgraded Mona web app for deployment to [$web_app_name] slot [$upgrade_slot_name]..."
@@ -50,6 +39,17 @@ upgrade_mona_rg() {
         cd ./topublish
         zip -r ../topublish.zip . >/dev/null
         cd ..
+
+        # Create a temporary slot to push the new version of Mona to...
+
+        echo "Creating temporary upgrade deployment slot [$upgrade_slot_name]..."
+
+        az webapp deployment slot create \
+            --name "$web_app_name" \
+            --resource-group "$rg_name" \
+            --slot "$upgrade_slot_name" \
+            --configuration-source "$web_app_name" \
+            --subscription "$subscription_id"
 
         echo "Deploying upgraded Mona web app to [$web_app_name] slot [$upgrade_slot_name]..."
 
