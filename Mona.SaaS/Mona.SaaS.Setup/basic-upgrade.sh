@@ -31,10 +31,12 @@ upgrade_mona_rg() {
         # Alright, let's build the new version of Mona...
 
         echo "Packaging upgraded Mona web app for deployment to [$web_app_name] slot [$upgrade_slot_name]..."
+        echo
 
         dotnet publish -c Release -o ./topublish ../Mona.SaaS.Web/Mona.SaaS.Web.csproj
 
         echo "Zipping upgraded Mona web app deployment package..."
+        echo
 
         cd ./topublish
         zip -r ../topublish.zip . >/dev/null
@@ -43,6 +45,7 @@ upgrade_mona_rg() {
         # Create a temporary slot to push the new version of Mona to...
 
         echo "Creating temporary upgrade deployment slot [$upgrade_slot_name]..."
+        echo
 
         az webapp deployment slot create \
             --name "$web_app_name" \
@@ -52,6 +55,7 @@ upgrade_mona_rg() {
             --subscription "$subscription_id"
 
         echo "Deploying upgraded Mona web app to [$web_app_name] slot [$upgrade_slot_name]..."
+        echo
 
         az webapp deployment source config-zip \
             --src ./topublish.zip \
@@ -64,6 +68,8 @@ upgrade_mona_rg() {
 
         rm -rf ./topublish >/dev/null
         rm -rf ./topublish.zip >/dev/null
+
+        return 0; # Bailing early for now...
 
         echo "Upgraded Mona web app has been deployed to [$web_app_name] slot [$upgrade_slot_name]."
         echo "Checking upgraded Mona web app health..."
@@ -138,6 +144,7 @@ for subscription_id in $subscription_ids; do
 
             # TODO: Add additional logic here to actually compare Mona versions to prevent downgrade?
 
+            echo
             echo "Potentially upgradeable Mona deployment found."
             echo
             echo "Deployment Name:      [$rg_mona_name]"
@@ -151,7 +158,7 @@ for subscription_id in $subscription_ids; do
             read -p "Upgrade Mona deployment [$rg_mona_name] to version [$THIS_MONA_VERSION]? [y/N]" initiate_upgrade
 
             case "$initiate_upgrade" in
-                [yY1]   ) echo; echo "Too bad. This part isn't wired up yet. 🤷🏼‍♂️"; echo; ;; # upgrade_mona_rg "$subscription_id" "$mona_rg_name" "$rg_mona_name";; # We have a winner!
+                [yY1]   ) upgrade_mona_rg "$subscription_id" "$mona_rg_name" "$rg_mona_name";; # We have a winner!
                 *       ) ;; # Move along now. Nothing to see here...
             esac
         else
