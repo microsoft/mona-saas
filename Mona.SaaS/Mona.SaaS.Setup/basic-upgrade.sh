@@ -163,8 +163,6 @@ upgrade_mona_rg() {
             --name "$web_app_name" \
             --resource-group "$rg_name" \
             --subscription "$subscription_id"
-
-        echo # Alright. Next? 
     fi
 }
 
@@ -243,8 +241,19 @@ for subscription_id in $subscription_ids; do
             read -p "Upgrade Mona deployment [$rg_mona_name] to version [$THIS_MONA_VERSION]? [y/N] " initiate_upgrade
 
             case "$initiate_upgrade" in
-                [yY1]   ) upgrade_mona_rg "$subscription_id" "$mona_rg_name" "$rg_mona_name";; # We have a winner!
-                *       ) ;; # Move along now. Nothing to see here...
+                [yY1]   ) 
+                    upgrade_mona_rg "$subscription_id" "$mona_rg_name" "$rg_mona_name"
+
+                    echo
+                    read -p "Keep scanning for upgradeable Mona deployments? [y/N] " keep_scanning
+
+                    case "$keep_scanning" in
+                        [nN0]   ) exit 0;;
+                        *       ) ;;
+                    esac
+                ;; # We have a winner!
+                *       )
+                ;; # Move along now. Nothing to see here...
             esac
         else
             echo "Mona deployment [$rg_mona_name (subscription: $subscription_id; resource group: $mona_rg_name)] is already version [$THIS_MONA_VERSION]."
