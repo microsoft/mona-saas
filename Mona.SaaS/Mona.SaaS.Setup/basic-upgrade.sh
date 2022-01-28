@@ -20,6 +20,7 @@ upgrade_mona_rg() {
 
         # There should be a web app here but there isn't. Let the user know then bail early...
 
+        echo
         echo "Expected Mona web app [$web_app_name] not found in resource group [$rg_name]. Upgrade failed." >&2
 
         return 1
@@ -31,21 +32,19 @@ upgrade_mona_rg() {
 
         # Alright, let's build the new version of Mona...
 
-        echo "Packaging upgraded Mona web app for deployment to [$web_app_name] slot [$upgrade_slot_name]..."
+        echo
+        echo "Packaging new Mona web app for deployment to app service [$web_app_name]..."
         echo
 
         dotnet publish -c Release -o ./topublish ../Mona.SaaS.Web/Mona.SaaS.Web.csproj
-
-        echo "Zipping upgraded Mona web app deployment package..."
-        echo
-
         cd ./topublish
         zip -r ../topublish.zip . >/dev/null
         cd ..
 
         # Create a temporary slot to push the new version of Mona to...
 
-        echo "Creating temporary upgrade deployment slot [$upgrade_slot_name]..."
+        echo
+        echo "Creating app service [$web_app_name] temporary deployment slot [$upgrade_slot_name]..."
         echo
 
         az webapp deployment slot create \
@@ -55,7 +54,8 @@ upgrade_mona_rg() {
             --configuration-source "$web_app_name" \
             --subscription "$subscription_id"
 
-        echo "Deploying upgraded Mona web app to [$web_app_name] slot [$upgrade_slot_name]..."
+        echo
+        echo "Deploying upgraded Mona web app to app service [$web_app_name] temporary deployment slot [$upgrade_slot_name]..."
         echo
 
         az webapp deployment source config-zip \
@@ -70,16 +70,39 @@ upgrade_mona_rg() {
         rm -rf ./topublish >/dev/null
         rm -rf ./topublish.zip >/dev/null
 
-        return 0; # Bailing early for now...
+        echo
+        echo "Upgraded Mona web app has been deployed to app service [$web_app_name] deployment slot [$upgrade_slot_name]. Swapping production slot with upgraded deployment slot [$upgrade_slot_name]..."
+        echo
 
-        echo "Upgraded Mona web app has been deployed to [$web_app_name] slot [$upgrade_slot_name]."
-        echo "Checking upgraded Mona web app health..."
+        az webapp deployment slot swap \
+            --slot "$upgrade_slot_name" \
+            --action "swap" \
+            --name "$web_app_name" \
+            --resource-group "$rg_name" \
+            --subscription "$subscription_id" \
+            --target-slot "production"
 
-        read -p "Complete Mona deployment [$deployment_name] production upgrade now? [y/N]" complete_upgrade
+        echo
+        echo "Upgraded Mona web app promoted to production slot. Please visit the upgraded Mona admin center [ https://$web_app_name.azurewebsites.net/admin ] and test landing pages [ https://$web_app_name.azurewebsites.net/test ] to confirm that your upgraded Mona deployment is working as expected."
+        echo
+
+        read -p "Is Mona [$deployment_name] working as expected? [y/N] " complete_upgrade
 
         case "$complete_upgrade" in
             [yY1]   )    
-                echo "Promoting upgrade slot [$upgrade_slot_name] to production..."
+                echo
+                echo "Tagging Mona resource group [$rg_name] with updated Mona version..."
+                echo
+                
+                az group update \
+                    --name "$rg_name" \
+                    --subscription "$subscription_id" \
+                    --tags "Mona Version"="$THIS_MONA_VERSION"
+            ;;
+            *       )
+                echo
+                echo "Sorry to hear that you're having issues with your Mona upgrade. Please visit [ https://github.com/microsoft/mona-saas/discussions ] for assistance. Rolling back Mona [$deployment_name] upgrade..."
+                echo
 
                 az webapp deployment slot swap \
                     --slot "$upgrade_slot_name" \
@@ -89,10 +112,19 @@ upgrade_mona_rg() {
                     --subscription "$subscription_id" \
                     --target-slot "production"
             ;;
-            *       )
+        esac
 
-            ;;
-        esac 
+        echo
+        echo "Deleting app service [$web_app_name] deployment slot [$upgrade_slot_name]..."
+        echo
+
+        az webapp deployment slot delete \
+            --slot "$upgrade_slot_name" \
+            --name "$web_app_name" \
+            --resource-group "$rg_name" \
+            --subscription "$subscription_id"
+
+        echo # Alright. Next? 
     fi
 }
 
