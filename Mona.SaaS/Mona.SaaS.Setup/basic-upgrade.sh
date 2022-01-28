@@ -10,6 +10,7 @@ upgrade_mona_rg() {
 
     local web_app_id=$(az resource show \
         --resource-group "$rg_name" \
+        --resource-type "Microsoft.Web/sites" \
         --subscription "$subscription_id" \
         --name "$web_app_name" \
         --query "id" \
@@ -155,7 +156,7 @@ for subscription_id in $subscription_ids; do
             echo "Upgrade to Version?:  [$THIS_MONA_VERSION]"
             echo
 
-            read -p "Upgrade Mona deployment [$rg_mona_name] to version [$THIS_MONA_VERSION]? [y/N]" initiate_upgrade
+            read -p "Upgrade Mona deployment [$rg_mona_name] to version [$THIS_MONA_VERSION]? [y/N] " initiate_upgrade
 
             case "$initiate_upgrade" in
                 [yY1]   ) upgrade_mona_rg "$subscription_id" "$mona_rg_name" "$rg_mona_name";; # We have a winner!
