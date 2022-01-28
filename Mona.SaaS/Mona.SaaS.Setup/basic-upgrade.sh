@@ -168,7 +168,6 @@ upgrade_mona_rg() {
 
 cat ./splash.txt
 echo
-echo
 
 check_prereqs
 
@@ -177,6 +176,7 @@ if [[ $? -ne 0 ]]; then
     exit 1
 fi
 
+echo
 echo "Scanning subscriptions for upgradeable Mona deployments..."
 echo
 
@@ -242,16 +242,16 @@ for subscription_id in $subscription_ids; do
 
             case "$initiate_upgrade" in
                 [yY1]   ) 
-                    upgrade_mona_rg "$subscription_id" "$mona_rg_name" "$rg_mona_name"
+                    upgrade_mona_rg "$subscription_id" "$mona_rg_name" "$rg_mona_name" # We have a winner!
 
                     echo
                     read -p "Keep scanning for upgradeable Mona deployments? [y/N] " keep_scanning
 
                     case "$keep_scanning" in
-                        [nN0]   ) exit 0;;
-                        *       ) ;;
+                        [yY1]   ) ;;
+                        *       ) exit 0 ;;
                     esac
-                ;; # We have a winner!
+                ;;
                 *       )
                 ;; # Move along now. Nothing to see here...
             esac
