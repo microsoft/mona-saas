@@ -151,7 +151,7 @@ for subscription_id in subscription_ids; do
             read -p "Upgrade Mona deployment [$rg_mona_name] to version [$THIS_MONA_VERSION]? [y/N]" initiate_upgrade
 
             case "$initiate_upgrade" in
-                [yY1]   ) upgrade_mona_rg "$subscription_id" "$mona_rg_name" "$rg_mona_name";; # We have a winner!
+                [yY1]   ) echo; echo "Too bad. This part isn't wired up yet. 🤷🏼‍♂️"; echo; # upgrade_mona_rg "$subscription_id" "$mona_rg_name" "$rg_mona_name";; # We have a winner!
                 *       ) ;; # Move along now. Nothing to see here...
             esac
         else
