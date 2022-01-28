@@ -18,10 +18,4 @@
     <ProjectReference Include="..\Mona.SaaS.Core\Mona.SaaS.Core.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Reference Include="Microsoft.Marketplace">
-      <HintPath>..\..\libs\Microsoft.Marketplace.dll</HintPath>
-    </Reference>
-  </ItemGroup>
-
 </Project>

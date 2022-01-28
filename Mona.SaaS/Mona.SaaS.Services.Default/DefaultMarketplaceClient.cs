@@ -14,10 +14,6 @@ using Azure.Core;
 using Azure.Identity;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using Microsoft.Marketplace.SaaS;
-using Microsoft.Marketplace.SaaS.Models;
-using Microsoft.Rest;
-using Microsoft.Rest.Azure;
 using Mona.SaaS.Core.Enumerations;
 using Mona.SaaS.Core.Interfaces;
 using Mona.SaaS.Core.Models;
@@ -26,7 +22,6 @@ using Newtonsoft.Json;
 using Polly;
 using Polly.Retry;
 using System;
-using System.Collections.Generic;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
@@ -34,29 +29,16 @@ using System.Threading.Tasks;
 
 namespace Mona.SaaS.Services.Default
 {
-    public class DefaultMarketplaceClient : IMarketplaceOperationService, IMarketplaceSubscriptionService, IDisposable
+    public class DefaultMarketplaceClient : IMarketplaceOperationService, IMarketplaceSubscriptionService
     {
         // [Originally] a thin wrapper around https://github.com/Azure/commercial-marketplace-client-dotnet.
 
         private const int maxRetries = 3; // Max # of retries for exponential backoff retry policy.
 
-        private static readonly HttpClient httpClient; // When the Marketplace SDK doesn't support an operation we need, fall back to using just a regular HttpClient.
+        private static readonly HttpClient httpClient;
 
         private readonly ILogger logger;
         private readonly IdentityConfiguration identityConfig;
-        private readonly MarketplaceSaaSClient innerClient;
-
-        private readonly Dictionary<SubscriptionStatusEnum, SubscriptionStatus> subscriptionStatusMap =
-            new Dictionary<SubscriptionStatusEnum, SubscriptionStatus>
-            {
-                [SubscriptionStatusEnum.NotStarted] = SubscriptionStatus.Unknown,
-                [SubscriptionStatusEnum.PendingFulfillmentStart] = SubscriptionStatus.PendingActivation,
-                [SubscriptionStatusEnum.Subscribed] = SubscriptionStatus.Active,
-                [SubscriptionStatusEnum.Suspended] = SubscriptionStatus.Suspended,
-                [SubscriptionStatusEnum.Unsubscribed] = SubscriptionStatus.Cancelled
-            };
-
-        private bool disposedValue;
 
         static DefaultMarketplaceClient()
         {
@@ -72,11 +54,6 @@ namespace Mona.SaaS.Services.Default
         {
             this.logger = logger;
             this.identityConfig = identityConfig.Value;
-
-            innerClient = new MarketplaceSaaSClient(
-                Guid.Parse(this.identityConfig.AppIdentity.AadTenantId),
-                Guid.Parse(this.identityConfig.AppIdentity.AadClientId),
-                this.identityConfig.AppIdentity.AadClientSecret);
         }
 
         public async Task<SubscriptionOperation> GetSubscriptionOperationAsync(string subscriptionId, string operationId)
@@ -93,10 +70,7 @@ namespace Mona.SaaS.Services.Default
 
             try
             {
-                var retryPolicy = Policy
-                    .HandleResult<HttpResponseMessage>(r => ShouldRetry(r.StatusCode))
-                    .WaitAndRetryAsync(maxRetries, a => TimeSpan.FromSeconds(Math.Pow(2, a)));
-
+                var retryPolicy = CreateAsyncHttpRetryPolicy();
                 var relativeUrl = $"api/saas/subscriptions/{subscriptionId}/operations/{operationId}?api-version=2018-08-31";
 
                 var pollyResult = await retryPolicy.ExecuteAndCaptureAsync(async () =>
@@ -116,7 +90,7 @@ namespace Mona.SaaS.Services.Default
                 response.EnsureSuccessStatusCode();
 
                 var jsonString = await response.Content.ReadAsStringAsync();
-                var apiOperation = JsonConvert.DeserializeObject<Models.Operation>(jsonString);
+                var apiOperation = JsonConvert.DeserializeObject<Core.Models.MarketplaceAPI.V_2018_08_31.SubscriptionOperation>(jsonString);
                 var coreOperation = ToCoreModel(apiOperation);
 
                 return coreOperation;
@@ -131,7 +105,7 @@ namespace Mona.SaaS.Services.Default
             }
         }
 
-        public async Task<Core.Models.Subscription> GetSubscriptionAsync(string subscriptionId)
+        public async Task<Subscription> GetSubscriptionAsync(string subscriptionId)
         {
             if (string.IsNullOrEmpty(subscriptionId))
             {
@@ -139,13 +113,31 @@ namespace Mona.SaaS.Services.Default
             }
 
             try
-            { 
-                var retryPolicy = CreateAsyncHttpRetryPolicy<AzureOperationResponse<Microsoft.Marketplace.SaaS.Models.Subscription>>();
+            {
+                var retryPolicy = CreateAsyncHttpRetryPolicy();
+                var relativeUrl = $"api/saas/subscriptions/{subscriptionId}?api-version=2018-08-31";
 
-                var pollyResult = await retryPolicy.ExecuteAndCaptureAsync(() =>
-                    innerClient.FulfillmentOperations.GetSubscriptionWithHttpMessagesAsync(Guid.Parse(subscriptionId)));
+                var pollyResult = await retryPolicy.ExecuteAndCaptureAsync(async () =>
+                {
+                    using (var request = new HttpRequestMessage(HttpMethod.Get, relativeUrl))
+                    {
+                        var bearerToken = await GetMarketplaceApiBearerToken();
 
-                return ToCoreModel(GetResult(pollyResult).Body);
+                        request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", bearerToken);
+
+                        return await httpClient.SendAsync(request);
+                    }
+                });
+
+                var response = GetResult(pollyResult);
+
+                response.EnsureSuccessStatusCode();
+
+                var jsonString = await response.Content.ReadAsStringAsync();
+                var apiSubscription = JsonConvert.DeserializeObject<Core.Models.MarketplaceAPI.V_2018_08_31.Subscription>(jsonString);
+                var coreSubscription = ToCoreModel(apiSubscription);
+
+                return coreSubscription;
             }
             catch (Exception ex)
             {
@@ -155,7 +147,7 @@ namespace Mona.SaaS.Services.Default
             }
         }
 
-        public async Task<Core.Models.Subscription> ResolveSubscriptionTokenAsync(string subscriptionToken)
+        public async Task<Subscription> ResolveSubscriptionTokenAsync(string subscriptionToken)
         {
             if (string.IsNullOrEmpty(subscriptionToken))
             {
@@ -164,12 +156,31 @@ namespace Mona.SaaS.Services.Default
 
             try
             {
-                var retryPolicy = CreateAsyncHttpRetryPolicy<AzureOperationResponse<ResolvedSubscription>>();
+                var retryPolicy = CreateAsyncHttpRetryPolicy();
+                var relativeUrl = $"api/saas/subscriptions/resolve?api-version=2018-08-31";
 
-                var pollyResult = await retryPolicy.ExecuteAndCaptureAsync(() =>
-                    innerClient.FulfillmentOperations.ResolveWithHttpMessagesAsync(subscriptionToken));
+                var pollyResult = await retryPolicy.ExecuteAndCaptureAsync(async () =>
+                {
+                    using (var request = new HttpRequestMessage(HttpMethod.Get, relativeUrl))
+                    {
+                        var bearerToken = await GetMarketplaceApiBearerToken();
 
-                return ToCoreModel(GetResult(pollyResult).Body);
+                        request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", bearerToken);
+                        request.Headers.Add("x-ms-marketplace-token", subscriptionToken);
+
+                        return await httpClient.SendAsync(request);
+                    }
+                });
+
+                var response = GetResult(pollyResult);
+
+                response.EnsureSuccessStatusCode();
+
+                var jsonString = await response.Content.ReadAsStringAsync();
+                var apiSubscription = JsonConvert.DeserializeObject<Core.Models.MarketplaceAPI.V_2018_08_31.ResolvedSubscription>(jsonString);
+                var coreSubscription = ToCoreModel(apiSubscription);
+
+                return coreSubscription;
             }
             catch (Exception ex)
             {
@@ -179,10 +190,10 @@ namespace Mona.SaaS.Services.Default
             }
         }
 
-        private Core.Models.Subscription ToCoreModel(ResolvedSubscription resolvedSubscription) =>
-            ToCoreModel(resolvedSubscription?.Subscription);
+        private Subscription ToCoreModel(Core.Models.MarketplaceAPI.V_2018_08_31.ResolvedSubscription mpResolvedSubscription) =>
+            ToCoreModel(mpResolvedSubscription?.Subscription);
 
-        private Core.Models.Subscription ToCoreModel(Microsoft.Marketplace.SaaS.Models.Subscription mpSubscription)
+        private Subscription ToCoreModel(Core.Models.MarketplaceAPI.V_2018_08_31.Subscription mpSubscription)
         {
             if (mpSubscription == null)
             {
@@ -190,7 +201,7 @@ namespace Mona.SaaS.Services.Default
             }
             else
             {
-                return new Core.Models.Subscription
+                return new Subscription
                 {
                     Beneficiary = ToCoreModel(mpSubscription.Beneficiary),
                     IsFreeTrial = mpSubscription.IsFreeTrial.GetValueOrDefault(),
@@ -199,7 +210,7 @@ namespace Mona.SaaS.Services.Default
                     PlanId = mpSubscription.PlanId,
                     Purchaser = ToCoreModel(mpSubscription.Purchaser),
                     SeatQuantity = mpSubscription.Quantity,
-                    Status = ToCoreStatus(mpSubscription.SaasSubscriptionStatus),
+                    Status = ToCoreStatus(mpSubscription.Status),
                     SubscriptionId = mpSubscription.Id.ToString(),
                     SubscriptionName = mpSubscription.Name,
                     Term = ToCoreModel(mpSubscription.Term)
@@ -207,9 +218,9 @@ namespace Mona.SaaS.Services.Default
             }
         }
 
-        private MarketplaceUser ToCoreModel(AadIdentifier aadIdentifier)
+        private MarketplaceUser ToCoreModel(Core.Models.MarketplaceAPI.V_2018_08_31.MarketplaceUser mpUser)
         {
-            if (aadIdentifier == null)
+            if (mpUser == null)
             {
                 return null;
             }
@@ -217,17 +228,17 @@ namespace Mona.SaaS.Services.Default
             {
                 return new MarketplaceUser
                 {
-                    AadObjectId = aadIdentifier.ObjectId?.ToString(),
-                    AadTenantId = aadIdentifier.TenantId?.ToString(),
-                    UserEmail = aadIdentifier.EmailId,
-                    UserId = aadIdentifier.Puid
+                    AadObjectId = mpUser.ObjectId,
+                    AadTenantId = mpUser.TenantId,
+                    UserEmail = mpUser.EmailId,
+                    UserId = mpUser.PId
                 };
             }
         }
 
-        private MarketplaceTerm ToCoreModel(SubscriptionTerm subscriptionTerm)
+        private MarketplaceTerm ToCoreModel(Core.Models.MarketplaceAPI.V_2018_08_31.MarketplaceTerm mpTerm)
         {
-            if (subscriptionTerm == null)
+            if (mpTerm == null)
             {
                 return null;
             }
@@ -235,13 +246,13 @@ namespace Mona.SaaS.Services.Default
             {
                 return new MarketplaceTerm
                 {
-                    EndDate = subscriptionTerm.EndDate,
-                    StartDate = subscriptionTerm.StartDate
+                    EndDate = mpTerm.EndDate,
+                    StartDate = mpTerm.StartDate
                 };
             }
         }
 
-        private SubscriptionOperation ToCoreModel(Models.Operation operation)
+        private SubscriptionOperation ToCoreModel(Core.Models.MarketplaceAPI.V_2018_08_31.SubscriptionOperation operation)
         {
             if (operation == null)
             {
@@ -261,14 +272,8 @@ namespace Mona.SaaS.Services.Default
             }
         }
 
-        private SubscriptionOperationType ToCoreSubscriptionOperationType(string actionType)
-        {
-            if (actionType == null)
-            {
-                throw new ArgumentNullException(nameof(actionType));
-            }
-
-            return actionType switch
+        private SubscriptionOperationType ToCoreSubscriptionOperationType(string mpActionType) =>
+            mpActionType switch
             {
                 "ChangePlan" => SubscriptionOperationType.ChangePlan,
                 "ChangeQuantity" => SubscriptionOperationType.ChangeSeatQuantity,
@@ -277,12 +282,19 @@ namespace Mona.SaaS.Services.Default
                 "Suspend" => SubscriptionOperationType.Suspend,
                 "Unsubscribe" => SubscriptionOperationType.Cancel,
 
-                _ => throw new ArgumentException($"Operation action type [{actionType}] is unknown."),
+                _ => throw new ArgumentException($"Operation action type [{mpActionType}] is unknown.")
             };
-        }
 
-        private SubscriptionStatus ToCoreStatus(SubscriptionStatusEnum? subscriptionStatus) =>
-            subscriptionStatusMap[subscriptionStatus.GetValueOrDefault()];
+        private SubscriptionStatus ToCoreStatus(string mpStatus) =>
+            mpStatus switch
+            {
+                "PendingFulfillmentStart" => SubscriptionStatus.PendingActivation,
+                "Subscribed" => SubscriptionStatus.Active,
+                "Suspended" => SubscriptionStatus.Suspended,
+                "Unsubscribed" => SubscriptionStatus.Cancelled,
+
+                _ => throw new ArgumentException($"Subscription status [{mpStatus}] is unknown.")
+            };
 
         private T GetResult<T>(PolicyResult<T> policyResult)
         {
@@ -309,10 +321,9 @@ namespace Mona.SaaS.Services.Default
             }
         }
 
-        private AsyncRetryPolicy<T> CreateAsyncHttpRetryPolicy<T>() where T : IHttpOperationResponse => Policy
-            .Handle<CloudException>()
-            .OrResult<T>(t => ShouldRetry(t.Response.StatusCode))
-            .WaitAndRetryAsync(maxRetries, a => TimeSpan.FromSeconds(Math.Pow(2, a))); // Exponential backoff retry.
+        private AsyncRetryPolicy<HttpResponseMessage> CreateAsyncHttpRetryPolicy() => Policy
+            .HandleResult<HttpResponseMessage>(r => ShouldRetry(r.StatusCode))
+            .WaitAndRetryAsync(maxRetries, a => TimeSpan.FromSeconds(Math.Pow(2, a)));
 
         private bool ShouldRetry(HttpStatusCode httpStatusCode) =>
             httpStatusCode == HttpStatusCode.TooManyRequests ||   // 429 -- Too many requests. We're being throttled.
@@ -331,25 +342,6 @@ namespace Mona.SaaS.Services.Default
             var tokenResponse = await credential.GetTokenAsync(tokenRequestContext);
 
             return tokenResponse.Token;
-        }
-
-        protected virtual void Dispose(bool disposing)
-        {
-            if (!disposedValue)
-            {
-                if (disposing && innerClient != null)
-                {
-                    innerClient.Dispose();
-                }
-
-                disposedValue = true;
-            }
-        }
-
-        public void Dispose()
-        {
-            Dispose(disposing: true);
-            GC.SuppressFinalize(this);
         }
     }
 }
