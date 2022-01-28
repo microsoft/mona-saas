@@ -161,7 +161,7 @@ namespace Mona.SaaS.Services.Default
 
                 var pollyResult = await retryPolicy.ExecuteAndCaptureAsync(async () =>
                 {
-                    using (var request = new HttpRequestMessage(HttpMethod.Get, relativeUrl))
+                    using (var request = new HttpRequestMessage(HttpMethod.Post, relativeUrl))
                     {
                         var bearerToken = await GetMarketplaceApiBearerToken();
 
