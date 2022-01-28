@@ -35,7 +35,7 @@ check_prereqs() {
     check_dotnet;   if [[ $? -ne 0 ]]; then prereq_check_failed=1; fi;
 
     if [[ -z $prereq_check_failed ]]; then
-        echo "$lp ✔   All Mona upgrade prerequisites installed."
+        echo "✔   All Mona upgrade prerequisites installed."
     else
         return 1
     fi
@@ -168,12 +168,14 @@ upgrade_mona_rg() {
     fi
 }
 
-cat ./spash.txt & echo;
+cat ./splash.txt
+echo
+echo
 
 check_prereqs
 
 if [[ $? -ne 0 ]]; then
-    echo "$lp ❌   Please install all Mona setup prerequisites then try again. Setup failed."
+    echo "❌   Please install all Mona setup prerequisites then try again. Setup failed."
     exit 1
 fi
 
