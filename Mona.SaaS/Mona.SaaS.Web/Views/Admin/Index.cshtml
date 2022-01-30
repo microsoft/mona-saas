@@ -267,6 +267,9 @@
                         <a role="button" class="ms-Button  ms-Button--primary" href="@Model.ConfigurationSettingsUrl" target="_blank">
                              <span class="ms-Button-label">@Localizer["Manage configuration settings"]</span>
                              <i class="ms-Icon ms-Icon--DoubleChevronRight" style="font-size: 10px;padding-left: 5px;color:white;"></i>
+                        </a>&nbsp;
+                        <a role="button" class="ms-Button" href="@Url.RouteUrl("appsettings")" target="_blank">
+                             <span class="ms-Button-label">@Localizer["Download appsettings.json for local debugging"]</span>
                         </a>
                         <div class="admin-section" id="user-management-section">
                             <p class="ms-font-m">
