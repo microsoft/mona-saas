@@ -231,7 +231,7 @@ namespace Mona.SaaS.Services.Default
                     AadObjectId = mpUser.ObjectId,
                     AadTenantId = mpUser.TenantId,
                     UserEmail = mpUser.EmailId,
-                    UserId = mpUser.PId
+                    UserId = mpUser.Puid
                 };
             }
         }
@@ -247,7 +247,8 @@ namespace Mona.SaaS.Services.Default
                 return new MarketplaceTerm
                 {
                     EndDate = mpTerm.EndDate,
-                    StartDate = mpTerm.StartDate
+                    StartDate = mpTerm.StartDate,
+                    TermUnit = mpTerm.TermUnit
                 };
             }
         }

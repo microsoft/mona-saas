@@ -25,7 +25,7 @@ namespace Mona.SaaS.Core.Models.MarketplaceAPI.V_2018_08_31
         [JsonProperty("tenantId")]
         public string TenantId { get; set; }
 
-        [JsonProperty("pid")]
-        public string PId { get; set; }
+        [JsonProperty("puid")]
+        public string Puid { get; set; }
     }
 }

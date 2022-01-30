@@ -218,7 +218,7 @@ namespace Mona.SaaS.Web.Controllers
             }
             else
             {
-                // We have a token (or we're in test mode) so we're almost certainly coming from the AppSource/Marketplace...
+                // We have a token so we're almost certainly coming from the AppSource/Marketplace...
 
                 if (User.Identity.IsAuthenticated)
                 {
