@@ -60,21 +60,25 @@ namespace Mona.SaaS.Web.Controllers
 
             try
             {
-                var checkTasks = new List<Task<bool>>();
-
-                checkTasks.Add(mpOperationService.IsHealthyAsync());    // Check connectivity to Marketplace Operations API
-                checkTasks.Add(mpSubscriptionService.IsHealthyAsync()); // Check connectivity to Marketplace Subscriptions API
-                checkTasks.Add(publisherConfigStore.IsHealthyAsync());  // Check connectivity to publisher configuration store (blob storage by default)
-                checkTasks.Add(subEventPublisher.IsHealthyAsync());     // Check connectivity to subscription events topic (event grid by default)
-                checkTasks.Add(subStagingCache.IsHealthyAsync());       // Check connectivity to subscription staging cache (blob storage by default)
-                checkTasks.Add(subTestingCache.IsHealthyAsync());       // Check connectivity to subscription testing cache (blob storage by default)
+                var checkTasks = new List<Task<bool>>
+                {
+                    mpOperationService.IsHealthyAsync(),    // Check connectivity to Marketplace Operations API
+                    mpSubscriptionService.IsHealthyAsync(), // Check connectivity to Marketplace Subscriptions API
+                    publisherConfigStore.IsHealthyAsync(),  // Check connectivity to publisher configuration store (blob storage by default)
+                    subEventPublisher.IsHealthyAsync(),     // Check connectivity to subscription events topic (event grid by default)
+                    subStagingCache.IsHealthyAsync(),       // Check connectivity to subscription staging cache (blob storage by default)
+                    subTestingCache.IsHealthyAsync()        // Check connectivity to subscription testing cache (blob storage by default)
+                };   
 
                 Task.WaitAll(checkTasks.ToArray()); // Wait for all the checks to finish.
 
-                // Everything's good == OK (200)
-                // Something's broken == Service Unavailable (503)
+                // Everything's good    == OK (200)
+                // Something's broken   == Service Unavailable (503)
 
                 return StatusCode(checkTasks.All(t => t.Result) ? (int)HttpStatusCode.OK : (int)HttpStatusCode.ServiceUnavailable);
+
+                // If something's broken, we should be able to see it in the logs. We don't return details here since
+                // this is an unauthenticated endpoint and we really don't want to reveal anything more than we absolutely need to.
             }
             catch (Exception ex)
             {
