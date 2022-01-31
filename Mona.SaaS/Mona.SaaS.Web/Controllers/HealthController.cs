@@ -53,18 +53,26 @@ namespace Mona.SaaS.Web.Controllers
         [AllowAnonymous, HttpGet, Route("health", Name = "health")]
         public IActionResult CheckHealth()
         {
+            // Health check is unauthenticated which is always kind of scary but this endpoint _only_ 
+            // returns a status code and doesn't really reveal anything about the app. Tools that check health status 
+            // (e.g., K8s, Front Door, AppGw, etc.) don't allow you to authenticate to health check endpoints anyway
+            // so let's just keep things simple and reasonably secure.
+
             try
             {
                 var checkTasks = new List<Task<bool>>();
 
-                checkTasks.Add(mpOperationService.IsHealthyAsync());
-                checkTasks.Add(mpSubscriptionService.IsHealthyAsync());
-                checkTasks.Add(publisherConfigStore.IsHealthyAsync());
-                checkTasks.Add(subEventPublisher.IsHealthyAsync());
-                checkTasks.Add(subStagingCache.IsHealthyAsync());
-                checkTasks.Add(subTestingCache.IsHealthyAsync());
+                checkTasks.Add(mpOperationService.IsHealthyAsync());    // Check connectivity to Marketplace Operations API
+                checkTasks.Add(mpSubscriptionService.IsHealthyAsync()); // Check connectivity to Marketplace Subscriptions API
+                checkTasks.Add(publisherConfigStore.IsHealthyAsync());  // Check connectivity to publisher configuration store (blob storage by default)
+                checkTasks.Add(subEventPublisher.IsHealthyAsync());     // Check connectivity to subscription events topic (event grid by default)
+                checkTasks.Add(subStagingCache.IsHealthyAsync());       // Check connectivity to subscription staging cache (blob storage by default)
+                checkTasks.Add(subTestingCache.IsHealthyAsync());       // Check connectivity to subscription testing cache (blob storage by default)
 
-                Task.WaitAll(checkTasks.ToArray());
+                Task.WaitAll(checkTasks.ToArray()); // Wait for all the checks to finish.
+
+                // Everything's good == OK (200)
+                // Something's broken == Service Unavailable (503)
 
                 return StatusCode(checkTasks.All(t => t.Result) ? (int)HttpStatusCode.OK : (int)HttpStatusCode.ServiceUnavailable);
             }
@@ -73,6 +81,8 @@ namespace Mona.SaaS.Web.Controllers
                 logger.LogError(ex,
                     "An error occurred while checking the health of this Mona deployment. " +
                     "See exception for details.");
+
+                // If something broke during the health check, we're definitely not healthy (503)...
 
                 return StatusCode((int)HttpStatusCode.ServiceUnavailable);
             }
