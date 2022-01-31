@@ -18,7 +18,7 @@ namespace Mona.SaaS.Core.Interfaces
     /// <summary>
     /// Defines an interface for publishing subscription-related events.
     /// </summary>
-    public interface ISubscriptionEventPublisher
+    public interface ISubscriptionEventPublisher : IHealthCheckable
     {
         /// <summary>
         /// Publishes a subscription-related event.

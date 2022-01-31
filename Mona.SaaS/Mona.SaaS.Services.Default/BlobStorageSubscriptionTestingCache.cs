@@ -76,6 +76,22 @@ namespace Mona.SaaS.Services.Default
             }
         }
 
+        public async Task<bool> IsHealthyAsync()
+        {
+            try
+            {
+                // Can we access the testing blob storage container?
+
+                var subscription = await GetSubscriptionAsync(Guid.NewGuid().ToString());
+
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
         public async Task PutSubscriptionAsync(Subscription subscription)
         {
             if (subscription == null)

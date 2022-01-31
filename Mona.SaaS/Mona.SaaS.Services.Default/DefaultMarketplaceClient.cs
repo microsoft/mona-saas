@@ -56,6 +56,35 @@ namespace Mona.SaaS.Services.Default
             this.identityConfig = identityConfig.Value;
         }
 
+        public async Task<bool> IsHealthyAsync()
+        {
+            try
+            {
+                var retryPolicy = CreateAsyncHttpRetryPolicy();
+                var relativeUrl = "api";
+
+                var pollyResult = await retryPolicy.ExecuteAndCaptureAsync(async () =>
+                {
+                    using (var request = new HttpRequestMessage(HttpMethod.Get, relativeUrl))
+                    {
+                        return await httpClient.SendAsync(request);
+                    }
+                });
+
+                var result = GetResult(pollyResult);
+
+                return true;
+            }
+            catch (Exception ex)
+            {
+                logger.LogError(ex,
+                    "An error occurred while attempting to check Marketplace API connection health. " +
+                    "For more details see exception.");
+
+                return false;
+            }
+        }
+
         public async Task<SubscriptionOperation> GetSubscriptionOperationAsync(string subscriptionId, string operationId)
         {
             if (string.IsNullOrEmpty(subscriptionId))

@@ -43,6 +43,22 @@ namespace Mona.SaaS.Services.Default
             this.logger = logger;
         }
 
+        public async Task<bool> IsHealthyAsync()
+        {
+            try
+            {
+                return await containerClient.ExistsAsync();
+            }
+            catch (Exception ex)
+            {
+                logger.LogError(ex,
+                    "An error occurred while attempting to check subscription staging cache health. " +
+                    "For more details see exception.");
+
+                return false;
+            }
+        }
+
         public async Task<string> PutSubscriptionAsync(Subscription subscription)
         {
             if (subscription == null)

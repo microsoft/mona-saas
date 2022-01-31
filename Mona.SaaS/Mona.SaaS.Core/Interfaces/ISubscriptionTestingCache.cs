@@ -15,7 +15,7 @@ using System.Threading.Tasks;
 
 namespace Mona.SaaS.Core.Interfaces
 {
-    public interface ISubscriptionTestingCache
+    public interface ISubscriptionTestingCache : IHealthCheckable
     {
         /// <summary>
         /// Gets a <see cref="Subscription"/> from the repository by its unique <paramref name="subscriptionId"/>.

@@ -18,7 +18,7 @@ namespace Mona.SaaS.Core.Interfaces
     /// <summary>
     /// Defines an interface for managing Marketplace subscription operations.
     /// </summary>
-    public interface IMarketplaceOperationService
+    public interface IMarketplaceOperationService : IHealthCheckable
     {
         /// <summary>
         /// Tries to get a subscription operation from the Marketplace.

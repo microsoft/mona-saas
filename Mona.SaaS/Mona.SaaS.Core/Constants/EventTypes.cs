@@ -24,5 +24,7 @@ namespace Mona.SaaS.Core.Constants
         public const string SubscriptionReinstated = "Mona.SaaS.Marketplace.SubscriptionReinstated";
         public const string SubscriptionCancelled = "Mona.SaaS.Marketplace.SubscriptionCancelled";
         public const string SubscriptionRenewed = "Mona.SaaS.Marketplace.SubscriptionRenewed";
+
+        public const string CheckingHealth = "Mona.SaaS.CheckingHealth";
     }
 }
