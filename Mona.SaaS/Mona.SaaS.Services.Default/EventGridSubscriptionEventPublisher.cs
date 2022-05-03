@@ -15,7 +15,6 @@ using Microsoft.Azure.EventGrid.Models;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Mona.SaaS.Core.Interfaces;
-using Mona.SaaS.Core.Models.Events.V_2021_10_01;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -39,6 +38,32 @@ namespace Mona.SaaS.Services.Default
 
             eventGridClient = new EventGridClient(new TopicCredentials(options.TopicKey));
             topicHostName = new Uri(options.TopicEndpoint).Host;
+        }
+
+        public async Task<bool> IsHealthyAsync()
+        {
+            try
+            {
+                var healthEvent = new EventGridEvent(
+                    Guid.NewGuid().ToString(),
+                    "mona/saas/health",
+                    new { Message = "Please ignore. This is an automated health check event." },
+                    Core.Constants.EventTypes.CheckingHealth,
+                    DateTime.UtcNow,
+                    Core.Constants.EventTypes.CheckingHealth);
+
+                await eventGridClient.PublishEventsAsync(topicHostName, new List<EventGridEvent> { healthEvent });
+
+                return true;
+            }
+            catch (Exception ex)
+            {
+                logger.LogError(ex,
+                    "An error occurred while attempting to check event grid topic health. " +
+                    "For more details see exception.");
+
+                return false;
+            }
         }
 
         /// <summary>

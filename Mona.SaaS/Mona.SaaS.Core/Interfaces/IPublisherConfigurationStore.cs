@@ -15,7 +15,7 @@ namespace Mona.SaaS.Core.Interfaces
     using Mona.SaaS.Core.Models.Configuration;
     using System.Threading.Tasks;
 
-    public interface IPublisherConfigurationStore
+    public interface IPublisherConfigurationStore : IHealthCheckable
     {
         /// <summary>
         /// Gets the current <see cref="PublisherConfiguration"/> from the configuration store.

@@ -18,7 +18,7 @@ namespace Mona.SaaS.Core.Interfaces
     /// <summary>
     /// Defines an interface for resolving Marketplace subscription metadata.
     /// </summary>
-    public interface IMarketplaceSubscriptionService
+    public interface IMarketplaceSubscriptionService : IHealthCheckable
     {
         /// <summary>
         /// Requests a specific subscription's metadata from the Marketplace using a its <paramref name="subscriptionId"/>.
