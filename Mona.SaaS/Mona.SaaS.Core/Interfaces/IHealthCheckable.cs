@@ -10,34 +10,15 @@
 //
 // In no event shall Microsoft be liable for any damages whatsoever (including, without limitation, damages for loss of business profits, business interruption, loss of business information, or other pecuniary loss) arising out of the use of or inability to use the preview code, even if Microsoft has been advised of the possibility of such damages.
 
-using System.ComponentModel.DataAnnotations;
-
-namespace Mona.SaaS.Core.Models.Configuration
+namespace Mona.SaaS.Core.Interfaces
 {
-    /// <summary>
-    /// Provides information on this Mona application's Azure Active Directory (AAD) administrative identity.
-    /// </summary>
-    /// <remarks>
-    /// Typically, this identity will be the same as the user that originally deployed this Mona application.
-    /// </remarks>
-    public class AppAdminIdentityConfiguration
-    {
-        /// <summary>
-        /// Gets/sets this Mona application's administrative AAD tenant ID.
-        /// </summary>
-        /// <remarks>
-        /// AAD claim is [tid].
-        /// </remarks>
-        [Required]
-        public string AadTenantId { get; set; }
+    using System.Threading.Tasks;
 
-        /// <summary>
-        /// Gets/sets this Mona application's administrator role name.
-        /// </summary>
-        /// <remarks>
-        /// By default, the role name is simply "monaadmins".
-        /// </remarks>
-        [Required]
-        public string RoleName { get; set; }
+    /// <summary>
+    /// Defines a common interface for checking the health of a service.
+    /// </summary>
+    public interface IHealthCheckable
+    {
+        Task<bool> IsHealthyAsync();
     }
 }

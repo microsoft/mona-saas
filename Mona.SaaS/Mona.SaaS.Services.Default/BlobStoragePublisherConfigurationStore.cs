@@ -73,6 +73,22 @@ namespace Mona.SaaS.Services.Default
             }
         }
 
+        public async Task<bool> IsHealthyAsync()
+        {
+            try
+            {
+                // Can we access the publisher configuration container?
+
+                var publisherConfig = await GetPublisherConfiguration();
+
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
         public async Task PutPublisherConfiguration(PublisherConfiguration publisherConfig)
         {
             if (publisherConfig == null)

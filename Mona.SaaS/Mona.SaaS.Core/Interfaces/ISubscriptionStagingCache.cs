@@ -15,7 +15,7 @@ namespace Mona.SaaS.Core.Interfaces
     using Mona.SaaS.Core.Models;
     using System.Threading.Tasks;
 
-    public interface ISubscriptionStagingCache
+    public interface ISubscriptionStagingCache : IHealthCheckable
     {
         /// <summary>
         /// Puts/stages a <see cref="Subscription"/> into the staging repository.

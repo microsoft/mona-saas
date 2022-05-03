@@ -25,6 +25,7 @@ using Mona.SaaS.Web.Models;
 using System;
 using System.Net;
 using System.Threading.Tasks;
+using System.Web;
 using Events = Mona.SaaS.Core.Models.Events;
 
 namespace Mona.SaaS.Web.Controllers
@@ -217,7 +218,7 @@ namespace Mona.SaaS.Web.Controllers
             }
             else
             {
-                // We have a token (or we're in test mode) so we're almost certainly coming from the AppSource/Marketplace...
+                // We have a token so we're almost certainly coming from the AppSource/Marketplace...
 
                 if (User.Identity.IsAuthenticated)
                 {
