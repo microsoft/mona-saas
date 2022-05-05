@@ -298,7 +298,7 @@ echo "$lp Deploying Mona to subscription [$subscription_id] resource group [$res
 
 az_deployment_name="mona-deploy-$deployment_name"
 
-az group deployment create \
+az deployment group create \
     --resource-group "$resource_group_name" \
     --name "$az_deployment_name" \
     --template-file "./arm-templates/basic-deploy.json" \
