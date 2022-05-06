@@ -5,8 +5,6 @@ THIS_MONA_VERSION="1.0"
 check_az() {
     az version >/dev/null
 
-    # TODO: Should we be more specific about which version of az is required?
-
     if [[ $? -ne 0 ]]; then
         echo "❌   Please install the Azure CLI before continuing. See [https://docs.microsoft.com/cli/azure/install-azure-cli] for more information."
         return 1
@@ -41,6 +39,33 @@ check_prereqs() {
     fi
 }
 
+check_mona_health() {
+    local deployment_name="$1"
+    local web_app_name="$2"
+
+    local health_status=""
+
+    for i in {1..6}; do
+        sleep 10
+
+        health_status = $(curl -s -o /dev/null -w "%{http_code}" "https://$web_app_name.azurewebsites.net/health")
+
+        echo "Health status is [$health_status]." # Just for now to debug.
+
+        echo "🩺   Checking Mona deployment [$deployment_name] health (attempt $i of 6)..."
+
+        if [[ health_status == "200" ]]; then
+            echo "✔   Mona deployment [$deployment_name] is healthy!"
+            return 0 # All good!
+        fi
+    done
+    
+    # If we got this far, something's definitely not right...
+
+    echo "⚠️   Mona deployment [$deployment_name] is unhealthy."
+    return 1
+}
+
 upgrade_mona_rg() {
     local subscription_id="$1"
     local rg_name="$2"
@@ -60,7 +85,7 @@ upgrade_mona_rg() {
         # There should be a web app here but there isn't. Let the user know then bail early...
 
         echo
-        echo "Expected Mona web app [$web_app_name] not found in resource group [$rg_name]. Upgrade failed." >&2
+        echo "⚠️   Expected app service [$web_app_name] not found in resource group [$rg_name]. Upgrade failed." >&2
 
         return 1
     else
@@ -71,10 +96,8 @@ upgrade_mona_rg() {
 
         # Create a temporary slot to push the new version of Mona to...
 
-        # FYI - We used to do this _right before
-
         echo
-        echo "Creating app service [$web_app_name] temporary deployment slot [$upgrade_slot_name]..."
+        echo "🏗️   Creating app service [$web_app_name] temporary deployment slot [$upgrade_slot_name]..."
         echo
 
         az webapp deployment slot create \
@@ -87,7 +110,7 @@ upgrade_mona_rg() {
         # Alright, let's build the new version of Mona...
 
         echo
-        echo "Packaging new Mona web app for deployment to app service [$web_app_name]..."
+        echo "📦   Packaging new Mona web app for deployment to app service [$web_app_name]..."
         echo
 
         dotnet publish -c Release -o ./topublish ../Mona.SaaS.Web/Mona.SaaS.Web.csproj
@@ -96,7 +119,7 @@ upgrade_mona_rg() {
         cd ..
 
         echo
-        echo "Deploying upgraded Mona web app to app service [$web_app_name] temporary deployment slot [$upgrade_slot_name]..."
+        echo "☁️   Deploying upgraded Mona web app to app service [$web_app_name] temporary deployment slot [$upgrade_slot_name]..."
         echo
 
         az webapp deployment source config-zip \
@@ -112,7 +135,7 @@ upgrade_mona_rg() {
         rm -rf ./topublish.zip >/dev/null
 
         echo
-        echo "Upgraded Mona web app has been deployed to app service [$web_app_name] deployment slot [$upgrade_slot_name]. Swapping production slot with upgraded deployment slot [$upgrade_slot_name]..."
+        echo "🔃   Upgraded Mona web app has been deployed to app service [$web_app_name] deployment slot [$upgrade_slot_name]. Swapping production slot with upgraded deployment slot [$upgrade_slot_name]..."
 
         az webapp deployment slot swap \
             --slot "$upgrade_slot_name" \
@@ -123,47 +146,67 @@ upgrade_mona_rg() {
             --target-slot "production"
 
         echo
-        echo "Upgraded Mona web app promoted to production slot."
-        echo
-        echo "Please visit the upgraded Mona admin center [ https://$web_app_name.azurewebsites.net/admin ] and test landing pages [ https://$web_app_name.azurewebsites.net/test ] to confirm that your upgraded Mona deployment is working as expected."
-        echo
-        read -p "Is Mona [$deployment_name] working as expected? [y/N] " complete_upgrade
+        echo "✔   Upgraded Mona web app promoted to production slot."
 
-        case "$complete_upgrade" in
-            [yY1]   )    
-                echo
-                echo "Tagging Mona resource group [$rg_name] with updated Mona version..."
-                echo
-                
-                az tag update \
-                    --resource-id "/subscriptions/$subscription_id/resourcegroups/$rg_name" \
-                    --operation "merge" \
-                    --tags "Mona Version"="$THIS_MONA_VERSION"
-            ;;
-            *       )
-                echo
-                echo "Sorry to hear that you're having issues with your Mona upgrade. Please visit [ https://github.com/microsoft/mona-saas/discussions ] for assistance. Rolling back Mona [$deployment_name] upgrade..."
-                echo
+        # Let's try to see if the upgraded Mona deployment is healthy...
 
-                az webapp deployment slot swap \
-                    --slot "$upgrade_slot_name" \
-                    --action "swap" \
-                    --name "$web_app_name" \
-                    --resource-group "$rg_name" \
-                    --subscription "$subscription_id" \
-                    --target-slot "production"
-            ;;
-        esac
+        check_mona_health "$deployment_name" "$web_app_name"
 
-        echo
-        echo "Deleting app service [$web_app_name] deployment slot [$upgrade_slot_name]..."
+        if [[ $? == 0 ]]; then # Score! Mona deployment is healthy. Let's make this official...
+            echo "✔   Upgrade successful."
+            commit_upgrade      "$upgrade_slot_name" "$web_app_name" "$rg_name" "$subscription_id"
+        else # Something broke. We need to roll it back.
+            echo "❌  Upgrade failed."
+            rollback_upgrade    "$upgrade_slot_name" "$web_app_name" "$rg_name" "$subscription_id"
+        fi
+}
 
-        az webapp deployment slot delete \
-            --slot "$upgrade_slot_name" \
-            --name "$web_app_name" \
-            --resource-group "$rg_name" \
-            --subscription "$subscription_id"
-    fi
+commit_upgrade() {
+    local upgrade_slot_name=$1
+    local web_app_name=$2
+    local rg_name=$3
+    local subscription_id=$4
+
+    echo
+    echo "🏷️   Tagging Mona resource group [$rg_name] with updated Mona version..."
+    echo
+
+    az tag update \
+        --resource_id "/subscriptions/$subscription_id/resourcegroups/$rg_name"
+        --operation "merge" \
+        --tags "Mona Version"="$THIS_MONA_VERSION"
+
+    echo
+    echo "🧹   Deleting app service [$web_app_name] temporary upgrade deployment slot [$upgrade_slot_name]..."
+    echo
+
+    az webapp deployment slot delete \
+        --slot "$upgrade_slot_name" \
+        --name "$web_app_name" \
+        --resource-group "$rg_name" \
+        --subscription "$subscription_id"
+}
+
+rollback_upgrade() {
+    local upgrade_slot_name=$1
+    local web_app_name=$2
+    local rg_name=$3
+    local subscription_id=$4
+
+    echo
+    echo "🔙  Rolling Mona back to previous version..."
+
+    az webapp deployment slot swap \
+        --slot "$upgrade_slot_name" \
+        --action "swap" \
+        --name "$web_app_name" \
+        --resource-group "$rg_name" \
+        --subscription "$subscription_id" \
+        --target-slot "production"
+
+    echo
+    echo "🪲   Leaving unhealthy Mona deployment in slot [$upgrade_slot_name] for debugging purposes."
+    echo
 }
 
 cat ./splash.txt
@@ -177,7 +220,7 @@ if [[ $? -ne 0 ]]; then
 fi
 
 echo
-echo "Scanning subscriptions for upgradeable Mona deployments..."
+echo "🔍   Scanning accessible subscriptions for upgradeable Mona deployments..."
 echo
 
 subscription_ids=$(az account subscription list \
@@ -186,7 +229,7 @@ subscription_ids=$(az account subscription list \
 
 for subscription_id in $subscription_ids; do
 
-    echo "Scanning subscription [$subscription_id]..."
+    echo "🔍   Scanning subscription [$subscription_id]..."
 
     # If a resource group has a "Mona Version" tag, we can be pretty confident 
     # that it's a Mona deployment. Get all the resource groups that we can touch
@@ -221,14 +264,18 @@ for subscription_id in $subscription_ids; do
             # presumably contains a Mona deployment but doesn't have a "Deployment Name" tag. We need to 
             # know the name of the deployment in order to upgrade it so we'll have to skip this one. Bummer.
 
-            echo "Azure resource group [$mona_rg_name (subscription: $subscription_id)] is tagged with Mona version [$rg_mona_version] but has no \"Deployment Name\" tag. Unable to upgrade Mona without a deployment name." >&2
+            echo "⚠️   Azure resource group [$mona_rg_name (subscription: $subscription_id)] is tagged with Mona version [$rg_mona_version] but has no \"Deployment Name\" tag. Unable to upgrade Mona without a deployment name." >&2
 
         elif [[ "$THIS_MONA_VERSION" != "$rg_mona_version" ]]; then # Different Mona version so potentially upgradeable.
 
-            # TODO: Add additional logic here to actually compare Mona versions to prevent downgrade?
+            # Comparing semantic versions is difficult and gets even fuzzier when you're trying to compare
+            # versions that contain suffixes like -prerelease. I was thinking about specifically breaking out 
+            # the version number into resource group tags (a major, minor, and patch tag) but, for now, we'll
+            # just have the user confirm that they want to upgrade a deployment if the version number is different
+            # than the current version number.
 
             echo
-            echo "Potentially upgradeable Mona deployment found."
+            echo "❕   Potentially upgradeable Mona deployment found."
             echo
             echo "Deployment Name:      [$rg_mona_name]"
             echo "Azure Subscription:   [$subscription_id]"
@@ -238,14 +285,14 @@ for subscription_id in $subscription_ids; do
             echo "Upgrade to Version?:  [$THIS_MONA_VERSION]"
             echo
 
-            read -p "Upgrade Mona deployment [$rg_mona_name] to version [$THIS_MONA_VERSION]? [y/N] " initiate_upgrade
+            read -p "❔   Upgrade Mona deployment [$rg_mona_name] to version [$THIS_MONA_VERSION]? [y/N] " initiate_upgrade
 
             case "$initiate_upgrade" in
                 [yY1]   ) 
                     upgrade_mona_rg "$subscription_id" "$mona_rg_name" "$rg_mona_name" # We have a winner!
 
                     echo
-                    read -p "Keep scanning for upgradeable Mona deployments? [y/N] " keep_scanning
+                    read -p "❔   Keep scanning for upgradeable Mona deployments? [y/N] " keep_scanning
 
                     case "$keep_scanning" in
                         [yY1]   ) ;;
