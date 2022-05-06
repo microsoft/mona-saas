@@ -89,7 +89,6 @@ upgrade_mona_rg() {
 
         return 1
     else
-
         # Alright so we're doing this...
 
         local upgrade_slot_name="mona-upgrade-$(date +%s)"
@@ -159,6 +158,7 @@ upgrade_mona_rg() {
             echo "❌  Upgrade failed."
             rollback_upgrade    "$upgrade_slot_name" "$web_app_name" "$rg_name" "$subscription_id"
         fi
+    fi
 }
 
 commit_upgrade() {
