@@ -183,7 +183,7 @@ commit_upgrade() {
     echo
 
     az tag update \
-        --resource_id "/subscriptions/$subscription_id/resourcegroups/$rg_name" \
+        --resource-id "/subscriptions/$subscription_id/resourcegroups/$rg_name" \
         --operation "merge" \
         --tags "Mona Version"="$THIS_MONA_VERSION" \
 
@@ -196,6 +196,10 @@ commit_upgrade() {
         --name "$web_app_name" \
         --resource-group "$rg_name" \
         --subscription "$subscription_id"
+
+    echo
+    echo "✔   Upgrade to [$THIS_MONA_VERSION] complete."
+    echo
 }
 
 rollback_upgrade() {
