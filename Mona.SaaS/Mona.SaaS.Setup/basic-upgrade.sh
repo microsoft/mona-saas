@@ -48,13 +48,13 @@ check_mona_health() {
     for i in {1..6}; do
         sleep 10
 
-        health_status = $(curl -s -o /dev/null -w "%{http_code}" "https://$web_app_name.azurewebsites.net/health")
+        health_status=$(curl -s -o /dev/null -w "%{http_code}" "https://$web_app_name.azurewebsites.net/health")
 
         echo "Health status is [$health_status]." # Just for now to debug.
 
         echo "🩺   Checking Mona deployment [$deployment_name] health (attempt $i of 6)..."
 
-        if [[ health_status == "200" ]]; then
+        if [[ $health_status == "200" ]]; then
             echo "✔   Mona deployment [$deployment_name] is healthy!"
             return 0 # All good!
         fi
