@@ -104,6 +104,19 @@ upgrade_mona_rg() {
             --configuration-source "$web_app_name" \
             --subscription "$subscription_id"
 
+        if [[ $? -ne 0 ]]; then
+            # We couldn't create a deployment slot which means that we can't do this upgrade
+            # safely which means that we're not going to try to do it at all. I mean, this thing
+            # is probably running in production. More than likely, the app service that Mona
+            # is deployed to doesn't support deployment slots (< Standard).
+
+            echo
+            echo "⚠️  Unable to create temporary deployment slot. Can not safely perform upgrade. Please ensure that your App Service Plan SKU is Standard (S1) or higher. For more information, see [ https://docs.microsoft.com/en-us/azure/azure-resource-manager/management/azure-subscription-service-limits#app-service-limits ]."
+            echo
+            
+            return 1
+        fi
+
         # Alright, let's build the new version of Mona...
 
         echo
