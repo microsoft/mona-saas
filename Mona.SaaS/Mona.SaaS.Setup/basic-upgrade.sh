@@ -50,19 +50,17 @@ check_mona_health() {
 
         health_status=$(curl -s -o /dev/null -w "%{http_code}" "https://$web_app_name.azurewebsites.net/health")
 
-        echo "Health status is [$health_status]." # Just for now to debug.
-
         echo "🩺   Checking Mona deployment [$deployment_name] health (attempt $i of 6)..."
 
         if [[ $health_status == "200" ]]; then
-            echo "✔   Mona deployment [$deployment_name] is healthy!"
+            echo "✔   Mona deployment [$deployment_name] is healthy (HTTP $health_status)!"
             return 0 # All good!
         fi
     done
     
     # If we got this far, something's definitely not right...
 
-    echo "⚠️   Mona deployment [$deployment_name] is unhealthy."
+    echo "⚠️   Mona deployment [$deployment_name] is unhealthy (HTTP $health_status)."
     return 1
 }
 
@@ -172,9 +170,9 @@ commit_upgrade() {
     echo
 
     az tag update \
-        --resource_id "/subscriptions/$subscription_id/resourcegroups/$rg_name"
+        --resource_id "/subscriptions/$subscription_id/resourcegroups/$rg_name" \
         --operation "merge" \
-        --tags "Mona Version"="$THIS_MONA_VERSION"
+        --tags "Mona Version"="$THIS_MONA_VERSION" \
 
     echo
     echo "🧹   Deleting app service [$web_app_name] temporary upgrade deployment slot [$upgrade_slot_name]..."
