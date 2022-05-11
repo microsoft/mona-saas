@@ -35,6 +35,8 @@ See [this doc](../README.md/#how-do-i-get-started-with-mona-saas).
 
 The upgrade script will scan all Azure subscriptions that you have access to looking for existing Mona deployments. Once it finds a Mona deployment with a different version (indicated by the `Mona Version` resource group tag), the script will ask if you want to upgrade it. Once the upgrade is complete, the script automatically [checks the health of the deployment using Mona's health check endpoint](#does-mona-have-a-health-check-endpoint) and, if the check is successful, rolls the upgraded Mona deployment to production. If the upgrade Mona deployment is unhealthy, the script automatically rolls it back to the last known healthy state.
 
+> Previous versions of Mona (pre-general availability) may not expose a health check endpoint. The upgrade script is unable to safely upgrade a Mona deployment that doesn't expose a health check endpoint. In these cases, you will likely need to redeploy Mona. 
+
 > The upgrade script depends on [Azure App Service staging slots](https://docs.microsoft.com/azure/app-service/deploy-staging-slots) to perform a safe upgrade. The staging slots feature is available in the Standard (default for Mona deployment), Premium, and Isolated App Service tiers. Automated upgrades are not supported in Free, Shared, and Basic tiers. [For more information, see App Service limits.](https://docs.microsoft.com/azure/azure-resource-manager/management/azure-subscription-service-limits#app-service-limits) 
 
 ## How do I uninstall Mona?
