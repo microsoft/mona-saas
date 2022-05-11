@@ -1,6 +1,7 @@
 # Frequently asked questions
 
 * [How do I install Mona?](#how-do-i-install-mona)
+* [How do I upgrade Mona?](#how-do-i-upgrade-mona)
 * [How do I uninstall Mona?](#how-do-i-uninstall-mona)
 * [Where is the admin center?](#where-is-the-admin-center)
 * [How can I return to the setup wizard?](#how-can-i-return-to-the-setup-wizard)
@@ -16,6 +17,7 @@
 * [How can I modify Mona's configuration settings?](#how-can-i-modify-monas-configuration-settings)
 * [Where can I find Mona's diagnostic logs?](#where-can-i-find-monas-diagnostic-logs)
 * [How do I debug Mona?](#how-do-i-debug-mona)
+* [Does Mona have a health check endpoint?](#does-mona-have-a-health-check-endpoint)
 
 ## How do I install Mona?
 
@@ -25,13 +27,13 @@ See [this doc](../README.md/#how-do-i-get-started-with-mona-saas).
 
 1. Open the [Bash cloud shell](https://docs.microsoft.com/azure/cloud-shell/quickstart#start-cloud-shell) from the Azure portal.
 2. Get the latest version of Mona.
-    * If you originally set up Mona, there's a good chance that the repo is already there. If the `mona-saas` directory already exists, navigate to that directory by running `cd mona-saas` then run `git pull origin`. This will update your local copy of Mona to the latest version.
+    * If you originally set up Mona, the repo is likely already there. If the `mona-saas` directory already exists, navigate to that directory by running `cd mona-saas` then run `git pull origin`. This will update your local copy of Mona to the latest version.
     * If you don't already have a `mona-saas` directory, run `git clone https://github.com/microsoft/mona-saas`. Run `cd mona-saas` to navigate to the Mona directory.
 3. From the root Mona directory (`mona-saas`), navigate to the setup folder by running `cd Mona.SaaS/Mona.SaaS.Setup`.
 4. Run `chmod +x ./basic-setup.sh` to allow the script to be executed within the cloud shell.
 5. Run `./basic-upgrade.sh`.
 
-The upgrade script will scan all Azure subscriptions that you have access to looking for existing Mona deployments. Once it finds a Mona deployment with a different version (indicated by the `Mona Version` resource group tag), the script will ask if you want to upgrade it. Once the upgrade is complete, the script automatically checks the health of the deployment using Mona's health check endpoint and, if the check is successful, rolls the upgraded Mona deployment to production. If the upgrade Mona deployment is unhealthy, the script automatically rolls it back to the last known healthy state.
+The upgrade script will scan all Azure subscriptions that you have access to looking for existing Mona deployments. Once it finds a Mona deployment with a different version (indicated by the `Mona Version` resource group tag), the script will ask if you want to upgrade it. Once the upgrade is complete, the script automatically [checks the health of the deployment using Mona's health check endpoint](#does-mona-have-a-health-check-endpoint) and, if the check is successful, rolls the upgraded Mona deployment to production. If the upgrade Mona deployment is unhealthy, the script automatically rolls it back to the last known healthy state.
 
 > The upgrade script depends on [Azure App Service staging slots](https://docs.microsoft.com/azure/app-service/deploy-staging-slots) to perform a safe upgrade. The staging slots feature is available in the Standard (default for Mona deployment), Premium, and Isolated App Service tiers. Automated upgrades are not supported in Free, Shared, and Basic tiers. [For more information, see App Service limits.](https://docs.microsoft.com/azure/azure-resource-manager/management/azure-subscription-service-limits#app-service-limits) 
 
@@ -134,3 +136,7 @@ By default, Mona pulishes telemetry (including logs) to an [Application Insights
 Given the numerous dependencies that Mona takes on Azure, the easiest way to debug it is to deploy it into your Azure environment (using the provided setup script) and [use Visual Studio to remotely debug the Mona web app](https://docs.microsoft.com/azure/app-service/troubleshoot-dotnet-visual-studio#remotedebug) directly. This will require you to open the Mona solution that you previously cloned in Visual Studio and attach the debugger to your running Mona web app.
 
 Remotely debugging the Mona web app using the method described above requires that the app be deployed in [`debug` configuration](https://docs.microsoft.com/visualstudio/debugger/how-to-set-debug-and-release-configurations). By default, the Mona web app is deployed in `release` configuration for performance reasons. When debugging, we recommend that you [use Visual Studio to publish the Mona web app in `debug` configuration](https://docs.microsoft.com/azure/app-service/quickstart-dotnetcore?tabs=netcore31&pivots=development-environment-vs#publish-your-web-app) to its own [App Service deployment slot](https://docs.microsoft.com/azure/app-service/deploy-staging-slots). Doing so will prevent your production customers from being interrupted and give you a clean, easily disposed environment for your debugging needs.
+
+## Does Mona have a health check endpoint?
+
+Yes it does. Mona exposes a public health check `HTTP GET` endpoint at `/health`. If the Mona deployment is healthy and able to access all of its service dependencies, the endpoint will return a `HTTP 200 OK`. Any other status code indicates that Mona is unhealthy. [The Mona upgrade script uses the endpoint to ensure that the deployment is healthy before committing the upgrade to production.](#how-do-i-upgrade-mona) You can also use this health check endpoint to deploy Mona in a highly available configuration using [Azure Front Door](https://docs.microsoft.com/azure/frontdoor/health-probes), [Application Gateway](https://docs.microsoft.com/azure/application-gateway/application-gateway-probe-overview), [Kubernetes](https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/), etc. [You can also leverage the Application Insights resource deployed with Mona to configure availability tests using the health check endpoint.](https://docs.microsoft.com/azure/azure-monitor/app/availability-standard-tests)
