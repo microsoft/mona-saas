@@ -94,8 +94,7 @@ upgrade_mona_rg() {
         # Create a temporary slot to push the new version of Mona to...
 
         echo
-        echo "🏗️   Creating app service [$web_app_name] temporary deployment slot [$upgrade_slot_name]..."
-        echo
+        echo "🏗️   Creating app service [$web_app_name] temporary upgrade slot [$upgrade_slot_name]..."
 
         az webapp deployment slot create \
             --name "$web_app_name" \
@@ -111,8 +110,7 @@ upgrade_mona_rg() {
             # is deployed to doesn't support deployment slots (< Standard).
 
             echo
-            echo "⚠️  Unable to create temporary deployment slot. Can not safely perform upgrade. Please ensure that your App Service Plan SKU is Standard (S1) or higher. For more information, see [ https://docs.microsoft.com/en-us/azure/azure-resource-manager/management/azure-subscription-service-limits#app-service-limits ]."
-            echo
+            echo "⚠️  Unable to create temporary upgrade slot. Can not safely perform upgrade. Please ensure that your App Service Plan SKU is Standard (S1) or higher. For more information, see [ https://docs.microsoft.com/azure/azure-resource-manager/management/azure-subscription-service-limits#app-service-limits ]."
             
             return 1
         fi
@@ -120,8 +118,7 @@ upgrade_mona_rg() {
         # Alright, let's build the new version of Mona...
 
         echo
-        echo "📦   Packaging new Mona web app for deployment to app service [$web_app_name]..."
-        echo
+        echo "📦   Packaging new Mona web app for deployment to app service [$web_app_name] temporary upgrade slot [$upgrade_slot_name]..."
 
         dotnet publish -c Release -o ./topublish ../Mona.SaaS.Web/Mona.SaaS.Web.csproj
         cd ./topublish
@@ -129,8 +126,7 @@ upgrade_mona_rg() {
         cd ..
 
         echo
-        echo "☁️   Deploying upgraded Mona web app to app service [$web_app_name] temporary deployment slot [$upgrade_slot_name]..."
-        echo
+        echo "☁️   Deploying upgraded Mona web app to app service [$web_app_name] temporary upgrade slot [$upgrade_slot_name]..."
 
         az webapp deployment source config-zip \
             --src ./topublish.zip \
@@ -180,7 +176,6 @@ commit_upgrade() {
 
     echo
     echo "🏷️   Tagging Mona resource group [$rg_name] with updated Mona version..."
-    echo
 
     az tag update \
         --resource-id "/subscriptions/$subscription_id/resourcegroups/$rg_name" \
@@ -188,8 +183,7 @@ commit_upgrade() {
         --tags "Mona Version"="$THIS_MONA_VERSION" \
 
     echo
-    echo "🧹   Deleting app service [$web_app_name] temporary upgrade deployment slot [$upgrade_slot_name]..."
-    echo
+    echo "🧹   Deleting app service [$web_app_name] temporary upgrade slot [$upgrade_slot_name]..."
 
     az webapp deployment slot delete \
         --slot "$upgrade_slot_name" \
@@ -199,7 +193,6 @@ commit_upgrade() {
 
     echo
     echo "✔   Upgrade to [$THIS_MONA_VERSION] complete."
-    echo
 }
 
 rollback_upgrade() {
@@ -221,7 +214,6 @@ rollback_upgrade() {
 
     echo
     echo "🪲   Leaving unhealthy Mona deployment in slot [$upgrade_slot_name] for debugging purposes."
-    echo
 }
 
 cat ./splash.txt
@@ -236,7 +228,6 @@ fi
 
 echo
 echo "🔍   Scanning accessible subscriptions for upgradeable Mona deployments..."
-echo
 
 subscription_ids=$(az account subscription list \
     --query "[].subscriptionId" \
