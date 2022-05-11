@@ -30,10 +30,10 @@ See [this doc](../README.md/#how-do-i-get-started-with-mona-saas).
     * If you originally set up Mona, the repo is likely already there. If the `mona-saas` directory already exists, navigate to that directory by running `cd mona-saas` then run `git pull origin`. This will update your local copy of Mona to the latest version.
     * If you don't already have a `mona-saas` directory, run `git clone https://github.com/microsoft/mona-saas`. Run `cd mona-saas` to navigate to the Mona directory.
 3. From the root Mona directory (`mona-saas`), navigate to the setup folder by running `cd Mona.SaaS/Mona.SaaS.Setup`.
-4. Run `chmod +x ./basic-setup.sh` to allow the script to be executed within the cloud shell.
+4. Run `chmod +x ./basic-upgrade.sh` to allow the script to be executed within the cloud shell.
 5. Run `./basic-upgrade.sh`.
 
-The upgrade script will scan all Azure subscriptions that you have access to looking for existing Mona deployments. Once it finds a Mona deployment with a different version (indicated by the `Mona Version` resource group tag), the script will ask if you want to upgrade it. Once the upgrade is complete, the script automatically [checks the health of the deployment using Mona's health check endpoint](#does-mona-have-a-health-check-endpoint) and, if the check is successful, rolls the upgraded Mona deployment to production. If the upgrade Mona deployment is unhealthy, the script automatically rolls it back to the last known healthy state.
+The upgrade script will scan all Azure subscriptions that you have access to looking for existing Mona deployments. Once it finds a Mona deployment with a different version (indicated by the `Mona Version` resource group tag), the script will ask if you want to upgrade it. Once the upgrade is complete, the script automatically [checks the health of the deployment using Mona's health check endpoint](#does-mona-have-a-health-check-endpoint) and, if the check is successful, commits the upgraded Mona deployment to production. If the upgrade Mona deployment is unhealthy, the script automatically rolls it back to the previous version.
 
 > Previous versions of Mona (pre-general availability) may not expose a health check endpoint. The upgrade script is unable to safely upgrade a Mona deployment that doesn't expose a health check endpoint. In these cases, you will likely need to redeploy Mona. 
 
