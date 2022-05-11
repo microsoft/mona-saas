@@ -1,6 +1,6 @@
 #!/bin/bash
 
-THIS_MONA_VERSION="1.0"
+THIS_MONA_VERSION="0.1-prerelease"
 
 check_az() {
     az version >/dev/null
