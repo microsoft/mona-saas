@@ -21,6 +21,20 @@
 
 See [this doc](../README.md/#how-do-i-get-started-with-mona-saas).
 
+## How do I upgrade Mona?
+
+1. Open the [Bash cloud shell](https://docs.microsoft.com/azure/cloud-shell/quickstart#start-cloud-shell) from the Azure portal.
+2. Get the latest version of Mona.
+    * If you originally set up Mona, there's a good chance that the repo is already there. If the `mona-saas` directory already exists, navigate to that directory by running `cd mona-saas` then run `git pull origin`. This will update your local copy of Mona to the latest version.
+    * If you don't already have a `mona-saas` directory, run `git clone https://github.com/microsoft/mona-saas`. Run `cd mona-saas` to navigate to the Mona directory.
+3. From the root Mona directory (`mona-saas`), navigate to the setup folder by running `cd Mona.SaaS/Mona.SaaS.Setup`.
+4. Run `chmod +x ./basic-setup.sh` to allow the script to be executed within the cloud shell.
+5. Run `./basic-upgrade.sh`.
+
+The upgrade script will scan all Azure subscriptions that you have access to looking for existing Mona deployments. Once it finds a Mona deployment with a different version (indicated by the `Mona Version` resource group tag), the script will ask if you want to upgrade it. Once the upgrade is complete, the script automatically checks the health of the deployment using Mona's health check endpoint and, if the check is successful, rolls the upgraded Mona deployment to production. If the upgrade Mona deployment is unhealthy, the script automatically rolls it back to the last known healthy state.
+
+> The upgrade script depends on [Azure App Service staging slots](https://docs.microsoft.com/azure/app-service/deploy-staging-slots) to perform a safe upgrade. The staging slots feature is available in the Standard (default for Mona deployment), Premium, and Isolated App Service tiers. Automated upgrades are not supported in Free, Shared, and Basic tiers. [For more information, see App Service limits.](https://docs.microsoft.com/azure/azure-resource-manager/management/azure-subscription-service-limits#app-service-limits) 
+
 ## How do I uninstall Mona?
 
 > ⚠️ __Warning!__ These actions are irreversible.
