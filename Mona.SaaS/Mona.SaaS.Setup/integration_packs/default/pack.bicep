@@ -41,3 +41,14 @@ module onPlanChanged 'on_plan_changed_workflow.bicep' = {
     aadTenantId: aadTenantId
   }
 }
+
+module onSeatQtyChanged 'on_seat_qty_changed_workflow.bicep' = {
+  name: '${packName}-pack-deploy-on-seat-qty-changed-${deploymentName}'
+  params: {
+    deploymentName: deploymentName
+    location: location
+    aadClientId: aadClientId
+    aadClientSecret: aadClientSecret
+    aadTenantId: aadTenantId
+  }
+}
