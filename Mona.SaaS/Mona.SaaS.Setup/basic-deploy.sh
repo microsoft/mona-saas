@@ -4,7 +4,7 @@ mona_version="0.1-prerelease"
 
 exec 3>&2 # Grabbing a reliable stderr handle...
 
-usage() { printf "\nUsage: $0 <-n deployment-name> <-r deployment-region> [-a app-service-plan-id] [-d display-name] [-g resource-group] [-l ui-language] [-s subscription-id] [-e event-version] [-h] [-p]\n"; }
+usage() { printf "\nUsage: $0 <-n deployment-name> <-r deployment-region> [-i integration-pack] [-a app-service-plan-id] [-d display-name] [-g resource-group] [-l ui-language] [-s subscription-id] [-e event-version] [-h] [-p]\n"; }
 
 check_az() {
     exec 3>&2
@@ -122,6 +122,7 @@ check_deployment_name() {
 
 event_version="2021-10-01" # Default event version is always the latest one. Can be overridden using [-e] flag below for backward compatibility.
 language="en" # Default UI language is English ("en"). Can be overridden using [-l] flag below.
+integration_pack="default"
 
 while getopts "a:d:g:l:n:r:s:hp" opt; do
     case $opt in
@@ -148,6 +149,9 @@ while getopts "a:d:g:l:n:r:s:hp" opt; do
         ;;
         e)
             event_version=$OPTARG
+        ;;
+        i)
+            integration_pack=$OPTARG
         ;;
         h)
             no_splash=1
@@ -320,6 +324,39 @@ az deployment group create \
 storage_account_name=$(az deployment group show --resource-group "$resource_group_name" --name "$az_deployment_name" --query properties.outputs.storageAccountName.value --output tsv);
 web_app_base_url=$(az deployment group show --resource-group "$resource_group_name" --name "$az_deployment_name" --query properties.outputs.webAppBaseUrl.value --output tsv);
 web_app_name=$(az deployment group show --resource-group "$resource_group_name" --name "$az_deployment_name" --query properties.outputs.webAppName.value --output tsv);
+
+# Deploy integration pack.
+
+integration_pack="${integration_pack#/}" # Trim leading...
+integration_pack="${integration_pack%/}" # and trailing slashes.
+
+pack_absolute_path="$integration_pack/deploy_pack.bicep" # Absolute...
+pack_relative_path="./integration_packs/$integration_pack/deploy_pack.bicep" # and relative pack paths.
+
+if [[ -f "$pack_absolute_path" ]]; then # Check the absolute path first...
+    pack_path="$pack_absolute_path"
+elif [[ -f "$pack_relative_path" ]]; then # then check the relative path.
+    pack_path="$pack_relative_path"
+fi
+
+if [[ -z "$pack_path" ]]; then
+    echo "$lp ⚠️   Integration pack [$integration_pack] not found at [$pack_absolute_path] or [$pack_relative_path]. No integration pack will be deployed."
+else
+    echo "$lp Deploying [$integration_pack ($pack_path)] integration pack..."
+
+    az deployment group create \
+        --resource-group "$resource_group_name" \
+        --name "mona-pack-deploy-${deployment_name}" \
+        --template-file "$pack_path" \
+        --parameters \
+            deploymentName="$deployment_name" \
+            aadClientId="$aad_app_id" \
+            aadClientSecret="$aad_app_secret" \
+            aadTenantId="$current_user_tid"
+
+    [[ $? -eq 0 ]] && echo "$lp ✔   Integration pack [$integration_pack ($pack_path)] deployed.";
+    [[ $? -ne 0 ]] && echo "$lp ⚠️   Integration pack [$integration_pack ($pack_path)] deployment failed."
+fi
 
 # Configure Mona.
 
