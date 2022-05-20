@@ -330,6 +330,14 @@
         "webAppName": {
             "type": "string",
             "value": "[variables('webAppName')]"
+        },
+        "eventGridTopicName": {
+            "type": "string",
+            "value": "[variables('eventGridTopicName')]"
+        },
+        "eventGridConnectionName": {
+            "type": "string",
+            "value": "[variables('logicApps').eventGridConnectionName]"
         }
     }
 }

@@ -259,9 +259,9 @@ aad_app_id=$(az ad app create \
     --available-to-other-tenants true \
     --end-date "2299-12-31" \
     --password "$aad_app_secret" \
-    --optional-claims @./aad/manifest.optional-claims.json \
-    --required-resource-accesses @./aad/manifest.resource-access.json \
-    --app-roles @./aad/manifest.app-roles.json \
+    --optional-claims @./aad/manifest.optional_claims.json \
+    --required-resource-accesses @./aad/manifest.resource_access.json \
+    --app-roles @./aad/manifest.app_roles.json \
     --query appId \
     --output tsv);
 
@@ -305,7 +305,7 @@ az_deployment_name="mona-deploy-$deployment_name"
 az deployment group create \
     --resource-group "$resource_group_name" \
     --name "$az_deployment_name" \
-    --template-file "./arm-templates/basic-deploy.json" \
+    --template-file "./templates/basic-deploy.json" \
     --parameters \
         deploymentName="$deployment_name" \
         aadTenantId="$current_user_tid" \
