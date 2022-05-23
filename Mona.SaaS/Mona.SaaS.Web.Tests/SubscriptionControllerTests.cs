@@ -260,7 +260,7 @@ namespace Mona.SaaS.Web.Tests
 
             lpModel = viewResult.Model as LandingPageModel;
 
-            lpModel.ErrorCode.Should().Be(SubscriptionController.ErrorCodes.SubscriptionActivationFailed);
+            lpModel.ErrorCode.Should().Be(SubscriptionController.ErrorCodes.SubscriptionNotFound);
             lpModel.InTestMode.Should().Be(true);
             lpModel.PublisherContactPageUrl.Should().Be(publisherConfig.PublisherContactPageUrl);
             lpModel.PublisherCopyrightNotice.Should().Be(publisherConfig.PublisherCopyrightNotice);
