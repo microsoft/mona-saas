@@ -112,7 +112,7 @@ The setup script supports additional optional parameters detailed in the table b
 
 ### 5. Complete Mona SaaS setup
 
-Once the script is finished, note the information provided in the `Mona Deployment Summary`. It's strongly recommended saving these values somewhere safe and convenient as you will likely need to refer to them again later.
+Once the script is finished, note the information provided in the `Mona Deployment Summary`. It's strongly recommended to save these values somewhere safe and convenient as you will likely need to refer to them again later.
 
 Locate the setup URL at the _very bottom_ of the script output. It will look similiar to this —
 
