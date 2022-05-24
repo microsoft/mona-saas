@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.30611.23
+# Visual Studio Version 17
+VisualStudioVersion = 17.2.32505.173
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Mona.SaaS.Core", "Mona.SaaS.Core\Mona.SaaS.Core.csproj", "{03D0BAB8-0DD0-485E-BD03-AB822BF38895}"
 EndProject
@@ -16,7 +16,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Mona.AutoIntegration", "Mon
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Mona.SaaS.Services.Default", "Mona.SaaS.Services.Default\Mona.SaaS.Services.Default.csproj", "{BB15E201-B247-4942-9B2F-8FE6FF872DFC}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mona.SaaS.Web.Tests", "Mona.SaaS.Web.Tests\Mona.SaaS.Web.Tests.csproj", "{207DF0C6-32E4-49CF-8413-4F26D07FABF4}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Mona.SaaS.Web.Tests", "Mona.SaaS.Web.Tests\Mona.SaaS.Web.Tests.csproj", "{207DF0C6-32E4-49CF-8413-4F26D07FABF4}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mona.SaaS.TurnstileRelay", "Mona.SaaS.TurnstileRelay\Mona.SaaS.TurnstileRelay.csproj", "{170BB895-49A2-4E91-85A5-116EBF6F1EBA}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -44,6 +46,10 @@ Global
 		{207DF0C6-32E4-49CF-8413-4F26D07FABF4}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{207DF0C6-32E4-49CF-8413-4F26D07FABF4}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{207DF0C6-32E4-49CF-8413-4F26D07FABF4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{170BB895-49A2-4E91-85A5-116EBF6F1EBA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{170BB895-49A2-4E91-85A5-116EBF6F1EBA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{170BB895-49A2-4E91-85A5-116EBF6F1EBA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{170BB895-49A2-4E91-85A5-116EBF6F1EBA}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

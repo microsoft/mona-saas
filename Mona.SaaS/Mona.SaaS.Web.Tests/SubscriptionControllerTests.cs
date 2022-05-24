@@ -965,7 +965,7 @@ namespace Mona.SaaS.Web.Tests
                 SubscriptionId = testWhNotification.SubscriptionId
             };
 
-            V_2021_10_01.SubscriptionCancelled cancelledEvent = null;
+            V_2021_10_01.SubscriptionCanceled cancelledEvent = null;
 
             mockMpOperationService
                 .Setup(os => os.GetSubscriptionOperationAsync(testWhNotification.SubscriptionId, testWhNotification.OperationId))
@@ -976,8 +976,8 @@ namespace Mona.SaaS.Web.Tests
                 .Returns(Task.FromResult(testSubscription));
 
             mockEventPublisher
-                .Setup(ep => ep.PublishEventAsync(It.IsAny<V_2021_10_01.SubscriptionCancelled>()))
-                .Callback<V_2021_10_01.SubscriptionCancelled>(e => cancelledEvent = e);
+                .Setup(ep => ep.PublishEventAsync(It.IsAny<V_2021_10_01.SubscriptionCanceled>()))
+                .Callback<V_2021_10_01.SubscriptionCanceled>(e => cancelledEvent = e);
 
             var controllerUt = new SubscriptionController(
               mockDeployConfig.Object, mockLogger.Object, mockMpOperationService.Object,
@@ -989,7 +989,7 @@ namespace Mona.SaaS.Web.Tests
             actionResult.Should().BeOfType<OkResult>();
 
             cancelledEvent.Should().NotBeNull();
-            cancelledEvent.EventType.Should().Be(EventTypes.SubscriptionCancelled);
+            cancelledEvent.EventType.Should().Be(EventTypes.SubscriptionCanceled);
             cancelledEvent.OperationId.Should().Be(testWhNotification.OperationId);
             cancelledEvent.Subscription.Should().BeEquivalentTo(new FlatSubscription(testSubscription));
         }
@@ -1362,15 +1362,15 @@ namespace Mona.SaaS.Web.Tests
                 SubscriptionId = testWhNotification.SubscriptionId
             };
 
-            V_2021_10_01.SubscriptionCancelled cancelledEvent = null;
+            V_2021_10_01.SubscriptionCanceled cancelledEvent = null;
 
             mockSubscriptionRepo
                 .Setup(sr => sr.GetSubscriptionAsync(testSubscription.SubscriptionId))
                 .Returns(Task.FromResult(testSubscription));
 
             mockEventPublisher
-                .Setup(ep => ep.PublishEventAsync(It.IsAny<V_2021_10_01.SubscriptionCancelled>()))
-                .Callback<V_2021_10_01.SubscriptionCancelled>(e => cancelledEvent = e);
+                .Setup(ep => ep.PublishEventAsync(It.IsAny<V_2021_10_01.SubscriptionCanceled>()))
+                .Callback<V_2021_10_01.SubscriptionCanceled>(e => cancelledEvent = e);
 
             var controllerUt = new SubscriptionController(
               mockDeployConfig.Object, mockLogger.Object, mockMpOperationService.Object,
@@ -1382,7 +1382,7 @@ namespace Mona.SaaS.Web.Tests
             actionResult.Should().BeOfType<OkResult>();
 
             cancelledEvent.Should().NotBeNull();
-            cancelledEvent.EventType.Should().Be(EventTypes.SubscriptionCancelled);
+            cancelledEvent.EventType.Should().Be(EventTypes.SubscriptionCanceled);
             cancelledEvent.OperationId.Should().Be(testWhNotification.OperationId);
             cancelledEvent.Subscription.Should().BeEquivalentTo(new FlatSubscription(testSubscription));
         }

@@ -390,7 +390,7 @@ namespace Mona.SaaS.Web.Controllers
             {
                 SubscriptionOperationType.Cancel =>
                 this.subscriptionEventPublisher.PublishEventAsync(
-                    new Events.V_2021_05_01.SubscriptionCancelled(subscription, whNotification.OperationId)),
+                    new Events.V_2021_05_01.SubscriptionCanceled(subscription, whNotification.OperationId)),
 
                 SubscriptionOperationType.ChangePlan =>
                 this.subscriptionEventPublisher.PublishEventAsync(
@@ -420,7 +420,7 @@ namespace Mona.SaaS.Web.Controllers
            {
                SubscriptionOperationType.Cancel =>
                this.subscriptionEventPublisher.PublishEventAsync(
-                   new Events.V_2021_10_01.SubscriptionCancelled(subscription, whNotification.OperationId)),
+                   new Events.V_2021_10_01.SubscriptionCanceled(subscription, whNotification.OperationId)),
 
                SubscriptionOperationType.ChangePlan =>
                this.subscriptionEventPublisher.PublishEventAsync(
