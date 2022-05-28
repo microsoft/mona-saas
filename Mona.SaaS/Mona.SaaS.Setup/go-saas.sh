@@ -130,10 +130,12 @@ else
     return 1
 fi
 
+p_deployment_name=$(echo "$p_deployment_name" | tr '[:upper:]' '[:lower:]') # Lower the deployment name...
+
 if [[ -z $p_display_name ]]; then
-    display_name="$p_deployment_name"
+    display_name="$p_deployment_name SaaS"
 else
-    display_name=p_display_name
+    display_name="$p_display_name"
 fi
 
 # Go get Turnstile...
@@ -162,36 +164,71 @@ fi
 # Create the Mona app registration in AAD...
 
 mona_aad_app_name="$display_name"
-mona_aad_app_secret=$(openssl rand -base64 64)
 
 echo "🛡️   Creating Mona Azure Active Directory (AAD) app [$mona_aad_app_name] registration..."
 
-mona_aad_app_id=$(az ad app create \
-    --display-name "$mona_aad_app_name" \
-    --available-to-other-tenants true \
-    --end-date "2299-12-31" \
-    --password "$mona_aad_app_secret" \
-    --optional-claims @./aad/manifest.optional_claims.json \
-    --required-resource-accesses @./aad/manifest.resource_access.json \
-    --app-roles @./aad/manifest.app_roles.json \
-    --query appId \
+graph_token=$(az account get-access-token \
+    --resource-type ms-graph \
+    --query accessToken \
     --output tsv);
 
+mona_admin_role_id=$(cat /proc/sys/kernel/random/uuid)
+create_mona_app_json=$(cat ./aad/manifest.json)
+create_mona_app_json="${create_app_json/__aad_app_name__/${mona_aad_app_name}}"
+create_mona_app_json="${create_app_json/__deployment_name__/${p_deployment_name}}"
+create_mona_app_json="${create_app_json/__admin_role_id__/${mona_admin_role_id}}"
+
+create_mona_app_response=$(curl \
+    -X POST \
+    -H "Content-Type: application/json" \
+    -H "Authorization: Bearer $graph_token" \
+    -d "$create_mona_app_json" \
+    "https://graph.microsoft.com/v1.0/applications")
+
+mona_aad_object_id=$(echo "$create_mona_app_response" | jq -r ".id")
+mona_aad_app_id=$(echo "$create_mona_app_response" | jq -r ".appId")
+add_mona_password_json=$(cat ./aad/add_password.json)
+
+add_mona_password_response=$(curl \
+    -X POST \
+    -H "Content-Type: application/json" \
+    -H "Authorization: Bearer $graph_token" \
+    -d "$add_mona_password_json" \
+    "https://graph.microsoft.com/v1.0/applications/$mona_aad_object_id/addPassword")
+
+mona_aad_app_secret=$(echo "$add_mona_password_response" | jq -r ".secretText")
+
 turn_aad_app_name="$display_name Seating"
-turn_aad_app_secret=$(openssl rand -base64 64)
 
 echo "🛡️   Creating Turnstile Azure Active Directory (AAD) app [$turn_aad_app_name] registration..."
 
-turn_aad_app_id=$(az ad app create \
-    --display-name "$turn_aad_app_name" \
-    --available-to-other-tenants true \
-    --end-date "2299-12-31" \
-    --password "$turn_aad_app_secret" \
-    --optional-claims @./aad/turnstile/manifest.optional_claims.json \
-    --required-resource-accesses @./aad/turnstile/manifest.resource_access.json \
-    --app-roles @./aad/turnstile/manifest.app_roles.json \
-    --query appId \
-    --output tsv);
+turn_tenant_admin_role_id=$(cat /proc/sys/kernel/random/uuid)
+turn_admin_role_id=$(cat /proc/sys/kernel/random/uuid)
+create_turn_app_json=$(cat ./aad/turnstile/manifest.json)
+create_turn_app_json="${create_app_json/__aad_app_name__/${turn_aad_app_name}}"
+create_turn_app_json="${create_app_json/__deployment_name__/${p_deployment_name}}"
+create_turn_app_json="${create_app_json/__tenant_admin_role_id__/${turn_tenant_admin_role_id}}"
+create_turn_app_json="${create_app_json/__turnstile_admin_role_id__/${turn_admin_role_id}}"
+
+create_turn_app_response=$(curl \
+    -X POST \
+    -H "Content-Type: application/json" \
+    -H "Authorization: Bearer $graph_token" \
+    -d "$create_turn_app_json" \
+    "https://graph.microsoft.com/v1.0/applications")
+
+turn_aad_object_id=$(echo "$create_turn_app_response" | jq -r ".id")
+turn_aad_app_id=$(echo "$create_turn_app_response" | jq -r ".appId")
+add_turn_password_json=$(cat ./aad/turnstile/add_password.json)
+
+add_turn_password_response=$(curl \
+    -X POST \
+    -H "Content-Type: application/json" \
+    -H "Authorization: Bearer $graph_token" \
+    -d "$add_turn_password_json" \
+    "https://graph.microsoft.com/v1.0/applications/$turn_aad_object_id/addPassword")
+
+turn_aad_app_secret=$(echo "$add_turn_password_response" | jq -r ".secretText")
 
 echo "🛡️   Creating Mona AAD app [$mona_aad_app_name] service principal..."
 
@@ -246,3 +283,189 @@ az deployment group create \
         turnAadClientId="$turn_aad_app_id" \
         turnAadTenantId="$current_user_tid" \
         turnAadClientSecret="$turn_aad_app_secret"
+
+storage_account_name=$(az deployment group show \
+    --resource-group "$resource_group_name" \
+    --name "$az_deployment_name" \
+    --query properties.outputs.storageAccountName.value \
+    --output tsv);
+
+storage_account_key=$(az deployment group show \
+    --resource-group "$resource_group_name" \
+    --name "$az_deployment_name" \
+    --query properties.outputs.storageAccountKey.value \
+    --output tsv);
+
+mona_publisher_config_json=$(az deployment group show \
+    --resource-group "$resource_group_name" \
+    --name "$az_deployment_name" \
+    --query properties.outputs.monaPublisherConfig.value \
+    --output tsv);
+
+turn_publisher_config_json=$(az deployment group show \
+    --resource-group "$resource_group_name" \
+    --name "$az_deployment_name" \
+    --query properties.outputs.turnPublisherConfig.value \
+    --output tsv);
+
+mona_web_app_name=$(az deployment group show \
+    --resource-group "$resource_group_name" \
+    --name "$az_deployment_name" \
+    --query properties.outputs.monaWebAppName.value \
+    --output tsv);
+
+relay_app_name=$(az deployment group show \
+    --resource-group "$resource_group_name" \
+    --name "$az_deployment_name" \
+    --query properties.outputs.relayName.value \
+    --output tsv);
+
+turn_web_app_name=$(az deployment group show \
+    --resource-group "$resource_group_name" \
+    --name "$az_deployment_name" \
+    --query properties.outputs.turnWebAppName.value \
+    --output tsv);
+
+turn_api_app_name=$(az deployment group show \
+    --resource-group "$resource_group_name" \
+    --name "$az_deployment_name" \
+    --query properties.outputs.turnApiAppName.value \
+    --output tsv);
+
+echo "⚙️   Applying Mona publisher configuration..."
+
+az storage blob upload \
+    --account-name "$storage_account_name" \
+    --account-key "$storage_account_key" \
+    --container-name "mona-configuration" \
+    --data "$mona_publisher_config_json" \
+    --name "publisher-config.json"
+
+echo "⚙️   Applying Turnstile publisher configuration..."
+
+az storage blob upload \
+    --account-name "$storage_account_name" \
+    --account-key "$storage_account_key" \
+    --container-name "turn-configuration" \
+    --data "$turn_publisher_config_json" \
+    --name "publisher_config.json"
+
+echo "🦾   Deploying default Mona integration pack..."
+
+az deployment group create \
+    --resource-group "$resource_group_name" \
+    --name "mona-pack-deploy-$p_deployment_name" \
+    --template-file "./integration_packs/default/deploy_pack.bicep"
+    --parameters \
+        deploymentName="$p_deployment_name" \
+        aadClientId="$mona_aad_app_id" \
+        aadClientSecret="$mona_aad_app_secret" \
+        aadTenantId="$current_user_tid"
+
+[[ $? -eq 0 ]] && echo "✔   Default Mona integration pack deployed.";
+[[ $? -ne 0 ]] && echo "⚠️   Default Mona integration pack deployment failed."
+
+echo "🦾   Deploying default Turnstile integration pack..."
+
+# Deploy default Turnstile integration pack...
+
+echo "🔐   Adding you to Mona's administrator role..."
+
+# Add the current user to the Mona administrators role...
+
+curl -X POST \
+    -H "Content-Type: application/json" \
+    -H "Authorization: Bearer $graph_token" \
+    -d "{ \"principalId\": \"$current_user_oid\", \"resourceId\": \"$mona_aad_sp_id\", \"appRoleId\": \"$mona_admin_role_id\" }" \
+    "https://graph.microsoft.com/v1.0/users/$current_user_oid/appRoleAssignments"
+
+echo "🔐   Adding you to Turnstile's administrative roles..."
+
+# Add the current user to the subscriber tenant administrator's AAD role...
+
+curl -X POST \
+    -H "Content-Type: application/json" \
+    -H "Authorization: Bearer $graph_token" \
+    -d "{ \"principalId\": \"$current_user_oid\", \"resourceId\": \"$turn_aad_sp_id\", \"appRoleId\": \"$turn_tenant_admin_role_id\" }" \
+    "https://graph.microsoft.com/v1.0/users/$current_user_oid/appRoleAssignments"
+
+# Add the current user to the turnstile administrator's AAD role...
+
+curl -X POST \
+    -H "Content-Type: application/json" \
+    -H "Authorization: Bearer $graph_token" \
+    -d "{ \"principalId\": \"$current_user_oid\", \"resourceId\": \"$turn_aad_sp_id\", \"appRoleId\": \"$turn_admin_role_id\" }" \
+    "https://graph.microsoft.com/v1.0/users/$current_user_oid/appRoleAssignments"
+
+echo "🌐   Building Mona web app..."
+
+dotnet publish -c Release -o ./mona_web_topublish ../Mona.Saas.Web/Mona.SaaS.Web.csproj
+
+cd ./mona_web_topublish
+zip -r ../mona_web_topublish.zip . >/dev/null
+cd ..
+
+echo "⚡   Building Mona to Turnstile relay..."
+
+dotnet publish -c Release -o ./relay_topublish ../Mona.SaaS.TurnstileRelay/Mona.SaaS.TurnstileRelay.csproj
+
+cd ./relay_topublish
+zip -r ../relay_topublish.zip . >/dev/null
+cd ..
+
+echo "⚡   Building Turnstile API..."
+
+dotnet publish -c Release -o ./turn_api_topublish ../turnstile/Turnstile/Turnstile.Api/Turnstile.Api.csproj
+
+cd ./turn_api_topublish
+zip -r ../turn_api_topublish.zip . >/dev/null
+cd ..
+
+echo "🌐   Building Turnstile web app..."
+
+dotnet publish -c Release -o ./turn_web_topublish ../turnstile/Turnstile/Turnstile.Web/Turnstile.Web.csproj
+
+cd ./turn_web_topublish
+zip -r ../turn_web_topublish.zip . >/dev/null
+cd ..
+
+echo "☁️   Publishing Mona web app..."
+
+az webapp deployment source config-zip \
+    --resource-group "$resource_group_name" \
+    --name "$mona_web_app_name" \
+    --src "./mona_web_topublish.zip"
+
+echo "☁️   Publishing Mona to Turnstile relay..."
+
+az functionapp deployment source config-zip \
+    --resource-group "$resource_group_name" \
+    --name "$relay_app_name" \
+    --src "./relay_topublish.zip"
+
+echo "☁️   Publishing Turnstile API..."
+
+az functionapp deployment source config-zip \
+    --resource-group "$resource_group_name" \
+    --name "$turn_api_app_name" \
+    --src "./turn_api_topublish.zip"
+
+echo "☁️   Publishing Turnstile web app..."
+
+az webapp deployment source config-zip \
+    --resource-group "$resource_group_name" \
+    --name "$turn_web_app_name" \
+    --src "./turn_web_topublish.zip"
+
+echo "🧹   Cleaning up..."
+
+rm -rf ./mona_web_topublish >/dev/null
+rm -rf ./mona_web_topublish.zip >/dev/null
+rm -rf ./relay_topublish >/dev/null
+rm -rf ./relay_topublish.zip >/dev/null
+rm -rf ./turn_api_topublish >/dev/null
+rm -rf ./turn_api_topublish.zip >/dev/null
+rm -rf ./turn_web_topublish >/dev/null
+rm -rf ./turn_web_topublish.zip >/dev/null
+rm -rf ./turnstile >/dev/null
+

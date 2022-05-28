@@ -536,3 +536,21 @@ resource turnWebApp 'Microsoft.Web/sites@2021-03-01' = {
     }
   }
 }
+
+output monaWebAppName string = monaWebAppName
+output relayName string = relayApiAppName
+output turnWebAppName string = turnWebAppName
+output turnApiAppName string = turnApiAppName
+
+output storageAccountName string = storageAccount.name
+output storageAccountKey string = storageAccount.listKeys().keys[0].value
+
+output monaPublisherConfig object = {
+  SubscriptionConfigurationUrl: 'https://${turnWebAppName}.azurewebsites.net/subscriptions/{subscription-id}'
+  SubscriptionPurchaseConfirmationUrl: 'https://${turnWebAppName}.azurewebsites.net/from-mona'
+}
+
+output turnPublisherConfig object = {
+  is_setup_complete: false
+  mona_base_storage_url: 'https://${storageAccount.name}.blob.core.windows.net'
+}
