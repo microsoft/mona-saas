@@ -435,8 +435,7 @@ curl -X POST \
     -H "Content-Type: application/json" \
     -H "Authorization: Bearer $graph_token" \
     -d "{ \"principalId\": \"$current_user_oid\", \"resourceId\": \"$mona_aad_sp_id\", \"appRoleId\": \"$mona_admin_role_id\" }" \
-    "https://graph.microsoft.com/v1.0/users/$current_user_oid/appRoleAssignments"
-echo
+    "https://graph.microsoft.com/v1.0/users/$current_user_oid/appRoleAssignments" && echo
 
 echo "🔐   Adding you to Turnstile's administrative roles..."
 
@@ -446,8 +445,7 @@ curl -X POST \
     -H "Content-Type: application/json" \
     -H "Authorization: Bearer $graph_token" \
     -d "{ \"principalId\": \"$current_user_oid\", \"resourceId\": \"$turn_aad_sp_id\", \"appRoleId\": \"$turn_tenant_admin_role_id\" }" \
-    "https://graph.microsoft.com/v1.0/users/$current_user_oid/appRoleAssignments"
-echo
+    "https://graph.microsoft.com/v1.0/users/$current_user_oid/appRoleAssignments" && echo
 
 # Add the current user to the turnstile administrator's AAD role...
 
@@ -455,8 +453,7 @@ curl -X POST \
     -H "Content-Type: application/json" \
     -H "Authorization: Bearer $graph_token" \
     -d "{ \"principalId\": \"$current_user_oid\", \"resourceId\": \"$turn_aad_sp_id\", \"appRoleId\": \"$turn_admin_role_id\" }" \
-    "https://graph.microsoft.com/v1.0/users/$current_user_oid/appRoleAssignments"
-echo
+    "https://graph.microsoft.com/v1.0/users/$current_user_oid/appRoleAssignments" && echo
 
 echo "🌐   Building Mona web app..."
 
@@ -528,5 +525,8 @@ az webapp deployment source config-zip \
 
 clean_up
 
-
+echo "🏁   Mona + Turnstile deployment complete. It took [$SECONDS] seconds."
+echo "➡️   Go to [ https://$mona_web_app_name.azurewebsites.net/setup ] to complete Mona setup, then..."
+echo "    go to [ https://$turn_web_app_name.azurewebsites.net/publisher/setup ] to complete Turnstile setup."
+echo
 
