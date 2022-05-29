@@ -544,6 +544,8 @@ output turnApiAppName string = turnApiAppName
 
 output relayId string = relayApiApp.id
 output topicId string = eventGridTopic.id
+output topicName string = eventGridTopic.name
+output topicConnectionName string = eventGridConnection.name
 
 output storageAccountName string = storageAccount.name
 output storageAccountKey string = storageAccount.listKeys().keys[0].value
@@ -555,5 +557,5 @@ output monaPublisherConfig object = {
 
 output turnPublisherConfig object = {
   is_setup_complete: false
-  mona_base_storage_url: 'https://${storageAccount.name}.blob.core.windows.net'
+  mona_base_storage_url: 'https://${storageAccount.properties.primaryEndpoints.web}'
 }

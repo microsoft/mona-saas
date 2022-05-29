@@ -71,6 +71,20 @@ check_deployment_region() {
     fi
 }
 
+clean_up() {
+    echo "🧹   Cleaning up..."
+
+    rm -rf ./mona_web_topublish >/dev/null
+    rm -rf ./mona_web_topublish.zip >/dev/null
+    rm -rf ./relay_topublish >/dev/null
+    rm -rf ./relay_topublish.zip >/dev/null
+    rm -rf ./turn_api_topublish >/dev/null
+    rm -rf ./turn_api_topublish.zip >/dev/null
+    rm -rf ./turn_web_topublish >/dev/null
+    rm -rf ./turn_web_topublish.zip >/dev/null
+    rm -rf ./turnstile >/dev/null
+}
+
 splash() {
     echo "Mona + Turnstile Unified Installer"
     echo "https://github.com/microsoft/mona-saas"
@@ -84,6 +98,10 @@ splash() {
 # Howdy!
 
 splash
+
+# Clean up anything left behind if the previous run failed...
+
+clean_up
 
 # Make sure all pre-reqs are installed...
 
@@ -314,13 +332,13 @@ mona_publisher_config_json=$(az deployment group show \
     --resource-group "$resource_group_name" \
     --name "$az_deployment_name" \
     --query properties.outputs.monaPublisherConfig.value \
-    --output tsv);
+    --output json);
 
 turn_publisher_config_json=$(az deployment group show \
     --resource-group "$resource_group_name" \
     --name "$az_deployment_name" \
     --query properties.outputs.turnPublisherConfig.value \
-    --output tsv);
+    --output json);
 
 mona_web_app_name=$(az deployment group show \
     --resource-group "$resource_group_name" \
@@ -358,6 +376,18 @@ event_grid_topic_id=$(az deployment group show \
     --query properties.outputs.topicId.value \
     --output tsv)
 
+event_grid_topic_name=$(az deployment group show \
+    --resource-group "$resource_group_name" \
+    --name "$az_deployment_name" \
+    --query properties.outputs.topicName.value \
+    --output tsv)
+
+event_grid_connection_name=$(az deployment group show \
+    --resource-group "$resource_group_name" \
+    --name "$az_deployment_name" \
+    --query properties.outputs.topicConnectionName.value \
+    --output tsv)
+
 echo "⚙️   Applying Mona publisher configuration..."
 
 az storage blob upload \
@@ -386,7 +416,9 @@ az deployment group create \
         deploymentName="$p_deployment_name" \
         aadClientId="$mona_aad_app_id" \
         aadClientSecret="$mona_aad_app_secret" \
-        aadTenantId="$current_user_tid"
+        aadTenantId="$current_user_tid" \
+        eventGridTopicName="$event_grid_topic_name" \
+        eventGridConnectionName="$event_grid_connection_name"
 
 [[ $? -eq 0 ]] && echo "✔   Default Mona integration pack deployed.";
 [[ $? -ne 0 ]] && echo "⚠️   Default Mona integration pack deployment failed."
@@ -404,6 +436,7 @@ curl -X POST \
     -H "Authorization: Bearer $graph_token" \
     -d "{ \"principalId\": \"$current_user_oid\", \"resourceId\": \"$mona_aad_sp_id\", \"appRoleId\": \"$mona_admin_role_id\" }" \
     "https://graph.microsoft.com/v1.0/users/$current_user_oid/appRoleAssignments"
+echo
 
 echo "🔐   Adding you to Turnstile's administrative roles..."
 
@@ -414,6 +447,7 @@ curl -X POST \
     -H "Authorization: Bearer $graph_token" \
     -d "{ \"principalId\": \"$current_user_oid\", \"resourceId\": \"$turn_aad_sp_id\", \"appRoleId\": \"$turn_tenant_admin_role_id\" }" \
     "https://graph.microsoft.com/v1.0/users/$current_user_oid/appRoleAssignments"
+echo
 
 # Add the current user to the turnstile administrator's AAD role...
 
@@ -422,10 +456,11 @@ curl -X POST \
     -H "Authorization: Bearer $graph_token" \
     -d "{ \"principalId\": \"$current_user_oid\", \"resourceId\": \"$turn_aad_sp_id\", \"appRoleId\": \"$turn_admin_role_id\" }" \
     "https://graph.microsoft.com/v1.0/users/$current_user_oid/appRoleAssignments"
+echo
 
 echo "🌐   Building Mona web app..."
 
-dotnet publish -c Release -o ./mona_web_topublish ../Mona.Saas.Web/Mona.SaaS.Web.csproj
+dotnet publish -c Release -o ./mona_web_topublish ../Mona.SaaS.Web/Mona.SaaS.Web.csproj
 
 cd ./mona_web_topublish
 zip -r ../mona_web_topublish.zip . >/dev/null
@@ -472,6 +507,7 @@ az functionapp deployment source config-zip \
 echo "🔌   Connecting Mona to Turnstile relay to event grid topic ..."
 
 az eventgrid event-subscription create \
+    --name "relay_connection" \
     --source-resource-id "$event_grid_topic_id" \
     --endpoint "$relay_app_id/functions/Relay" \
     --endpoint-type azurefunction
@@ -490,15 +526,7 @@ az webapp deployment source config-zip \
     --name "$turn_web_app_name" \
     --src "./turn_web_topublish.zip"
 
-echo "🧹   Cleaning up..."
+clean_up
 
-rm -rf ./mona_web_topublish >/dev/null
-rm -rf ./mona_web_topublish.zip >/dev/null
-rm -rf ./relay_topublish >/dev/null
-rm -rf ./relay_topublish.zip >/dev/null
-rm -rf ./turn_api_topublish >/dev/null
-rm -rf ./turn_api_topublish.zip >/dev/null
-rm -rf ./turn_web_topublish >/dev/null
-rm -rf ./turn_web_topublish.zip >/dev/null
-rm -rf ./turnstile >/dev/null
+
 
