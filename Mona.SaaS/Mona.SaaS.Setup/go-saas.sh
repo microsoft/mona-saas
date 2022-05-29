@@ -195,6 +195,10 @@ create_mona_app_response=$(curl \
     -d "$create_mona_app_json" \
     "https://graph.microsoft.com/v1.0/applications")
 
+echo "$create_mona_app_response"
+
+exit 1
+
 mona_aad_object_id=$(echo "$create_mona_app_response" | jq -r ".id")
 mona_aad_app_id=$(echo "$create_mona_app_response" | jq -r ".appId")
 add_mona_password_json=$(cat ./aad/add_password.json)
