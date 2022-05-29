@@ -33,7 +33,7 @@ param location string = resourceGroup().location
 // For shared resources
 
 var cleanDeploymentName = toLower(deploymentName)
-var storageAccountName = take('saasstor${cleanDeploymentName}', 24)
+var storageAccountName = take('saasstor${uniqueString(resourceGroup().id, cleanDeploymentName)}', 24)
 var appInsightsName = 'saas-insights-${cleanDeploymentName}'
 var appServicePlanName = 'saas-plan-${cleanDeploymentName}'
 var eventGridTopicName = 'saas-events-${cleanDeploymentName}'
@@ -414,7 +414,7 @@ resource monaWebApp 'Microsoft.Web/sites@2021-03-01' = {
         }
         {
           name: 'Deployment:AzureSubscriptionId'
-          value: subscription().id
+          value: subscription().subscriptionId
         }
         {
           name: 'Deployment:EventVersion'

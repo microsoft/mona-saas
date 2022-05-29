@@ -381,7 +381,7 @@ echo "🦾   Deploying default Mona integration pack..."
 az deployment group create \
     --resource-group "$resource_group_name" \
     --name "mona-pack-deploy-$p_deployment_name" \
-    --template-file "./integration_packs/default/deploy_pack.bicep"
+    --template-file "./integration_packs/default/deploy_pack.bicep" \
     --parameters \
         deploymentName="$p_deployment_name" \
         aadClientId="$mona_aad_app_id" \
