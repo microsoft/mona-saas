@@ -215,7 +215,7 @@ if [[ -n $param_valid_failed ]]; then
 fi
 
 while [[ -z $current_user_oid ]]; do
-    current_user_oid=$(az ad signed-in-user show --query objectId --output tsv 2>/dev/null);
+    current_user_oid=$(az ad signed-in-user show --query id --output tsv 2>/dev/null);
     if [[ -z $current_user_oid ]]; then az login; fi;
 done
 
