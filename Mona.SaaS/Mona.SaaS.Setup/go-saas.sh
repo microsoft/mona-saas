@@ -2,7 +2,7 @@
 
 SECONDS=0 # Let's time it...
 
-usage() { echo "Usage: $0 <-n name> <-r deployment_region> [-d display_name] [-i integration_pack]"; }
+usage() { echo "Usage: $0 <-n name> <-r deployment_region> [-d display_name]"; }
 
 check_az() {
     az version >/dev/null
@@ -105,9 +105,6 @@ while getopts "n:r:d:i:" opt; do
         ;;
         d)
             p_display_name=$OPTARG
-        ;;
-        i)
-            p_integration_pack=$OPTARG
         ;;
         \?)
             usage
@@ -332,6 +329,18 @@ turn_api_app_name=$(az deployment group show \
     --query properties.outputs.turnApiAppName.value \
     --output tsv);
 
+relay_app_id=$(az deployment group show \
+    --resource-group "$resource_group_name" \
+    --name "$az_deployment_name" \
+    --query properties.outputs.relayId.value \
+    --output tsv)
+
+event_grid_topic_id=$(az deployment group show \
+    --resource-group "$resource_group_name" \
+    --name "$az_deployment_name" \
+    --query properties.outputs.topicId.value \
+    --output tsv)
+
 echo "⚙️   Applying Mona publisher configuration..."
 
 az storage blob upload \
@@ -442,6 +451,13 @@ az functionapp deployment source config-zip \
     --resource-group "$resource_group_name" \
     --name "$relay_app_name" \
     --src "./relay_topublish.zip"
+
+echo "🔌   Connecting Mona to Turnstile relay to event grid topic ..."
+
+az eventgrid event-subscription create \
+    --source-resource-id "$event_grid_topic_id" \
+    --endpoint "$relay_app_id/functions/Relay" \
+    --endpoint-type azurefunction
 
 echo "☁️   Publishing Turnstile API..."
 

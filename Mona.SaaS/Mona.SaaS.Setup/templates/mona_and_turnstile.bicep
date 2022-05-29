@@ -542,6 +542,9 @@ output relayName string = relayApiAppName
 output turnWebAppName string = turnWebAppName
 output turnApiAppName string = turnApiAppName
 
+output relayId string = relayApiApp.id
+output topicId string = eventGridTopic.id
+
 output storageAccountName string = storageAccount.name
 output storageAccountKey string = storageAccount.listKeys().keys[0].value
 
