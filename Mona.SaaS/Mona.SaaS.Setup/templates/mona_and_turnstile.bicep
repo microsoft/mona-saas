@@ -217,7 +217,7 @@ resource eventGridConnection 'Microsoft.Web/connections@2016-06-01' = {
       'token:grantType': 'client_credentials'
     }
     api: {
-      id: '${subscription().id}/providers/Microsoft.Web/locations/${location}/managedApis/azureeventgrid'
+      id: '${subscription().id}/providers/Microsoft.Web/locations/${eventGridTopic.location}/managedApis/azureeventgrid'
     }
   }
 }
