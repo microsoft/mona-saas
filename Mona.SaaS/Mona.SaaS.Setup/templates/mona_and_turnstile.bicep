@@ -337,7 +337,7 @@ resource turnApiApp 'Microsoft.Web/sites@2021-03-01' = {
         }
         {
           name: 'Turnstile_CosmosDatabaseId'
-          value: turnCosmosDbAccountName
+          value: turnCosmosDbName
         }
         {
           name: 'Turnstile_CosmosEndpointUrl'

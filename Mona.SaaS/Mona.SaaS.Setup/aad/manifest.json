@@ -43,6 +43,9 @@
     "web": {
         "redirectUris": [
             "https://mona-web-__deployment_name__.azurewebsites.net/signin-oidc"
-        ]
+        ],
+        "implicitGrantSettings": {
+            "enableIdTokenIssuance": true
+        }
     }
 }
