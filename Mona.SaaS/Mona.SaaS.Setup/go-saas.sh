@@ -184,9 +184,9 @@ graph_token=$(az account get-access-token \
 
 mona_admin_role_id=$(cat /proc/sys/kernel/random/uuid)
 create_mona_app_json=$(cat ./aad/manifest.json)
-create_mona_app_json="${create_app_json/__aad_app_name__/${mona_aad_app_name}}"
-create_mona_app_json="${create_app_json/__deployment_name__/${p_deployment_name}}"
-create_mona_app_json="${create_app_json/__admin_role_id__/${mona_admin_role_id}}"
+create_mona_app_json="${create_mona_app_json/__aad_app_name__/${mona_aad_app_name}}"
+create_mona_app_json="${create_mona_app_json/__deployment_name__/${p_deployment_name}}"
+create_mona_app_json="${create_mona_app_json/__admin_role_id__/${mona_admin_role_id}}"
 
 create_mona_app_response=$(curl \
     -X POST \
@@ -196,8 +196,6 @@ create_mona_app_response=$(curl \
     "https://graph.microsoft.com/v1.0/applications")
 
 echo "$create_mona_app_response"
-
-exit 1
 
 mona_aad_object_id=$(echo "$create_mona_app_response" | jq -r ".id")
 mona_aad_app_id=$(echo "$create_mona_app_response" | jq -r ".appId")
@@ -219,10 +217,10 @@ echo "🛡️   Creating Turnstile Azure Active Directory (AAD) app [$turn_aad_a
 turn_tenant_admin_role_id=$(cat /proc/sys/kernel/random/uuid)
 turn_admin_role_id=$(cat /proc/sys/kernel/random/uuid)
 create_turn_app_json=$(cat ./aad/turnstile/manifest.json)
-create_turn_app_json="${create_app_json/__aad_app_name__/${turn_aad_app_name}}"
-create_turn_app_json="${create_app_json/__deployment_name__/${p_deployment_name}}"
-create_turn_app_json="${create_app_json/__tenant_admin_role_id__/${turn_tenant_admin_role_id}}"
-create_turn_app_json="${create_app_json/__turnstile_admin_role_id__/${turn_admin_role_id}}"
+create_turn_app_json="${create_turn_app_json/__aad_app_name__/${turn_aad_app_name}}"
+create_turn_app_json="${create_turn_app_json/__deployment_name__/${p_deployment_name}}"
+create_turn_app_json="${create_turn_app_json/__tenant_admin_role_id__/${turn_tenant_admin_role_id}}"
+create_turn_app_json="${create_turn_app_json/__turnstile_admin_role_id__/${turn_admin_role_id}}"
 
 create_turn_app_response=$(curl \
     -X POST \
@@ -230,6 +228,8 @@ create_turn_app_response=$(curl \
     -H "Authorization: Bearer $graph_token" \
     -d "$create_turn_app_json" \
     "https://graph.microsoft.com/v1.0/applications")
+
+echo "$create_turn_app_response"
 
 turn_aad_object_id=$(echo "$create_turn_app_response" | jq -r ".id")
 turn_aad_app_id=$(echo "$create_turn_app_response" | jq -r ".appId")
