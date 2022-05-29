@@ -99,6 +99,10 @@ else
     return 1
 fi
 
+# Upgrade to the latest version of Bicep...
+
+az bicep upgrade
+
 # Log in the user if they aren't already...
 
 while [[ -z $current_user_oid ]]; do
@@ -108,7 +112,7 @@ done
 
 # Get our parameters...
 
-while getopts "n:r:d:i:" opt; do
+while getopts "n:r:d:" opt; do
     case $opt in
         n)
             p_deployment_name=$OPTARG
@@ -195,8 +199,6 @@ create_mona_app_response=$(curl \
     -d "$create_mona_app_json" \
     "https://graph.microsoft.com/v1.0/applications")
 
-echo "$create_mona_app_response"
-
 mona_aad_object_id=$(echo "$create_mona_app_response" | jq -r ".id")
 mona_aad_app_id=$(echo "$create_mona_app_response" | jq -r ".appId")
 add_mona_password_json=$(cat ./aad/add_password.json)
@@ -228,8 +230,6 @@ create_turn_app_response=$(curl \
     -H "Authorization: Bearer $graph_token" \
     -d "$create_turn_app_json" \
     "https://graph.microsoft.com/v1.0/applications")
-
-echo "$create_turn_app_response"
 
 turn_aad_object_id=$(echo "$create_turn_app_response" | jq -r ".id")
 turn_aad_app_id=$(echo "$create_turn_app_response" | jq -r ".appId")
