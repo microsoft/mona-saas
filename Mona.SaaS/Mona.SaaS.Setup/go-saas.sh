@@ -246,7 +246,7 @@ turn_aad_app_secret=$(echo "$add_turn_password_response" | jq -r ".secretText")
 
 echo "🛡️   Creating Mona AAD app [$mona_aad_app_name] service principal..."
 
-mona_aad_sp_id=$(az ad sp create --id "$mona_aad_app_id" --query objectId --output tsv);
+mona_aad_sp_id=$(az ad sp create --id "$mona_aad_app_id" --query id --output tsv);
 
 if [[ -z $mona_aad_sp_id ]]; then
     echo "$lp ❌   Unable to create service principal for Mona AAD app [$mona_aad_app_name ($mona_aad_app_id)]. See above output for details. Setup failed."
@@ -255,7 +255,7 @@ fi
 
 echo "🛡️   Creating Turnstile AAD app [$turn_aad_app_name] service principal..."
 
-turn_aad_sp_id=$(az ad sp create --id "$turn_aad_app_id" --query objectId --output tsv);
+turn_aad_sp_id=$(az ad sp create --id "$turn_aad_app_id" --query id --output tsv);
 
 if [[ -z $turn_aad_sp_id ]]; then
     echo "$lp ❌   Unable to create service principal for Turnstile AAD app [$turn_aad_app_name ($turn_aad_app_id)]. See above output for details. Setup failed."
