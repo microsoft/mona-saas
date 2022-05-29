@@ -65,7 +65,7 @@
             "https://turn-web-__deployment_name__.azurewebsites.net/signin-oidc"
         ],
         "implicitGrantSettings": {
-            "enableIdTokenIssuance": true
+            "enableIdTokenIssuance": "true"
         }
     }
 }
