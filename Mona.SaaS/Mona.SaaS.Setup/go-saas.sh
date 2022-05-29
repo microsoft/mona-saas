@@ -476,7 +476,7 @@ cd ..
 
 echo "⚡   Building Turnstile API..."
 
-dotnet publish -c Release -o ./turn_api_topublish ../turnstile/Turnstile/Turnstile.Api/Turnstile.Api.csproj
+dotnet publish -c Release -o ./turn_api_topublish ./turnstile/Turnstile/Turnstile.Api/Turnstile.Api.csproj
 
 cd ./turn_api_topublish
 zip -r ../turn_api_topublish.zip . >/dev/null
@@ -484,7 +484,7 @@ cd ..
 
 echo "🌐   Building Turnstile web app..."
 
-dotnet publish -c Release -o ./turn_web_topublish ../turnstile/Turnstile/Turnstile.Web/Turnstile.Web.csproj
+dotnet publish -c Release -o ./turn_web_topublish ./turnstile/Turnstile/Turnstile.Web/Turnstile.Web.csproj
 
 cd ./turn_web_topublish
 zip -r ../turn_web_topublish.zip . >/dev/null
@@ -507,7 +507,7 @@ az functionapp deployment source config-zip \
 echo "🔌   Connecting Mona to Turnstile relay to event grid topic ..."
 
 az eventgrid event-subscription create \
-    --name "relay_connection" \
+    --name "relay-connection" \
     --source-resource-id "$event_grid_topic_id" \
     --endpoint "$relay_app_id/functions/Relay" \
     --endpoint-type azurefunction
