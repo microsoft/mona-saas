@@ -557,5 +557,5 @@ output monaPublisherConfig object = {
 
 output turnPublisherConfig object = {
   is_setup_complete: false
-  mona_base_storage_url: 'https://${storageAccount.properties.primaryEndpoints.web}'
+  mona_base_storage_url: storageAccount.properties.primaryEndpoints.web
 }
