@@ -560,7 +560,6 @@ output turnPublisherConfig object = {
   mona_base_storage_url: storageAccount.properties.primaryEndpoints.blob
   default_seating_config: {
     seating_strategy_name: 'first_come_first_served'
-    low_seat_warning_level_pct: '0.25'
     limited_overflow_seating_enabled: true
     seat_reservation_expiry_in_days: 14
     default_seat_expiry_in_days: 14
