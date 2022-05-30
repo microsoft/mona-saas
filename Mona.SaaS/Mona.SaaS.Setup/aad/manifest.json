@@ -40,6 +40,9 @@
             ]
         }
     ],
+    "api": {
+        "requestedAccessTokenVersion": 2
+    },
     "web": {
         "redirectUris": [
             "https://mona-web-__deployment_name__.azurewebsites.net/signin-oidc"
