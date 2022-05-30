@@ -24,6 +24,7 @@ using Mona.SaaS.Web.Extensions;
 using Mona.SaaS.Web.Models;
 using System;
 using System.Net;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using System.Web;
 using Events = Mona.SaaS.Core.Models.Events;
@@ -33,6 +34,9 @@ namespace Mona.SaaS.Web.Controllers
     public class SubscriptionController : Controller
     {
         public const string SubscriptionDetailQueryParameter = "_sub";
+
+        private const string objectIdClaimType = "http://schemas.microsoft.com/identity/claims/objectidentifier";
+        private const string tenantIdClaimType = "http://schemas.microsoft.com/identity/claims/tenantid";
 
         public static class ErrorCodes
         {
@@ -573,18 +577,18 @@ namespace Mona.SaaS.Web.Controllers
 
         private MarketplaceUser CreateTestMarketplaceBeneficiary(string defaultUserEmail) => new MarketplaceUser
         {
-            AadObjectId = TryGetQueryStringParameter(TestSubscriptionParameterNames.BeneficiaryAadObjectId, Guid.NewGuid().ToString()),
-            AadTenantId = TryGetQueryStringParameter(TestSubscriptionParameterNames.BeneficiaryAadTenantId, Guid.NewGuid().ToString()),
-            UserEmail = TryGetQueryStringParameter(TestSubscriptionParameterNames.BeneficiaryUserEmail, defaultUserEmail),
-            UserId = TryGetQueryStringParameter(TestSubscriptionParameterNames.BeneficiaryUserId, Guid.NewGuid().ToString())
+            AadObjectId = TryGetQueryStringParameter(TestSubscriptionParameterNames.BeneficiaryAadObjectId, User.FindFirstValue(objectIdClaimType)),
+            AadTenantId = TryGetQueryStringParameter(TestSubscriptionParameterNames.BeneficiaryAadTenantId, User.FindFirstValue(tenantIdClaimType)),
+            UserEmail = TryGetQueryStringParameter(TestSubscriptionParameterNames.BeneficiaryUserEmail, User.FindFirstValue(ClaimTypes.Email)),
+            UserId = TryGetQueryStringParameter(TestSubscriptionParameterNames.BeneficiaryUserId, User.FindFirstValue(ClaimTypes.Upn))
         };
 
         private MarketplaceUser CreateTestMarketplacePurchaser(string defaultUserEmail) => new MarketplaceUser
         {
-            AadObjectId = TryGetQueryStringParameter(TestSubscriptionParameterNames.PurchaserAadObjectId, Guid.NewGuid().ToString()),
-            AadTenantId = TryGetQueryStringParameter(TestSubscriptionParameterNames.PurchaserAadTenantId, Guid.NewGuid().ToString()),
-            UserEmail = TryGetQueryStringParameter(TestSubscriptionParameterNames.PurchaserUserEmail, defaultUserEmail),
-            UserId = TryGetQueryStringParameter(TestSubscriptionParameterNames.PurchaserUserId, Guid.NewGuid().ToString())
+            AadObjectId = TryGetQueryStringParameter(TestSubscriptionParameterNames.PurchaserAadObjectId, User.FindFirstValue(objectIdClaimType)),
+            AadTenantId = TryGetQueryStringParameter(TestSubscriptionParameterNames.PurchaserAadTenantId, User.FindFirstValue(tenantIdClaimType)),
+            UserEmail = TryGetQueryStringParameter(TestSubscriptionParameterNames.PurchaserUserEmail, User.FindFirstValue(ClaimTypes.Email)),
+            UserId = TryGetQueryStringParameter(TestSubscriptionParameterNames.PurchaserUserId, User.FindFirstValue(ClaimTypes.Upn))
         };
 
         private string TryGetQueryStringParameter(string key, string defaultValue = null) =>

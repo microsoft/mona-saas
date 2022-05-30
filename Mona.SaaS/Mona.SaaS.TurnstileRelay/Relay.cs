@@ -43,7 +43,7 @@ namespace Mona.SaaS.TurnstileRelay
                 throw new InvalidOperationException($"[{apiAccessKeyVariable}] not configured."));
 
             httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-            httpClient.DefaultRequestHeaders.UserAgent.Add(new ProductInfoHeaderValue("Mona.SaaS.TurnstileRelay"));
+            httpClient.DefaultRequestHeaders.UserAgent.Add(new ProductInfoHeaderValue("Mona to Turnstile Relay", null));
         }
 
         [FunctionName("Relay")]
