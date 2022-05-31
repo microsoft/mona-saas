@@ -90,6 +90,8 @@ namespace Mona.SaaS.TurnstileRelay
             var canceled = JsonConvert.DeserializeObject<SubscriptionCanceled>(
                 eventGridEvent.Data.ToString());
 
+            log.LogRelayDebugMessage(eventGridEvent, canceled);
+
             await OnSubscriptionStateChanged(canceled, "canceled");
 
             log.LogInformation($"Subscription [{canceled.SubscriptionId}] canceled.");
@@ -100,6 +102,8 @@ namespace Mona.SaaS.TurnstileRelay
             var reinstated = JsonConvert.DeserializeObject<SubscriptionReinstated>(
                 eventGridEvent.Data.ToString());
 
+            log.LogRelayDebugMessage(eventGridEvent, reinstated);
+
             await OnSubscriptionStateChanged(reinstated, "active");
 
             log.LogInformation($"Subscription [{reinstated.SubscriptionId}] reinstated.");
@@ -109,6 +113,8 @@ namespace Mona.SaaS.TurnstileRelay
         {
             var suspended = JsonConvert.DeserializeObject<SubscriptionSuspended>(
                 eventGridEvent.Data.ToString());
+
+            log.LogRelayDebugMessage(eventGridEvent, suspended);
 
             await OnSubscriptionStateChanged(suspended, "suspended");
 
@@ -121,6 +127,8 @@ namespace Mona.SaaS.TurnstileRelay
                 eventGridEvent.Data.ToString());
 
             var retryPolicy = CreateAsyncHttpRetryPolicy();
+
+            log.LogRelayDebugMessage(eventGridEvent, planChanged);
 
             var pollyResult = await retryPolicy.ExecuteAndCaptureAsync(async () =>
                 await httpClient.PatchAsync(
@@ -140,6 +148,8 @@ namespace Mona.SaaS.TurnstileRelay
                 eventGridEvent.Data.ToString());
 
             var retryPolicy = CreateAsyncHttpRetryPolicy();
+
+            log.LogRelayDebugMessage(eventGridEvent, seatQtyChanged);
 
             var pollyResult = await retryPolicy.ExecuteAndCaptureAsync(async () =>
                 await httpClient.PatchAsync(
@@ -191,6 +201,9 @@ namespace Mona.SaaS.TurnstileRelay
                 }
             }
         }
+
+        private static void LogRelayDebugMessage(this ILogger log, EventGridEvent egEvent, BaseSubscriptionEvent subEvent) =>
+            log.LogDebug($"Relaying [{egEvent.EventType}] event [{egEvent.Id}] to Turnstile API @ [{new Uri(httpClient.BaseAddress!, GetSubscriptionPatchUrl(subEvent))}].");
 
         private static string GetSubscriptionPatchUrl(BaseSubscriptionEvent subEvent) =>
             $"api/saas/subscriptions/{subEvent.SubscriptionId}";
