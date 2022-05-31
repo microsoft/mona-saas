@@ -211,7 +211,7 @@ if [[ -n $param_valid_failed ]]; then
 fi
 
 while [[ -z $current_user_oid ]]; do
-    current_user_oid=$(az ad signed-in-user show --query objectId --output tsv 2>/dev/null);
+    current_user_oid=$(az ad signed-in-user show --query id --output tsv 2>/dev/null);
     if [[ -z $current_user_oid ]]; then az login; fi;
 done
 
@@ -246,27 +246,46 @@ current_user_tid=$(az account show --query tenantId --output tsv);
 # Create the app registration in AAD.
 
 aad_app_name="$display_name"
-aad_app_secret=$(openssl rand -base64 64)
 
 echo "$lp Creating Azure Active Directory (AAD) app registration [$aad_app_name]..."
 
-aad_app_id=$(az ad app create \
-    --display-name "$aad_app_name" \
-    --available-to-other-tenants true \
-    --end-date "2299-12-31" \
-    --password "$aad_app_secret" \
-    --optional-claims @./aad/manifest.optional-claims.json \
-    --required-resource-accesses @./aad/manifest.resource-access.json \
-    --app-roles @./aad/manifest.app-roles.json \
-    --query appId \
+graph_token=$(az account get-access-token \
+    --resource-type ms-graph \
+    --query accessToken \
     --output tsv);
+
+mona_admin_role_id=$(cat /proc/sys/kernel/random/uuid)
+create_mona_app_json=$(cat ./aad/manifest.json)
+create_mona_app_json="${create_mona_app_json/__aad_app_name__/${aad_app_name}}"
+create_mona_app_json="${create_mona_app_json/__deployment_name__/${deployment_name}}"
+create_mona_app_json="${create_mona_app_json/__admin_role_id__/${mona_admin_role_id}}"
+
+create_mona_app_response=$(curl \
+    -X POST \
+    -H "Content-Type: application/json" \
+    -H "Authorization: Bearer $graph_token" \
+    -d "$create_mona_app_json" \
+    "https://graph.microsoft.com/v1.0/applications")
+
+aad_object_id=$(echo "$create_mona_app_response" | jq -r ".id")
+aad_app_id=$(echo "$create_mona_app_response" | jq -r ".appId")
+add_mona_password_json=$(cat ./aad/add_password.json)
+
+add_mona_password_response=$(curl \
+    -X POST \
+    -H "Content-Type: application/json" \
+    -H "Authorization: Bearer $graph_token" \
+    -d "$add_mona_password_json" \
+    "https://graph.microsoft.com/v1.0/applications/$aad_object_id/addPassword")
+
+aad_app_secret=$(echo "$add_mona_password_response" | jq -r ".secretText")
 
 echo "$lp ✔   AAD app [$aad_app_name ($aad_app_id)] successfully registered with AAD tenant [$current_user_tid]."
 echo "$lp Creating app service principal. This might take a while..."
 
 sleep 30 # Give AAD a chance to catch up...
 
-aad_sp_id=$(az ad sp create --id "$aad_app_id" --query objectId --output tsv);
+aad_sp_id=$(az ad sp create --id "$aad_app_id" --query id --output tsv);
 
 if [[ -z $aad_sp_id ]]; then
     echo "$lp ❌   Unable to create service principal for AAD app [$aad_app_name ($aad_app_id)]. See above output for details. Setup failed."
@@ -335,14 +354,6 @@ curl -X POST \
     -H "Authorization: Bearer $graph_token" \
     -d "{ \"principalId\": \"$current_user_oid\", \"resourceId\": \"$aad_sp_id\", \"appRoleId\": \"$sp_admin_role_id\" }" \
     "https://graph.microsoft.com/v1.0/users/$current_user_oid/appRoleAssignments"
-
-# Configure AD app reply and ID URLs.
-
-echo "$lp Completing Mona configuration..."
-
-az ad app update \
-    --id "$aad_app_id" \
-    --reply-urls "$web_app_base_url/signin-oidc";
 
 if [[ -z $no_publish ]]; then
     # Deploy Mona web application...
