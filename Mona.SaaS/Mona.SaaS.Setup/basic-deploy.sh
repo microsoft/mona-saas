@@ -355,14 +355,6 @@ curl -X POST \
     -d "{ \"principalId\": \"$current_user_oid\", \"resourceId\": \"$aad_sp_id\", \"appRoleId\": \"$sp_admin_role_id\" }" \
     "https://graph.microsoft.com/v1.0/users/$current_user_oid/appRoleAssignments"
 
-# Configure AD app reply and ID URLs.
-
-echo "$lp Completing Mona configuration..."
-
-az ad app update \
-    --id "$aad_app_id" \
-    --reply-urls "$web_app_base_url/signin-oidc";
-
 if [[ -z $no_publish ]]; then
     # Deploy Mona web application...
 
