@@ -5,7 +5,7 @@ using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.EventGrid;
 using Microsoft.Extensions.Logging;
 using Mona.SaaS.Core.Constants;
-using Mona.SaaS.Core.Models.Events.V_2021_05_01;
+using Mona.SaaS.Core.Models.Events.V_2021_10_01;
 using Newtonsoft.Json;
 using Polly;
 using Polly.Retry;
@@ -203,7 +203,7 @@ namespace Mona.SaaS.TurnstileRelay
         }
 
         private static void LogRelayDebugMessage(this ILogger log, EventGridEvent egEvent, BaseSubscriptionEvent subEvent) =>
-            log.LogDebug($"Relaying [{egEvent.EventType}] event [{egEvent.Id}] to Turnstile API @ [{new Uri(httpClient.BaseAddress!, GetSubscriptionPatchUrl(subEvent))}].");
+            log.LogInformation($"Relaying [{egEvent.EventType}] event [{egEvent.Id}] to Turnstile API @ [{new Uri(httpClient.BaseAddress!, GetSubscriptionPatchUrl(subEvent))}].");
 
         private static string GetSubscriptionPatchUrl(BaseSubscriptionEvent subEvent) =>
             $"api/saas/subscriptions/{subEvent.SubscriptionId}";
