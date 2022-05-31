@@ -211,7 +211,7 @@ if [[ -n $param_valid_failed ]]; then
 fi
 
 while [[ -z $current_user_oid ]]; do
-    current_user_oid=$(az ad signed-in-user show --query objectId --output tsv 2>/dev/null);
+    current_user_oid=$(az ad signed-in-user show --query id --output tsv 2>/dev/null);
     if [[ -z $current_user_oid ]]; then az login; fi;
 done
 
@@ -245,94 +245,40 @@ current_user_tid=$(az account show --query tenantId --output tsv);
 
 # Create the app registration in AAD.
 
-echo "#################"
-echo "#################"
-
 aad_app_name="$display_name"
-#aad_app_secret=$(openssl rand -base64 64)
 
 echo "$lp Creating Azure Active Directory (AAD) app registration [$aad_app_name]..."
 
-# aad_app_id=$(az ad app create \
-#     --display-name "$aad_app_name" \
-#     --available-to-other-tenants true \
-#     --end-date "2299-12-31" \
-#     --password "$aad_app_secret" \
-#     --optional-claims @./aad/manifest.optional-claims.json \
-#     --required-resource-accesses @./aad/manifest.resource-access.json \
-#     --app-roles @./aad/manifest.app-roles.json \
-#     --query appId \
-#     --output tsv);
+graph_token=$(az account get-access-token \
+    --resource-type ms-graph \
+    --query accessToken \
+    --output tsv);
 
+mona_admin_role_id=$(cat /proc/sys/kernel/random/uuid)
+create_mona_app_json=$(cat ./aad/manifest.json)
+create_mona_app_json="${create_mona_app_json/__aad_app_name__/${aad_app_name}}"
+create_mona_app_json="${create_mona_app_json/__deployment_name__/${deployment_name}}"
+create_mona_app_json="${create_mona_app_json/__admin_role_id__/${mona_admin_role_id}}"
 
-graph_token=$(az account get-access-token --resource-type ms-graph --query accessToken --output tsv)
-create_app_resp=$(curl -X POST \
+create_mona_app_response=$(curl \
+    -X POST \
     -H "Content-Type: application/json" \
     -H "Authorization: Bearer $graph_token" \
-    -d '{ 
-            "displayName": "'$aad_app_name'",
-            "appRoles": [
-                {
-                    "allowedMemberTypes": ["User"],
-                    "description": "Mona administrators can access the Mona admin center and use the various test endpoints.",
-                    "displayName": "Mona Administrators",
-                    "id": "'$(uuidgen)'",
-                    "isEnabled": true,
-                    "value": "monaadmins"
-                }
-            ],
-            "optionalClaims": {
-                "idToken": [
-                    {
-                        "name": "given_name",
-                        "source": null,
-                        "essential": false,
-                        "additionalProperties": []
-                    }
-                ],
-                "accessToken": [],
-                "saml2Token": []
-            },
-            "requiredResourceAccess": [
-                {
-                    "resourceAppId": "00000003-0000-0000-c000-000000000000",
-                    "resourceAccess": [
-                    {
-                        "id": "e1fe6dd8-ba31-4d61-89e7-88639da4683d",
-                        "type": "Scope"
-                    },
-                    {
-                        "id": "14dad69e-099b-42c9-810b-d002981feec1",
-                        "type": "Scope"
-                    }
-                    ]
-                }
-            ]
-        }' \
-    "https://graph.microsoft.com/v1.0/applications"  )
-#echo $create_app_resp
-aad_obj_id=$( echo $create_app_resp | jq -r '.id' )
-aad_app_id=$( echo $create_app_resp | jq -r '.appId' )
-#echo $aad_obj_id
-#echo $aad_app_id
+    -d "$create_mona_app_json" \
+    "https://graph.microsoft.com/v1.0/applications")
 
-#sleep 30
+aad_object_id=$(echo "$create_mona_app_response" | jq -r ".id")
+aad_app_id=$(echo "$create_mona_app_response" | jq -r ".appId")
+add_mona_password_json=$(cat ./aad/add_password.json)
 
-aad_app_credentials_res=$(curl -X POST \
+add_mona_password_response=$(curl \
+    -X POST \
     -H "Content-Type: application/json" \
     -H "Authorization: Bearer $graph_token" \
-    -d '{ 
-            "displayName": "MonaCredentials",
-            "endDateTime": "2299-12-31",
-            "startDateTime": "2000-12-31"
-        }' \
-    "https://graph.microsoft.com/v1.0/applications/$aad_obj_id/addPassword"   )
-#echo $aad_app_credentials_res
-aad_app_secret=$( echo $aad_app_credentials_res | jq -r '.secretText' )
-#echo $aad_app_secret
+    -d "$add_mona_password_json" \
+    "https://graph.microsoft.com/v1.0/applications/$aad_object_id/addPassword")
 
-echo "#################"
-echo "#################"
+aad_app_secret=$(echo "$add_mona_password_response" | jq -r ".secretText")
 
 echo "$lp ✔   AAD app [$aad_app_name ($aad_app_id)] successfully registered with AAD tenant [$current_user_tid]."
 echo "$lp Creating app service principal. This might take a while..."
