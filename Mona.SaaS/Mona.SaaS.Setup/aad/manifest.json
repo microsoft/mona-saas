@@ -1,0 +1,54 @@
+{
+    "displayName": "__aad_app_name__",
+    "signInAudience": "AzureADandPersonalMicrosoftAccount",
+    "appRoles": [
+        {
+            "allowedMemberTypes": [
+                "User"
+            ],
+            "description": "Mona administrators can access the Mona admin center and use the various test endpoints.",
+            "displayName": "Mona Administrators",
+            "id": "__admin_role_id__",
+            "isEnabled": "true",
+            "value": "monaadmins"
+        }
+    ],
+    "optionalClaims": {
+        "idToken": [
+            {
+                "name": "given_name",
+                "source": null,
+                "essential": false,
+                "additionalProperties": []
+            }
+        ],
+        "accessToken": [],
+        "saml2Token": []
+    },
+    "requiredResourceAccess": [
+        {
+            "resourceAppId": "00000003-0000-0000-c000-000000000000",
+            "resourceAccess": [
+                {
+                    "id": "e1fe6dd8-ba31-4d61-89e7-88639da4683d",
+                    "type": "Scope"
+                },
+                {
+                    "id": "14dad69e-099b-42c9-810b-d002981feec1",
+                    "type": "Scope"
+                }
+            ]
+        }
+    ],
+    "api": {
+        "requestedAccessTokenVersion": 2
+    },
+    "web": {
+        "redirectUris": [
+            "https://mona-web-__deployment_name__.azurewebsites.net/signin-oidc"
+        ],
+        "implicitGrantSettings": {
+            "enableIdTokenIssuance": true
+        }
+    }
+}
