@@ -579,7 +579,7 @@ namespace Mona.SaaS.Web.Controllers
         {
             AadObjectId = TryGetQueryStringParameter(TestSubscriptionParameterNames.BeneficiaryAadObjectId, User.FindFirstValue(objectIdClaimType)),
             AadTenantId = TryGetQueryStringParameter(TestSubscriptionParameterNames.BeneficiaryAadTenantId, User.FindFirstValue(tenantIdClaimType)),
-            UserEmail = TryGetQueryStringParameter(TestSubscriptionParameterNames.BeneficiaryUserEmail, User.FindFirstValue(ClaimTypes.Email)),
+            UserEmail = TryGetQueryStringParameter(TestSubscriptionParameterNames.BeneficiaryUserEmail, defaultUserEmail),
             UserId = TryGetQueryStringParameter(TestSubscriptionParameterNames.BeneficiaryUserId, User.FindFirstValue(ClaimTypes.Upn))
         };
 
@@ -587,7 +587,7 @@ namespace Mona.SaaS.Web.Controllers
         {
             AadObjectId = TryGetQueryStringParameter(TestSubscriptionParameterNames.PurchaserAadObjectId, User.FindFirstValue(objectIdClaimType)),
             AadTenantId = TryGetQueryStringParameter(TestSubscriptionParameterNames.PurchaserAadTenantId, User.FindFirstValue(tenantIdClaimType)),
-            UserEmail = TryGetQueryStringParameter(TestSubscriptionParameterNames.PurchaserUserEmail, User.FindFirstValue(ClaimTypes.Email)),
+            UserEmail = TryGetQueryStringParameter(TestSubscriptionParameterNames.PurchaserUserEmail, defaultUserEmail),
             UserId = TryGetQueryStringParameter(TestSubscriptionParameterNames.PurchaserUserId, User.FindFirstValue(ClaimTypes.Upn))
         };
 
