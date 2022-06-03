@@ -220,7 +220,7 @@ create_mona_app_response=$(curl \
 mona_aad_object_id=$(echo "$create_mona_app_response" | jq -r ".id")
 mona_aad_app_id=$(echo "$create_mona_app_response" | jq -r ".appId")
 
-# Now let's do the Turnstile one so AAD has enough time to catch up by the time we try to add the password...
+# Now let's do the Turnstile one so AAD has enough time to catch up by the time we try to add passwords...
 
 turn_aad_app_name="$display_name Seating"
 
@@ -244,6 +244,8 @@ turn_aad_app_id=$(echo "$create_turn_app_response" | jq -r ".appId")
 
 sleep 15 # Give AAD a few more seconds...
 
+# Create the Mona client secret...
+
 add_mona_password_json=$(cat ./aad/add_password.json)
 
 add_mona_password_response=$(curl \
@@ -254,6 +256,9 @@ add_mona_password_response=$(curl \
     "https://graph.microsoft.com/v1.0/applications/$mona_aad_object_id/addPassword")
 
 mona_aad_app_secret=$(echo "$add_mona_password_response" | jq -r ".secretText")
+
+# Then, create the Turnstile client secret...
+
 add_turn_password_json=$(cat ./aad/turnstile/add_password.json)
 
 add_turn_password_response=$(curl \
@@ -282,6 +287,8 @@ if [[ -z $turn_aad_sp_id ]]; then
     echo "$lp ❌   Unable to create service principal for Turnstile AAD app [$turn_aad_app_name ($turn_aad_app_id)]. See above output for details. Setup failed."
     exit 1
 fi
+
+sleep 15 # Wait again, I guess...
 
 echo "🔐   Granting Mona and Turnstile service principals contributor access to [$resource_group_name]..."
 
@@ -449,7 +456,7 @@ deploy_turn_pack_pid=$!
 wait $deploy_mona_pack_pid
 wait $deploy_turn_pack_pid
 
-echo "🔐   Adding you to Mona and Turnstile's administrative roles..."
+echo "🔐   Adding you to Mona and Turnstile administrative roles..."
 
 # Add the current user to the Mona administrators role...
 
@@ -487,47 +494,48 @@ wait $turn_admin_role_assign_pid
 
 echo "🏗️   Building apps..."
 
+# We have to stagger this kind of weird to parallelize the builds but not run into
+# conflicts within the same solution.
+
 dotnet publish -c Release -o ./mona_web_topublish ../Mona.SaaS.Web/Mona.SaaS.Web.csproj &
 
 build_mona_web_pid=$!
-
-dotnet publish -c Release -o ./relay_topublish ../Mona.SaaS.TurnstileRelay/Mona.SaaS.TurnstileRelay.csproj &
-
-build_relay_pid=$!
 
 dotnet publish -c Release -o ./turn_api_topublish ./turnstile/Turnstile/Turnstile.Api/Turnstile.Api.csproj &
 
 build_turn_api_pid=$!
 
-dotnet publish -c Release -o ./turn_web_topublish ./turnstile/Turnstile/Turnstile.Web/Turnstile.Web.csproj &
-
-build_turn_web_pid=$!
-
 wait $build_mona_web_pid
+wait $build_turn_api_pid
 
 cd ./mona_web_topublish
 zip -r ../mona_web_topublish.zip . >/dev/null
 cd ..
 
+cd ./turn_api_topublish
+zip -r ../turn_api_topublish.zip . >/dev/null
+cd ..
+
+dotnet publish -c Release -o ./relay_topublish ../Mona.SaaS.TurnstileRelay/Mona.SaaS.TurnstileRelay.csproj &
+
+build_relay_pid=$!
+
+dotnet publish -c Release -o ./turn_web_topublish ./turnstile/Turnstile/Turnstile.Web/Turnstile.Web.csproj &
+
+build_turn_web_pid=$!
+
 wait $build_relay_pid
+wait $build_mona_web_pid
 
 cd ./relay_topublish
 zip -r ../relay_topublish.zip . >/dev/null
 cd ..
 
-wait $build_turn_api_pid
-
-cd ./turn_api_topublish
-zip -r ../turn_api_topublish.zip . >/dev/null
-cd ..
-
-wait $build_turn_web_pid
-
 cd ./turn_web_topublish
 zip -r ../turn_web_topublish.zip . >/dev/null
 cd ..
 
-echo "☁️   Publishing apps..."
+echo "☁️   Deploying apps..."
 
 az webapp deployment source config-zip \
     --resource-group "$resource_group_name" \
