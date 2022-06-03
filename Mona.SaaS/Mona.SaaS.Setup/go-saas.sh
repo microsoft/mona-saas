@@ -242,7 +242,7 @@ create_turn_app_response=$(curl \
 turn_aad_object_id=$(echo "$create_turn_app_response" | jq -r ".id")
 turn_aad_app_id=$(echo "$create_turn_app_response" | jq -r ".appId")
 
-sleep 15 # Give AAD a few more seconds...
+sleep 10 # Give AAD a few more seconds...
 
 # Create the Mona client secret...
 
@@ -270,6 +270,8 @@ add_turn_password_response=$(curl \
 
 turn_aad_app_secret=$(echo "$add_turn_password_response" | jq -r ".secretText")
 
+sleep 10 # Wait again, I guess...
+
 echo "🛡️   Creating Mona AAD app [$mona_aad_app_name] service principal..."
 
 mona_aad_sp_id=$(az ad sp create --id "$mona_aad_app_id" --query id --output tsv);
@@ -288,7 +290,7 @@ if [[ -z $turn_aad_sp_id ]]; then
     exit 1
 fi
 
-sleep 15 # Wait again, I guess...
+sleep 10 # Wait again, I guess...
 
 echo "🔐   Granting Mona and Turnstile service principals contributor access to [$resource_group_name]..."
 
