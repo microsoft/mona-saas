@@ -242,7 +242,7 @@ create_turn_app_response=$(curl \
 turn_aad_object_id=$(echo "$create_turn_app_response" | jq -r ".id")
 turn_aad_app_id=$(echo "$create_turn_app_response" | jq -r ".appId")
 
-wait 10 # Give AAD a few more seconds...
+sleep 15 # Give AAD a few more seconds...
 
 add_mona_password_json=$(cat ./aad/add_password.json)
 
