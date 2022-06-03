@@ -197,7 +197,7 @@ fi
 
 mona_aad_app_name="$display_name"
 
-echo "🛡️   Creating Mona Azure Active Directory (AAD) app [$mona_aad_app_name] registration..."
+echo "🛡️   Creating Azure Active Directory (AAD) app registrations..."
 
 graph_token=$(az account get-access-token \
     --resource-type ms-graph \
@@ -219,20 +219,10 @@ create_mona_app_response=$(curl \
 
 mona_aad_object_id=$(echo "$create_mona_app_response" | jq -r ".id")
 mona_aad_app_id=$(echo "$create_mona_app_response" | jq -r ".appId")
-add_mona_password_json=$(cat ./aad/add_password.json)
 
-add_mona_password_response=$(curl \
-    -X POST \
-    -H "Content-Type: application/json" \
-    -H "Authorization: Bearer $graph_token" \
-    -d "$add_mona_password_json" \
-    "https://graph.microsoft.com/v1.0/applications/$mona_aad_object_id/addPassword")
-
-mona_aad_app_secret=$(echo "$add_mona_password_response" | jq -r ".secretText")
+# Now let's do the Turnstile one so AAD has enough time to catch up by the time we try to add the password...
 
 turn_aad_app_name="$display_name Seating"
-
-echo "🛡️   Creating Turnstile Azure Active Directory (AAD) app [$turn_aad_app_name] registration..."
 
 turn_tenant_admin_role_id=$(cat /proc/sys/kernel/random/uuid)
 turn_admin_role_id=$(cat /proc/sys/kernel/random/uuid)
@@ -251,6 +241,19 @@ create_turn_app_response=$(curl \
 
 turn_aad_object_id=$(echo "$create_turn_app_response" | jq -r ".id")
 turn_aad_app_id=$(echo "$create_turn_app_response" | jq -r ".appId")
+
+wait 10 # Give AAD a few more seconds...
+
+add_mona_password_json=$(cat ./aad/add_password.json)
+
+add_mona_password_response=$(curl \
+    -X POST \
+    -H "Content-Type: application/json" \
+    -H "Authorization: Bearer $graph_token" \
+    -d "$add_mona_password_json" \
+    "https://graph.microsoft.com/v1.0/applications/$mona_aad_object_id/addPassword")
+
+mona_aad_app_secret=$(echo "$add_mona_password_response" | jq -r ".secretText")
 add_turn_password_json=$(cat ./aad/turnstile/add_password.json)
 
 add_turn_password_response=$(curl \
@@ -280,19 +283,24 @@ if [[ -z $turn_aad_sp_id ]]; then
     exit 1
 fi
 
-echo "🔐   Granting Mona AAD app [$mona_aad_app_name] service principal [$mona_aad_sp_id] contributor access to resource group [$resource_group_name]..."
+echo "🔐   Granting Mona and Turnstile service principals contributor access to [$resource_group_name]..."
 
 az role assignment create \
     --role "Contributor" \
     --assignee "$mona_aad_sp_id" \
-    --resource-group "$resource_group_name"
+    --resource-group "$resource_group_name" &
 
-echo "🔐   Granting Turnstile AAD app [$turn_aad_app_name] service principal [$turn_aad_sp_id] contributor access to resource group [$resource_group_name]..."
+mona_sp_role_pid=$!
 
 az role assignment create \
     --role "Contributor" \
     --assignee "$turn_aad_sp_id" \
     --resource-group "$resource_group_name"
+
+turn_sp_role_pid=$!
+
+wait $mona_sp_role_pid
+wait $turn_sp_role_pid
 
 # Deploy the combined Bicep template...
 
@@ -388,25 +396,30 @@ event_grid_connection_name=$(az deployment group show \
     --query properties.outputs.topicConnectionName.value \
     --output tsv)
 
-echo "⚙️   Applying Mona publisher configuration..."
+echo "⚙️   Applying publisher configuration..."
 
 az storage blob upload \
     --account-name "$storage_account_name" \
     --account-key "$storage_account_key" \
     --container-name "mona-configuration" \
     --data "$mona_publisher_config_json" \
-    --name "publisher-config.json"
-
-echo "⚙️   Applying Turnstile publisher configuration..."
+    --name "publisher-config.json" &
+    
+mona_pub_config_pid=$!
 
 az storage blob upload \
     --account-name "$storage_account_name" \
     --account-key "$storage_account_key" \
     --container-name "turn-configuration" \
     --data "$turn_publisher_config_json" \
-    --name "publisher_config.json"
+    --name "publisher_config.json" &
+    
+turn_pub_config_pid=$!
 
-echo "🦾   Deploying default Mona integration pack..."
+wait $mona_pub_config_pid
+wait $turn_pub_config_pid
+
+echo "🦾   Deploying integration packs..."
 
 az deployment group create \
     --resource-group "$resource_group_name" \
@@ -418,16 +431,25 @@ az deployment group create \
         aadClientSecret="$mona_aad_app_secret" \
         aadTenantId="$current_user_tid" \
         eventGridTopicName="$event_grid_topic_name" \
-        eventGridConnectionName="$event_grid_connection_name"
+        eventGridConnectionName="$event_grid_connection_name" &
 
-[[ $? -eq 0 ]] && echo "✔   Default Mona integration pack deployed.";
-[[ $? -ne 0 ]] && echo "⚠️   Default Mona integration pack deployment failed."
+deploy_mona_pack_pid=$!
 
-echo "🦾   Deploying default Turnstile integration pack..."
+az deployment group create \
+    --resource-group "$resource_group_name" \
+    --name "turn-pack-deploy-$p_deployment_name" \
+    --template-file "./turnstile/Turnstile/Turnstile.Setup/integration_packs/default/deploy_pack.bicep" \
+    --parameters \
+        deploymentName="$p_deployment_name" \
+        eventGridTopicName="$event_grid_topic_name" \
+        eventGridConnectionName="$event_grid_connection_name" &
 
-# Deploy default Turnstile integration pack...
+deploy_turn_pack_pid=$!
 
-echo "🔐   Adding you to Mona's administrator role..."
+wait $deploy_mona_pack_pid
+wait $deploy_turn_pack_pid
+
+echo "🔐   Adding you to Mona and Turnstile's administrative roles..."
 
 # Add the current user to the Mona administrators role...
 
@@ -435,9 +457,9 @@ curl -X POST \
     -H "Content-Type: application/json" \
     -H "Authorization: Bearer $graph_token" \
     -d "{ \"principalId\": \"$current_user_oid\", \"resourceId\": \"$mona_aad_sp_id\", \"appRoleId\": \"$mona_admin_role_id\" }" \
-    "https://graph.microsoft.com/v1.0/users/$current_user_oid/appRoleAssignments" && echo
+    "https://graph.microsoft.com/v1.0/users/$current_user_oid/appRoleAssignments" &
 
-echo "🔐   Adding you to Turnstile's administrative roles..."
+mona_admin_role_assign_pid=$!
 
 # Add the current user to the subscriber tenant administrator's AAD role...
 
@@ -445,7 +467,9 @@ curl -X POST \
     -H "Content-Type: application/json" \
     -H "Authorization: Bearer $graph_token" \
     -d "{ \"principalId\": \"$current_user_oid\", \"resourceId\": \"$turn_aad_sp_id\", \"appRoleId\": \"$turn_tenant_admin_role_id\" }" \
-    "https://graph.microsoft.com/v1.0/users/$current_user_oid/appRoleAssignments" && echo
+    "https://graph.microsoft.com/v1.0/users/$current_user_oid/appRoleAssignments" &
+
+turn_tenant_admin_role_assign_pid=$!
 
 # Add the current user to the turnstile administrator's AAD role...
 
@@ -453,53 +477,90 @@ curl -X POST \
     -H "Content-Type: application/json" \
     -H "Authorization: Bearer $graph_token" \
     -d "{ \"principalId\": \"$current_user_oid\", \"resourceId\": \"$turn_aad_sp_id\", \"appRoleId\": \"$turn_admin_role_id\" }" \
-    "https://graph.microsoft.com/v1.0/users/$current_user_oid/appRoleAssignments" && echo
+    "https://graph.microsoft.com/v1.0/users/$current_user_oid/appRoleAssignments" &
 
-echo "🌐   Building Mona web app..."
+turn_admin_role_assign_pid=$!
 
-dotnet publish -c Release -o ./mona_web_topublish ../Mona.SaaS.Web/Mona.SaaS.Web.csproj
+wait $mona_admin_role_assign_pid
+wait $turn_tenant_admin_role_assign_pid
+wait $turn_admin_role_assign_pid
+
+echo "🏗️   Building apps..."
+
+dotnet publish -c Release -o ./mona_web_topublish ../Mona.SaaS.Web/Mona.SaaS.Web.csproj &
+
+build_mona_web_pid=$!
+
+dotnet publish -c Release -o ./relay_topublish ../Mona.SaaS.TurnstileRelay/Mona.SaaS.TurnstileRelay.csproj &
+
+build_relay_pid=$!
+
+dotnet publish -c Release -o ./turn_api_topublish ./turnstile/Turnstile/Turnstile.Api/Turnstile.Api.csproj &
+
+build_turn_api_pid=$!
+
+dotnet publish -c Release -o ./turn_web_topublish ./turnstile/Turnstile/Turnstile.Web/Turnstile.Web.csproj &
+
+build_turn_web_pid=$!
+
+wait $build_mona_web_pid
 
 cd ./mona_web_topublish
 zip -r ../mona_web_topublish.zip . >/dev/null
 cd ..
 
-echo "⚡   Building Mona to Turnstile relay..."
-
-dotnet publish -c Release -o ./relay_topublish ../Mona.SaaS.TurnstileRelay/Mona.SaaS.TurnstileRelay.csproj
+wait $build_relay_pid
 
 cd ./relay_topublish
 zip -r ../relay_topublish.zip . >/dev/null
 cd ..
 
-echo "⚡   Building Turnstile API..."
-
-dotnet publish -c Release -o ./turn_api_topublish ./turnstile/Turnstile/Turnstile.Api/Turnstile.Api.csproj
+wait $build_turn_api_pid
 
 cd ./turn_api_topublish
 zip -r ../turn_api_topublish.zip . >/dev/null
 cd ..
 
-echo "🌐   Building Turnstile web app..."
-
-dotnet publish -c Release -o ./turn_web_topublish ./turnstile/Turnstile/Turnstile.Web/Turnstile.Web.csproj
+wait $build_turn_web_pid
 
 cd ./turn_web_topublish
 zip -r ../turn_web_topublish.zip . >/dev/null
 cd ..
 
-echo "☁️   Publishing Mona web app..."
+echo "☁️   Publishing apps..."
 
 az webapp deployment source config-zip \
     --resource-group "$resource_group_name" \
     --name "$mona_web_app_name" \
-    --src "./mona_web_topublish.zip"
+    --src "./mona_web_topublish.zip" &
 
-echo "☁️   Publishing Mona to Turnstile relay..."
+deploy_mona_web_pid=$!
 
 az functionapp deployment source config-zip \
     --resource-group "$resource_group_name" \
     --name "$relay_app_name" \
-    --src "./relay_topublish.zip"
+    --src "./relay_topublish.zip" &
+
+deploy_relay_pid=$!
+
+az functionapp deployment source config-zip \
+    --resource-group "$resource_group_name" \
+    --name "$turn_api_app_name" \
+    --src "./turn_api_topublish.zip" &
+
+deploy_turn_api_pid=$!
+
+az webapp deployment source config-zip \
+    --resource-group "$resource_group_name" \
+    --name "$turn_web_app_name" \
+    --src "./turn_web_topublish.zip"
+
+deploy_turn_web_pid=$!
+
+wait $deploy_mona_web_pid
+wait $deploy_relay_pid
+wait $deploy_turn_api_pid
+wait $deploy_turn_web_pid
 
 echo "🔌   Connecting Mona to Turnstile relay to event grid topic ..."
 
@@ -508,20 +569,6 @@ az eventgrid event-subscription create \
     --source-resource-id "$event_grid_topic_id" \
     --endpoint "$relay_app_id/functions/Relay" \
     --endpoint-type azurefunction
-
-echo "☁️   Publishing Turnstile API..."
-
-az functionapp deployment source config-zip \
-    --resource-group "$resource_group_name" \
-    --name "$turn_api_app_name" \
-    --src "./turn_api_topublish.zip"
-
-echo "☁️   Publishing Turnstile web app..."
-
-az webapp deployment source config-zip \
-    --resource-group "$resource_group_name" \
-    --name "$turn_web_app_name" \
-    --src "./turn_web_topublish.zip"
 
 clean_up
 
