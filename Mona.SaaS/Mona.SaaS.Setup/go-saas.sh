@@ -466,7 +466,7 @@ curl -X POST \
     -H "Content-Type: application/json" \
     -H "Authorization: Bearer $graph_token" \
     -d "{ \"principalId\": \"$current_user_oid\", \"resourceId\": \"$mona_aad_sp_id\", \"appRoleId\": \"$mona_admin_role_id\" }" \
-    "https://graph.microsoft.com/v1.0/users/$current_user_oid/appRoleAssignments" &
+    "https://graph.microsoft.com/v1.0/users/$current_user_oid/appRoleAssignments" >/dev/null &
 
 mona_admin_role_assign_pid=$!
 
@@ -476,7 +476,7 @@ curl -X POST \
     -H "Content-Type: application/json" \
     -H "Authorization: Bearer $graph_token" \
     -d "{ \"principalId\": \"$current_user_oid\", \"resourceId\": \"$turn_aad_sp_id\", \"appRoleId\": \"$turn_tenant_admin_role_id\" }" \
-    "https://graph.microsoft.com/v1.0/users/$current_user_oid/appRoleAssignments" &
+    "https://graph.microsoft.com/v1.0/users/$current_user_oid/appRoleAssignments" >/dev/null &
 
 turn_tenant_admin_role_assign_pid=$!
 
@@ -486,7 +486,7 @@ curl -X POST \
     -H "Content-Type: application/json" \
     -H "Authorization: Bearer $graph_token" \
     -d "{ \"principalId\": \"$current_user_oid\", \"resourceId\": \"$turn_aad_sp_id\", \"appRoleId\": \"$turn_admin_role_id\" }" \
-    "https://graph.microsoft.com/v1.0/users/$current_user_oid/appRoleAssignments" &
+    "https://graph.microsoft.com/v1.0/users/$current_user_oid/appRoleAssignments" >/dev/null &
 
 turn_admin_role_assign_pid=$!
 
@@ -494,6 +494,7 @@ wait $mona_admin_role_assign_pid
 wait $turn_tenant_admin_role_assign_pid
 wait $turn_admin_role_assign_pid
 
+echo
 echo "🏗️   Building apps..."
 
 # We have to stagger this kind of weird to parallelize the builds but not run into
@@ -527,7 +528,7 @@ dotnet publish -c Release -o ./turn_web_topublish ./turnstile/Turnstile/Turnstil
 build_turn_web_pid=$!
 
 wait $build_relay_pid
-wait $build_mona_web_pid
+wait $build_turn_web_pid
 
 cd ./relay_topublish
 zip -r ../relay_topublish.zip . >/dev/null
