@@ -195,9 +195,9 @@ fi
 
 # Create the Mona app registration in AAD...
 
-mona_aad_app_name="$display_name"
+echo "🛡️   Creating Mona Azure Active Directory (AAD) app registration..."
 
-echo "🛡️   Creating Azure Active Directory (AAD) app registrations..."
+mona_aad_app_name="$display_name"
 
 graph_token=$(az account get-access-token \
     --resource-type ms-graph \
@@ -210,17 +210,38 @@ create_mona_app_json="${create_mona_app_json/__aad_app_name__/${mona_aad_app_nam
 create_mona_app_json="${create_mona_app_json/__deployment_name__/${p_deployment_name}}"
 create_mona_app_json="${create_mona_app_json/__admin_role_id__/${mona_admin_role_id}}"
 
-create_mona_app_response=$(curl \
-    -X POST \
-    -H "Content-Type: application/json" \
-    -H "Authorization: Bearer $graph_token" \
-    -d "$create_mona_app_json" \
-    "https://graph.microsoft.com/v1.0/applications")
+# Getting around some occasional consistency issues by implementing the retry pattern. This was fun.
+# If you're reading this code and you've never heard of the retry pattern, check this out --
+# https://docs.microsoft.com/en-us/azure/architecture/patterns/retry
 
-mona_aad_object_id=$(echo "$create_mona_app_response" | jq -r ".id")
-mona_aad_app_id=$(echo "$create_mona_app_response" | jq -r ".appId")
+for i1 in {1..5}; do
+    create_mona_app_response=$(curl \
+        -X POST \
+        -H "Content-Type: application/json" \
+        -H "Authorization: Bearer $graph_token" \
+        -d "$create_mona_app_json" \
+        "https://graph.microsoft.com/v1.0/applications")
 
-# Now let's do the Turnstile one so AAD has enough time to catch up by the time we try to add passwords...
+    mona_aad_object_id=$(echo "$create_mona_app_response" | jq -r ".id")
+    mona_aad_app_id=$(echo "$create_mona_app_response" | jq -r ".appId")
+
+    if [[ -z $mona_aad_object_id || -z $mona_aad_app_id ]]; then
+        if [[ i1 == 5 ]]; then
+            # We tried and we failed. Such is life.
+            clean_up
+            echo "$lp ❌   Failed to create Mona AAD app. Setup failed."
+            exit 1
+        else
+            sleep_for=$((2**i1)) # Exponential backoff. 2..4..8..16 seconds.
+            echo "$lp ⚠️   Trying to create app again in [$sleep_for] seconds."
+            sleep $sleep_for
+        fi
+    else
+        break
+    fi
+done
+
+echo "🛡️   Creating Turnstile Azure Active Directory (AAD) app registration..."
 
 turn_aad_app_name="$display_name Seating"
 
@@ -232,84 +253,179 @@ create_turn_app_json="${create_turn_app_json/__deployment_name__/${p_deployment_
 create_turn_app_json="${create_turn_app_json/__tenant_admin_role_id__/${turn_tenant_admin_role_id}}"
 create_turn_app_json="${create_turn_app_json/__turnstile_admin_role_id__/${turn_admin_role_id}}"
 
-create_turn_app_response=$(curl \
-    -X POST \
-    -H "Content-Type: application/json" \
-    -H "Authorization: Bearer $graph_token" \
-    -d "$create_turn_app_json" \
-    "https://graph.microsoft.com/v1.0/applications")
+for i2 in {1..5}; do
+    create_turn_app_response=$(curl \
+        -X POST \
+        -H "Content-Type: application/json" \
+        -H "Authorization: Bearer $graph_token" \
+        -d "$create_turn_app_json" \
+        "https://graph.microsoft.com/v1.0/applications")
 
-turn_aad_object_id=$(echo "$create_turn_app_response" | jq -r ".id")
-turn_aad_app_id=$(echo "$create_turn_app_response" | jq -r ".appId")
+    turn_aad_object_id=$(echo "$create_turn_app_response" | jq -r ".id")
+    turn_aad_app_id=$(echo "$create_turn_app_response" | jq -r ".appId")
 
-sleep 10 # Give AAD a few more seconds...
+     if [[ -z $turn_aad_object_id || -z $turn_aad_app_id ]]; then
+        if [[ i2 == 5 ]]; then
+            clean_up
+            echo "$lp ❌   Failed to create Turnstile AAD app. Setup failed."
+            exit 1
+        else
+            sleep_for=$((2**i2))
+            echo "$lp ⚠️   Trying to create app again in [$sleep_for] seconds."
+            sleep $sleep_for
+        fi
+    else
+        break
+    fi
+done
 
 # Create the Mona client secret...
 
+echo "🛡️   Creating Mona Azure Active Directory (AAD) client credentials..."
+
 add_mona_password_json=$(cat ./aad/add_password.json)
 
-add_mona_password_response=$(curl \
-    -X POST \
-    -H "Content-Type: application/json" \
-    -H "Authorization: Bearer $graph_token" \
-    -d "$add_mona_password_json" \
-    "https://graph.microsoft.com/v1.0/applications/$mona_aad_object_id/addPassword")
+for i3 in {1..5}; do
+    add_mona_password_response=$(curl \
+        -X POST \
+        -H "Content-Type: application/json" \
+        -H "Authorization: Bearer $graph_token" \
+        -d "$add_mona_password_json" \
+        "https://graph.microsoft.com/v1.0/applications/$mona_aad_object_id/addPassword")
 
-mona_aad_app_secret=$(echo "$add_mona_password_response" | jq -r ".secretText")
+    mona_aad_app_secret=$(echo "$add_mona_password_response" | jq -r ".secretText")
+
+    if [[ -z $mona_aad_app_secret ]]; then
+        if [[ i3 == 5 ]]; then
+            clean_up
+            echo "$lp ❌   Failed to create Mona AAD app client credentials. Setup failed."
+            exit 1
+        else
+            sleep_for=$((2**i3))
+            echo "$lp ⚠️   Trying to create client credentials again in [$sleep_for] seconds."
+            sleep $sleep_for
+        fi
+    else
+        break
+    fi
+done
 
 # Then, create the Turnstile client secret...
 
+echo "🛡️   Creating Turnstile Azure Active Directory (AAD) client credentials..."
+
 add_turn_password_json=$(cat ./aad/turnstile/add_password.json)
 
-add_turn_password_response=$(curl \
-    -X POST \
-    -H "Content-Type: application/json" \
-    -H "Authorization: Bearer $graph_token" \
-    -d "$add_turn_password_json" \
-    "https://graph.microsoft.com/v1.0/applications/$turn_aad_object_id/addPassword")
+for i4 in {1..5}; do
+    add_turn_password_response=$(curl \
+        -X POST \
+        -H "Content-Type: application/json" \
+        -H "Authorization: Bearer $graph_token" \
+        -d "$add_turn_password_json" \
+        "https://graph.microsoft.com/v1.0/applications/$turn_aad_object_id/addPassword")
 
-turn_aad_app_secret=$(echo "$add_turn_password_response" | jq -r ".secretText")
+    turn_aad_app_secret=$(echo "$add_turn_password_response" | jq -r ".secretText")
 
-sleep 10 # Wait again, I guess...
+    if [[ -z $turn_aad_app_secret ]]; then
+        if [[ i4 == 5 ]]; then
+            clean_up
+            echo "$lp ❌   Failed to create Turnstile AAD app client credentials. Setup failed."
+            exit 1
+        else
+            sleep_for=$((2**i4))
+            echo "$lp ⚠️   Trying to create client credentials again in [$sleep_for] seconds."
+            sleep $sleep_for
+        fi
+    else
+        break
+    fi
+done
 
 echo "🛡️   Creating Mona AAD app [$mona_aad_app_name] service principal..."
 
-mona_aad_sp_id=$(az ad sp create --id "$mona_aad_app_id" --query id --output tsv);
+for i5 in {1..5}; do
+    mona_aad_sp_id=$(az ad sp create --id "$mona_aad_app_id" --query id --output tsv);
 
-if [[ -z $mona_aad_sp_id ]]; then
-    echo "$lp ❌   Unable to create service principal for Mona AAD app [$mona_aad_app_name ($mona_aad_app_id)]. See above output for details. Setup failed."
-    exit 1
-fi
+    if [[ -z $mona_aad_sp_id ]]; then
+        if [[ i5 == 5 ]]; then
+            clean_up
+            echo "$lp ❌   Failed to create Mona AAD app service principal. Setup failed."
+            exit 1
+        else
+            sleep_for=$((2**i5))
+            echo "$lp ⚠️   Trying to create service principal again in [$sleep_for] seconds."
+            sleep $sleep_for
+        fi
+    else
+        break
+    fi
+done
 
 echo "🛡️   Creating Turnstile AAD app [$turn_aad_app_name] service principal..."
 
-turn_aad_sp_id=$(az ad sp create --id "$turn_aad_app_id" --query id --output tsv);
+for i6 in {1..5}; do
+    turn_aad_sp_id=$(az ad sp create --id "$turn_aad_app_id" --query id --output tsv);
 
-if [[ -z $turn_aad_sp_id ]]; then
-    echo "$lp ❌   Unable to create service principal for Turnstile AAD app [$turn_aad_app_name ($turn_aad_app_id)]. See above output for details. Setup failed."
-    exit 1
-fi
+     if [[ -z $turn_aad_sp_id ]]; then
+        if [[ i6 == 5 ]]; then
+            clean_up
+            echo "$lp ❌   Failed to create Turnstile AAD app service principal. Setup failed."
+            exit 1
+        else
+            sleep_for=$((2**i6))
+            echo "$lp ⚠️   Trying to create service principal again in [$sleep_for] seconds."
+            sleep $sleep_for
+        fi
+    else
+        break
+    fi
+done
 
-sleep 10 # Wait again, I guess...
+echo "🔐   Granting Mona service principal contributor access to [$resource_group_name]..."
 
-echo "🔐   Granting Mona and Turnstile service principals contributor access to [$resource_group_name]..."
+for 17 in {1..5}; do
+    az role assignment create \
+        --role "Contributor" \
+        --assignee "$mona_aad_sp_id" \
+        --resource-group "$resource_group_name"
 
-az role assignment create \
-    --role "Contributor" \
-    --assignee "$mona_aad_sp_id" \
-    --resource-group "$resource_group_name" &
+    if [[ $? -ne 0 ]]; then
+        if [[ i7 == 5 ]]; then
+            clean_up
+            echo "$lp ❌   Failed to grant Mona service principal contributor access. Setup failed."
+            exit 1
+        else
+            sleep_for=$((2**i7))
+            echo "$lp ⚠️   Trying to grant service principal contributor access again in [$sleep_for] seconds."
+            sleep $sleep_for
+        fi
+    else
+        break
+    fi
+done
 
-mona_sp_role_pid=$!
+echo "🔐   Granting Mona service principal contributor access to [$resource_group_name]..."
 
-az role assignment create \
-    --role "Contributor" \
-    --assignee "$turn_aad_sp_id" \
-    --resource-group "$resource_group_name"
+for i8 in {1..5}; do
+    az role assignment create \
+        --role "Contributor" \
+        --assignee "$turn_aad_sp_id" \
+        --resource-group "$resource_group_name"
 
-turn_sp_role_pid=$!
-
-wait $mona_sp_role_pid
-wait $turn_sp_role_pid
+    if [[ $? -ne 0 ]]; then
+        if [[ i8 == 5 ]]; then
+            clean_up
+            echo "$lp ❌   Failed to grant Turnstile service principal contributor access. Setup failed."
+            exit 1
+        else
+            sleep_for=$((2**i8))
+            echo "$lp ⚠️   Trying to grant service principal contributor access again in [$sleep_for] seconds."
+            sleep $sleep_for
+        fi
+    else
+        break
+    fi
+done
 
 # Deploy the combined Bicep template...
 
@@ -337,43 +453,43 @@ storage_account_name=$(az deployment group show \
     --resource-group "$resource_group_name" \
     --name "$az_deployment_name" \
     --query properties.outputs.storageAccountName.value \
-    --output tsv);
+    --output tsv)
 
 storage_account_key=$(az deployment group show \
     --resource-group "$resource_group_name" \
     --name "$az_deployment_name" \
     --query properties.outputs.storageAccountKey.value \
-    --output tsv);
+    --output tsv)
 
 mona_publisher_config_json=$(az deployment group show \
     --resource-group "$resource_group_name" \
     --name "$az_deployment_name" \
     --query properties.outputs.monaPublisherConfig.value \
-    --output json);
+    --output json)
 
 turn_publisher_config_json=$(az deployment group show \
     --resource-group "$resource_group_name" \
     --name "$az_deployment_name" \
     --query properties.outputs.turnPublisherConfig.value \
-    --output json);
+    --output json)
 
 mona_web_app_name=$(az deployment group show \
     --resource-group "$resource_group_name" \
     --name "$az_deployment_name" \
     --query properties.outputs.monaWebAppName.value \
-    --output tsv);
+    --output tsv)
 
 relay_app_name=$(az deployment group show \
     --resource-group "$resource_group_name" \
     --name "$az_deployment_name" \
     --query properties.outputs.relayName.value \
-    --output tsv);
+    --output tsv)
 
 turn_web_app_name=$(az deployment group show \
     --resource-group "$resource_group_name" \
     --name "$az_deployment_name" \
     --query properties.outputs.turnWebAppName.value \
-    --output tsv);
+    --output tsv)
 
 turn_api_app_name=$(az deployment group show \
     --resource-group "$resource_group_name" \
@@ -497,8 +613,7 @@ wait $turn_admin_role_assign_pid
 echo
 echo "🏗️   Building apps..."
 
-# We have to stagger this kind of weird to parallelize the builds but not run into
-# conflicts within the same solution.
+# We have to stagger this kind of weird to parallelize the builds but not run into within the same sln.
 
 dotnet publish -c Release -o ./mona_web_topublish ../Mona.SaaS.Web/Mona.SaaS.Web.csproj &
 
