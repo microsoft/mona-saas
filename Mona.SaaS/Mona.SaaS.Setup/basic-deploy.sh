@@ -70,18 +70,19 @@ check_app_service_plan() {
 }
 
 check_deployment_region() {
-    region=$1
+    lp=$1
+    region=$2
 
     region_display_name=$(az account list-locations -o tsv --query "[?name=='$region'].displayName")
 
     if [[ -z $region_display_name ]]; then
-        echo "❌   [$region] is not a valid Azure region, but these are..."
+        echo "$lp ❌   [$region] is not a valid Azure region, but these are..."
         echo
         az account list-locations --output table --query "[].name"
         echo
         return 1
     else
-        echo "✔   [$region] is a valid Azure region ($region_display_name)."
+        echo "$lp ✔   [$region] is a valid Azure region ($region_display_name)."
     fi
 }
 
