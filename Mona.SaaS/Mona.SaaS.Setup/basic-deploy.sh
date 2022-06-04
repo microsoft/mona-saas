@@ -70,16 +70,18 @@ check_app_service_plan() {
 }
 
 check_deployment_region() {
-    lp=$1
-    region=$2
+    region=$1
 
     region_display_name=$(az account list-locations -o tsv --query "[?name=='$region'].displayName")
 
     if [[ -z $region_display_name ]]; then
-        echo "$lp ❌   [$region] is not a valid Azure region. For a full list of Azure regions, run 'az account list-locations -o table'."
+        echo "❌   [$region] is not a valid Azure region, but these are..."
+        echo
+        az account list-locations --output table --query "[].name"
+        echo
         return 1
     else
-        echo "$lp ✔   [$region] is a valid Azure region ($region_display_name)."
+        echo "✔   [$region] is a valid Azure region ($region_display_name)."
     fi
 }
 
@@ -247,54 +249,123 @@ fi
 subscription_id=$(az account show --query id --output tsv);
 current_user_tid=$(az account show --query tenantId --output tsv);
 
-# Create the app registration in AAD.
+# Create the Mona app registration in AAD...
 
-aad_app_name="$display_name"
-aad_app_secret=$(openssl rand -base64 64)
+echo "🛡️   Creating Mona Azure Active Directory (AAD) app registration..."
 
-echo "$lp Creating Azure Active Directory (AAD) app registration [$aad_app_name]..."
+mona_aad_app_name="$display_name"
 
-aad_app_id=$(az ad app create \
-    --display-name "$aad_app_name" \
-    --available-to-other-tenants true \
-    --end-date "2299-12-31" \
-    --password "$aad_app_secret" \
-    --optional-claims @./aad/manifest.optional_claims.json \
-    --required-resource-accesses @./aad/manifest.resource_access.json \
-    --app-roles @./aad/manifest.app_roles.json \
-    --query appId \
+graph_token=$(az account get-access-token \
+    --resource-type ms-graph \
+    --query accessToken \
     --output tsv);
 
-echo "$lp ✔   AAD app [$aad_app_name ($aad_app_id)] successfully registered with AAD tenant [$current_user_tid]."
-echo "$lp Creating app service principal. This might take a while..."
+mona_admin_role_id=$(cat /proc/sys/kernel/random/uuid)
+create_mona_app_json=$(cat ./aad/manifest.json)
+create_mona_app_json="${create_mona_app_json/__aad_app_name__/${mona_aad_app_name}}"
+create_mona_app_json="${create_mona_app_json/__deployment_name__/${p_deployment_name}}"
+create_mona_app_json="${create_mona_app_json/__admin_role_id__/${mona_admin_role_id}}"
 
-sleep 30 # Give AAD a chance to catch up...
+# Getting around some occasional consistency issues by implementing the retry pattern. This was fun.
+# If you're reading this code and you've never heard of the retry pattern, check this out --
+# https://docs.microsoft.com/en-us/azure/architecture/patterns/retry
 
-aad_sp_id=$(az ad sp create --id "$aad_app_id" --query id --output tsv);
+for i1 in {1..5}; do
+    create_mona_app_response=$(curl \
+        -X POST \
+        -H "Content-Type: application/json" \
+        -H "Authorization: Bearer $graph_token" \
+        -d "$create_mona_app_json" \
+        "https://graph.microsoft.com/v1.0/applications")
 
-if [[ -z $aad_sp_id ]]; then
-    echo "$lp ❌   Unable to create service principal for AAD app [$aad_app_name ($aad_app_id)]. See above output for details. Setup failed."
-    exit 1
-fi
+    mona_aad_object_id=$(echo "$create_mona_app_response" | jq -r ".id")
+    mona_aad_app_id=$(echo "$create_mona_app_response" | jq -r ".appId")
 
-echo "$lp Granting AAD app [$aad_app_name] service principal [$aad_sp_id] contributor access to resource group [$resource_group_name]..."
+    if [[ -z $mona_aad_object_id || -z $mona_aad_app_id ]]; then
+        if [[ i1 == 5 ]]; then
+            # We tried and we failed. Such is life.
+            echo "$lp ❌   Failed to create Mona AAD app. Setup failed."
+            exit 1
+        else
+            sleep_for=$((2**i1)) # Exponential backoff. 2..4..8..16 seconds.
+            echo "$lp ⚠️   Trying to create app again in [$sleep_for] seconds."
+            sleep $sleep_for
+        fi
+    else
+        break
+    fi
+done
 
-sleep 30 # Give AAD a chance to catch up...
+# Create the Mona client secret...
 
-az role assignment create \
-    --role "Contributor" \
-    --assignee "$aad_sp_id" \
-    --resource-group "$resource_group_name"
+echo "🛡️   Creating Mona Azure Active Directory (AAD) client credentials..."
 
-echo "$lp Tagging resource group [$resource_group_name]..."
+add_mona_password_json=$(cat ./aad/add_password.json)
 
-az group update \
-    --name "$resource_group_name" \
-    --tags \
-        "Mona Version"="$mona_version" \
-        "Deployment Name"="$deployment_name" \
-        "AAD App ID"="$aad_app_id" \
-        "AAD App Name"="$aad_app_name" >/dev/null
+for i2 in {1..5}; do
+    add_mona_password_response=$(curl \
+        -X POST \
+        -H "Content-Type: application/json" \
+        -H "Authorization: Bearer $graph_token" \
+        -d "$add_mona_password_json" \
+        "https://graph.microsoft.com/v1.0/applications/$mona_aad_object_id/addPassword")
+
+    mona_aad_app_secret=$(echo "$add_mona_password_response" | jq -r ".secretText")
+
+    if [[ -z $mona_aad_app_secret ]]; then
+        if [[ i2 == 5 ]]; then
+            echo "$lp ❌   Failed to create Mona AAD app client credentials. Setup failed."
+            exit 1
+        else
+            sleep_for=$((2**i2))
+            echo "$lp ⚠️   Trying to create client credentials again in [$sleep_for] seconds."
+            sleep $sleep_for
+        fi
+    else
+        break
+    fi
+done
+
+echo "🛡️   Creating Mona AAD app [$mona_aad_app_name] service principal..."
+
+for i3 in {1..5}; do
+    mona_aad_sp_id=$(az ad sp create --id "$mona_aad_app_id" --query id --output tsv);
+
+    if [[ -z $mona_aad_sp_id ]]; then
+        if [[ i3 == 5 ]]; then
+            echo "$lp ❌   Failed to create Mona AAD app service principal. Setup failed."
+            exit 1
+        else
+            sleep_for=$((2**i3))
+            echo "$lp ⚠️   Trying to create service principal again in [$sleep_for] seconds."
+            sleep $sleep_for
+        fi
+    else
+        break
+    fi
+done
+
+echo "🔐   Granting Mona service principal contributor access to [$resource_group_name]..."
+
+for i4 in {1..5}; do
+    az role assignment create \
+        --role "Contributor" \
+        --assignee "$mona_aad_sp_id" \
+        --resource-group "$resource_group_name"
+
+    if [[ $? -ne 0 ]]; then
+        if [[ i4 == 5 ]]; then
+            echo "$lp ❌   Failed to grant Mona service principal contributor access. Setup failed."
+            exit 1
+        else
+            sleep_for=$((2**i4))
+            echo "$lp ⚠️   Trying to grant service principal contributor access again in [$sleep_for] seconds."
+            sleep $sleep_for
+        fi
+    else
+        break
+    fi
+done
 
 # Deploy the ARM template.
 
@@ -309,9 +380,9 @@ az deployment group create \
     --parameters \
         deploymentName="$deployment_name" \
         aadTenantId="$current_user_tid" \
-        aadPrincipalId="$aad_sp_id" \
-        aadClientId="$aad_app_id" \
-        aadClientSecret="$aad_app_secret" \
+        aadPrincipalId="$mona_aad_sp_id" \
+        aadClientId="$mona_aad_app_id" \
+        aadClientSecret="$mona_aad_app_secret" \
         language="$language" \
         appServicePlanId="$app_service_plan_id" \
         eventVersion="$event_version"
@@ -342,7 +413,7 @@ fi
 if [[ -z "$pack_path" ]]; then
     echo "$lp ⚠️   Integration pack [$integration_pack] not found at [$pack_absolute_path] or [$pack_relative_path]. No integration pack will be deployed."
 else
-    echo "$lp Deploying [$integration_pack ($pack_path)] integration pack..."
+    echo "$lp 🦾   Deploying [$integration_pack ($pack_path)] integration pack..."
 
     az deployment group create \
         --resource-group "$resource_group_name" \
@@ -350,8 +421,8 @@ else
         --template-file "$pack_path" \
         --parameters \
             deploymentName="$deployment_name" \
-            aadClientId="$aad_app_id" \
-            aadClientSecret="$aad_app_secret" \
+            aadClientId="$mona_aad_app_id" \
+            aadClientSecret="$mona_aad_app_secret" \
             aadTenantId="$current_user_tid"
 
     [[ $? -eq 0 ]] && echo "$lp ✔   Integration pack [$integration_pack ($pack_path)] deployed.";
@@ -364,22 +435,11 @@ echo "$lp Configuring Mona settings...";
 
 # Regardless of whether or not -j was set, add the current user to the admin role...
 
-sp_admin_role_id=$(az ad sp show --id "$aad_sp_id" --query "appRoles[0].id" --output tsv)
-graph_token=$(az account get-access-token --resource-type ms-graph --query accessToken --output tsv)
-
 curl -X POST \
     -H "Content-Type: application/json" \
     -H "Authorization: Bearer $graph_token" \
-    -d "{ \"principalId\": \"$current_user_oid\", \"resourceId\": \"$aad_sp_id\", \"appRoleId\": \"$sp_admin_role_id\" }" \
+    -d "{ \"principalId\": \"$current_user_oid\", \"resourceId\": \"$mona_aad_sp_id\", \"appRoleId\": \"$mona_admin_role_id\" }" \
     "https://graph.microsoft.com/v1.0/users/$current_user_oid/appRoleAssignments"
-
-# Configure AD app reply and ID URLs.
-
-echo "$lp Completing Mona configuration..."
-
-az ad app update \
-    --id "$aad_app_id" \
-    --reply-urls "$web_app_base_url/signin-oidc";
 
 if [[ -z $no_publish ]]; then
     # Deploy Mona web application...
@@ -412,7 +472,7 @@ printf "$lp Deployment Name                     [$deployment_name]\n"
 printf "$lp Deployment Version                  [$mona_version]\n"
 printf "$lp Deployed to Azure Subscription      [$subscription_id]\n"
 printf "$lp Deployed to Resource Group          [$resource_group_name]\n"
-printf "$lp Deployment AAD Client ID            [$aad_app_id]\n"
+printf "$lp Deployment AAD Client ID            [$mona_aad_app_id]\n"
 printf "$lp Deployment AAD Tenant ID            [$current_user_tid]\n"
 
 if [[ -z $no_publish ]]; then

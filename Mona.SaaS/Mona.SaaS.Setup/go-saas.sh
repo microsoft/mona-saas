@@ -408,7 +408,7 @@ for 17 in {1..5}; do
     fi
 done
 
-echo "🔐   Granting Mona service principal contributor access to [$resource_group_name]..."
+echo "🔐   Granting Turnstile service principal contributor access to [$resource_group_name]..."
 
 for i8 in {1..5}; do
     az role assignment create \
