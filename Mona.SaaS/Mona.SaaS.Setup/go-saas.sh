@@ -74,6 +74,7 @@ check_deployment_region() {
 clean_up() {
     echo "🧹   Cleaning up..."
 
+    rm -rf ./dotnet-install.sh >/dev/null
     rm -rf ./mona_web_topublish >/dev/null
     rm -rf ./mona_web_topublish.zip >/dev/null
     rm -rf ./relay_topublish >/dev/null
