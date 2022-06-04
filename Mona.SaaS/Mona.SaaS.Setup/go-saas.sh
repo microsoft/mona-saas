@@ -64,7 +64,10 @@ check_deployment_region() {
     region_display_name=$(az account list-locations -o tsv --query "[?name=='$region'].displayName")
 
     if [[ -z $region_display_name ]]; then
-        echo "❌   [$region] is not a valid Azure region. For a full list of Azure regions, run 'az account list-locations -o table'."
+        echo "❌   [$region] is not a valid Azure region, but these are..."
+        echo
+        az account list-locations --output table --query "[].name"
+        echo
         return 1
     else
         echo "✔   [$region] is a valid Azure region ($region_display_name)."
