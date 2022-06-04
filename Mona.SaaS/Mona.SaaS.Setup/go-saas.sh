@@ -118,7 +118,7 @@ if [[ -z $prereq_check_failed ]]; then
     echo "✔   All setup prerequisites installed."
 else
     echo "❌   Please install all setup prerequisites then try again."
-    return 1
+    exit 1
 fi
 
 # Upgrade to the latest version of Bicep...
@@ -163,7 +163,7 @@ if [[ -z $param_check_failed ]]; then
     echo "✔   All setup parameters are valid."
 else
     echo "❌   Parameter validation failed. Please review and try again."
-    return 1
+    exit 1
 fi
 
 p_deployment_name=$(echo "$p_deployment_name" | tr '[:upper:]' '[:lower:]') # Lower the deployment name...
