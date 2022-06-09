@@ -64,8 +64,9 @@ namespace Mona.AutoIntegration.Interrogators
 
             using (var logicAppClient = new LogicManagementClient(credentials) { SubscriptionId = subscriptionId })
             {
-                return (await logicAppClient.Workflows.ListByResourceGroupAsync(resourceGroupName)).Select(
-                    w => InterrogateResourceAsync(credentials, w).Result).ToList();
+                return (await logicAppClient.Workflows.ListByResourceGroupAsync(resourceGroupName))
+                    .Where(w => (w.Tags?.Any() == true))
+                    .Select(w => InterrogateResourceAsync(credentials, w).Result).ToList();
             }
         }
     }
