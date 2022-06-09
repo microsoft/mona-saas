@@ -151,7 +151,7 @@ namespace Mona.SaaS.Web.Controllers
                     // were indeed able to resolve the subscription but, for some reason, we don't know about it. Let the user know
                     // and prompt them to return to the AppSource/Marketplace offer URL...
 
-                    this.logger.LogError($"Subscription [{subscription.SubscriptionId}] not found.");
+                    this.logger.LogError($"Subscription [{landingPageModel.SubscriptionId}] not found.");
 
                     return View("Index", new LandingPageModel(inTestMode)
                         .WithCurrentUserInformation(User)

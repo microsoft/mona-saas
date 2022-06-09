@@ -10,13 +10,13 @@
 
  ## How does Mona SaaS work?
 
- Mona SaaS implements all of the various customer and publisher (you, the ISV) flows that are required by Microsoft's [SaaS fulfillment APIs](https://docs.microsoft.com/azure/marketplace/partner-center-portal/pc-saas-fulfillment-api-v2) including both [the landing page](https://docs.microsoft.com/azure/marketplace/partner-center-portal/pc-saas-fulfillment-api-v2#purchased-but-not-yet-activated-pendingfulfillmentstart) that customers will see when purchasing your SaaS offer and [the webhook](https://docs.microsoft.com/azure/marketplace/partner-center-portal/pc-saas-fulfillment-api-v2#implementing-a-webhook-on-the-saas-service) that we use to notify you of [subscription changes](https://docs.microsoft.com/azure/marketplace/partner-center-portal/pc-saas-fulfillment-api-v2#managing-the-saas-subscription-life-cycle) like [cancellations](https://docs.microsoft.com/azure/marketplace/partner-center-portal/pc-saas-fulfillment-api-v2#canceled-unsubscribed) and [suspensions](https://docs.microsoft.com/azure/marketplace/partner-center-portal/pc-saas-fulfillment-api-v2#suspended-suspended).
+ Mona SaaS implements all of the various customer and publisher (you, the ISV) flows that are required by Microsoft's [SaaS fulfillment APIs](https://docs.microsoft.com/azure/marketplace/partner-center-portal/pc-saas-fulfillment-api-v2) including both [the landing page](https://docs.microsoft.com/azure/marketplace/partner-center-portal/pc-saas-fulfillment-api-v2#purchased-but-not-yet-activated-pendingfulfillmentstart) that customers will see when purchasing your SaaS offer and [the webhook](https://docs.microsoft.com/azure/marketplace/partner-center-portal/pc-saas-fulfillment-api-v2#implementing-a-webhook-on-the-saas-service) that Azure Marketplace uses to notify you of [subscription changes](https://docs.microsoft.com/azure/marketplace/partner-center-portal/pc-saas-fulfillment-api-v2#managing-the-saas-subscription-life-cycle) like [cancellations](https://docs.microsoft.com/azure/marketplace/partner-center-portal/pc-saas-fulfillment-api-v2#canceled-unsubscribed) and [suspensions](https://docs.microsoft.com/azure/marketplace/partner-center-portal/pc-saas-fulfillment-api-v2#suspended-suspended).
  
   ![Mona Architecture Overview](docs/images/mona_arch_overview.png)
  
-Each of these operations is exposed to your SaaS application by Mona SaaS through events published to [a custom Event Grid topic](https://docs.microsoft.com/azure/event-grid/custom-topics) automatically provisioned during setup. By default, we deploy a set of "stub" Logic Apps into your Azure subscription that are enabled by default and configured to be triggered by these subscription events.
+Each of these operations is exposed to your SaaS application by Mona SaaS through events published to [a custom Event Grid topic](https://docs.microsoft.com/azure/event-grid/custom-topics) automatically provisioned during setup. By default, Mona SaaS deploys a set of "stub" Logic Apps into your Azure subscription that are enabled by default and configured to be triggered by these subscription events.
  
- Since Mona SaaS exposes these subscription-related events to your SaaS application through an Event Grid topic, [you have lots of options for handling them](https://docs.microsoft.com/azure/event-grid/overview#event-handlers). Because we're using Event Grid, multiple event subscribers can handle the same events simultaneously. These flows can be easily modified in production with no downtime.
+ Since Mona SaaS exposes these subscription-related events to your SaaS application through an Event Grid topic, [you have lots of options for handling them](https://docs.microsoft.com/azure/event-grid/overview#event-handlers). Because Mona SaaS is using Event Grid, multiple event subscribers can handle the same events simultaneously. These flows can be easily modified in production with no downtime.
 
 ## How do I get started with Mona SaaS?
 
@@ -71,7 +71,7 @@ At a minimum, you need this information before running the setup script —
 
 #### Setup script examples
 
-To deploy a Mona instance named `monaex01` to the West Europe (`westeurope`) Azure region, you would run the following command from the cloud shell. Note that, since we didn't explicitly provide a display name, Mona will default to using `monaex01` as the display name.
+To deploy a Mona instance named `monaex01` to the West Europe (`westeurope`) Azure region, you would run the following command from the cloud shell. Note that, since you didn't explicitly provide a display name, Mona will default to using `monaex01` as the display name.
 
 ```shell
 ./basic-deploy.sh -r "westeurope" -n "monaex01"
@@ -112,7 +112,7 @@ The setup script supports additional optional parameters detailed in the table b
 
 ### 5. Complete Mona SaaS setup
 
-Once the script is finished, note the information provided in the `Mona Deployment Summary`. We strongly recommend saving these values somewhere safe and convenient as you will likely need to refer to them again later.
+Once the script is finished, note the information provided in the `Mona Deployment Summary`. It's strongly recommended to save these values somewhere safe and convenient as you will likely need to refer to them again later.
 
 Locate the setup URL at the _very bottom_ of the script output. It will look similiar to this —
 
@@ -150,7 +150,7 @@ Your actual costs may vary based on the following —
 
  * __The integrations that you build.__ For example, Logic Apps offers [a growing list of Standard and Enterprise connectors](https://docs.microsoft.com/en-us/azure/connectors/apis-list) that allow you to easily access various cloud-based and on-premises services. [The connectors that you use have a direct impact on your overall Azure costs](https://azure.microsoft.com/en-us/pricing/details/logic-apps/) outside of the base Mona SaaS deployment.
  * __Where you deploy Mona SaaS.__ Be aware that costs for the same Azure services can vary across regions.
- * __Any special pricing arrangements you have with Microsoft.__ Many of the ISVs that we work with have special pricing arrangements through their partnerships with Microsoft.
+ * __Any special pricing arrangements you have with Microsoft.__ Many of the ISVs that Mona SaaS team works with have special pricing arrangements through their partnerships with Microsoft.
 
 Use the [Azure pricing calculator](https://azure.microsoft.com/pricing/calculator/) to better understand your unique costs.
 
