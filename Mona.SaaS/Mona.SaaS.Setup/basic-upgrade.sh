@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# Copyright (c) Microsoft Corporation.
+# Licensed under the MIT License.
+
 THIS_MONA_VERSION="0.1-prerelease"
 
 check_az() {

@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# Copyright (c) Microsoft Corporation.
+# Licensed under the MIT License.
+
 mona_version="0.1-prerelease"
 
 exec 3>&2 # Grabbing a reliable stderr handle...
