@@ -43,10 +43,10 @@ namespace Mona.AutoIntegration.Interrogators
 
         protected virtual Plugin CreateBasePlugin(string resourceId, IDictionary<string, string> resourceTags)
         {
-                if (string.IsNullOrEmpty(resourceId))
-                {
-                    throw new ArgumentNullException(nameof(resourceId));
-                }
+            if (string.IsNullOrEmpty(resourceId))
+            {
+                throw new ArgumentNullException(nameof(resourceId));
+            }
 
             // TODO: Come back and revisit this whole auto-integration thing in the future. This approach worked just fine
             // when it was just Mona logic apps to worry about but now that we have Turnstile in the picture, the logic behind
