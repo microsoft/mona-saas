@@ -252,7 +252,7 @@ current_user_tid=$(az account show --query tenantId --output tsv);
 
 # Create the Mona app registration in AAD...
 
-echo "🛡️   Creating Mona Azure Active Directory (AAD) app registration..."
+echo "$lp 🛡️   Creating Mona Azure Active Directory (AAD) app registration..."
 
 mona_aad_app_name="$display_name"
 
@@ -283,7 +283,7 @@ for i1 in {1..5}; do
     mona_aad_app_id=$(echo "$create_mona_app_response" | jq -r ".appId")
 
     if [[ -z $mona_aad_object_id || -z $mona_aad_app_id ]]; then
-        if [[ i1 == 5 ]]; then
+        if [[ $i1 == 5 ]]; then
             # We tried and we failed. Such is life.
             echo "$lp ❌   Failed to create Mona AAD app. Setup failed."
             exit 1
@@ -299,7 +299,7 @@ done
 
 # Create the Mona client secret...
 
-echo "🛡️   Creating Mona Azure Active Directory (AAD) client credentials..."
+echo "$lp 🛡️   Creating Mona Azure Active Directory (AAD) client credentials..."
 
 add_mona_password_json=$(cat ./aad/add_password.json)
 
@@ -314,7 +314,7 @@ for i2 in {1..5}; do
     mona_aad_app_secret=$(echo "$add_mona_password_response" | jq -r ".secretText")
 
     if [[ -z $mona_aad_app_secret ]]; then
-        if [[ i2 == 5 ]]; then
+        if [[ $i2 == 5 ]]; then
             echo "$lp ❌   Failed to create Mona AAD app client credentials. Setup failed."
             exit 1
         else
@@ -327,13 +327,13 @@ for i2 in {1..5}; do
     fi
 done
 
-echo "🛡️   Creating Mona AAD app [$mona_aad_app_name] service principal..."
+echo "$lp 🛡️   Creating Mona AAD app [$mona_aad_app_name] service principal..."
 
 for i3 in {1..5}; do
     mona_aad_sp_id=$(az ad sp create --id "$mona_aad_app_id" --query id --output tsv);
 
     if [[ -z $mona_aad_sp_id ]]; then
-        if [[ i3 == 5 ]]; then
+        if [[ $i3 == 5 ]]; then
             echo "$lp ❌   Failed to create Mona AAD app service principal. Setup failed."
             exit 1
         else
@@ -346,7 +346,7 @@ for i3 in {1..5}; do
     fi
 done
 
-echo "🔐   Granting Mona service principal contributor access to [$resource_group_name]..."
+echo "$lp 🔐   Granting Mona service principal contributor access to [$resource_group_name]..."
 
 for i4 in {1..5}; do
     az role assignment create \
@@ -355,7 +355,7 @@ for i4 in {1..5}; do
         --resource-group "$resource_group_name"
 
     if [[ $? -ne 0 ]]; then
-        if [[ i4 == 5 ]]; then
+        if [[ $i4 == 5 ]]; then
             echo "$lp ❌   Failed to grant Mona service principal contributor access. Setup failed."
             exit 1
         else
@@ -370,7 +370,7 @@ done
 
 # Deploy the ARM template.
 
-echo "$lp Deploying Mona to subscription [$subscription_id] resource group [$resource_group_name]. This might take a while...";
+echo "$lp 🦾   Deploying Mona to subscription [$subscription_id] resource group [$resource_group_name]. This might take a while...";
 
 az_deployment_name="mona-deploy-$deployment_name"
 
@@ -432,7 +432,7 @@ fi
 
 # Configure Mona.
 
-echo "$lp Configuring Mona settings...";
+echo "$lp 🔐   Adding you to the Mona administrators role...";
 
 # Regardless of whether or not -j was set, add the current user to the admin role...
 
@@ -445,23 +445,21 @@ curl -X POST \
 if [[ -z $no_publish ]]; then
     # Deploy Mona web application...
 
-    echo "$lp Packaging Mona web app for deployment to [$web_app_name]..."
+    echo "$lp 🏗️   Building Mona web app for deployment to [$web_app_name]..."
 
     dotnet publish -c Release -o ./topublish ../Mona.SaaS.Web/Mona.SaaS.Web.csproj
-
-    echo "$lp Zipping Mona web app deployment package..."
 
     cd ./topublish
     zip -r ../topublish.zip . >/dev/null
     cd ..
 
-    echo "$lp Deploying Mona web app to [$web_app_name]..."
+    echo "$lp ☁️   Publishing Mona web app to [$web_app_name]..."
 
     az webapp deployment source config-zip -g "$resource_group_name" -n "$web_app_name" --src ./topublish.zip
 
     # And scene...
 
-    echo "$lp Cleaning up..."
+    echo "$lp 🧹   Cleaning up..."
 
     rm -rf ./topublish >/dev/null
     rm -rf ./topublish.zip >/dev/null

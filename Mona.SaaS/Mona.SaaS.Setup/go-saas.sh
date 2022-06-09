@@ -214,7 +214,7 @@ create_mona_app_json="${create_mona_app_json/__aad_app_name__/${mona_aad_app_nam
 create_mona_app_json="${create_mona_app_json/__deployment_name__/${p_deployment_name}}"
 create_mona_app_json="${create_mona_app_json/__admin_role_id__/${mona_admin_role_id}}"
 
-# Getting around some occasional consistency issues by implementing the retry pattern. This was fun.
+# Getting around some occasional consistency issues by implementing the retry pattern. This was legit fun.
 # If you're reading this code and you've never heard of the retry pattern, check this out --
 # https://docs.microsoft.com/en-us/azure/architecture/patterns/retry
 
@@ -229,13 +229,13 @@ for i1 in {1..5}; do
     mona_aad_object_id=$(echo "$create_mona_app_response" | jq -r ".id")
     mona_aad_app_id=$(echo "$create_mona_app_response" | jq -r ".appId")
 
-    if [[ -z $mona_aad_object_id || -z $mona_aad_app_id ]]; then
-        if [[ i1 == 5 ]]; then
+    if [[ -z $mona_aad_object_id || -z $mona_aad_app_id ]]; then # If we couldn't get these values, it's a pretty safe bet that something broke.
+        if [[ $i1 == 5 ]]; then # This was our last try.
             # We tried and we failed. Such is life.
             clean_up
             echo "$lp ❌   Failed to create Mona AAD app. Setup failed."
             exit 1
-        else
+        else # Let's wait a few seconds then try again.
             sleep_for=$((2**i1)) # Exponential backoff. 2..4..8..16 seconds.
             echo "$lp ⚠️   Trying to create app again in [$sleep_for] seconds."
             sleep $sleep_for
@@ -269,7 +269,7 @@ for i2 in {1..5}; do
     turn_aad_app_id=$(echo "$create_turn_app_response" | jq -r ".appId")
 
      if [[ -z $turn_aad_object_id || -z $turn_aad_app_id ]]; then
-        if [[ i2 == 5 ]]; then
+        if [[ $i2 == 5 ]]; then
             clean_up
             echo "$lp ❌   Failed to create Turnstile AAD app. Setup failed."
             exit 1
@@ -300,7 +300,7 @@ for i3 in {1..5}; do
     mona_aad_app_secret=$(echo "$add_mona_password_response" | jq -r ".secretText")
 
     if [[ -z $mona_aad_app_secret ]]; then
-        if [[ i3 == 5 ]]; then
+        if [[ $i3 == 5 ]]; then
             clean_up
             echo "$lp ❌   Failed to create Mona AAD app client credentials. Setup failed."
             exit 1
@@ -331,7 +331,7 @@ for i4 in {1..5}; do
     turn_aad_app_secret=$(echo "$add_turn_password_response" | jq -r ".secretText")
 
     if [[ -z $turn_aad_app_secret ]]; then
-        if [[ i4 == 5 ]]; then
+        if [[ $i4 == 5 ]]; then
             clean_up
             echo "$lp ❌   Failed to create Turnstile AAD app client credentials. Setup failed."
             exit 1
@@ -351,7 +351,7 @@ for i5 in {1..5}; do
     mona_aad_sp_id=$(az ad sp create --id "$mona_aad_app_id" --query id --output tsv);
 
     if [[ -z $mona_aad_sp_id ]]; then
-        if [[ i5 == 5 ]]; then
+        if [[ $i5 == 5 ]]; then
             clean_up
             echo "$lp ❌   Failed to create Mona AAD app service principal. Setup failed."
             exit 1
@@ -371,7 +371,7 @@ for i6 in {1..5}; do
     turn_aad_sp_id=$(az ad sp create --id "$turn_aad_app_id" --query id --output tsv);
 
      if [[ -z $turn_aad_sp_id ]]; then
-        if [[ i6 == 5 ]]; then
+        if [[ $i6 == 5 ]]; then
             clean_up
             echo "$lp ❌   Failed to create Turnstile AAD app service principal. Setup failed."
             exit 1
@@ -387,14 +387,14 @@ done
 
 echo "🔐   Granting Mona service principal contributor access to [$resource_group_name]..."
 
-for 17 in {1..5}; do
+for i7 in {1..5}; do
     az role assignment create \
         --role "Contributor" \
         --assignee "$mona_aad_sp_id" \
         --resource-group "$resource_group_name"
 
     if [[ $? -ne 0 ]]; then
-        if [[ i7 == 5 ]]; then
+        if [[ $i7 == 5 ]]; then
             clean_up
             echo "$lp ❌   Failed to grant Mona service principal contributor access. Setup failed."
             exit 1
