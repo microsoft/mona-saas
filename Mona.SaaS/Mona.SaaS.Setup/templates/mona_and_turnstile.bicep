@@ -50,6 +50,7 @@ var monaWebAppName = 'mona-web-${cleanDeploymentName}'
 
 // For Turnstile-specific resources
 
+var turnEventStoreContainerName = 'event-store'
 var turnConfigContainerName = 'turn-configuration'
 var turnConfigBlobName = 'publisher_config.json'
 var turnCosmosDbAccountName = 'turn-cosmos-${cleanDeploymentName}'
@@ -140,6 +141,10 @@ resource monaTestSubStorageContainer 'Microsoft.Storage/storageAccounts/blobServ
 
 resource monaStageSubStorageContainer 'Microsoft.Storage/storageAccounts/blobServices/containers@2021-09-01' = {
   name: '${storageAccount.name}/default/${monaStageSubContainerName}'
+}
+
+resource turnEventStoreStorageContainer 'Microsoft.Storage/storageAccounts/blobServices/containers@2021-09-01' = {
+  name: '${storageAccount.name}/default/${turnEventStoreContainerName}'
 }
 
 resource storageAccountPolicies 'Microsoft.Storage/storageAccounts/managementPolicies@2019-06-01' = {
