@@ -17,5 +17,7 @@ namespace Mona.SaaS.Web.Models
         /// Gets/sets the publisher to be set up.
         /// </summary>
         public PublisherConfiguration Publisher { get; set; }
+
+        public string MonaVersion { get; set; }
     }
 }

@@ -442,6 +442,9 @@ az_deployment_name="saas-deploy-$p_deployment_name"
 
 echo "🦾   Deploying Mona + Turnstile Bicep template to subscription [$subscription_id] resource group [$resource_group_name]..."
 
+mona_version=$(cat ../../VERSION)
+turn_version=$(cat ./turnstile/VERSION)
+
 az deployment group create \
     --resource-group "$resource_group_name" \
     --name "$az_deployment_name" \
@@ -454,7 +457,9 @@ az deployment group create \
         monaAadClientSecret="$mona_aad_app_secret" \
         turnAadClientId="$turn_aad_app_id" \
         turnAadTenantId="$current_user_tid" \
-        turnAadClientSecret="$turn_aad_app_secret"
+        turnAadClientSecret="$turn_aad_app_secret" \
+        monaVersion="$mona_version" \
+        turnVersion="$turn_version"
 
 storage_account_name=$(az deployment group show \
     --resource-group "$resource_group_name" \

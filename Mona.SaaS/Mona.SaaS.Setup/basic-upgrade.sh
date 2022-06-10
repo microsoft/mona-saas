@@ -3,7 +3,7 @@
 # Copyright (c) Microsoft Corporation.
 # Licensed under the MIT License.
 
-THIS_MONA_VERSION="0.1-prerelease"
+THIS_MONA_VERSION=$(cat ../../VERSION)
 
 check_az() {
     az version >/dev/null
