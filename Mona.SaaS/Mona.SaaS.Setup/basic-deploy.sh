@@ -3,7 +3,7 @@
 # Copyright (c) Microsoft Corporation.
 # Licensed under the MIT License.
 
-mona_version="0.1-prerelease"
+mona_version=$(cat ../../VERSION)
 
 exec 3>&2 # Grabbing a reliable stderr handle...
 
@@ -237,7 +237,13 @@ fi
 
 if [[ $(az group exists --resource-group "$resource_group_name" --output tsv) == false ]]; then
     echo "$lp Creating resource group [$resource_group_name]..."
-    az group create --location "$deployment_region" --name "$resource_group_name"
+
+    az group create \
+        --location "$deployment_region" \
+        --name "$resource_group_name" \
+        --tags \
+            "Mona Version"="$mona_version" \
+            "Deployment Name"="$deployment_name"
 
     if [[ $? -eq 0 ]]; then
         echo "$lp ✔   Resource group [$resource_group_name] created."

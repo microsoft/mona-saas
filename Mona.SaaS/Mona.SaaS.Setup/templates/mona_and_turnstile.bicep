@@ -14,7 +14,7 @@ param monaAadClientId string
 param monaAadTenantId string
 param monaAadPrincipalId string
 param monaEventVersion string = '2021-10-01'
-param monaVersion string = '0.1-prerelease'
+param monaVersion string
 
 @secure()
 param monaAadClientSecret string
@@ -23,7 +23,7 @@ param turnPublisherAdminRole string = 'turnstile_admins'
 param turnTenantAdminRole string = 'subscriber_tenant_admins'
 param turnAadClientId string
 param turnAadTenantId string
-param turnVersion string = '0.1-prerelease'
+param turnVersion string
 
 @secure()
 param turnAadClientSecret string

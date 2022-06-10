@@ -5,7 +5,7 @@
  _/      _/  _/    _/  _/    _/  _/    _/     
 _/      _/    _/_/    _/    _/    _/_/_/      
                                               
-Mona SaaS | 0.1-prerelease
+Mona SaaS
 
 https://github.com/microsoft/mona-saas
 

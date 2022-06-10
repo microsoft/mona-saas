@@ -5,7 +5,9 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Mona.SaaS.Core.Interfaces;
+using Mona.SaaS.Core.Models.Configuration;
 using Mona.SaaS.Web.Models;
+using Microsoft.Extensions.Options;
 using System.Threading.Tasks;
 
 namespace Mona.SaaS.Web.Controllers
@@ -14,12 +16,15 @@ namespace Mona.SaaS.Web.Controllers
     public class SetupController : Controller
     {
         private readonly ILogger logger;
+        private readonly DeploymentConfiguration deploymentConfig;
         private readonly IPublisherConfigurationStore publisherConfigStore;
 
         public SetupController(
+            IOptionsSnapshot<DeploymentConfiguration> deploymentConfig,
             ILogger<SetupController> logger,
             IPublisherConfigurationStore publisherConfigStore)
         {
+            this.deploymentConfig = deploymentConfig.Value;
             this.logger = logger;
             this.publisherConfigStore = publisherConfigStore;
         }
@@ -31,7 +36,7 @@ namespace Mona.SaaS.Web.Controllers
 
             var publisherConfig = await this.publisherConfigStore.GetPublisherConfiguration();
 
-            return View(new SetupModel(publisherConfig));
+            return View(new SetupModel(publisherConfig) { MonaVersion = deploymentConfig.MonaVersion });
         }
 
         [HttpPost, Route("setup", Name = "setup"), ValidateAntiForgeryToken]
