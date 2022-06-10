@@ -183,6 +183,11 @@ echo "⬇️   Cloning Turnstile repository..."
 
 git clone https://github.com/microsoft/turnstile
 
+# Get our versions...
+
+mona_version=$(cat ../../VERSION)
+turn_version=$(cat ./turnstile/VERSION)
+
 # Create our resource group if it doesn't already exist...
 
 resource_group_name="saas-$p_deployment_name"
@@ -190,7 +195,14 @@ resource_group_name="saas-$p_deployment_name"
 if [[ $(az group exists --resource-group "$resource_group_name" --output tsv) == false ]]; then
     echo "Creating resource group [$resource_group_name]..."
 
-    az group create --location "$p_deployment_region" --name "$resource_group_name"
+    az group create \
+        --location "$p_deployment_region" \
+        --name "$resource_group_name" \
+        --tags \
+            "Deployment Name"="$p_deployment_name" \
+            "Mona Version"="$mona_version" \
+            "Turnstile Deployment Name"="$p_deployment_name" \
+            "Turnstile Version"="$turn_version"
 
     if [[ $? -eq 0 ]]; then
         echo "✔   Resource group [$resource_group_name] created."
@@ -441,9 +453,6 @@ current_user_tid=$(az account show --query tenantId --output tsv);
 az_deployment_name="saas-deploy-$p_deployment_name"
 
 echo "🦾   Deploying Mona + Turnstile Bicep template to subscription [$subscription_id] resource group [$resource_group_name]..."
-
-mona_version=$(cat ../../VERSION)
-turn_version=$(cat ./turnstile/VERSION)
 
 az deployment group create \
     --resource-group "$resource_group_name" \
