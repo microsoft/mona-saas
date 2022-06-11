@@ -50,7 +50,7 @@ Finally, enable the setup script to be executed locally by running —
 chmod +x ./basic-deploy.sh
 ```
 
-### 4. Set up Mona SaaS
+### 3. Set up Mona SaaS
 
 At a minimum, you need this information before running the setup script —
 
@@ -102,7 +102,7 @@ The setup script supports additional optional parameters detailed in the table b
 | `-h` | __Flag__ - Don't show script splash screen. | No | N/A | When set, the setup script will not display the standard Mona setup splash screen. |
 | `-p` | __Flag__ - Don't publish the web app. | No | N/A | When set, the setup script will provision all Azure and Azure Active Directory reources as usual _but_ won't actually publish the Mona web app. |
 
-### 5. Complete Mona SaaS setup
+### 4. Complete Mona SaaS setup
 
 Once the script is finished, note the information provided in the `Mona Deployment Summary`. It's strongly recommended to save these values somewhere safe and convenient as you will likely need to refer to them again later.
 
@@ -118,7 +118,7 @@ Click the URL (it's automatically linked within the cloud shell) to navigate to 
 
 > The setup wizard is hosted entirely within your own Mona SaaS deployment so you're aren't sharing any information with Microsoft (or anyone else) at this point.
 
-### 6. Finish setting up your offer(s) in Partner Center
+### 5. Finish setting up your offer(s) in Partner Center
 
 [Use the Partner Center to configure your offer(s) and begin transacting with Microsoft!](https://docs.microsoft.com/azure/marketplace/create-new-saas-offer)
 
