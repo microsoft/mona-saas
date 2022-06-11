@@ -28,13 +28,7 @@ First, ensure that the following prerequisites are met.
  * You have the ability to create new app registrations within your Azure Active Directory (AAD) tenant. In order to create app registrations, you must be a directory administrator. For more information, see [this article](https://docs.microsoft.com/en-us/azure/active-directory/roles/permissions-reference).
  * You have the ability to create resources and resource groups within the target Azure subscription. Typically, this requires at least [contributor-level access](https://docs.microsoft.com/azure/role-based-access-control/built-in-roles#contributor) to the subscription.
 
-### 2. Gain access to the Mona SaaS GitHub repository
- 
-During our private preview phase, the Mona SaaS GitHub repository is private.
-
-Per Microsoft policy, you must use two-factor authentication (2FA) to access this repo using your own GitHub credentials. Since the Azure cloud shell doesn't support GitHub 2FA, you'll need to both [enable 2FA for your GitHub account](https://docs.github.com/en/github/authenticating-to-github/securing-your-account-with-two-factor-authentication-2fa) and [generate a personal access token (PAT) with the `repo` scope selected](https://docs.github.com/en/github/authenticating-to-github/keeping-your-account-and-data-secure/creating-a-personal-access-token). Save this PAT in a secure place as you'll need it later (as your password) when cloning this repository into your own Azure environment.
-
- ### 3. Clone the Mona SaaS GitHub repository
+ ### 2. Clone the Mona SaaS GitHub repository
 
  Navigate to [the Azure portal](https://portal.azure.com) and [launch the Bash cloud shell](https://docs.microsoft.com/azure/cloud-shell/quickstart#start-cloud-shell).
  
@@ -46,7 +40,7 @@ Run this command from the cloud shell to clone the Mona SaaS repository —
 git clone https://github.com/microsoft/mona-saas
 ```
 
-Your user name is your GitHub user name. Your password is the PAT generated in the previous section. By default, the Mona SaaS repository will be cloned to a local directory named `mona-saas`. Navigate to the setup folder by running the following command —
+By default, the Mona SaaS repository will be cloned to a local directory named `mona-saas`. Navigate to the setup folder by running the following command —
 
 ```shell
 cd ./mona-saas/Mona.SaaS/Mona.SaaS.Setup
