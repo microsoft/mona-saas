@@ -291,7 +291,7 @@ for i1 in {1..5}; do
     mona_aad_object_id=$(echo "$create_mona_app_response" | jq -r ".id")
     mona_aad_app_id=$(echo "$create_mona_app_response" | jq -r ".appId")
 
-    if [[ -z $mona_aad_object_id || -z $mona_aad_app_id ]]; then
+    if [[ -z $mona_aad_object_id || -z $mona_aad_app_id || $mona_aad_object_id == null || $mona_aad_sp_id == null ]]; then
         if [[ $i1 == 5 ]]; then
             # We tried and we failed. Such is life.
             echo "$lp ❌   Failed to create Mona AAD app. Setup failed."
@@ -322,7 +322,7 @@ for i2 in {1..5}; do
 
     mona_aad_app_secret=$(echo "$add_mona_password_response" | jq -r ".secretText")
 
-    if [[ -z $mona_aad_app_secret ]]; then
+    if [[ -z $mona_aad_app_secret || $mona_aad_app_secret == null ]]; then
         if [[ $i2 == 5 ]]; then
             echo "$lp ❌   Failed to create Mona AAD app client credentials. Setup failed."
             exit 1
@@ -341,7 +341,7 @@ echo "$lp 🛡️   Creating Mona AAD app [$mona_aad_app_name] service principal
 for i3 in {1..5}; do
     mona_aad_sp_id=$(az ad sp create --id "$mona_aad_app_id" --query id --output tsv);
 
-    if [[ -z $mona_aad_sp_id ]]; then
+    if [[ -z $mona_aad_sp_id || $mona_aad_sp_id == null ]]; then
         if [[ $i3 == 5 ]]; then
             echo "$lp ❌   Failed to create Mona AAD app service principal. Setup failed."
             exit 1
