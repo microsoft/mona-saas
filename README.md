@@ -154,6 +154,14 @@ Mona SaaS takes a dependency on the open source [Commercial Marketplace .NET Cli
 
 All other dependencies are automatically satisfied using [Nuget](https://docs.microsoft.com/nuget/what-is-nuget) during the Mona SaaS setup process. For more information on Mona SaaS' dependencies, [check out our dependency graph](https://github.com/microsoft/mona-saas/network/dependencies).
 
+* [Create a subscription](https://github.com/microsoft/turnstile/blob/4a8769e6b01a35dfaaea04a79ac6f136e918cbe4/tests/e2e.sh#L23)
+* [Patch a subscription](https://github.com/microsoft/turnstile/blob/4a8769e6b01a35dfaaea04a79ac6f136e918cbe4/tests/e2e.sh#L42)
+* [Reserve a seat](https://github.com/microsoft/turnstile/blob/4a8769e6b01a35dfaaea04a79ac6f136e918cbe4/tests/e2e.sh#L64)
+* [Redeem a reserved seat](https://github.com/microsoft/turnstile/blob/4a8769e6b01a35dfaaea04a79ac6f136e918cbe4/tests/e2e.sh#L85)
+* [Request a "walk-up" seat](https://github.com/microsoft/turnstile/blob/4a8769e6b01a35dfaaea04a79ac6f136e918cbe4/tests/e2e.sh#L108)
+* [Check if a user has a seat](https://github.com/microsoft/turnstile/blob/4a8769e6b01a35dfaaea04a79ac6f136e918cbe4/tests/e2e.sh#L168)
+* [Manually release a seat](https://github.com/microsoft/turnstile/blob/4a8769e6b01a35dfaaea04a79ac6f136e918cbe4/tests/e2e.sh#L190)
+
 ## Who supports Mona SaaS?
 
 Please see [our support docs](SUPPORT.md) for more information.
