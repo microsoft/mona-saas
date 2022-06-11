@@ -244,7 +244,7 @@ for i1 in {1..5}; do
     mona_aad_object_id=$(echo "$create_mona_app_response" | jq -r ".id")
     mona_aad_app_id=$(echo "$create_mona_app_response" | jq -r ".appId")
 
-    if [[ -z $mona_aad_object_id || -z $mona_aad_app_id ]]; then # If we couldn't get these values, it's a pretty safe bet that something broke.
+    if [[ -z $mona_aad_object_id || -z $mona_aad_app_id || $mona_aad_object_id == null || $mona_aad_app_id == null ]]; then # If we couldn't get these values, it's a pretty safe bet that something broke.
         if [[ $i1 == 5 ]]; then # This was our last try.
             # We tried and we failed. Such is life.
             clean_up
@@ -283,7 +283,7 @@ for i2 in {1..5}; do
     turn_aad_object_id=$(echo "$create_turn_app_response" | jq -r ".id")
     turn_aad_app_id=$(echo "$create_turn_app_response" | jq -r ".appId")
 
-     if [[ -z $turn_aad_object_id || -z $turn_aad_app_id ]]; then
+     if [[ -z $turn_aad_object_id || -z $turn_aad_app_id || $turn_aad_object_id == null || $turn_aad_app_id == null ]]; then
         if [[ $i2 == 5 ]]; then
             clean_up
             echo "$lp ❌   Failed to create Turnstile AAD app. Setup failed."
@@ -314,7 +314,7 @@ for i3 in {1..5}; do
 
     mona_aad_app_secret=$(echo "$add_mona_password_response" | jq -r ".secretText")
 
-    if [[ -z $mona_aad_app_secret ]]; then
+    if [[ -z $mona_aad_app_secret || $mona_aad_app_secret == null ]]; then
         if [[ $i3 == 5 ]]; then
             clean_up
             echo "$lp ❌   Failed to create Mona AAD app client credentials. Setup failed."
@@ -345,7 +345,7 @@ for i4 in {1..5}; do
 
     turn_aad_app_secret=$(echo "$add_turn_password_response" | jq -r ".secretText")
 
-    if [[ -z $turn_aad_app_secret ]]; then
+    if [[ -z $turn_aad_app_secret || $turn_aad_app_secret == null ]]; then
         if [[ $i4 == 5 ]]; then
             clean_up
             echo "$lp ❌   Failed to create Turnstile AAD app client credentials. Setup failed."
@@ -365,7 +365,7 @@ echo "🛡️   Creating Mona AAD app [$mona_aad_app_name] service principal..."
 for i5 in {1..5}; do
     mona_aad_sp_id=$(az ad sp create --id "$mona_aad_app_id" --query id --output tsv);
 
-    if [[ -z $mona_aad_sp_id ]]; then
+    if [[ -z $mona_aad_sp_id || $mona_aad_sp_id == null ]]; then
         if [[ $i5 == 5 ]]; then
             clean_up
             echo "$lp ❌   Failed to create Mona AAD app service principal. Setup failed."
@@ -385,7 +385,7 @@ echo "🛡️   Creating Turnstile AAD app [$turn_aad_app_name] service principa
 for i6 in {1..5}; do
     turn_aad_sp_id=$(az ad sp create --id "$turn_aad_app_id" --query id --output tsv);
 
-     if [[ -z $turn_aad_sp_id ]]; then
+     if [[ -z $turn_aad_sp_id || $turn_aad_app_id == null ]]; then
         if [[ $i6 == 5 ]]; then
             clean_up
             echo "$lp ❌   Failed to create Turnstile AAD app service principal. Setup failed."
