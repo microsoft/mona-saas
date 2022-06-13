@@ -6,11 +6,12 @@
 SECONDS=0 # Let's time it...
 
 usage() { 
-    echo "Usage: $0 <-n name> <-r deployment_region> [-d display_name]"
+    echo "Usage:   $0 <-n name> <-r deployment_region> [-d display_name]"
+    echo "Example: $0 -n \"examplename\" -r \"southcentralus\" -d \"Example name\""
     echo
     echo "<-n name>.................Unique name for this Mona + Turnstile deployment"
     echo "                          Lower-case, alphanumeric, must be between 5-13 characters"
-    echo "<-r deployment_region>....The Azure region to deploy Turnstile to"
+    echo "<-r deployment_region>....The Azure region to deploy Mona + Turnstile to"
     echo "                          For region list, run `az account list-locations --output table`"
     echo "[-d display_name].........Optional; Mona Azure Active Directory app name"
     echo "                          Turnstile app name is \"[display_name] Seating\""
