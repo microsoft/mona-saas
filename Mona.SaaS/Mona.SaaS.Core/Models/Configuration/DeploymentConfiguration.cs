@@ -26,6 +26,12 @@ namespace Mona.SaaS.Core.Models.Configuration
         public string MonaVersion { get; set; }
 
         /// <summary>
+        /// Gets/sets whether or not this Mona deployment is currently configured for passthrough mode.
+        /// </summary>
+        [Required]
+        public bool IsPassthroughModeEnabled { get; set; }
+
+        /// <summary>
         /// Gets/sets the instrumentation key needed to push events and metrics to App Insights.
         /// </summary>
         [Required]

@@ -17,7 +17,6 @@ using System;
 using System.Net;
 using System.Security.Claims;
 using System.Threading.Tasks;
-using System.Web;
 using Events = Mona.SaaS.Core.Models.Events;
 
 namespace Mona.SaaS.Web.Controllers
@@ -151,29 +150,7 @@ namespace Mona.SaaS.Web.Controllers
                 }
                 else
                 {
-                    // Alright, we're done here. Redirect the user to their subscription...
-
-                    await PublishSubscriptionPurchasedEvent(subscription);
-
-                    var redirectUrl = publisherConfig.SubscriptionPurchaseConfirmationUrl
-                        .WithSubscriptionId(subscription.SubscriptionId);
-
-                    if (this.deploymentConfig.SendSubscriptionDetailsToPurchaseConfirmationPage)
-                    {
-                        // Stage the subscription so we can pass the details along to the purchase confirmation page...
-
-                        var subToken = await this.subscriptionStagingCache.PutSubscriptionAsync(subscription);
-
-                        // The web app being redirected to must know the name of the storage account (https://*.blob.core.windows.net) to be
-                        // able to use the SAS fragment that we provide. This prevents bad actors from either reading the subscription details
-                        // from blob storage or injecting their own false subscription info.
-
-                        redirectUrl = AppendSubscriptionAccessTokenToUrl(redirectUrl, subToken);
-                    }
-
-                    this.logger.LogInformation($"Subscription [{subscription.SubscriptionId}] purchase confirmed. Redirecting user to [{redirectUrl}]...");
-
-                    return Redirect(redirectUrl);
+                    return await CompleteSubscriptionPurchase(subscription, publisherConfig, inTestMode);
                 }
             }
             catch (Exception ex)
@@ -189,6 +166,31 @@ namespace Mona.SaaS.Web.Controllers
                     .WithPublisherInformation(publisherConfig)
                     .WithErrorCode(ErrorCodes.SubscriptionActivationFailed));
             }
+        }
+
+        private async Task<IActionResult> CompleteSubscriptionPurchase(Subscription subscription, PublisherConfiguration publisherConfig, bool inTestMode)
+        {
+            await PublishSubscriptionPurchasedEvent(subscription);
+
+            var redirectUrl = publisherConfig.SubscriptionPurchaseConfirmationUrl
+                .WithSubscriptionId(subscription.SubscriptionId);
+
+            if (this.deploymentConfig.SendSubscriptionDetailsToPurchaseConfirmationPage)
+            {
+                // Stage the subscription so we can pass the details along to the purchase confirmation page...
+
+                var subToken = await this.subscriptionStagingCache.PutSubscriptionAsync(subscription);
+
+                // The web app being redirected to must know the name of the storage account (https://*.blob.core.windows.net) to be
+                // able to use the SAS fragment that we provide. This prevents bad actors from either reading the subscription details
+                // from blob storage or injecting their own false subscription info.
+
+                redirectUrl = AppendSubscriptionAccessTokenToUrl(redirectUrl, subToken);
+            }
+
+            this.logger.LogInformation($"Subscription [{subscription.SubscriptionId}] purchase confirmed. Redirecting user to [{redirectUrl}]...");
+
+            return Redirect(redirectUrl);
         }
 
         private async Task<IActionResult> GetLandingPageAsync(string token = null, bool inTestMode = false)
@@ -215,7 +217,16 @@ namespace Mona.SaaS.Web.Controllers
             {
                 // We have a token so we're almost certainly coming from the AppSource/Marketplace...
 
-                if (User.Identity.IsAuthenticated)
+                // If we're running in passthrough mode, we don't need to authenticate the user at this step since we're just going
+                // to be forwarding them along to the purchase confirmation page anyway. Spent a lot of time thinking about this one --
+                // do we actually need to authenticate the user here for security reasons or do we not? If the user isn't seeing any kind of UI
+                // to confirm that they've confirmed their purchase here, then I don't think we need to authenticate them because, really,
+                // Mona is acting purely as a Marketplace adapter at this point. All it's doing is channeling events from the Marketplace to the
+                // SaaS app so Mona's identity -- Identity:AppIdentity -- is plenty to secure the exchange of information and the
+                // handing off of the customer to the SaaS app. Really, authing the user here is an uncessary step that just makes
+                // the UX worse the for the purchaser.
+
+                if (User.Identity.IsAuthenticated || deploymentConfig.IsPassthroughModeEnabled)
                 {
                     // The default landing page experience...
 
@@ -228,10 +239,25 @@ namespace Mona.SaaS.Web.Controllers
 
                         this.logger.LogWarning($"Unable to resolve source subscription token [{token}].");
 
-                        return View("Index", new LandingPageModel(inTestMode)
-                            .WithCurrentUserInformation(User)
-                            .WithPublisherInformation(publisherConfig)
-                            .WithErrorCode(ErrorCodes.UnableToResolveMarketplaceToken));
+                        if (deploymentConfig.IsPassthroughModeEnabled)
+                        {
+                            // Probably need to think a little more about how we handle this situation.
+                            // Right now, we're just kicking back a 404 since we couldn't find the requested
+                            // subscription. Do we redirect the user to the purchase confirmation page without 
+                            // a _sub parameter and let the SaaS app sort it out? Do we redirect with a status code?
+                            // If we redirect with a status code, then there's the possibilty the a bad actor could
+                            // spoof the call to the SaaS app and do something nefarious. For now, we'll just kick
+                            // back a 404 and talk to some ISV partners to see what they'd prefer to do here.
+
+                            return NotFound($"Unable to resolve source subscription token [{token}].");
+                        }
+                        else
+                        {
+                            return View("Index", new LandingPageModel(inTestMode)
+                                .WithCurrentUserInformation(User)
+                                .WithPublisherInformation(publisherConfig)
+                                .WithErrorCode(ErrorCodes.UnableToResolveMarketplaceToken));
+                        }
                     }
                     else
                     {
@@ -242,22 +268,38 @@ namespace Mona.SaaS.Web.Controllers
 
                         if (subscription.Status == SubscriptionStatus.PendingActivation)
                         {
-                            // Score! New customer! Let's get them over to the landing page so they can complete their purchase and
-                            // we can get their subscription spun up...
-
-                            this.logger.LogInformation(
-                                $"Subscription [{subscription.SubscriptionId}] is unknown to Mona. " +
-                                $"Presenting user with default subscription purchase confirmation page...");
+                            // Score! New customer!
 
                             if (inTestMode)
                             {
                                 await this.subscriptionTestingCache.PutSubscriptionAsync(subscription).ConfigureAwait(false);
                             }
 
-                            return View("Index", new LandingPageModel(inTestMode)
-                                .WithCurrentUserInformation(User)
-                                .WithPublisherInformation(publisherConfig)
-                                .WithSubscriptionInformation(subscription));
+                            if (deploymentConfig.IsPassthroughModeEnabled)
+                            {
+                                // In passthrough mode, customers never see any Mona UI. Get the subscription details and pass
+                                // them directly through to the purchase confirmation page through the _sub parameter.
+
+                                this.logger.LogInformation(
+                                    $"Subscription [{subscription.SubscriptionId}] is unknown to Mona. " +
+                                    $"Passthrough mode is [enabled]; redirecting user to SaaS purchase confirmation page...");
+
+                                return await CompleteSubscriptionPurchase(subscription, publisherConfig, inTestMode);
+                            }
+                            else
+                            { 
+                                // Let's get them over to the landing page so they can complete their purchase and
+                                // we can get their subscription spun up...
+
+                                this.logger.LogInformation(
+                                    $"Subscription [{subscription.SubscriptionId}] is unknown to Mona. " +
+                                    $"Passthrough mode is [disabled]; redirecting user to Mona's landing page...");
+
+                                return View("Index", new LandingPageModel(inTestMode)
+                                    .WithCurrentUserInformation(User)
+                                    .WithPublisherInformation(publisherConfig)
+                                    .WithSubscriptionInformation(subscription));
+                            }    
                         }
                         else
                         {
