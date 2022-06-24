@@ -44,7 +44,7 @@ namespace Mona.SaaS.Core.Models.Events
         [JsonProperty("Is Free Trial Subscription?")]
         public bool IsFreeTrial { get; set; }
 
-        [JsonProperty("Seat Quantity")]
+        [JsonProperty("Seat Quantity", NullValueHandling = NullValueHandling.Include)]
         public int? SeatQuantity { get; set; }
 
         [JsonProperty("Subscription Status")]

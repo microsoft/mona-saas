@@ -29,7 +29,7 @@ namespace Mona.SaaS.Core.Models
         [JsonProperty("isFreeTrial")]
         public bool IsFreeTrial { get; set; }
 
-        [JsonProperty("seatQuantity")]
+        [JsonProperty("seatQuantity", NullValueHandling = NullValueHandling.Include)]
         public int? SeatQuantity { get; set; }
 
         [JsonProperty("status")]
