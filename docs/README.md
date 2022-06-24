@@ -157,7 +157,7 @@ The table below contains the query string parameters that are available for you 
 
 `/test?offerId=Offer1&seatQuantity=40`
 
-This set of query string parameters will generate a test subscription with offer ID `Offer1` with a total `40` seats.
+This set of query string parameters will generate a test subscription with offer ID `Offer1` and `40` total seats.
 
 ## How can I modify Mona's configuration settings?
 
