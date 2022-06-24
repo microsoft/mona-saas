@@ -159,6 +159,16 @@ The table below contains the query string parameters that are available for you 
 
 This set of query string parameters will generate a test subscription with offer ID `Offer1` and `40` total seats.
 
+## What is passthrough mode?
+
+Normally, when a customer is routed from the commercial Marketplace to the Mona landing page, Mona authenticates the user and presents them with a pre-built landing page that prompts the user to complete their purchase.
+
+When configured for passthrough mode, the customer never sees Mona landing page and, consequently, is not forced to authenticate. Instead, the landing page simply resolves the subscription, publishes the `Mona.SaaS.Marketplace.SubscriptionPurchased` event, and redirects the user to the purchase confirmation page. If configured, Mona continues to [provide subscription details to the purchase confirmation page using the `_sub` query string parameter](#can-i-retrieve-subscription-details-from-the-purchase-confirmation-page).
+
+To enable passthrough mode, [navigate to Mona's configuration settings](#how-can-i-modify-monas-configuration-settings) and set `Deployment:IsPassthroughModeEnabled` to `true`. This will force a restart of the Mona web app. 
+
+> __Important note__: It's important that you give the customer an opportunity to confirm their purchase. Since Mona doesn't provide a landing page UI in passthrough mode, it's your responsibility to confirm that the customer indeed wants to purchase your offer before you notify the Marketplace that the subscription has been activated.
+
 ## How can I modify Mona's configuration settings?
 
 See [this doc](config-settings.md).
