@@ -129,7 +129,11 @@ You can use tools like [cURL](https://curl.se/) (scriptable; great for automated
 
 ## Can I customize the test subscription that Mona generates?
 
-Yes you can. Through the test landing page (`/test`) you can use query string parameters to override properties on the test subscription that is generated allowing you to test very specific subscription scenarios. The table below contains the query string parameters that are available for you to use.
+Yes you can. Through the test landing page (`/test`) you can use query string parameters to override properties on the test subscription that is generated allowing you to test very specific subscription scenarios.
+
+The table below contains the query string parameters that are available for you to use.
+
+### Parameters
 
 | Parameter | Description |
 | --- | --- |
@@ -148,6 +152,12 @@ Yes you can. Through the test landing page (`/test`) you can use query string pa
 | `purchaser_aadObjectId` | The Azure Active Directory object ID (`sub` claim) of the user that purchased this subscription (e.g., in a CSP scenario) |
 | `purchaser_aadTenantId` | The Azure Active Directory tenant ID (`tid` claim) of the user that purchased this subscription (e.g., in a CSP scenario) |
 | `purchaser_userEmail` | The email address of the user that purchased the subscription |
+
+### Example
+
+`/test?offerId=Offer1&seatQuantity=40`
+
+This set of query string parameters will generate a test subscription with offer ID `Offer1` with a total `40` seats.
 
 ## How can I modify Mona's configuration settings?
 
