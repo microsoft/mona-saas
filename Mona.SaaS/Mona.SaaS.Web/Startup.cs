@@ -1,8 +1,6 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Authentication.AzureAD.UI;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
@@ -12,12 +10,12 @@ using Microsoft.AspNetCore.Mvc.Razor;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.IdentityModel.Tokens;
+using Microsoft.Identity.Web;
+using Microsoft.Identity.Web.UI;
 using Mona.SaaS.Core.Interfaces;
 using Mona.SaaS.Core.Models.Configuration;
 using Mona.SaaS.Services.Default;
 using Mona.SaaS.Web.Authorization;
-using System.Threading.Tasks;
 
 namespace Mona.SaaS.Web
 {
@@ -46,6 +44,7 @@ namespace Mona.SaaS.Web
 
             services
                 .AddRazorPages()
+                .AddMicrosoftIdentityUI()
                 .AddViewLocalization(LanguageViewLocationExpanderFormat.Suffix);
 
             services.AddApplicationInsightsTelemetry(Configuration["Deployment:AppInsightsInstrumentationKey"]);
@@ -53,57 +52,36 @@ namespace Mona.SaaS.Web
 
         private void ConfigureAuth(IServiceCollection services)
         {
-            services.AddAuthentication(AzureADDefaults.AuthenticationScheme).AddAzureAD(o =>
-            {
-                o.Instance = "https://login.microsoftonline.com/";
-                o.ClientId = Configuration["Identity:AppIdentity:AadClientId"];
-                o.TenantId = "common"; // Static for multi-tenant AAD apps.
-                o.CallbackPath = "/signin-oidc";
-            });
+            services.AddAuthentication(OpenIdConnectDefaults.AuthenticationScheme)
+                .AddMicrosoftIdentityWebApp(o =>
+                {
+                    o.Instance = "https://login.microsoftonline.com";
+                    o.ClientId = Configuration["Identity:AppIdentity:AadClientId"];
+                    o.ClientSecret = Configuration["Identity:AppIdentity:AadClientSecret"];
+                    o.TenantId = "common"; // Static for multi-tenant AAD apps.
+                    o.CallbackPath = "/signin-oidc";
+                    o.SignedOutCallbackPath = "/signout-callback-oidc";
+                })
+                .EnableTokenAcquisitionToCallDownstreamApi()
+                .AddMicrosoftGraph(o =>
+                {
+                    o.Scopes = "user.read profile";
+                    o.BaseUrl = "https://graph.microsoft.com/v1.0";
+                })
+                .AddInMemoryTokenCaches();
 
             // Configuring Mona admin access...
 
             services.AddSingleton<IAuthorizationHandler, AdminRoleAuthorizationHandler>();
 
-            services.AddAuthorization(
-                o => o.AddPolicy("admin",
-                p => p.Requirements.Add(new AdminRoleAuthorizationRequirement(
-                    Configuration["Identity:AdminIdentity:AadTenantId"],
-                    Configuration["Identity:AdminIdentity:RoleName"]))));
-
-            services.Configure<OpenIdConnectOptions>(AzureADDefaults.OpenIdScheme, options =>
+            services.AddAuthorization(o =>
             {
-                options.TokenValidationParameters = new TokenValidationParameters
-                {
-                    // Instead of using the default validation (validating against a single issuer value, as we do in
-                    // line of business apps), we inject our own multitenant validation logic
-                    ValidateIssuer = false,
+                o.FallbackPolicy = o.DefaultPolicy;
 
-                    // If the app is meant to be accessed by entire organizations, add your issuer validation logic here.
-                    //IssuerValidator = (issuer, securityToken, validationParameters) => {
-                    //    if (myIssuerValidationLogic(issuer)) return issuer;
-                    //}
-                };
-
-                options.Events = new OpenIdConnectEvents
-                {
-                    OnTicketReceived = context =>
-                    {
-                        // If your authentication logic is based on users then add your logic here
-                        return Task.CompletedTask;
-                    },
-                    OnAuthenticationFailed = context =>
-                    {
-                        context.Response.Redirect("/Error");
-                        context.HandleResponse(); // Suppress the exception
-                        return Task.CompletedTask;
-                    },
-                    // If your application needs to authenticate single users, add your user validation below.
-                    //OnTokenValidated = context =>
-                    //{
-                    //    return myUserValidationLogic(context.Ticket.Principal);
-                    //}
-                };
+                o.AddPolicy("admin",
+                    p => p.Requirements.Add(new AdminRoleAuthorizationRequirement(
+                    Configuration["Identity:AdminIdentity:AadTenantId"],
+                    Configuration["Identity:AdminIdentity:RoleName"])));
             });
         }
 
