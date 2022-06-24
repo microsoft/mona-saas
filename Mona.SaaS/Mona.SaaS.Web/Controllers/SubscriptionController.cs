@@ -224,7 +224,7 @@ namespace Mona.SaaS.Web.Controllers
                 // Mona is acting purely as a Marketplace adapter at this point. All it's doing is channeling events from the Marketplace to the
                 // SaaS app so Mona's identity -- Identity:AppIdentity -- is plenty to secure the exchange of information and the
                 // handing off of the customer to the SaaS app. Really, authing the user here is an uncessary step that just makes
-                // the UX worse the for the purchaser.
+                // the UX worse for the purchaser.
 
                 if (User.Identity.IsAuthenticated || deploymentConfig.IsPassthroughModeEnabled)
                 {
