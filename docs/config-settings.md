@@ -20,7 +20,7 @@ Exercise __extreme caution__ when modifying these configuration settings. Updati
 | `Deployment:AzureResourceGroupName` | |
 | `Deployment:AzureSubscriptionId` | |
 | `Deployment:EventVersion ` | Subscription event version Mona should publish; supported versions are [`2021-05-01`](https://github.com/microsoft/mona-saas/tree/main/Mona.SaaS/Mona.SaaS.Core/Models/Events/V_2021_05_01) and [`2021-10-01`](https://github.com/microsoft/mona-saas/tree/main/Mona.SaaS/Mona.SaaS.Core/Models/Events/V_2021_10_01) (current and default) |
-| `Deployment:IsTestModeEnabled` | Indicates whether or not [test mode](../#how-can-i-test-my-marketplace-integration-logic-before-going-live-with-an-offer) is enabled. |
+| `Deployment:IsTestModeEnabled` | Indicates whether or not [test mode](./#how-can-i-test-my-marketplace-integration-logic-before-going-live-with-an-offer) is enabled. |
 | `Deployment:IsPassthroughModeEnabled` | Indicates whether or not passthrough mode is enabled. |
 | `Deployment:MonaVersion ` | |
 | `Deployment:Name ` | Configured via the name (`-n`) flag during setup; must contain only lowercase alphanumeric customers and be between 3-13 characters in length |
