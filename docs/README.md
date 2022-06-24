@@ -14,6 +14,8 @@
 * [Can I retrieve subscription details from the purchase confirmation page?](#can-i-retrieve-subscription-details-from-the-purchase-confirmation-page)
 * [What is the subscription configuration page?](#what-is-the-subscription-configuration-page)
 * [How can I test my Marketplace integration logic before going live with an offer?](#how-can-i-test-my-marketplace-integration-logic-before-going-live-with-an-offer)
+* [Can I customize the test subscription that Mona generates?](#can-i-customize-the-test-subscription-that-mona-generates)
+* [What is passthrough mode?](#what-is-passthrough-mode)
 * [How can I modify Mona's configuration settings?](#how-can-i-modify-monas-configuration-settings)
 * [Where can I find Mona's diagnostic logs?](#where-can-i-find-monas-diagnostic-logs)
 * [How do I debug Mona?](#how-do-i-debug-mona)
@@ -124,6 +126,48 @@ You can find both test endpoints in the __Testing__ tab of the Mona admin center
 The test landing page (`/test`) can only be accessed by Mona administrators. The test landing page behaves and looks just like the live landing page except for a warning banner across the top of the page indicating that you're running in test mode. You can customize the test subscription that Mona automatically generates by using [these query string parameters](https://github.com/microsoft/mona-saas/blob/357aa09039f9c8c0dfd324cdd7903b3dbdef88c6/Mona.SaaS/Mona.SaaS.Web/Controllers/SubscriptionController.cs#L591) _only_ on the test landing page.
 
 You can use tools like [cURL](https://curl.se/) (scriptable; great for automated testing) and [Postman](https://www.postman.com/) and the Mona test webhook endpoint (`/webhook/test`) to test [all kinds of Marketplace webhook invocations](https://docs.microsoft.com/azure/marketplace/partner-center-portal/pc-saas-fulfillment-api-v2#implementing-a-webhook-on-the-saas-service) against subscriptions previously created through the test landing page (`/test`). These test subscriptions automatically expire (you can no longer perform webhook operations against them) after 30 days of inactivity. Like the live webhook, the test webhook requires no authentication but operations succeed only when executed against existing test subscriptions.
+
+## Can I customize the test subscription that Mona generates?
+
+Yes you can. Through the test landing page (`/test`) you can use query string parameters to override properties on the test subscription that is generated allowing you to test very specific subscription scenarios.
+
+The table below contains the query string parameters that are available for you to use.
+
+### Parameters
+
+| Parameter | Description |
+| --- | --- |
+| `subscriptionId` | Subscription ID |
+| `subscriptionName` | Subscription name |
+| `offerId` | Offer ID |
+| `planId` | Plan ID |
+| `isFreeTrial` | Is this a free trial subscription? |
+| `seatQuantity` | The total number of seats available in this subscription |
+| `term_startDate` | The current subscription term start date |
+| `term_endDate` | The current subscription term end date |
+| `term_termUnit` | `P1M` for monthly term; `P1Y` for annual term |
+| `beneficiary_aadObjectId` | The Azure Active Directoy object ID (`sub` claim) of the user that the subscription was created for |
+| `beneficiary_aadTenantId` | The Azure Active Directory tenant ID (`tid` claim) of the user that the subscription was created for |
+| `beneficiary_userEmail` | The email address of the user that the subscription was created for |
+| `purchaser_aadObjectId` | The Azure Active Directory object ID (`sub` claim) of the user that purchased this subscription (e.g., in a CSP scenario) |
+| `purchaser_aadTenantId` | The Azure Active Directory tenant ID (`tid` claim) of the user that purchased this subscription (e.g., in a CSP scenario) |
+| `purchaser_userEmail` | The email address of the user that purchased the subscription |
+
+### Example
+
+`/test?offerId=Offer1&seatQuantity=40`
+
+This set of query string parameters will generate a test subscription with offer ID `Offer1` and `40` total seats.
+
+## What is passthrough mode?
+
+Normally, when a customer is routed from the commercial Marketplace to the Mona landing page, Mona authenticates the user and presents them with a pre-built landing page that prompts the user to complete their purchase.
+
+When configured for passthrough mode, the customer never sees Mona's landing page and, consequently, is never forced to authenticate. Instead, the landing page simply resolves the subscription, publishes the `Mona.SaaS.Marketplace.SubscriptionPurchased` event, and redirects the user to [the purchase confirmation page](#what-is-the-subscription-purchase-confirmation-page) that you configured during setup (`/setup`). If configured, Mona continues to [provide subscription details to the purchase confirmation page using the `_sub` query string parameter](#can-i-retrieve-subscription-details-from-the-purchase-confirmation-page). Mona's webhook endpoint is not affected by passthrough mode.
+
+To enable passthrough mode, [navigate to Mona's configuration settings](#how-can-i-modify-monas-configuration-settings) and set `Deployment:IsPassthroughModeEnabled` to `true`. This will force a restart of the Mona web app. 
+
+> __Important note__: It's important that you give the customer an opportunity to confirm their purchase. Since Mona doesn't provide a landing page UI in passthrough mode, it's your responsibility to confirm that the customer indeed wants to purchase your offer before you notify the Marketplace that the subscription has been activated.
 
 ## How can I modify Mona's configuration settings?
 
