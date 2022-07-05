@@ -170,7 +170,7 @@ resource workflow 'Microsoft.Logic/workflows@2019-05-01' = {
                   type: 'string'
                 }
                 'Seat Quantity': {
-                  type: 'number'
+                  type: ['number', 'null'] 
                 }
               }
               type: 'object'
