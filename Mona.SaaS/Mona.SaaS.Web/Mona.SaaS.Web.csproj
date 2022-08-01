@@ -8,7 +8,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Azure.Core" Version="1.24.0" />
+    <PackageReference Include="Azure.Core" Version="1.25.0" />
     <PackageReference Include="Azure.Identity" Version="1.6.0" />
     <Compile Remove="Resources\**" />
     <Content Remove="Resources\**" />
