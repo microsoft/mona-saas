@@ -241,6 +241,7 @@
                 "family": "S",
                 "capacity": 1
             },
+            "properties": { },
             "kind": "app"
         },
         {
