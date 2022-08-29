@@ -241,7 +241,9 @@
                 "family": "S",
                 "capacity": 1
             },
-            "kind": "app"
+            "kind": "app",
+			"properties": {
+            }
         },
         {
             "type": "Microsoft.Web/sites",
