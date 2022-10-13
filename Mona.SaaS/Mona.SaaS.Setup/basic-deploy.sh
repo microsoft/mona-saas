@@ -43,13 +43,26 @@ check_dotnet() {
     fi
 }
 
+check_cloud_shell_env() {
+    exec 3>&2  
+    
+    if [ -n "$ACC_CLOUD"  ]
+    then
+      echo "$lp ✔   Running in a Cloud Shell environment"
+    else
+      echo "$lp ❌   Not in an Azure Cloud Shell environment. See [https://github.com/microsoft/mona-saas#2-clone-the-mona-saas-github-repository] for more details."
+      return 1
+    fi 
+}
+
 check_prereqs() {
     lp=$1
 
     echo "$lp Checking Mona setup prerequisites...";
 
-    check_az "$lp";         if [[ $? -ne 0 ]]; then prereq_check_failed=1; fi;
-    check_dotnet "$lp";     if [[ $? -ne 0 ]]; then prereq_check_failed=1; fi;
+    check_cloud_shell_env "$lp";  if [[ $? -ne 0 ]]; then prereq_check_failed=1; fi;
+    check_az "$lp";               if [[ $? -ne 0 ]]; then prereq_check_failed=1; fi;
+    check_dotnet "$lp";           if [[ $? -ne 0 ]]; then prereq_check_failed=1; fi;
 
     if [[ -z $prereq_check_failed ]]; then
         echo "$lp ✔   All Mona setup prerequisites installed."
