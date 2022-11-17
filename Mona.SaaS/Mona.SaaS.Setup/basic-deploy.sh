@@ -75,7 +75,7 @@ check_account_type() {
   
   is_msa=$(curl --location --request GET 'https://graph.microsoft.com/v1.0/me?$select=identities' -H "Content-Type: application/json" -H "Authorization: Bearer $graph_token" --no-progress-meter | jq -r '.identities | map(. | select(.issuer=="MicrosoftAccount")) | . | length > 0');
 
-  if [ $is_msa ]; then
+  if [ "$is_msa" = "true" ]; then
     echo "$lp ❌   Microsoft Account (personal accounts) is not supported."
     return 1
   fi
