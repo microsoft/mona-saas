@@ -69,14 +69,14 @@ check_account_type() {
   user_type=$(curl --location --request GET 'https://graph.microsoft.com/v1.0/me?$select=userType' -H "Content-Type: application/json" -H "Authorization: Bearer $graph_token" --no-progress-meter | jq -r ".userType");
 
   if [ "$user_type" = "Guest" ]; then
-      echo "$lp ❌   Guest account will not work"
+      echo "$lp ❌   Mona cannot be installed using a Guest account. Please use Workplace or School account with type Member."
       return 1
   fi
   
   is_msa=$(curl --location --request GET 'https://graph.microsoft.com/v1.0/me?$select=identities' -H "Content-Type: application/json" -H "Authorization: Bearer $graph_token" --no-progress-meter | jq -r '.identities | map(. | select(.issuer=="MicrosoftAccount")) | . | length > 0');
 
   if [ "$is_msa" = "true" ]; then
-    echo "$lp ❌   Microsoft Account (personal accounts) is not supported."
+    echo "$lp ❌   Mona cannot be installed using a personal Microsoft account. Please use Workplace or School account with type Member."
     return 1
   fi
 }
