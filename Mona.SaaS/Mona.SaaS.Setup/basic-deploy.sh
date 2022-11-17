@@ -58,6 +58,29 @@ check_prereqs() {
     fi
 }
 
+check_account_type() {
+  lp=$1
+  
+  graph_token=$(az account get-access-token \
+      --resource-type ms-graph \
+      --query accessToken \
+      --output tsv);
+  
+  user_type=$(curl --location --request GET 'https://graph.microsoft.com/v1.0/me?$select=userType' -H "Content-Type: application/json" -H "Authorization: Bearer $graph_token" --no-progress-meter | jq -r ".userType");
+
+  if [ "$user_type" = "Guest" ]; then
+      echo "$lp ❌   Guest account will not work"
+      return 1
+  fi
+  
+  is_msa=$(curl --location --request GET 'https://graph.microsoft.com/v1.0/me?$select=identities' -H "Content-Type: application/json" -H "Authorization: Bearer $graph_token" --no-progress-meter | jq -r '.identities | map(. | select(.issuer=="MicrosoftAccount")) | . | length > 0');
+
+  if [ $is_msa ]; then
+    echo "$lp ❌   Microsoft Account (personal accounts) is not supported."
+    return 1
+  fi
+}
+
 check_app_service_plan() {
     lp=$1
     plan_id=$2
@@ -174,6 +197,11 @@ while getopts "a:d:g:l:n:r:s:hp" opt; do
         ;;
     esac
 done
+
+# Check that user account is of valid type
+check_account_type "$lp"
+
+[[ $? -ne 0 ]] && exit 1;
 
 # Check for missing parameters.
 # Set default resource group name and deployment display name.
