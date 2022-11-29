@@ -1,6 +1,6 @@
 # Event models
 
-By default, Mona publishes all subscription-related events to a custom Event Grid topic as highilghted in the diagram below.
+By default, Mona publishes all subscription-related events to a custom Event Grid topic as highlighted in the diagram below.
 
 ![Mona events](../images/mona_arch_overview_events.png)
 

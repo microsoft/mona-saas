@@ -20,6 +20,7 @@
 * [Where can I find Mona's diagnostic logs?](#where-can-i-find-monas-diagnostic-logs)
 * [How do I debug Mona?](#how-do-i-debug-mona)
 * [Does Mona have a health check endpoint?](#does-mona-have-a-health-check-endpoint)
+* [After completing the purchase, the subscription in Marketplace is not active. How to fix that?](#after-completing-the-purchase-the-subscription-in-marketplace-is-not-active-how-to-fix-that)
 
 ## How do I install Mona?
 
@@ -86,7 +87,7 @@ You will be redirected to [Mona's Azure Active Directory (AAD) Mona Administrato
 
 ## What is the subscription purchase confirmation page?
 
-Mona acts as a proxy between the Microsoft commercial marketplace and your SaaS app by implenting the required landing page and webhook endpoints. When your customer confirms that they wish to purchase a subscription by clicking the __Confirm purchase__ button on the landing page, Mona redirects them to the _purchase confirmation page_. Essentially, this is where Mona hands new Microsoft commercial marketplace subscription purchases off to your app.
+Mona acts as a proxy between the Microsoft commercial marketplace and your SaaS app by implementing the required landing page and webhook endpoints. When your customer confirms that they wish to purchase a subscription by clicking the __Confirm purchase__ button on the landing page, Mona redirects them to the _purchase confirmation page_. Essentially, this is where Mona hands new Microsoft commercial marketplace subscription purchases off to your app.
 
 Mona administrators can configure the purchase confirmation page URL at any time by navigating to the setup wizard (`/setup`).
 
@@ -97,7 +98,7 @@ Mona administrators can configure the purchase confirmation page URL at any time
 
 After a customer has confirmed their AppSource/Marketplace purchase through the Mona landing page, they are automatically redirected to a [publisher-managed purchase confirmation page](#what-is-the-subscription-purchase-confirmation-page) to complete their subscription configuration.
 
-By default, Mona will also include a partial link (via the `_sub` query parameter highilghted in the below image) that, when combined with the base storage URL (provided during Mona setup), can be used to efficiently and securely pull the subscription details. Note that the `_sub` parameter is URL encoded. In order to use it, you must first URL decode it before combining it with the base storage URL.
+By default, Mona will also include a partial link (via the `_sub` query parameter highlighted in the below image) that, when combined with the base storage URL (provided during Mona setup), can be used to efficiently and securely pull the subscription details. Note that the `_sub` parameter is URL encoded. In order to use it, you must first URL decode it before combining it with the base storage URL.
 
 ![Subscription details URL construction](images/complete-redirect-url.PNG)
 
@@ -135,23 +136,23 @@ The table below contains the query string parameters that are available for you 
 
 ### Parameters
 
-| Parameter | Description |
-| --- | --- |
-| `subscriptionId` | Subscription ID |
-| `subscriptionName` | Subscription name |
-| `offerId` | Offer ID |
-| `planId` | Plan ID |
-| `isFreeTrial` | Is this a free trial subscription? |
-| `seatQuantity` | The total number of seats available in this subscription |
-| `term_startDate` | The current subscription term start date |
-| `term_endDate` | The current subscription term end date |
-| `term_termUnit` | `P1M` for monthly term; `P1Y` for annual term |
-| `beneficiary_aadObjectId` | The Azure Active Directoy object ID (`sub` claim) of the user that the subscription was created for |
-| `beneficiary_aadTenantId` | The Azure Active Directory tenant ID (`tid` claim) of the user that the subscription was created for |
-| `beneficiary_userEmail` | The email address of the user that the subscription was created for |
+| Parameter | Description                                                                                                               |
+| --- |---------------------------------------------------------------------------------------------------------------------------|
+| `subscriptionId` | Subscription ID                                                                                                           |
+| `subscriptionName` | Subscription name                                                                                                         |
+| `offerId` | Offer ID                                                                                                                  |
+| `planId` | Plan ID                                                                                                                   |
+| `isFreeTrial` | Is this a free trial subscription?                                                                                        |
+| `seatQuantity` | The total number of seats available in this subscription                                                                  |
+| `term_startDate` | The current subscription term start date                                                                                  |
+| `term_endDate` | The current subscription term end date                                                                                    |
+| `term_termUnit` | `P1M` for monthly term; `P1Y` for annual term                                                                             |
+| `beneficiary_aadObjectId` | The Azure Active Directory object ID (`sub` claim) of the user that the subscription was created for                      |
+| `beneficiary_aadTenantId` | The Azure Active Directory tenant ID (`tid` claim) of the user that the subscription was created for                      |
+| `beneficiary_userEmail` | The email address of the user that the subscription was created for                                                       |
 | `purchaser_aadObjectId` | The Azure Active Directory object ID (`sub` claim) of the user that purchased this subscription (e.g., in a CSP scenario) |
 | `purchaser_aadTenantId` | The Azure Active Directory tenant ID (`tid` claim) of the user that purchased this subscription (e.g., in a CSP scenario) |
-| `purchaser_userEmail` | The email address of the user that purchased the subscription |
+| `purchaser_userEmail` | The email address of the user that purchased the subscription                                                             |
 
 ### Example
 
@@ -175,7 +176,7 @@ See [this doc](config-settings.md).
 
 ## Where can I find Mona's diagnostic logs?
 
-By default, Mona pulishes telemetry (including logs) to an [Application Insights](https://docs.microsoft.com/azure/azure-monitor/app/app-insights-overview) resource automatically deployed into your Mona resource group on setup. From here, you can search logs and configure alerts as needed.
+By default, Mona publishes telemetry (including logs) to an [Application Insights](https://docs.microsoft.com/azure/azure-monitor/app/app-insights-overview) resource automatically deployed into your Mona resource group on setup. From here, you can search logs and configure alerts as needed.
 
 ## How do I debug Mona?
 
@@ -186,3 +187,9 @@ Remotely debugging the Mona web app using the method described above requires th
 ## Does Mona have a health check endpoint?
 
 Yes it does. Mona exposes a public health check `HTTP GET` endpoint at `/health`. If the Mona deployment is healthy and able to access all of its service dependencies, the endpoint will return a `HTTP 200 OK`. Any other status code indicates that Mona is unhealthy. [The Mona upgrade script uses the endpoint to ensure that the deployment is healthy before committing the upgrade to production.](#how-do-i-upgrade-mona) You can also use this health check endpoint to deploy Mona in a highly available configuration using [Azure Front Door](https://docs.microsoft.com/azure/frontdoor/health-probes), [Application Gateway](https://docs.microsoft.com/azure/application-gateway/application-gateway-probe-overview), [Kubernetes](https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/), etc. [You can also leverage the Application Insights resource deployed with Mona to configure availability tests using the health check endpoint.](https://docs.microsoft.com/azure/azure-monitor/app/availability-standard-tests)
+
+## After completing the purchase, the subscription in Marketplace is not active. How to fix that?
+
+It's due to the fact that `mona-on-subscription-purchased-DEPLOYMENT_NAME` Logic App does not notify the Microsoft Marketplace that subscription is activated. You can change that behaviour by changing the settings in `Notify the Marketplace` step in this Logic App.
+
+You can enable it when you want to activate subscriptions immediately after purchase or disable it if you don't wish to immediately activate the subscription with the Microsoft Marketplace.
