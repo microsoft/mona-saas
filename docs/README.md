@@ -136,23 +136,23 @@ The table below contains the query string parameters that are available for you 
 
 ### Parameters
 
-| Parameter | Description                                                                                                               |
-| --- |---------------------------------------------------------------------------------------------------------------------------|
-| `subscriptionId` | Subscription ID                                                                                                           |
-| `subscriptionName` | Subscription name                                                                                                         |
-| `offerId` | Offer ID                                                                                                                  |
-| `planId` | Plan ID                                                                                                                   |
-| `isFreeTrial` | Is this a free trial subscription?                                                                                        |
-| `seatQuantity` | The total number of seats available in this subscription                                                                  |
-| `term_startDate` | The current subscription term start date                                                                                  |
-| `term_endDate` | The current subscription term end date                                                                                    |
-| `term_termUnit` | `P1M` for monthly term; `P1Y` for annual term                                                                             |
+| Parameter                 | Description                                                                                                               |
+|---------------------------|---------------------------------------------------------------------------------------------------------------------------|
+| `subscriptionId`          | Subscription ID                                                                                                           |
+| `subscriptionName`        | Subscription name                                                                                                         |
+| `offerId`                 | Offer ID                                                                                                                  |
+| `planId`                  | Plan ID                                                                                                                   |
+| `isFreeTrial`             | Is this a free trial subscription?                                                                                        |
+| `seatQuantity`            | The total number of seats available in this subscription                                                                  |
+| `term_startDate`          | The current subscription term start date                                                                                  |
+| `term_endDate`            | The current subscription term end date                                                                                    |
+| `term_termUnit`           | `P1M` for monthly term; `P1Y` for annual term                                                                             |
 | `beneficiary_aadObjectId` | The Azure Active Directory object ID (`sub` claim) of the user that the subscription was created for                      |
 | `beneficiary_aadTenantId` | The Azure Active Directory tenant ID (`tid` claim) of the user that the subscription was created for                      |
-| `beneficiary_userEmail` | The email address of the user that the subscription was created for                                                       |
-| `purchaser_aadObjectId` | The Azure Active Directory object ID (`sub` claim) of the user that purchased this subscription (e.g., in a CSP scenario) |
-| `purchaser_aadTenantId` | The Azure Active Directory tenant ID (`tid` claim) of the user that purchased this subscription (e.g., in a CSP scenario) |
-| `purchaser_userEmail` | The email address of the user that purchased the subscription                                                             |
+| `beneficiary_userEmail`   | The email address of the user that the subscription was created for                                                       |
+| `purchaser_aadObjectId`   | The Azure Active Directory object ID (`sub` claim) of the user that purchased this subscription (e.g., in a CSP scenario) |
+| `purchaser_aadTenantId`   | The Azure Active Directory tenant ID (`tid` claim) of the user that purchased this subscription (e.g., in a CSP scenario) |
+| `purchaser_userEmail`     | The email address of the user that purchased the subscription                                                             |
 
 ### Example
 
@@ -190,6 +190,6 @@ Yes it does. Mona exposes a public health check `HTTP GET` endpoint at `/health`
 
 ## After completing the purchase, the subscription in Marketplace is not active. How to fix that?
 
-It's due to the fact that `mona-on-subscription-purchased-DEPLOYMENT_NAME` Logic App does not notify the Microsoft Marketplace that subscription is activated. You can change that behaviour by changing the settings in `Notify the Marketplace` step in this Logic App.
+It's due to the fact that the `mona-on-subscription-purchased-DEPLOYMENT_NAME` Logic App does not notify the Microsoft Marketplace that subscription is activated **by default**.
 
 You can enable it when you want to activate subscriptions immediately after purchase or disable it if you don't wish to immediately activate the subscription with the Microsoft Marketplace.

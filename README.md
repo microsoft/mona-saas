@@ -106,7 +106,7 @@ The setup script supports additional optional parameters detailed in the table b
 
 Once the script is finished, note the information provided in the `Mona Deployment Summary`. It's strongly recommended to save these values somewhere safe and convenient as you will likely need to refer to them again later.
 
-Locate the setup URL at the _very bottom_ of the script output. It will look similar to this —
+Locate the setup URL at the _very bottom_ of the script output. It will look similiar to this —
 
 ```shell
 https://mona-web-monaex01.azurewebsites.net/setup
