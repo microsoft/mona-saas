@@ -42,6 +42,8 @@ The upgrade script will scan all Azure subscriptions that you have access to loo
 
 > The upgrade script depends on [Azure App Service staging slots](https://docs.microsoft.com/azure/app-service/deploy-staging-slots) to perform a safe upgrade. The staging slots feature is available in the Standard (default for Mona deployment), Premium, and Isolated App Service tiers. Automated upgrades are not supported in Free, Shared, and Basic tiers. [For more information, see App Service limits.](https://docs.microsoft.com/azure/azure-resource-manager/management/azure-subscription-service-limits#app-service-limits) 
 
+## Why aren't my Mona events triggering my Logic Apps?
+
 ## How do I uninstall Mona?
 
 > ⚠️ __Warning!__ These actions are irreversible.
