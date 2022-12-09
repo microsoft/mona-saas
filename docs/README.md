@@ -67,7 +67,11 @@ Navigate to the `Conditional | Notify the Marketplace` step in the logic app des
 
 #### If you with to active the subscription at some point in the future...
 
-Navigate to the `Conditional | Notify the Marketplace` step in the logic app designer and expand the `Conditional | Notify the Marketplace` step and that condition's `True` branch. Within that branch, you will find a HTTP 
+Navigate to the `Conditional | Notify the Marketplace` step in the logic app designer and expand the `Conditional | Notify the Marketplace` step and that condition's `True` branch. Within that branch, you will find a HTTP POST action that conditionally notifies the Marketplace that the subscription has been activated. This action contains the Azure Active Directory details that you will need to make this call on your own. Find these values as shown below and note them.
+
+![Toggling Mona activation on](images/mona_activate_later.png)
+
+You'll need to take these same values and use them to [call the Marketplace on your own as part of activation](https://learn.microsoft.com/azure/marketplace/partner-center-portal/pc-saas-fulfillment-subscription-api#activate-a-subscription). [This doc](https://learn.microsoft.com/azure/marketplace/partner-center-portal/pc-saas-registration#get-the-token-with-an-http-post) describes how to obtain an Azure Active Directory access token to call the API on your own. Note that you can also copy/paste the existing logic app action into another logic app that your app can call later once the subscription has been activated.
 
 ## How do I uninstall Mona?
 
