@@ -2,7 +2,7 @@
 
 * [How do I install Mona?](#how-do-i-install-mona)
 * [How do I upgrade Mona?](#how-do-i-upgrade-mona)
-* [Why aren't my Mona events triggering my Logic Apps?](#)
+* [Why aren't my Mona events triggering my Logic Apps?](#why-arent-my-mona-events-triggering-my-logic-apps)
 * [How do I uninstall Mona?](#how-do-i-uninstall-mona)
 * [Where is the admin center?](#where-is-the-admin-center)
 * [How can I return to the setup wizard?](#how-can-i-return-to-the-setup-wizard)
@@ -43,6 +43,10 @@ The upgrade script will scan all Azure subscriptions that you have access to loo
 > The upgrade script depends on [Azure App Service staging slots](https://docs.microsoft.com/azure/app-service/deploy-staging-slots) to perform a safe upgrade. The staging slots feature is available in the Standard (default for Mona deployment), Premium, and Isolated App Service tiers. Automated upgrades are not supported in Free, Shared, and Basic tiers. [For more information, see App Service limits.](https://docs.microsoft.com/azure/azure-resource-manager/management/azure-subscription-service-limits#app-service-limits) 
 
 ## Why aren't my Mona events triggering my Logic Apps?
+
+When you deploy Mona, an event grid topic is created which all Mona events are published to then, by default, a set of Logic Apps are deployed (one per event type) that, usually, are automatically connected to the event grid topic. Sometimes and unfortunately, intermittently, these Logic Apps don't get connected to the event grid topic. This is a problem that we are actively working on solving but, for the time being, you may need to go into your Logic Apps and manually reconnect them to the event grid topic.
+
+To do this, simply navigate to the Mona resource group, open the offending Logic App, and navigate to the Logic App Designer. If the Logic App trigger is not connected, an exclamation point ⚠️ will appear next to it. Simply expand the trigger and reconnect it to the Mona event grid topic through the Azure portal.
 
 ## How do I uninstall Mona?
 
