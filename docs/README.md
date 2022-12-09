@@ -2,6 +2,7 @@
 
 * [How do I install Mona?](#how-do-i-install-mona)
 * [How do I upgrade Mona?](#how-do-i-upgrade-mona)
+* [Why aren't my Mona events triggering my Logic Apps?](#)
 * [How do I uninstall Mona?](#how-do-i-uninstall-mona)
 * [Where is the admin center?](#where-is-the-admin-center)
 * [How can I return to the setup wizard?](#how-can-i-return-to-the-setup-wizard)
