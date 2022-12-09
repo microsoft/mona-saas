@@ -48,6 +48,8 @@ When you deploy Mona, an event grid topic is created which all Mona events are p
 
 To do this, simply navigate to the Mona resource group, open the offending Logic App, and navigate to the Logic App Designer. If the Logic App trigger is not connected, an exclamation point ⚠️ will appear next to it. Simply expand the trigger and reconnect it to the Mona event grid topic through the Azure portal.
 
+> Can't find Mona's event grid topic? Navigate to the __Mona admin center__ (`/admin`), open the __subscription event handlers__ tab, and locate the event grid topic link. Opening this link will navigate you to the custom event grid topic in the Azure portal.
+
 ## How do I uninstall Mona?
 
 > ⚠️ __Warning!__ These actions are irreversible.
