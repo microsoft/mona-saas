@@ -3,6 +3,7 @@
 * [How do I install Mona?](#how-do-i-install-mona)
 * [How do I upgrade Mona?](#how-do-i-upgrade-mona)
 * [Why aren't my Mona events triggering my Logic Apps?](#why-arent-my-mona-events-triggering-my-logic-apps)
+* [How do I notify the Marketplace that a subscription has been activated?](#how-do-i-notify-the-marketplace-that-a-subscription-has-been-activated)
 * [How do I uninstall Mona?](#how-do-i-uninstall-mona)
 * [Where is the admin center?](#where-is-the-admin-center)
 * [How can I return to the setup wizard?](#how-can-i-return-to-the-setup-wizard)
@@ -44,11 +45,25 @@ The upgrade script will scan all Azure subscriptions that you have access to loo
 
 ## Why aren't my Mona events triggering my Logic Apps?
 
-When you deploy Mona, an event grid topic is created which all Mona events are published to then, by default, a set of Logic Apps are deployed (one per event type) that, usually, are automatically connected to the event grid topic. Sometimes and unfortunately, intermittently, these Logic Apps don't get connected to the event grid topic. This is a problem that we are actively working on solving but, for the time being, you may need to go into your Logic Apps and manually reconnect them to the event grid topic.
+When you deploy Mona, an event grid topic is created which all Mona events are published to then, by default, a set of logic apps are deployed (one per event type) that, usually, are automatically connected to the event grid topic. Sometimes and unfortunately, intermittently, these logic apps don't get connected to the event grid topic. This is a problem that we are actively working on solving but, for the time being, you may need to go into your logic apps and manually reconnect them to the event grid topic.
 
-To do this, simply navigate to the Mona resource group, open the offending Logic App, and navigate to the Logic App Designer. If the Logic App trigger is not connected, an exclamation point ⚠️ will appear next to it. Simply expand the trigger and reconnect it to the Mona event grid topic through the Azure portal.
+To do this, simply navigate to the Mona resource group, open the offending logic app, and navigate to the logic app designer. If the logic app trigger is not connected, an exclamation point ⚠️ will appear next to it. Simply expand the trigger and reconnect it to the Mona event grid topic through the Azure portal.
 
 > Can't find Mona's event grid topic? Navigate to the __Mona admin center__ (`/admin`), open the __subscription event handlers__ tab, and locate the event grid topic link. Opening this link will navigate you to the custom event grid topic in the Azure portal.
+
+## How do I notify the Marketplace that a subscription has been activated?
+
+Once a customer has purchased their solution through the Marketplace and the Mona purchase onboarding workflow, it's still __your responsibility to notify the Marketplace that the subscription has been activated__. You have 30 days from the time of purchase to notify the Marketplace that the subscription has been activated on your side.
+
+We try to make this as easy as possible by including a step at the end of the "subscription purchased" logic app (in your resource group, it will be called `mona-on-subscription-purchased-[your deployment name]`) that _conditionally_ notifies the Marketplace that the subscription has been activated. By default, this condition is set to _not_ automatically notify the Marketplace that the subscription has been activated because, depending on your SaaS app, subscriptions may be activated immediately or there may be some time window when you're provisioning infrastructure, going through sales processes, etc. that will elapse before you actually activate the subscription.
+
+Below, we outline both scenarios and how you should configure Mona accordingly.
+
+### If you wish to activate the subscription immediately...
+
+Navigate to the `Conditional | Notify the Marketplace` step in the logic app designer and toggle the condition as shown below to `true`. This will automatically notify the Marketplace when a subscription has been activated and you're done.
+
+
 
 ## How do I uninstall Mona?
 
