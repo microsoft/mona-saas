@@ -59,11 +59,11 @@ We try to make this as easy as possible by including a step at the end of the "s
 
 Below, we outline both scenarios and how you should configure Mona accordingly.
 
-### If you wish to activate the subscription immediately...
+#### If you wish to activate the subscription immediately...
 
 Navigate to the `Conditional | Notify the Marketplace` step in the logic app designer and toggle the condition as shown below to `true`. This will automatically notify the Marketplace when a subscription has been activated and you're done.
 
-
+![Toggling Mona activation on](images/mona_activate_immediately.png)
 
 ## How do I uninstall Mona?
 
