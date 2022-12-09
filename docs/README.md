@@ -65,6 +65,10 @@ Navigate to the `Conditional | Notify the Marketplace` step in the logic app des
 
 ![Toggling Mona activation on](images/mona_activate_immediately.png)
 
+#### If you with to active the subscription at some point in the future...
+
+Navigate to the `Conditional | Notify the Marketplace` step in the logic app designer and expand the `Conditional | Notify the Marketplace` step and that condition's `True` branch. Within that branch, you will find a HTTP 
+
 ## How do I uninstall Mona?
 
 > ⚠️ __Warning!__ These actions are irreversible.
