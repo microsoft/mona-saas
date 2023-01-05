@@ -199,7 +199,7 @@ When configured for passthrough mode, the customer never sees Mona's landing pag
 
 To enable passthrough mode, [navigate to Mona's configuration settings](#how-can-i-modify-monas-configuration-settings) and set `Deployment:IsPassthroughModeEnabled` to `true`. This will force a restart of the Mona web app.
 
-Passthrough mode can also be enabled during setup by using the `-m` flag.
+Passthrough mode can also be enabled [during setup by using the `-m` flag](https://github.com/microsoft/mona-saas/blob/main/README.md/#3-set-up-mona-saas).
 
 > ⚠️ __Warning!__ It's important that you give the customer an opportunity to confirm their purchase. Since Mona doesn't provide a landing page UI in passthrough mode, it's your responsibility to confirm that the customer indeed wants to purchase your offer before you notify the Marketplace that the subscription has been activated.
 
