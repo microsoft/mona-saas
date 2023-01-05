@@ -62,6 +62,10 @@
             "metadata": {
                 "description": "The preferred UI language for this Mona deployment."
             }
+        },
+        "passthroughModeEnabled": {
+            "type": "bool",
+            "defaultValue": "false"
         }
     },
     "variables": {
@@ -275,6 +279,7 @@
                 "Deployment:IsTestModeEnabled": "true",
                 "Deployment:MonaVersion": "[variables('monaVersion')]",
                 "Deployment:Name": "[variables('deploymentName')]",
+                "Deployment:IsPassthroughModeEnabled": "[parameters('passthroughModeEnabled')]", 
                 "Identity:AdminIdentity:AadTenantId": "[parameters('aadTenantId')]",
                 "Identity:AdminIdentity:RoleName": "monaadmins",
                 "Identity:AppIdentity:AadClientId": "[parameters('aadClientId')]",
