@@ -201,7 +201,7 @@ To enable passthrough mode, [navigate to Mona's configuration settings](#how-can
 
 Passthrough mode can also be enabled [during setup by using the `-m` flag](https://github.com/microsoft/mona-saas/blob/main/README.md/#3-set-up-mona-saas).
 
-> ⚠️ __Warning!__ It's important that you give the customer an opportunity to confirm their purchase. Since Mona doesn't provide a landing page UI in passthrough mode, it's your responsibility to confirm that the customer indeed wants to purchase your offer before you notify the Marketplace that the subscription has been activated.
+> ⚠️ __Warning!__ It's important that you give the customer an opportunity to confirm their purchase. Since Mona doesn't provide a landing page UI in passthrough mode, it's your responsibility to confirm that the customer indeed wants to purchase your offer before you [notify the Marketplace that the subscription has been activated](https://github.com/microsoft/mona-saas/tree/main/docs#how-do-i-notify-the-marketplace-that-a-subscription-has-been-activated).
 
 ## How can I modify Mona's configuration settings?
 
