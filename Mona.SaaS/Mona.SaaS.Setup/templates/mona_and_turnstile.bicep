@@ -15,6 +15,7 @@ param monaAadTenantId string
 param monaAadPrincipalId string
 param monaEventVersion string = '2021-10-01'
 param monaVersion string
+param passthroughModeEnabled bool = false
 
 @secure()
 param monaAadClientSecret string
@@ -437,6 +438,10 @@ resource monaWebApp 'Microsoft.Web/sites@2021-03-01' = {
         {
           name: 'Deployment:Name'
           value: cleanDeploymentName
+        }
+        {
+          name: 'Deployment:IsPassthroughModeEnabled'
+          value: passthroughModeEnabled
         }
         {
           name: 'Identity:AdminIdentity:AadTenantId'
