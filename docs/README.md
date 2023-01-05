@@ -63,6 +63,8 @@ Below, we outline both scenarios and how you should configure Mona accordingly.
 
 Navigate to the `Conditional | Notify the Marketplace` step in the logic app designer and toggle the condition as shown below to `true`. This will automatically notify the Marketplace when a subscription has been activated and you're done.
 
+> ⚠️ __Warning!__ When using [passthrough mode](https://github.com/microsoft/mona-saas/tree/main/docs#what-is-passthrough-mode), the subscription will be automatically activated before the subscriber sees your purchase confirmation page. It's important that you give the subscriber an opportunity to confirm their purchase before you activate their subscription with the Marketplace.
+
 ![Toggling Mona activation on](images/mona_activate_immediately.png)
 
 #### If you with to active the subscription at some point in the future...
