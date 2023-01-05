@@ -197,7 +197,9 @@ Normally, when a customer is routed from the commercial Marketplace to the Mona 
 
 When configured for passthrough mode, the customer never sees Mona's landing page and, consequently, is never forced to authenticate. Instead, the landing page simply resolves the subscription, publishes the `Mona.SaaS.Marketplace.SubscriptionPurchased` event, and redirects the user to [the purchase confirmation page](#what-is-the-subscription-purchase-confirmation-page) that you configured during setup (`/setup`). If configured, Mona continues to [provide subscription details to the purchase confirmation page using the `_sub` query string parameter](#can-i-retrieve-subscription-details-from-the-purchase-confirmation-page). Mona's webhook endpoint is not affected by passthrough mode.
 
-To enable passthrough mode, [navigate to Mona's configuration settings](#how-can-i-modify-monas-configuration-settings) and set `Deployment:IsPassthroughModeEnabled` to `true`. This will force a restart of the Mona web app. 
+To enable passthrough mode, [navigate to Mona's configuration settings](#how-can-i-modify-monas-configuration-settings) and set `Deployment:IsPassthroughModeEnabled` to `true`. This will force a restart of the Mona web app.
+
+Passthrough mode can also be enabled during setup by using the `-m` flag.
 
 > ⚠️ __Warning!__ It's important that you give the customer an opportunity to confirm their purchase. Since Mona doesn't provide a landing page UI in passthrough mode, it's your responsibility to confirm that the customer indeed wants to purchase your offer before you notify the Marketplace that the subscription has been activated.
 
