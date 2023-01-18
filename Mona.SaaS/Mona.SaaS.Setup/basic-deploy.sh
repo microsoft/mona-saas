@@ -50,8 +50,7 @@ check_cloud_shell_env() {
     then
       echo "$lp ✔   Running in a Cloud Shell environment"
     else
-      echo "$lp ❌   Not in an Azure Cloud Shell environment. See [https://github.com/microsoft/mona-saas#2-clone-the-mona-saas-github-repository] for more details."
-      return 1
+      echo "$lp ⚠️   Not in an Azure Cloud Shell environment. See [https://github.com/microsoft/mona-saas#2-clone-the-mona-saas-github-repository] for more details."
     fi 
 }
 
@@ -60,7 +59,6 @@ check_prereqs() {
 
     echo "$lp Checking Mona setup prerequisites...";
 
-    check_cloud_shell_env "$lp";  if [[ $? -ne 0 ]]; then prereq_check_failed=1; fi;
     check_az "$lp";               if [[ $? -ne 0 ]]; then prereq_check_failed=1; fi;
     check_dotnet "$lp";           if [[ $? -ne 0 ]]; then prereq_check_failed=1; fi;
 
@@ -216,6 +214,9 @@ if [[ $? -ne 0 ]]; then
     echo "$lp ❌   Please install all Mona setup prerequisites then try again. Setup failed."
     exit 1
 fi
+
+# Check environment
+check_cloud_shell_env "$lp";
 
 # Check parameter values.
 
