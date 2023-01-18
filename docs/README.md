@@ -2,6 +2,8 @@
 
 * [How do I install Mona?](#how-do-i-install-mona)
 * [How do I upgrade Mona?](#how-do-i-upgrade-mona)
+* [Why aren't my Mona events triggering my Logic Apps?](#why-arent-my-mona-events-triggering-my-logic-apps)
+* [How do I notify the Marketplace that a subscription has been activated?](#how-do-i-notify-the-marketplace-that-a-subscription-has-been-activated)
 * [How do I uninstall Mona?](#how-do-i-uninstall-mona)
 * [Where is the admin center?](#where-is-the-admin-center)
 * [How can I return to the setup wizard?](#how-can-i-return-to-the-setup-wizard)
@@ -40,6 +42,36 @@ The upgrade script will scan all Azure subscriptions that you have access to loo
 > Previous versions of Mona (pre-general availability) may not expose a health check endpoint. The upgrade script is unable to safely upgrade a Mona deployment that doesn't expose a health check endpoint. In these cases, you will likely need to redeploy Mona. 
 
 > The upgrade script depends on [Azure App Service staging slots](https://docs.microsoft.com/azure/app-service/deploy-staging-slots) to perform a safe upgrade. The staging slots feature is available in the Standard (default for Mona deployment), Premium, and Isolated App Service tiers. Automated upgrades are not supported in Free, Shared, and Basic tiers. [For more information, see App Service limits.](https://docs.microsoft.com/azure/azure-resource-manager/management/azure-subscription-service-limits#app-service-limits) 
+
+## Why aren't my Mona events triggering my Logic Apps?
+
+When you deploy Mona, an event grid topic is created which all Mona events are published to then, by default, a set of logic apps are deployed (one per event type) that, usually, are automatically connected to the event grid topic. Sometimes and unfortunately, intermittently, these logic apps don't get connected to the event grid topic. This is a problem that we are actively working on solving but, for the time being, you may need to go into your logic apps and manually reconnect them to the event grid topic.
+
+To do this, simply navigate to the Mona resource group, open the offending logic app, and navigate to the logic app designer. If the logic app trigger is not connected, an exclamation point ⚠️ will appear next to it. Simply expand the trigger and reconnect it to the Mona event grid topic through the Azure portal.
+
+> Can't find Mona's event grid topic? Navigate to the __Mona admin center__ (`/admin`), open the __subscription event handlers__ tab, and locate the event grid topic link. Opening this link will navigate you to the custom event grid topic in the Azure portal.
+
+## How do I notify the Marketplace that a subscription has been activated?
+
+Once a customer has purchased their solution through the Marketplace and the Mona purchase onboarding workflow, it's still __your responsibility to notify the Marketplace that the subscription has been activated__. You have 30 days from the time of purchase to notify the Marketplace that the subscription has been activated on your side.
+
+We try to make this as easy as possible by including a step at the end of the "subscription purchased" logic app (in your resource group, it will be called `mona-on-subscription-purchased-[your deployment name]`) that _conditionally_ notifies the Marketplace that the subscription has been activated. By default, this condition is set to _not_ automatically notify the Marketplace that the subscription has been activated because, depending on your SaaS app, subscriptions may be activated immediately or there may be some time window when you're provisioning infrastructure, going through sales processes, etc. that will elapse before you actually activate the subscription.
+
+Below, we outline both scenarios and how you should configure Mona accordingly.
+
+#### If you wish to activate the subscription immediately...
+
+Navigate to the `Conditional | Notify the Marketplace` step in the logic app designer and toggle the condition as shown below to `true`. This will automatically notify the Marketplace when a subscription has been activated and you're done.
+
+![Toggling Mona activation on](images/mona_activate_immediately.png)
+
+#### If you with to active the subscription at some point in the future...
+
+Navigate to the `Conditional | Notify the Marketplace` step in the logic app designer and expand the `Conditional | Notify the Marketplace` step and that condition's `True` branch. Within that branch, you will find a HTTP POST action that conditionally notifies the Marketplace that the subscription has been activated. This action contains the Azure Active Directory details that you will need to make this call on your own. Find these values as shown below and note them.
+
+![Toggling Mona activation on](images/mona_activate_later.png)
+
+You'll need to take these same values and use them to [call the Marketplace on your own as part of activation](https://learn.microsoft.com/azure/marketplace/partner-center-portal/pc-saas-fulfillment-subscription-api#activate-a-subscription). [This doc](https://learn.microsoft.com/azure/marketplace/partner-center-portal/pc-saas-registration#get-the-token-with-an-http-post) describes how to obtain an Azure Active Directory access token to call the API on your own. Note that you can also copy/paste the existing logic app action into another logic app that your app can call later once the subscription has been activated.
 
 ## How do I uninstall Mona?
 
