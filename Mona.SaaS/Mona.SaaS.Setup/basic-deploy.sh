@@ -206,6 +206,9 @@ echo "$lp Setting up Mona SaaS in your Azure environment...";
 
 [[ -z $no_splash ]] && cat ./splash.txt && echo;
 
+# Check environment
+check_cloud_shell_env "$lp";
+
 # Check setup pre-reqs.
 
 check_prereqs "$lp"
@@ -214,9 +217,6 @@ if [[ $? -ne 0 ]]; then
     echo "$lp ❌   Please install all Mona setup prerequisites then try again. Setup failed."
     exit 1
 fi
-
-# Check environment
-check_cloud_shell_env "$lp";
 
 # Check parameter values.
 
