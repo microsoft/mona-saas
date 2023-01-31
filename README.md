@@ -25,6 +25,7 @@ First, ensure that the following prerequisites are met.
  * You have an active Azure subscription. [If you don't already have one, get one free here](https://azure.microsoft.com/free).
  * You have the ability to create new app registrations within your Azure Active Directory (AAD) tenant. In order to create app registrations, you must be a directory administrator. For more information, see [this article](https://docs.microsoft.com/en-us/azure/active-directory/roles/permissions-reference).
  * You have the ability to create resources and resource groups within the target Azure subscription. Typically, this requires at least [contributor-level access](https://docs.microsoft.com/azure/role-based-access-control/built-in-roles#contributor) to the subscription.
+ * You have a Workplace or School account. Guest account or personal accounts will not work.
 
  ### 2. Clone the Mona SaaS GitHub repository
 
