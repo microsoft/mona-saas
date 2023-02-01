@@ -312,7 +312,12 @@ graph_token=$(az account get-access-token \
     --query accessToken \
     --output tsv);
 
-mona_admin_role_id=$(cat /proc/sys/kernel/random/uuid)
+
+if [[ $OSTYPE == 'darwin'* ]]; then
+  mona_admin_role_id=$(/usr/bin/uuidgen)
+else 
+    mona_admin_role_id=$(cat /proc/sys/kernel/random/uuid)
+fi
 create_mona_app_json=$(cat ./aad/manifest.json)
 create_mona_app_json="${create_mona_app_json/__aad_app_name__/${mona_aad_app_name}}"
 create_mona_app_json="${create_mona_app_json/__deployment_name__/${deployment_name}}"
