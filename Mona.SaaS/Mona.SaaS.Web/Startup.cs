@@ -63,7 +63,7 @@ namespace Mona.SaaS.Web
                     o.TenantId = "common"; // Static for multi-tenant AAD apps.
                     o.CallbackPath = "/signin-oidc";
                     o.SignedOutCallbackPath = "/signout-callback-oidc";
-                    //o.AccessDeniedPath = "/Errors/ErrorAccessDenied";
+                    
                 })
                 .EnableTokenAcquisitionToCallDownstreamApi()
                 .AddMicrosoftGraph(o =>
