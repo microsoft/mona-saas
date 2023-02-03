@@ -1,0 +1,93 @@
+﻿<!--This error access page is shown when a guest account or personal account is used-->
+@{
+    Layout = null;
+}
+<head>
+    <link rel="stylesheet" href="https://static2.sharepointonline.com/files/fabric/office-ui-fabric-js/1.4.0/css/fabric.min.css" />
+    <link rel="stylesheet" href="https://static2.sharepointonline.com/files/fabric/office-ui-fabric-js/1.4.0/css/fabric.components.min.css" />
+    <script src="https://static2.sharepointonline.com/files/fabric/office-ui-fabric-js/1.4.0/js/fabric.min.js"></script>
+    <link href="~/lib/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <title>@ViewData["ErrorTitle"]</title>
+    <style>
+        .ms-TextField-field {
+            display: block;
+        }
+
+        .ms-MessageBar {
+            width: -webkit-fill-available;
+            padding: 15px;
+        }
+
+        .ms-Icon.ms-Icon--Asterisk {
+            font-size: 10px;
+            font-weight: bolder;
+            color: darkred;
+        }
+
+        .ms-Label {
+            font-size: 14px;
+        }
+
+        .ms-font-xl {
+            font-weight: bold;
+        }
+
+        .ms-MessageBar-icon {
+            font-size: 15px;
+        }
+
+        .ms-link {
+            font-weight: 600;
+        }
+
+        a {
+            color: #006cc1;
+        }
+
+        .ms-Button.ms-Button--primary {
+            color: #0072cc;
+            background-color: 0072cc;
+        }
+
+        ms-Button.ms-Button--primary {
+            color: 0072cc;
+        }
+
+        .ms-Label.is-disabled {
+            color: #717171;
+        }
+
+        .ms-Pivot-link:before {
+            transition: none !important;
+        }
+
+        .admin-section {
+            margin-top: 25px;
+        }
+    </style>
+</head>
+<body class="ms-Fabric" dir="ltr">
+    <main>
+        <div class="ms-Grid" dir="ltr">
+            <div class="ms-Grid-row" style="min-height: 87%;padding: 20px;">
+
+                <h1 style="color:red">@ViewData["ErrorTitle"]</h1>
+                <p>@ViewData["ErrorDescription"]</p>
+                <p>Please refer to our <a href="https://github.com/microsoft/mona-saas/blob/main/docs/README.md">FAQ</a> for any further questions.</p>
+                <a asp-area="MicrosoftIdentity" asp-controller="Account" asp-action="SignOut">Sign in with a different account</a>
+            </div> 
+        </div>
+    </main>
+
+    <footer style="padding-top: 18px;text-align: left;background-color: #f4f4f4;padding-bottom: 18px;">
+        <ul class="ms-List">
+            <li class="ms-ListItem ms-ListItem--image" tabindex="0">
+                <span class="ms-ListItem-primaryText" style="padding-right:30px; color: #006ee5 ">Mona SaaS </span>
+                <span class="ms-ListItem-secondaryText">Copyright © Microsoft Corporation @DateTime.UtcNow.Year</span>
+                <span class="ms-ListItem-tertiaryText">Licensed under the <a target="_blank" href="https://github.com/microsoft/mona-saas/LICENSE.txt">MIT license</a>.</span>
+            </li>
+        </ul>
+    </footer>
+</body>
+
+

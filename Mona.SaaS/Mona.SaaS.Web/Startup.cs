@@ -1,6 +1,7 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
@@ -16,6 +17,7 @@ using Mona.SaaS.Core.Interfaces;
 using Mona.SaaS.Core.Models.Configuration;
 using Mona.SaaS.Services.Default;
 using Mona.SaaS.Web.Authorization;
+using System.Security.AccessControl;
 
 namespace Mona.SaaS.Web
 {
@@ -61,6 +63,7 @@ namespace Mona.SaaS.Web
                     o.TenantId = "common"; // Static for multi-tenant AAD apps.
                     o.CallbackPath = "/signin-oidc";
                     o.SignedOutCallbackPath = "/signout-callback-oidc";
+                    //o.AccessDeniedPath = "/Errors/ErrorAccessDenied";
                 })
                 .EnableTokenAcquisitionToCallDownstreamApi()
                 .AddMicrosoftGraph(o =>
@@ -70,6 +73,11 @@ namespace Mona.SaaS.Web
                 })
                 .AddInMemoryTokenCaches();
 
+            //Access denied path for when guest account or personal account is used
+            services.Configure<CookieAuthenticationOptions>(CookieAuthenticationDefaults.AuthenticationScheme,
+            options => options.AccessDeniedPath = "/Errors/ErrorAccessDenied");
+
+            
             // Configuring Mona admin access...
 
             services.AddSingleton<IAuthorizationHandler, AdminRoleAuthorizationHandler>();
@@ -83,6 +91,7 @@ namespace Mona.SaaS.Web
                     Configuration["Identity:AdminIdentity:AadTenantId"],
                     Configuration["Identity:AdminIdentity:RoleName"])));
             });
+
         }
 
         private void ConfigureDefaultMonaServices(IServiceCollection services)
