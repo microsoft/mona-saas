@@ -6,6 +6,7 @@
 * [How do I notify the Marketplace that a subscription has been activated?](#how-do-i-notify-the-marketplace-that-a-subscription-has-been-activated)
 * [How do I uninstall Mona?](#how-do-i-uninstall-mona)
 * [Where is the admin center?](#where-is-the-admin-center)
+* [Are guest or personal accounts allowed?](#are-guest-or-personal-accounts-allowed)
 * [How can I return to the setup wizard?](#how-can-i-return-to-the-setup-wizard)
 * [Why do I get Access Denied in setup wizard?](#why-do-i-get-access-denied-in-setup-wizard)
 * [Where can I find my offer's Partner Center technical configuration details?](#where-can-i-find-my-offers-partner-center-technical-configuration-details)
@@ -84,6 +85,10 @@ You'll need to take these same values and use them to [call the Marketplace on y
 ## Where is the admin center?
 
 In your browser, navigate to `/admin` (e.g., `https://mona-web-***.azurewebsites.net/admin`).
+
+## Are guest or personal accounts allowed?
+
+Mona restricts administrative access to members and not guests or personal accounts.  Please only use workplace/school accounts.
 
 ## How can I return to the setup wizard?
 
