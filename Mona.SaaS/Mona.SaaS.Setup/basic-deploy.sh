@@ -419,7 +419,7 @@ for i4 in {1..5}; do
     fi
 done
 
-# Deploy the ARM template.
+# Deploy the Bicep template.
 
 echo "$lp 🦾   Deploying Mona to subscription [$subscription_id] resource group [$resource_group_name]. This might take a while...";
 
@@ -428,7 +428,7 @@ az_deployment_name="mona-deploy-$deployment_name"
 az deployment group create \
     --resource-group "$resource_group_name" \
     --name "$az_deployment_name" \
-    --template-file "./templates/basic-deploy.json" \
+    --template-file "./templates/basic-deploy.bicep" \
     --parameters \
         deploymentName="$deployment_name" \
         aadTenantId="$current_user_tid" \
