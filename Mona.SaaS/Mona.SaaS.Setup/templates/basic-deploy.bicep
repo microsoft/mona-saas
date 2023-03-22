@@ -258,11 +258,9 @@ resource webAppName_appsettings 'Microsoft.Web/sites/config@2020-12-01' = {
 resource logicApps_eventGridConnection 'Microsoft.Web/connections@2016-06-01' = {
   name: logicApps.eventGridConnectionName
   location: location
-  //kind: 'V1'
+
   properties: {
     displayName: logicApps_ui[language].eventGridConnectionDisplayName
-    customParameterValues: {
-    }
     parameterValues: {
       'token:clientId': aadClientId
       'token:clientSecret': aadClientSecret
@@ -270,7 +268,6 @@ resource logicApps_eventGridConnection 'Microsoft.Web/connections@2016-06-01' = 
       'token:grantType': 'client_credentials'
     }
     api: {
-      //id: '${subscription().id}/providers/Microsoft.Web/locations/${location}/managedApis/azureeventgrid'
       id: subscriptionResourceId('Microsoft.Web/locations/managedApis', location, 'azureeventgrid')
     }
   }
