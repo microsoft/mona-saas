@@ -18,6 +18,7 @@
 * [Can I retrieve subscription details from the purchase confirmation page?](#can-i-retrieve-subscription-details-from-the-purchase-confirmation-page)
 * [What is the subscription configuration page?](#what-is-the-subscription-configuration-page)
 * [How can I test my Marketplace integration logic before going live with an offer?](#how-can-i-test-my-marketplace-integration-logic-before-going-live-with-an-offer)
+* [How do I use the test webhooks?](#how-do-i-use-the-test-webhooks)
 * [Can I customize the test subscription that Mona generates?](#can-i-customize-the-test-subscription-that-mona-generates)
 * [What is passthrough mode?](#what-is-passthrough-mode)
 * [How can I modify Mona's configuration settings?](#how-can-i-modify-monas-configuration-settings)
@@ -178,6 +179,49 @@ You can find both test endpoints in the __Testing__ tab of the Mona admin center
 The test landing page (`/test`) can only be accessed by Mona administrators. The test landing page behaves and looks just like the live landing page except for a warning banner across the top of the page indicating that you're running in test mode. You can customize the test subscription that Mona automatically generates by using [these query string parameters](https://github.com/microsoft/mona-saas/blob/357aa09039f9c8c0dfd324cdd7903b3dbdef88c6/Mona.SaaS/Mona.SaaS.Web/Controllers/SubscriptionController.cs#L591) _only_ on the test landing page.
 
 You can use tools like [cURL](https://curl.se/) (scriptable; great for automated testing) and [Postman](https://www.postman.com/) and the Mona test webhook endpoint (`/webhook/test`) to test [all kinds of Marketplace webhook invocations](https://docs.microsoft.com/azure/marketplace/partner-center-portal/pc-saas-fulfillment-api-v2#implementing-a-webhook-on-the-saas-service) against subscriptions previously created through the test landing page (`/test`). These test subscriptions automatically expire (you can no longer perform webhook operations against them) after 30 days of inactivity. Like the live webhook, the test webhook requires no authentication but operations succeed only when executed against existing test subscriptions.
+
+## How do I use the test webhooks?
+
+To begin testing the webhook endpoints, you go to the (`/admin`) page of your Mona deployment and then to the Testing Tab.  You should see the following:
+
+![image](https://user-images.githubusercontent.com/111533671/228665759-28361274-646b-45a8-ac4a-79e64731cdc8.png)
+
+The Test Connection Webhook URL is what you will use to send requests to test the webhooks.  Next, you will want to grab the subscription URL.  You can click on the Test Landing Page URL to take you to the (`/test`) landing page.  You should see the following:
+
+![image](https://user-images.githubusercontent.com/111533671/228665826-02e52c0a-5052-4fca-ab3a-0830ac37bcbd.png)
+
+You can begin testing your webhooks by utilizing Postman, the Test subscription ID, and Test Connection Webhook URL. The following example shows a test of the change plan action. 
+
+![image](https://user-images.githubusercontent.com/111533671/228670715-13f61f90-7921-4315-b169-ace1651bed72.png)
+
+The following parameters can be used when testing the webhook:
+- id
+- activityId
+- subscriptionId
+- publisherId
+- offerId
+- planId
+- quantity
+- timestamp
+- status
+- action
+   - action types:
+      - ChangePlan
+      - ChangeQuantity
+      - Suspend
+      - Unsubscribe
+      - Reinstate
+      - Renew
+
+> If you are doing a seat quantity change you must include the quaantity paramater.  If you are doing a plan change you must provide the planId paramater.
+
+As you can see from the above screenshot, after sending the POST request, I received a 200 OK back indicating the request was successful.  We can verify this by visiting the Mona Resource group you deployed and finding the corresponding Logic App.  For the above example, we tested the subscription plan changing so we could go to the mona-on-subscription-plan-changed-contoso Logic App and see that the run was successful.  
+
+![image](https://user-images.githubusercontent.com/111533671/228671265-7859c798-936b-4f3f-8368-79598ae0d2e6.png)
+
+For further verification, you can click on the successful run and find the exact parameters you used in your request.
+
+![image](https://user-images.githubusercontent.com/111533671/228675549-5bf43c4b-45a0-4920-ae24-517dbc52ab0e.png)
 
 ## Can I customize the test subscription that Mona generates?
 
