@@ -419,6 +419,14 @@ for i4 in {1..5}; do
     fi
 done
 
+mp_client_sp_name="$deployment_name-market-sp"
+
+echo "$lp 🛡️   Creating Marketplace client AAD service principal [$mp_client_sp_name]..."
+
+mp_client_sp_create_response=$(az ad sp create-for-rbac -n "$mp_client_sp_name")
+mp_client_sp_client_id=$(echo "$mp_client_sp_create_response" | jq -r ".appId")
+mp_client_sp_client_secret=$(echo "$mp_client_sp_create_response" | jq -r ".password")
+
 # Deploy the Bicep template.
 
 echo "$lp 🦾   Deploying Mona to subscription [$subscription_id] resource group [$resource_group_name]. This might take a while...";
@@ -431,6 +439,8 @@ az deployment group create \
     --template-file "./templates/basic-deploy.bicep" \
     --parameters \
         deploymentName="$deployment_name" \
+        aadMpClientId="$mp_client_sp_client_id" \
+        aadMpClientSecret="$mp_client_sp_client_secret" \
         aadTenantId="$current_user_tid" \
         aadPrincipalId="$mona_aad_sp_id" \
         aadClientId="$mona_aad_app_id" \

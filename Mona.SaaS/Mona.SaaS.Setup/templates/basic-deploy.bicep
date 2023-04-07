@@ -18,6 +18,13 @@ param aadClientSecret string
 @description('If provided, specifies the ID of an existing app service plan that the Mona web app should be deployed to.')
 param appServicePlanId string = ''
 
+@description('This Mona deployment\'s Marketplace client Azure Active Directory (AAD) client ID.')
+param aadMpClientId string
+
+@description('This Mona deployment\'s Marketplace client Azure Active Directory (AAD) client secret.')
+@secure()
+param aadMpClientSecret string
+
 @description('The version of events that this Mona deployment will publish to Event Grid.')
 @allowed([
   '2021-05-01'
@@ -244,6 +251,9 @@ resource webAppName_appsettings 'Microsoft.Web/sites/config@2020-12-01' = {
     'Identity:AppIdentity:AadClientSecret': aadClientSecret
     'Identity:AppIdentity:AadPrincipalId': aadPrincipalId
     'Identity:AppIdentity:AadTenantId': aadTenantId
+    'Identity:MarketplaceIdentity:AadClientId': aadMpClientId
+    'Identity:MarketplaceIdentity:AadClientSecret': aadMpClientSecret
+    'Identity:MarketplaceIdentity:AadTenantId': aadTenantId
     'Subscriptions:Events:EventGrid:TopicEndpoint': eventGridTopic.properties.endpoint
     'Subscriptions:Events:EventGrid:TopicKey': listKeys(eventGridTopic.id, '2020-04-01-preview').key1
     'Subscriptions:Staging:Cache:BlobStorage:ConnectionString': 'DefaultEndpointsProtocol=https;AccountName=${storageAccountName};AccountKey=${storageAccount.listKeys().keys[0].value};EndpointSuffix=core.windows.net'
