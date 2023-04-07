@@ -360,9 +360,9 @@ namespace Mona.SaaS.Services.Default
                 new string[] { "20e940b3-4c77-4b0b-9a53-9e16a1b010a7/.default" });
 
             var credential = new ClientSecretCredential(
-                identityConfig.AppIdentity.AadTenantId,
-                identityConfig.AppIdentity.AadClientId,
-                identityConfig.AppIdentity.AadClientSecret);
+                identityConfig.MarketplaceIdentity.AadTenantId,
+                identityConfig.MarketplaceIdentity.AadClientId,
+                identityConfig.MarketplaceIdentity.AadClientSecret);
 
             var tokenResponse = await credential.GetTokenAsync(tokenRequestContext);
 

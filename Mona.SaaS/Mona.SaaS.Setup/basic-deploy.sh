@@ -483,8 +483,8 @@ else
         --template-file "$pack_path" \
         --parameters \
             deploymentName="$deployment_name" \
-            aadClientId="$mona_aad_app_id" \
-            aadClientSecret="$mona_aad_app_secret" \
+            aadClientId="$mp_client_sp_client_id" \
+            aadClientSecret="$mp_client_sp_client_secret" \
             aadTenantId="$current_user_tid"
 
     [[ $? -eq 0 ]] && echo "$lp ✔   Integration pack [$integration_pack ($pack_path)] deployed.";
