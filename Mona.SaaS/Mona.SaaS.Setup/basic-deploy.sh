@@ -164,7 +164,7 @@ event_version="2021-10-01" # Default event version is always the latest one. Can
 language="en" # Default UI language is English ("en"). Can be overridden using [-l] flag below.
 integration_pack="default"
 
-while getopts "a:d:g:l:n:r:s:hp" opt; do
+while getopts "a:d:g:l:n:r:i:s:hp" opt; do
     case $opt in
         a)
             app_service_plan_id=$OPTARG
