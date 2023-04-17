@@ -402,6 +402,7 @@ echo "$lp 🔐   Granting Mona service principal contributor access to [$resourc
 for i4 in {1..5}; do
     az role assignment create \
         --role "Contributor" \
+        --scope "/subscriptions/$subscription_id/resourceGroups/$resource_group_name" \
         --assignee "$mona_aad_sp_id" \
         --resource-group "$resource_group_name"
 

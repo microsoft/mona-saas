@@ -359,14 +359,25 @@ namespace Mona.SaaS.Services.Default
             var tokenRequestContext = new TokenRequestContext(
                 new string[] { "20e940b3-4c77-4b0b-9a53-9e16a1b010a7/.default" });
 
-            var credential = new ClientSecretCredential(
-                identityConfig.MarketplaceIdentity.AadTenantId,
-                identityConfig.MarketplaceIdentity.AadClientId,
-                identityConfig.MarketplaceIdentity.AadClientSecret);
-
+            var credential = GetMarketplaceApiCredential();
             var tokenResponse = await credential.GetTokenAsync(tokenRequestContext);
 
             return tokenResponse.Token;
         }
+
+        private ClientSecretCredential GetMarketplaceApiCredential() =>
+            !string.IsNullOrEmpty(identityConfig.MarketplaceIdentity.AadClientId) &&           // Is a dedicated Marketplace
+            !string.IsNullOrEmpty(identityConfig.MarketplaceIdentity.AadClientSecret) &&       // identity configured?
+            !string.IsNullOrEmpty(identityConfig.MarketplaceIdentity.AadTenantId)
+            ? new ClientSecretCredential(
+                identityConfig.MarketplaceIdentity.AadTenantId,                                 // If so, we should use this identity
+                identityConfig.MarketplaceIdentity.AadClientId,                                 // when communicating with the Marketplace.
+                identityConfig.MarketplaceIdentity.AadClientSecret
+            )
+            : new ClientSecretCredential(
+                identityConfig.AppIdentity.AadTenantId,                                         // If not, we'll fall back to the app identity.
+                identityConfig.AppIdentity.AadClientId,                                         // Chances are, this version of Mona did not support 
+                identityConfig.AppIdentity.AadClientSecret                                      // a separate identity for the Marketplace API.
+            );
     }
 }

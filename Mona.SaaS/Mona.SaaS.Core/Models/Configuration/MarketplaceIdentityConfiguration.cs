@@ -13,19 +13,16 @@ namespace Mona.SaaS.Core.Models.Configuration
         /// <summary>
         /// Gets/sets the Marketplace client's AAD client ID.
         /// </summary>
-        [Required]
         public string AadClientId { get; set; }
 
         /// <summary>
         /// Gets/sets the Marketplace client's AAD client secret.
         /// </summary>
-        [Required]
         public string AadClientSecret { get; set; }
 
         /// <summary>
         /// Gets/sets the Marketplace client's AAD tenant ID.
         /// </summary>
-        [Required]
         public string AadTenantId { get; set; }
     }
 }
