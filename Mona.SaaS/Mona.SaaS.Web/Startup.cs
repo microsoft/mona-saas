@@ -24,12 +24,12 @@ namespace Mona.SaaS.Web
     {
         public Startup(IConfiguration configuration)
         {
-            configuration = ConfigureMarketplaceIdentity(configuration);
+            configuration = PatchMarketplaceIdentityConfiguration(configuration);
 
             Configuration = configuration;
         }
 
-        private IConfiguration ConfigureMarketplaceIdentity(IConfiguration configuration)
+        private IConfiguration PatchMarketplaceIdentityConfiguration(IConfiguration configuration)
         {
             // Originally, Mona used one identity (the AppIdentity) to both protect the web app frontend
             // and to contact the Marketplace API. Per GH issue #109, we've made a change where these identities
@@ -49,9 +49,17 @@ namespace Mona.SaaS.Web
             const string appIdentityAadClientId = "Identity:AppIdentity:AadClientId";
             const string appIdentityClientSecret = "Identity:AppIdentity:AadClientSecret";
 
-            configuration[mpIdentityAadTenantId] = configuration.GetValue<string>(mpIdentityAadTenantId, configuration[appIdentityAadTenantId]);
-            configuration[mpIdentityAadClientId] = configuration.GetValue<string>(mpIdentityAadClientId, configuration[appIdentityAadClientId]);
-            configuration[mpIdentityAadClientSecret] = configuration.GetValue<string>(mpIdentityAadClientSecret, configuration[appIdentityClientSecret]);
+            configuration[mpIdentityAadTenantId] = configuration.GetValue<string>(
+                mpIdentityAadTenantId, // Use the Marketplace tenant ID if configured.
+                configuration[appIdentityAadTenantId]); // Patch it with the app tenant ID if not.
+
+            configuration[mpIdentityAadClientId] = configuration.GetValue<string>(
+                mpIdentityAadClientId, // Use the Marketplace client ID if configured.
+                configuration[appIdentityAadClientId]); // Patch it with the app client ID if not.
+
+            configuration[mpIdentityAadClientSecret] = configuration.GetValue<string>(
+                mpIdentityAadClientSecret, // Use the Marketplace client secret if configured.
+                configuration[appIdentityClientSecret]); // Patch it with the app client secret if not.
 
             return configuration;
         }
