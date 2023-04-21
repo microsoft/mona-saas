@@ -96,36 +96,14 @@ namespace Mona.SaaS.Web.Controllers
             $"https://portal.azure.com/#@{this.identityConfig.AppIdentity.AadTenantId}/resource/subscriptions/{this.deploymentConfig.AzureSubscriptionId}" +
             $"/resourceGroups/{this.deploymentConfig.AzureResourceGroupName}/overview";
 
-        private PartnerCenterTechnicalDetails GetPartnerCenterTechnicalDetails()
-        {
-            var techDetails = new PartnerCenterTechnicalDetails 
+        private PartnerCenterTechnicalDetails GetPartnerCenterTechnicalDetails() =>
+            new PartnerCenterTechnicalDetails
             {
+                AadApplicationId = this.identityConfig.MarketplaceIdentity.AadClientId,
+                AadTenantId = this.identityConfig.MarketplaceIdentity.AadTenantId,
                 LandingPageUrl = Url.RouteUrl("landing", null, Request.Scheme),
                 WebhookUrl = Url.RouteUrl("webhook", null, Request.Scheme)
             };
-
-            // We recently added support for a dedicated Marketplace identity per this GH issue --
-            // https://github.com/microsoft/mona-saas/issues/109
-
-            // Since we don't want to break existing users, we first check to see if a dedicated 
-            // Marketplace identity is configured (`identityConfig.MarketplaceIdentity`). If not, 
-            // we fall back to the app identity. However, users can manually configure a 
-            // Marketplace identity so they should choose. We should write a FAQ about this...
-
-            if (!string.IsNullOrEmpty(identityConfig.MarketplaceIdentity.AadClientId) &&
-                !string.IsNullOrEmpty(identityConfig.MarketplaceIdentity.AadTenantId))
-            {
-                techDetails.AadTenantId = identityConfig.MarketplaceIdentity.AadTenantId;
-                techDetails.AadApplicationId = identityConfig.MarketplaceIdentity.AadClientId;
-            }
-            else
-            {
-                techDetails.AadTenantId = identityConfig.AppIdentity.AadTenantId;
-                techDetails.AadApplicationId = identityConfig.AppIdentity.AadClientId;
-            }
-
-            return techDetails;
-        }
 
         private async Task<IEnumerable<PluginModel>> GetAvailableIntegrationPluginModels()
         {

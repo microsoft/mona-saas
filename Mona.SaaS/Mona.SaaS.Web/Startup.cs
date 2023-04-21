@@ -17,7 +17,6 @@ using Mona.SaaS.Core.Interfaces;
 using Mona.SaaS.Core.Models.Configuration;
 using Mona.SaaS.Services.Default;
 using Mona.SaaS.Web.Authorization;
-using System.Security.AccessControl;
 
 namespace Mona.SaaS.Web
 {
@@ -25,7 +24,36 @@ namespace Mona.SaaS.Web
     {
         public Startup(IConfiguration configuration)
         {
+            configuration = ConfigureMarketplaceIdentity(configuration);
+
             Configuration = configuration;
+        }
+
+        private IConfiguration ConfigureMarketplaceIdentity(IConfiguration configuration)
+        {
+            // Originally, Mona used one identity (the AppIdentity) to both protect the web app frontend
+            // and to contact the Marketplace API. Per GH issue #109, we've made a change where these identities
+            // are separate (added MarketplaceIdentity).
+
+            // So we don't break existing Mona users that don't have these new configuration settings, we check
+            // right here at the very top to see if MarketplaceIdentity is configured. If it isn't, we set the
+            // MarketplaceIdentity to the AppIdentity.
+
+            // This change is here explicitly for backward compatability.
+
+            const string mpIdentityAadTenantId = "Identity:MarketplaceIdentity:AadTenantId";
+            const string mpIdentityAadClientId = "Identity:MarketplaceIdentity:AadClientId";
+            const string mpIdentityAadClientSecret = "Identity:MarketplaceIdentity:AadClientSecret";
+
+            const string appIdentityAadTenantId = "Identity:AppIdentity:AadTenantId";
+            const string appIdentityAadClientId = "Identity:AppIdentity:AadClientId";
+            const string appIdentityClientSecret = "Identity:AppIdentity:AadClientSecret";
+
+            configuration[mpIdentityAadTenantId] = configuration.GetValue<string>(mpIdentityAadTenantId, configuration[appIdentityAadTenantId]);
+            configuration[mpIdentityAadClientId] = configuration.GetValue<string>(mpIdentityAadClientId, configuration[appIdentityAadClientId]);
+            configuration[mpIdentityAadClientSecret] = configuration.GetValue<string>(mpIdentityAadClientSecret, configuration[appIdentityClientSecret]);
+
+            return configuration;
         }
 
         public IConfiguration Configuration { get; }
