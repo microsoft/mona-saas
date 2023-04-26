@@ -192,17 +192,17 @@ The Test Connection Webhook URL is what you will use to send requests to test th
 
 As mentioned in the previous [FAQ bullet point](https://github.com/microsoft/mona-saas/tree/main/docs#how-can-i-test-my-marketplace-integration-logic-before-going-live-with-an-offer), you can use CURL or Postman to test your webhook.  
 
-The following parameters can be used when testing the webhook:
+The following parameters can be used when testing the webhook.  All webhooks will require SubscriptionID and ActionType.
 - id
 - activityId
-- subscriptionId
+- ***subscriptionId***
 - publisherId
 - offerId
 - planId
 - quantity
 - timestamp
 - status
-- action
+- ***action***
    - action types:
       - ChangePlan
       - ChangeQuantity
@@ -211,9 +211,9 @@ The following parameters can be used when testing the webhook:
       - Reinstate
       - Renew
 
-> If you are doing a seat quantity change you must include the quantity paramater.  If you are doing a plan change you must provide the planId paramater.
+> ***If you are doing a seat quantity change you must include the quantity paramater.  If you are doing a plan change you must provide the planId paramater.***
 
-The following examples show tests 
+The following examples show JSON payloads for each one of the available actions:
  
 ```json
 {
@@ -223,13 +223,45 @@ The following examples show tests
 }
 ```
 
-As you can see from the above screenshot, after sending the POST request, I received a 200 OK back indicating the request was successful.  We can verify this by visiting the Mona Resource group you deployed and finding the corresponding Logic App.  For the above example, we tested the subscription plan changing so we could go to the mona-on-subscription-plan-changed-contoso Logic App and see that the run was successful.  
+```json
+{
+    "subscriptionId": "e8e69216-745e-4f0c-91d2-886bb04343e3",
+    "action": "ChangeQuantity",
+    "Quantity": 6
+}
+```
+```json
+{
+    "subscriptionId": "e8e69216-745e-4f0c-91d2-886bb04343e3",
+    "action": "Suspend"
+}
+```
+```json
+{
+    "subscriptionId": "e8e69216-745e-4f0c-91d2-886bb04343e3",
+    "action": "Unsubscribe"
+}
+```
+```json
+{
+    "subscriptionId": "e8e69216-745e-4f0c-91d2-886bb04343e3",
+    "action": "Reinstate"
+}
+```
+```json
+{
+    "subscriptionId": "e8e69216-745e-4f0c-91d2-886bb04343e3",
+    "action": "Renew"
+}
+```
+
+Using one of the example JSON payloads, do a HTTP POST request and you should receive back a 200 OK indicating the request was successful. We can verify this by visiting the Mona Resource group you deployed and finding the corresponding Logic App.  For the above example, we tested the subscription plan changing so we could go to the mona-on-subscription-plan-changed-contoso Logic App and see that the run was successful.  
 
 ![image](https://user-images.githubusercontent.com/111533671/228671265-7859c798-936b-4f3f-8368-79598ae0d2e6.png)
 
 For further verification, you can click on the successful run and find the exact parameters you used in your request.
 
-![image](https://user-images.githubusercontent.com/111533671/228675549-5bf43c4b-45a0-4920-ae24-517dbc52ab0e.png)
+![image](https://user-images.githubusercontent.com/111533671/234479164-141251d3-18ce-42c4-bad6-881631e2f257.png)
 
 ## Can I customize the test subscription that Mona generates?
 
