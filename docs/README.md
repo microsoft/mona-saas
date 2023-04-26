@@ -190,9 +190,7 @@ The Test Connection Webhook URL is what you will use to send requests to test th
 
 ![image](https://user-images.githubusercontent.com/111533671/228665826-02e52c0a-5052-4fca-ab3a-0830ac37bcbd.png)
 
-You can begin testing your webhooks by utilizing Postman, the Test subscription ID, and Test Connection Webhook URL. The following example shows a test of the change plan action. 
-
-![image](https://user-images.githubusercontent.com/111533671/228670715-13f61f90-7921-4315-b169-ace1651bed72.png)
+As mentioned in the previous [FAQ bullet point](https://github.com/microsoft/mona-saas/tree/main/docs#how-can-i-test-my-marketplace-integration-logic-before-going-live-with-an-offer), you can use CURL or Postman to test your webhook.  
 
 The following parameters can be used when testing the webhook:
 - id
@@ -213,7 +211,17 @@ The following parameters can be used when testing the webhook:
       - Reinstate
       - Renew
 
-> If you are doing a seat quantity change you must include the quaantity paramater.  If you are doing a plan change you must provide the planId paramater.
+> If you are doing a seat quantity change you must include the quantity paramater.  If you are doing a plan change you must provide the planId paramater.
+
+The following examples show tests 
+ 
+```json
+{
+    "subscriptionId": "e8e69216-745e-4f0c-91d2-886bb04343e3",
+    "action": "ChangePlan",
+    "planId": "Josh's Plan"
+}
+```
 
 As you can see from the above screenshot, after sending the POST request, I received a 200 OK back indicating the request was successful.  We can verify this by visiting the Mona Resource group you deployed and finding the corresponding Logic App.  For the above example, we tested the subscription plan changing so we could go to the mona-on-subscription-plan-changed-contoso Logic App and see that the run was successful.  
 
