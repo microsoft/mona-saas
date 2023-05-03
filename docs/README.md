@@ -227,7 +227,7 @@ The following examples show JSON payloads for each one of the available actions:
 {
     "subscriptionId": "e8e69216-745e-4f0c-91d2-886bb04343e3",
     "action": "ChangeQuantity",
-    "Quantity": 6
+    "quantity": 6
 }
 ```
 ```json
