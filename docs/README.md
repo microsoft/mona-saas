@@ -22,6 +22,7 @@
 * [Can I customize the test subscription that Mona generates?](#can-i-customize-the-test-subscription-that-mona-generates)
 * [What is passthrough mode?](#what-is-passthrough-mode)
 * [How can I modify Mona's configuration settings?](#how-can-i-modify-monas-configuration-settings)
+* [What if my AAD app is multi tenant?](#what-if-my-aad-app-is-multi-tenant)
 * [Where can I find Mona's diagnostic logs?](#where-can-i-find-monas-diagnostic-logs)
 * [How do I debug Mona?](#how-do-i-debug-mona)
 * [Does Mona have a health check endpoint?](#does-mona-have-a-health-check-endpoint)
@@ -308,6 +309,13 @@ To enable passthrough mode, [navigate to Mona's configuration settings](#how-can
 ## How can I modify Mona's configuration settings?
 
 See [this doc](config-settings.md).
+
+## What if my AAD app is multi tenant?
+
+If your AAD app is multi-tenant, you will need to mark your app as publisher verified before you can authenticate to use Mona.
+Please see these docs:
+* [Publisher verification overview](https://learn.microsoft.com/en-us/azure/active-directory/develop/publisher-verification-overview)
+* [Mark your app as publisher verified](https://learn.microsoft.com/en-us/azure/active-directory/develop/mark-app-as-publisher-verified)
 
 ## Where can I find Mona's diagnostic logs?
 
