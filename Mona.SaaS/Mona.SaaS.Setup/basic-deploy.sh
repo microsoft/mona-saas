@@ -131,7 +131,7 @@ language="en" # Default UI language is English ("en"). Can be overridden using [
 integration_pack="default"
 passthrough_mode_enabled="false"
 
-while getopts "a:d:g:l:n:r:s:hp" opt; do
+while getopts "a:d:g:l:n:r:s:hpm" opt; do
     case $opt in
         a)
             app_service_plan_id=$OPTARG
