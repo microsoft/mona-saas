@@ -43,19 +43,53 @@ check_dotnet() {
     fi
 }
 
+check_cloud_shell_env() {
+    exec 3>&2  
+    
+    if [ -n "$ACC_CLOUD"  ]
+    then
+      echo "$lp ✔   Running in a Cloud Shell environment"
+    else
+      echo "$lp ⚠️   Not in an Azure Cloud Shell environment. See [https://github.com/microsoft/mona-saas#2-clone-the-mona-saas-github-repository] for more details."
+    fi 
+}
+
 check_prereqs() {
     lp=$1
 
     echo "$lp Checking Mona setup prerequisites...";
 
-    check_az "$lp";         if [[ $? -ne 0 ]]; then prereq_check_failed=1; fi;
-    check_dotnet "$lp";     if [[ $? -ne 0 ]]; then prereq_check_failed=1; fi;
+    check_az "$lp";               if [[ $? -ne 0 ]]; then prereq_check_failed=1; fi;
+    check_dotnet "$lp";           if [[ $? -ne 0 ]]; then prereq_check_failed=1; fi;
 
     if [[ -z $prereq_check_failed ]]; then
         echo "$lp ✔   All Mona setup prerequisites installed."
     else
         return 1
     fi
+}
+
+check_account_type() {
+  lp=$1
+  
+  graph_token=$(az account get-access-token \
+      --resource-type ms-graph \
+      --query accessToken \
+      --output tsv);
+  
+  user_type=$(curl --location --request GET 'https://graph.microsoft.com/v1.0/me?$select=userType' -H "Content-Type: application/json" -H "Authorization: Bearer $graph_token" --no-progress-meter | jq -r ".userType");
+
+  if [ "$user_type" = "Guest" ]; then
+      echo "$lp ❌   Mona cannot be installed using a Guest account. Please use Workplace or School account with type Member."
+      return 1
+  fi
+  
+  is_msa=$(curl --location --request GET 'https://graph.microsoft.com/v1.0/me?$select=identities' -H "Content-Type: application/json" -H "Authorization: Bearer $graph_token" --no-progress-meter | jq -r '.identities | map(. | select(.issuer=="MicrosoftAccount")) | . | length > 0');
+
+  if [ "$is_msa" = "true" ]; then
+    echo "$lp ❌   Mona cannot be installed using a personal Microsoft account. Please use Workplace or School account with type Member."
+    return 1
+  fi
 }
 
 check_app_service_plan() {
@@ -179,6 +213,11 @@ while getopts "a:d:g:l:n:r:s:hpm" opt; do
     esac
 done
 
+# Check that user account is of valid type
+check_account_type "$lp"
+
+[[ $? -ne 0 ]] && exit 1;
+
 # Check for missing parameters.
 # Set default resource group name and deployment display name.
 
@@ -198,6 +237,9 @@ echo "$lp Setting up Mona SaaS in your Azure environment...";
 # Show Mona setup splash screen...
 
 [[ -z $no_splash ]] && cat ./splash.txt && echo;
+
+# Check environment
+check_cloud_shell_env "$lp";
 
 # Check setup pre-reqs.
 
@@ -381,7 +423,7 @@ for i4 in {1..5}; do
     fi
 done
 
-# Deploy the ARM template.
+# Deploy the Bicep template.
 
 echo "$lp 🦾   Deploying Mona to subscription [$subscription_id] resource group [$resource_group_name]. This might take a while...";
 
@@ -390,7 +432,7 @@ az_deployment_name="mona-deploy-$deployment_name"
 az deployment group create \
     --resource-group "$resource_group_name" \
     --name "$az_deployment_name" \
-    --template-file "./templates/basic-deploy.json" \
+    --template-file "./templates/basic-deploy.bicep" \
     --parameters \
         deploymentName="$deployment_name" \
         aadTenantId="$current_user_tid" \

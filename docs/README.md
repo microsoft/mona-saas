@@ -6,7 +6,9 @@
 * [How do I notify the Marketplace that a subscription has been activated?](#how-do-i-notify-the-marketplace-that-a-subscription-has-been-activated)
 * [How do I uninstall Mona?](#how-do-i-uninstall-mona)
 * [Where is the admin center?](#where-is-the-admin-center)
+* [Are guest or personal accounts allowed?](#are-guest-or-personal-accounts-allowed)
 * [How can I return to the setup wizard?](#how-can-i-return-to-the-setup-wizard)
+* [Why do I get Access Denied in setup wizard?](#why-do-i-get-access-denied-in-setup-wizard)
 * [Where can I find my offer's Partner Center technical configuration details?](#where-can-i-find-my-offers-partner-center-technical-configuration-details)
 * [Where can I learn more about the various events that Mona publishes?](#where-can-i-learn-more-about-the-various-events-that-mona-publishes)
 * [Can I handle subscription events somewhere other than Logic Apps?](#can-i-handle-subscription-events-somewhere-other-than-logic-apps)
@@ -16,6 +18,7 @@
 * [Can I retrieve subscription details from the purchase confirmation page?](#can-i-retrieve-subscription-details-from-the-purchase-confirmation-page)
 * [What is the subscription configuration page?](#what-is-the-subscription-configuration-page)
 * [How can I test my Marketplace integration logic before going live with an offer?](#how-can-i-test-my-marketplace-integration-logic-before-going-live-with-an-offer)
+* [How do I use the test webhooks?](#how-do-i-use-the-test-webhooks)
 * [Can I customize the test subscription that Mona generates?](#can-i-customize-the-test-subscription-that-mona-generates)
 * [What is passthrough mode?](#what-is-passthrough-mode)
 * [How can I modify Mona's configuration settings?](#how-can-i-modify-monas-configuration-settings)
@@ -47,7 +50,16 @@ The upgrade script will scan all Azure subscriptions that you have access to loo
 
 When you deploy Mona, an event grid topic is created which all Mona events are published to then, by default, a set of logic apps are deployed (one per event type) that, usually, are automatically connected to the event grid topic. Sometimes and unfortunately, intermittently, these logic apps don't get connected to the event grid topic. This is a problem that we are actively working on solving but, for the time being, you may need to go into your logic apps and manually reconnect them to the event grid topic.
 
-To do this, simply navigate to the Mona resource group, open the offending logic app, and navigate to the logic app designer. If the logic app trigger is not connected, an exclamation point ⚠️ will appear next to it. Simply expand the trigger and reconnect it to the Mona event grid topic through the Azure portal.
+To do this, simply navigate to the Mona resource group, open the offending logic app, and navigate to the logic app designer. If the logic app trigger is not connected, an exclamation point ⚠️ will appear next to it. You will need to expand the trigger and reconnect it to the Mona event grid topic through the Azure portal. Creating a new client secret in the Azure AD Application might be needed to fix the connection using the "Connect with service principal" option. Then, on each logic app impacted, deleting the Event Type Item (eg: Mona.SaaS.Marketplace.SubscriptionCancelled), saving and retyping it as a custom value might be needed in order to recreate the Event Subscriptions in the Mona event grid if those are missing.
+
+The issue should be fixed when you will have 7 Event subscriptions for the 7 Event Types managed by Mona:
+* Mona.SaaS.Marketplace.SubscriptionSeatQuantityChanged
+* Mona.SaaS.Marketplace.SubscriptionPlanChanged
+* Mona.SaaS.Marketplace.SubscriptionReinstated
+* Mona.SaaS.Marketplace.SubscriptionSuspended
+* Mona.SaaS.Marketplace.SubscriptionRenewed
+* Mona.SaaS.Marketplace.SubscriptionPurchased
+* Mona.SaaS.Marketplace.SubscriptionCancelled
 
 > Can't find Mona's event grid topic? Navigate to the __Mona admin center__ (`/admin`), open the __subscription event handlers__ tab, and locate the event grid topic link. Opening this link will navigate you to the custom event grid topic in the Azure portal.
 
@@ -86,9 +98,18 @@ You'll need to take these same values and use them to [call the Marketplace on y
 
 In your browser, navigate to `/admin` (e.g., `https://mona-web-***.azurewebsites.net/admin`).
 
+## Are guest or personal accounts allowed?
+
+Mona restricts administrative access to members and not guests or personal accounts.  Please only use workplace/school accounts.
+
 ## How can I return to the setup wizard?
 
 In your browser, navigate to `/setup` (e.g., `https://mona-web-***.azurewebsites.net/setup`).
+
+## Why do I get Access Denied in setup wizard?
+
+If you installed Mona with a Guest account or a Personal account (Microsoft Account) you will get an Access Denied error when accessing
+the setup wizard or admin center. 
 
 ## Where can I find my offer's Partner Center technical configuration details?
 
@@ -160,6 +181,89 @@ You can find both test endpoints in the __Testing__ tab of the Mona admin center
 The test landing page (`/test`) can only be accessed by Mona administrators. The test landing page behaves and looks just like the live landing page except for a warning banner across the top of the page indicating that you're running in test mode. You can customize the test subscription that Mona automatically generates by using [these query string parameters](https://github.com/microsoft/mona-saas/blob/357aa09039f9c8c0dfd324cdd7903b3dbdef88c6/Mona.SaaS/Mona.SaaS.Web/Controllers/SubscriptionController.cs#L591) _only_ on the test landing page.
 
 You can use tools like [cURL](https://curl.se/) (scriptable; great for automated testing) and [Postman](https://www.postman.com/) and the Mona test webhook endpoint (`/webhook/test`) to test [all kinds of Marketplace webhook invocations](https://docs.microsoft.com/azure/marketplace/partner-center-portal/pc-saas-fulfillment-api-v2#implementing-a-webhook-on-the-saas-service) against subscriptions previously created through the test landing page (`/test`). These test subscriptions automatically expire (you can no longer perform webhook operations against them) after 30 days of inactivity. Like the live webhook, the test webhook requires no authentication but operations succeed only when executed against existing test subscriptions.
+
+## How do I use the test webhooks?
+
+To begin testing the webhook endpoints, you go to the (`/admin`) page of your Mona deployment and then to the Testing Tab.  You should see the following:
+
+![image](https://user-images.githubusercontent.com/111533671/228665759-28361274-646b-45a8-ac4a-79e64731cdc8.png)
+
+The Test Connection Webhook URL is what you will use to send requests to test the webhooks.  Next, you will want to grab the subscription URL.  You can click on the Test Landing Page URL to take you to the (`/test`) landing page.  You should see the following:
+
+![image](https://user-images.githubusercontent.com/111533671/228665826-02e52c0a-5052-4fca-ab3a-0830ac37bcbd.png)
+
+As mentioned in the previous [FAQ bullet point](https://github.com/microsoft/mona-saas/tree/main/docs#how-can-i-test-my-marketplace-integration-logic-before-going-live-with-an-offer), you can use CURL or Postman to test your webhook.  
+
+The following parameters can be used when testing the webhook.  All webhooks will require SubscriptionID and ActionType.
+- id
+- activityId
+- ***subscriptionId***
+- publisherId
+- offerId
+- planId
+- quantity
+- timestamp
+- status
+- ***action***
+   - action types:
+      - ChangePlan
+      - ChangeQuantity
+      - Suspend
+      - Unsubscribe
+      - Reinstate
+      - Renew
+
+> ***If you are doing a seat quantity change you must include the quantity paramater.  If you are doing a plan change you must provide the planId paramater.***
+
+The following examples show JSON payloads for each one of the available actions:
+ 
+```json
+{
+    "subscriptionId": "e8e69216-745e-4f0c-91d2-886bb04343e3",
+    "action": "ChangePlan",
+    "planId": "Josh's Plan"
+}
+```
+
+```json
+{
+    "subscriptionId": "e8e69216-745e-4f0c-91d2-886bb04343e3",
+    "action": "ChangeQuantity",
+    "quantity": 6
+}
+```
+```json
+{
+    "subscriptionId": "e8e69216-745e-4f0c-91d2-886bb04343e3",
+    "action": "Suspend"
+}
+```
+```json
+{
+    "subscriptionId": "e8e69216-745e-4f0c-91d2-886bb04343e3",
+    "action": "Unsubscribe"
+}
+```
+```json
+{
+    "subscriptionId": "e8e69216-745e-4f0c-91d2-886bb04343e3",
+    "action": "Reinstate"
+}
+```
+```json
+{
+    "subscriptionId": "e8e69216-745e-4f0c-91d2-886bb04343e3",
+    "action": "Renew"
+}
+```
+
+Using one of the example JSON payloads, do a HTTP POST request and you should receive back a 200 OK indicating the request was successful. We can verify this by visiting the Mona Resource group you deployed and finding the corresponding Logic App.  For the above example, we tested the subscription plan changing so we could go to the mona-on-subscription-plan-changed-contoso Logic App and see that the run was successful.  
+
+![image](https://user-images.githubusercontent.com/111533671/228671265-7859c798-936b-4f3f-8368-79598ae0d2e6.png)
+
+For further verification, you can click on the successful run and find the exact parameters you used in your request.
+
+![image](https://user-images.githubusercontent.com/111533671/234479164-141251d3-18ce-42c4-bad6-881631e2f257.png)
 
 ## Can I customize the test subscription that Mona generates?
 
