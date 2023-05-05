@@ -442,7 +442,7 @@ az deployment group create \
         language="$language" \
         appServicePlanId="$app_service_plan_id" \
         eventVersion="$event_version" \
-        passthroughModeEnabled="$passthrough_mode_enabled"
+        isPassthroughModeEnabled="$passthrough_mode_enabled"
 
 [[ $? -eq 0 ]] && echo "$lp ✔   Mona resources successfully deployed [$az_deployment_name] to resource group [$resource_group_name].";
 [[ $? -ne 0 ]] && echo "$lp ❌   Mona resource group [$resource_group_name] deployment [$az_deployment_name] has failed. Aborting setup..." && exit 1;
