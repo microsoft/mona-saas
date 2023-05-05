@@ -241,7 +241,7 @@ resource webAppName_appsettings 'Microsoft.Web/sites/config@2020-12-01' = {
     'Deployment:IsTestModeEnabled': 'true'
     'Deployment:MonaVersion': monaVersion
     'Deployment:Name': cleanDeploymentName
-    'Deployment:IsPassthroughModeEnabled' : isPassthroughModeEnabled
+    'Deployment:IsPassthroughModeEnabled' : string(isPassthroughModeEnabled)
     'Identity:AdminIdentity:AadTenantId': aadTenantId
     'Identity:AdminIdentity:RoleName': 'monaadmins'
     'Identity:AppIdentity:AadClientId': aadClientId
