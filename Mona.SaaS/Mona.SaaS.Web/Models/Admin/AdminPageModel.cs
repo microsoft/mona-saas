@@ -9,7 +9,7 @@ namespace Mona.SaaS.Web.Models
     public class AdminPageModel
     {
         public bool IsTestModeEnabled { get; set; }
-
+        public bool IsPassthroughModeEnabled { get; set; }
         public string ConfigurationSettingsUrl { get; set; }
         public string EventGridTopicOverviewUrl { get; set; }
         public string ResourceGroupOverviewUrl { get; set; }
