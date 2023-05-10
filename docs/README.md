@@ -22,7 +22,7 @@
 * [Can I customize the test subscription that Mona generates?](#can-i-customize-the-test-subscription-that-mona-generates)
 * [What is passthrough mode?](#what-is-passthrough-mode)
 * [How can I modify Mona's configuration settings?](#how-can-i-modify-monas-configuration-settings)
-* [Why did I receive a warning with needs admin approval?](#why-did-i-receive-a-warning-with-needs-admin-approval)
+* [Why did I receive a warning about needing admin approval when logging into Mona?](#why-did-i-receive-a-warning-about-needing-admin-approval-when-logging-into-mona)
 * [Where can I find Mona's diagnostic logs?](#where-can-i-find-monas-diagnostic-logs)
 * [How do I debug Mona?](#how-do-i-debug-mona)
 * [Does Mona have a health check endpoint?](#does-mona-have-a-health-check-endpoint)
@@ -310,7 +310,7 @@ To enable passthrough mode, [navigate to Mona's configuration settings](#how-can
 
 See [this doc](config-settings.md).
 
-## Why did I receive a warning with needs admin approval?
+## Why did I receive a warning about needing admin approval when logging into Mona?
 
 After doing the initial setup of Mona you may receive a warning that the app registration is unverified and it needs admin approval.  You can return to the application without granting consent but if you would like to address the warning please see these docs:
 * [Publisher verification overview](https://learn.microsoft.com/en-us/azure/active-directory/develop/publisher-verification-overview)
