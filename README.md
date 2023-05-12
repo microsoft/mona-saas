@@ -119,6 +119,8 @@ Click the URL (it's automatically linked within the cloud shell) to navigate to 
 
 > The setup wizard is hosted entirely within your own Mona SaaS deployment so you're aren't sharing any information with Microsoft (or anyone else) at this point.
 
+During your initial setup you may receive a warning indicating that your sign-in is unverified and needs admin approval.  If you'd like to resolve this warning please see [this section](https://github.com/microsoft/mona-saas/tree/jomarvel--aad--app-publisher-verficiation/docs#what-if-my-aad-app-is-multi-tenant) of the FAQ for more info.  
+
 ### 5. Finish setting up your offer(s) in Partner Center
 
 [Use the Partner Center to configure your offer(s) and begin transacting with Microsoft!](https://docs.microsoft.com/azure/marketplace/create-new-saas-offer)
