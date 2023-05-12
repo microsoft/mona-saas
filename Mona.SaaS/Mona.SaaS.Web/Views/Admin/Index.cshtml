@@ -120,6 +120,9 @@
                             <li class="ms-Pivot-link" data-content="testing" title="Testing" tabindex="1">
                             @Localizer["Testing"]
                             </li>
+                            <li class="ms-Pivot-link" data-content="passthrough" title="PassThrough" tabindex="1">
+                            @Localizer["Passthrough mode"]
+                            </li>
                             <li class="ms-Pivot-link" data-content="subscription" title="Subscription" tabindex="1">
                             @Localizer["Subscription event handlers"]
                             </li>
@@ -192,6 +195,28 @@
                             else
                             {
                                 <div class="alert alert-secondary">@Localizer["Mona SaaS test endpoints are currently disabled. see <a class=\"alert-link\" target=\"_blank\" href=\"https://github.com/microsoft/mona-saas/tree/main/docs\">the Mona SaaS docs</a>."]</div>
+                            }
+
+                    </div>
+
+                    <!-- Passthrough Mode-->
+                    <div class="ms-Pivot-content" data-content="passthrough">
+                            @if (Model.IsPassthroughModeEnabled)
+                            {
+                                <div class="ms-MessageBar">
+                                    <div class="ms-MessageBar-content">
+                                        <div class="ms-MessageBar-icon"><i class="ms-Icon ms-Icon--Info"></i></div>
+                                        <div class="ms-MessageBar-text">
+                                            @Localizer["You currently have passthrough mode enabled."]
+                                        </div>
+                                    </div>
+                                </div><br />
+                                <p class="ms-font-m">@Localizer["If you would like to learn more about passthrough mode please see <a class=\"alert-link\" target=\"_blank\" href=\"https://github.com/microsoft/mona-saas/tree/main/docs#what-is-passthrough-mode\">this Mona SaaS FAQ section</a>."] </p>
+                            
+                            }
+                            else
+                            {
+                                <div class="alert alert-secondary">@Localizer["Mona SaaS passthrough mode is currently disabled. If you'd like to learn more about passthrough mode please see <a class=\"alert-link\" target=\"_blank\" href=\"https://github.com/microsoft/mona-saas/tree/main/docs#what-is-passthrough-mode\">this Mona SaaS FAQ section</a>."]</div>
                             }
 
                     </div>
