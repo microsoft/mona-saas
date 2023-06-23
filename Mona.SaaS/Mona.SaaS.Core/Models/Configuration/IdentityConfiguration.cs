@@ -21,5 +21,11 @@ namespace Mona.SaaS.Core.Models.Configuration
         /// </summary>
         [Required]
         public AppIdentityConfiguration AppIdentity { get; set; }
+
+        /// <summary>
+        /// Gets/sets information about this Mona application's Marketplace AAD identity.
+        /// </summary>
+        [Required]
+        public MarketplaceIdentityConfiguration MarketplaceIdentity { get; set; }
     }
 }

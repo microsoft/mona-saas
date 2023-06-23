@@ -17,7 +17,6 @@ using Mona.SaaS.Core.Interfaces;
 using Mona.SaaS.Core.Models.Configuration;
 using Mona.SaaS.Services.Default;
 using Mona.SaaS.Web.Authorization;
-using System.Security.AccessControl;
 
 namespace Mona.SaaS.Web
 {
@@ -25,7 +24,44 @@ namespace Mona.SaaS.Web
     {
         public Startup(IConfiguration configuration)
         {
+            configuration = PatchMarketplaceIdentityConfiguration(configuration);
+
             Configuration = configuration;
+        }
+
+        private IConfiguration PatchMarketplaceIdentityConfiguration(IConfiguration configuration)
+        {
+            // Originally, Mona used one identity (the AppIdentity) to both protect the web app frontend
+            // and to contact the Marketplace API. Per GH issue #109, we've made a change where these identities
+            // are separate (added MarketplaceIdentity).
+
+            // So we don't break existing Mona users that don't have these new configuration settings, we check
+            // right here at the very top to see if MarketplaceIdentity is configured. If it isn't, we set the
+            // MarketplaceIdentity to the AppIdentity.
+
+            // This change is here explicitly for backward compatability.
+
+            const string mpIdentityAadTenantId = "Identity:MarketplaceIdentity:AadTenantId";
+            const string mpIdentityAadClientId = "Identity:MarketplaceIdentity:AadClientId";
+            const string mpIdentityAadClientSecret = "Identity:MarketplaceIdentity:AadClientSecret";
+
+            const string appIdentityAadTenantId = "Identity:AppIdentity:AadTenantId";
+            const string appIdentityAadClientId = "Identity:AppIdentity:AadClientId";
+            const string appIdentityClientSecret = "Identity:AppIdentity:AadClientSecret";
+
+            configuration[mpIdentityAadTenantId] = configuration.GetValue<string>(
+                mpIdentityAadTenantId, // Use the Marketplace tenant ID if configured.
+                configuration[appIdentityAadTenantId]); // Patch it with the app tenant ID if not.
+
+            configuration[mpIdentityAadClientId] = configuration.GetValue<string>(
+                mpIdentityAadClientId, // Use the Marketplace client ID if configured.
+                configuration[appIdentityAadClientId]); // Patch it with the app client ID if not.
+
+            configuration[mpIdentityAadClientSecret] = configuration.GetValue<string>(
+                mpIdentityAadClientSecret, // Use the Marketplace client secret if configured.
+                configuration[appIdentityClientSecret]); // Patch it with the app client secret if not.
+
+            return configuration;
         }
 
         public IConfiguration Configuration { get; }

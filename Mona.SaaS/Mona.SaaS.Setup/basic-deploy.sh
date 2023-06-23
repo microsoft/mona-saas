@@ -165,7 +165,7 @@ language="en" # Default UI language is English ("en"). Can be overridden using [
 integration_pack="default"
 passthrough_mode_enabled="false"
 
-while getopts "a:d:g:l:n:r:s:hpm" opt; do
+while getopts "a:d:g:l:n:r:s:i:hpm" opt; do
     case $opt in
         a)
             app_service_plan_id=$OPTARG
@@ -406,8 +406,8 @@ echo "$lp 🔐   Granting Mona service principal contributor access to [$resourc
 for i4 in {1..5}; do
     az role assignment create \
         --role "Contributor" \
-        --assignee "$mona_aad_sp_id" \
-        --resource-group "$resource_group_name"
+        --scope "/subscriptions/$subscription_id/resourceGroups/$resource_group_name" \
+        --assignee "$mona_aad_sp_id"
 
     if [[ $? -ne 0 ]]; then
         if [[ $i4 == 5 ]]; then
@@ -423,6 +423,14 @@ for i4 in {1..5}; do
     fi
 done
 
+mp_client_sp_name="$deployment_name-market-sp"
+
+echo "$lp 🛡️   Creating Marketplace client AAD service principal [$mp_client_sp_name]..."
+
+mp_client_sp_create_response=$(az ad sp create-for-rbac -n "$mp_client_sp_name")
+mp_client_sp_client_id=$(echo "$mp_client_sp_create_response" | jq -r ".appId")
+mp_client_sp_client_secret=$(echo "$mp_client_sp_create_response" | jq -r ".password")
+
 # Deploy the Bicep template.
 
 echo "$lp 🦾   Deploying Mona to subscription [$subscription_id] resource group [$resource_group_name]. This might take a while...";
@@ -435,6 +443,8 @@ az deployment group create \
     --template-file "./templates/basic-deploy.bicep" \
     --parameters \
         deploymentName="$deployment_name" \
+        aadMpClientId="$mp_client_sp_client_id" \
+        aadMpClientSecret="$mp_client_sp_client_secret" \
         aadTenantId="$current_user_tid" \
         aadPrincipalId="$mona_aad_sp_id" \
         aadClientId="$mona_aad_app_id" \
@@ -478,8 +488,8 @@ else
         --template-file "$pack_path" \
         --parameters \
             deploymentName="$deployment_name" \
-            aadClientId="$mona_aad_app_id" \
-            aadClientSecret="$mona_aad_app_secret" \
+            aadClientId="$mp_client_sp_client_id" \
+            aadClientSecret="$mp_client_sp_client_secret" \
             aadTenantId="$current_user_tid"
 
     [[ $? -eq 0 ]] && echo "$lp ✔   Integration pack [$integration_pack ($pack_path)] deployed.";

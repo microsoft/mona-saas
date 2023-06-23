@@ -100,8 +100,8 @@ namespace Mona.SaaS.Web.Controllers
         private PartnerCenterTechnicalDetails GetPartnerCenterTechnicalDetails() =>
             new PartnerCenterTechnicalDetails
             {
-                AadApplicationId = this.identityConfig.AppIdentity.AadClientId,
-                AadTenantId = this.identityConfig.AppIdentity.AadTenantId,
+                AadApplicationId = this.identityConfig.MarketplaceIdentity.AadClientId,
+                AadTenantId = this.identityConfig.MarketplaceIdentity.AadTenantId,
                 LandingPageUrl = Url.RouteUrl("landing", null, Request.Scheme),
                 WebhookUrl = Url.RouteUrl("webhook", null, Request.Scheme)
             };
