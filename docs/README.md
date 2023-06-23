@@ -18,9 +18,11 @@
 * [Can I retrieve subscription details from the purchase confirmation page?](#can-i-retrieve-subscription-details-from-the-purchase-confirmation-page)
 * [What is the subscription configuration page?](#what-is-the-subscription-configuration-page)
 * [How can I test my Marketplace integration logic before going live with an offer?](#how-can-i-test-my-marketplace-integration-logic-before-going-live-with-an-offer)
+* [How do I use the test webhooks?](#how-do-i-use-the-test-webhooks)
 * [Can I customize the test subscription that Mona generates?](#can-i-customize-the-test-subscription-that-mona-generates)
 * [What is passthrough mode?](#what-is-passthrough-mode)
 * [How can I modify Mona's configuration settings?](#how-can-i-modify-monas-configuration-settings)
+* [Why did I receive a warning about needing admin approval when logging into Mona?](#why-did-i-receive-a-warning-about-needing-admin-approval-when-logging-into-mona)
 * [Where can I find Mona's diagnostic logs?](#where-can-i-find-monas-diagnostic-logs)
 * [How do I debug Mona?](#how-do-i-debug-mona)
 * [Does Mona have a health check endpoint?](#does-mona-have-a-health-check-endpoint)
@@ -73,6 +75,8 @@ Below, we outline both scenarios and how you should configure Mona accordingly.
 #### If you wish to activate the subscription immediately...
 
 Navigate to the `Conditional | Notify the Marketplace` step in the logic app designer and toggle the condition as shown below to `true`. This will automatically notify the Marketplace when a subscription has been activated and you're done.
+
+> ⚠️ __Warning!__ When using [passthrough mode](https://github.com/microsoft/mona-saas/tree/main/docs#what-is-passthrough-mode), the subscription will be automatically activated before the subscriber sees your purchase confirmation page. It's important that you give the subscriber an opportunity to confirm their purchase before you activate their subscription with the Marketplace.
 
 ![Toggling Mona activation on](images/mona_activate_immediately.png)
 
@@ -179,6 +183,89 @@ The test landing page (`/test`) can only be accessed by Mona administrators. The
 
 You can use tools like [cURL](https://curl.se/) (scriptable; great for automated testing) and [Postman](https://www.postman.com/) and the Mona test webhook endpoint (`/webhook/test`) to test [all kinds of Marketplace webhook invocations](https://docs.microsoft.com/azure/marketplace/partner-center-portal/pc-saas-fulfillment-api-v2#implementing-a-webhook-on-the-saas-service) against subscriptions previously created through the test landing page (`/test`). These test subscriptions automatically expire (you can no longer perform webhook operations against them) after 30 days of inactivity. Like the live webhook, the test webhook requires no authentication but operations succeed only when executed against existing test subscriptions.
 
+## How do I use the test webhooks?
+
+To begin testing the webhook endpoints, you go to the (`/admin`) page of your Mona deployment and then to the Testing Tab.  You should see the following:
+
+![image](https://user-images.githubusercontent.com/111533671/228665759-28361274-646b-45a8-ac4a-79e64731cdc8.png)
+
+The Test Connection Webhook URL is what you will use to send requests to test the webhooks.  Next, you will want to grab the subscription URL.  You can click on the Test Landing Page URL to take you to the (`/test`) landing page.  You should see the following:
+
+![image](https://user-images.githubusercontent.com/111533671/228665826-02e52c0a-5052-4fca-ab3a-0830ac37bcbd.png)
+
+As mentioned in the previous [FAQ bullet point](https://github.com/microsoft/mona-saas/tree/main/docs#how-can-i-test-my-marketplace-integration-logic-before-going-live-with-an-offer), you can use CURL or Postman to test your webhook.  
+
+The following parameters can be used when testing the webhook.  All webhooks will require SubscriptionID and ActionType.
+- id
+- activityId
+- ***subscriptionId***
+- publisherId
+- offerId
+- planId
+- quantity
+- timestamp
+- status
+- ***action***
+   - action types:
+      - ChangePlan
+      - ChangeQuantity
+      - Suspend
+      - Unsubscribe
+      - Reinstate
+      - Renew
+
+> ***If you are doing a seat quantity change you must include the quantity paramater.  If you are doing a plan change you must provide the planId paramater.***
+
+The following examples show JSON payloads for each one of the available actions:
+ 
+```json
+{
+    "subscriptionId": "e8e69216-745e-4f0c-91d2-886bb04343e3",
+    "action": "ChangePlan",
+    "planId": "Josh's Plan"
+}
+```
+
+```json
+{
+    "subscriptionId": "e8e69216-745e-4f0c-91d2-886bb04343e3",
+    "action": "ChangeQuantity",
+    "quantity": 6
+}
+```
+```json
+{
+    "subscriptionId": "e8e69216-745e-4f0c-91d2-886bb04343e3",
+    "action": "Suspend"
+}
+```
+```json
+{
+    "subscriptionId": "e8e69216-745e-4f0c-91d2-886bb04343e3",
+    "action": "Unsubscribe"
+}
+```
+```json
+{
+    "subscriptionId": "e8e69216-745e-4f0c-91d2-886bb04343e3",
+    "action": "Reinstate"
+}
+```
+```json
+{
+    "subscriptionId": "e8e69216-745e-4f0c-91d2-886bb04343e3",
+    "action": "Renew"
+}
+```
+
+Using one of the example JSON payloads, do a HTTP POST request and you should receive back a 200 OK indicating the request was successful. We can verify this by visiting the Mona Resource group you deployed and finding the corresponding Logic App.  For the above example, we tested the subscription plan changing so we could go to the mona-on-subscription-plan-changed-contoso Logic App and see that the run was successful.  
+
+![image](https://user-images.githubusercontent.com/111533671/228671265-7859c798-936b-4f3f-8368-79598ae0d2e6.png)
+
+For further verification, you can click on the successful run and find the exact parameters you used in your request.
+
+![image](https://user-images.githubusercontent.com/111533671/234479164-141251d3-18ce-42c4-bad6-881631e2f257.png)
+
 ## Can I customize the test subscription that Mona generates?
 
 Yes you can. Through the test landing page (`/test`) you can use query string parameters to override properties on the test subscription that is generated allowing you to test very specific subscription scenarios.
@@ -217,13 +304,21 @@ Normally, when a customer is routed from the commercial Marketplace to the Mona 
 
 When configured for passthrough mode, the customer never sees Mona's landing page and, consequently, is never forced to authenticate. Instead, the landing page simply resolves the subscription, publishes the `Mona.SaaS.Marketplace.SubscriptionPurchased` event, and redirects the user to [the purchase confirmation page](#what-is-the-subscription-purchase-confirmation-page) that you configured during setup (`/setup`). If configured, Mona continues to [provide subscription details to the purchase confirmation page using the `_sub` query string parameter](#can-i-retrieve-subscription-details-from-the-purchase-confirmation-page). Mona's webhook endpoint is not affected by passthrough mode.
 
-To enable passthrough mode, [navigate to Mona's configuration settings](#how-can-i-modify-monas-configuration-settings) and set `Deployment:IsPassthroughModeEnabled` to `true`. This will force a restart of the Mona web app. 
+To enable passthrough mode, [navigate to Mona's configuration settings](#how-can-i-modify-monas-configuration-settings) and set `Deployment:IsPassthroughModeEnabled` to `true`. This will force a restart of the Mona web app.
 
-> ⚠️ __Warning!__ It's important that you give the customer an opportunity to confirm their purchase. Since Mona doesn't provide a landing page UI in passthrough mode, it's your responsibility to confirm that the customer indeed wants to purchase your offer before you notify the Marketplace that the subscription has been activated.
+Passthrough mode can also be enabled [during setup by using the `-m` flag](https://github.com/microsoft/mona-saas/blob/main/README.md/#3-set-up-mona-saas).
+
+> ⚠️ __Warning!__ It's important that you give the customer an opportunity to confirm their purchase. Since Mona doesn't provide a landing page UI in passthrough mode, it's your responsibility to confirm that the customer indeed wants to purchase your offer before you [notify the Marketplace that the subscription has been activated](https://github.com/microsoft/mona-saas/tree/main/docs#how-do-i-notify-the-marketplace-that-a-subscription-has-been-activated).
 
 ## How can I modify Mona's configuration settings?
 
 See [this doc](config-settings.md).
+
+## Why did I receive a warning about needing admin approval when logging into Mona?
+
+After doing the initial setup of Mona you may receive a warning that the app registration is unverified and it needs admin approval.  You can return to the application without granting consent but if you would like to address the warning please see these docs:
+* [Publisher verification overview](https://learn.microsoft.com/en-us/azure/active-directory/develop/publisher-verification-overview)
+* [Mark your app as publisher verified](https://learn.microsoft.com/en-us/azure/active-directory/develop/mark-app-as-publisher-verified)
 
 ## Where can I find Mona's diagnostic logs?
 

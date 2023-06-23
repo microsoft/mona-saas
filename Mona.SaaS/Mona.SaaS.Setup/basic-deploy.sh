@@ -7,7 +7,7 @@ mona_version=$(cat ../../VERSION)
 
 exec 3>&2 # Grabbing a reliable stderr handle...
 
-usage() { printf "\nUsage: $0 <-n deployment-name> <-r deployment-region> [-i integration-pack] [-a app-service-plan-id] [-d display-name] [-g resource-group] [-l ui-language] [-s subscription-id] [-e event-version] [-h] [-p]\n"; }
+usage() { printf "\nUsage: $0 <-n deployment-name> <-r deployment-region> [-i integration-pack] [-a app-service-plan-id] [-d display-name] [-g resource-group] [-l ui-language] [-s subscription-id] [-e event-version] [-h] [-p] [-m]\n"; }
 
 check_az() {
     exec 3>&2
@@ -163,8 +163,9 @@ check_deployment_name() {
 event_version="2021-10-01" # Default event version is always the latest one. Can be overridden using [-e] flag below for backward compatibility.
 language="en" # Default UI language is English ("en"). Can be overridden using [-l] flag below.
 integration_pack="default"
+passthrough_mode_enabled="false"
 
-while getopts "a:d:g:l:n:r:i:s:hp" opt; do
+while getopts "a:d:g:l:n:r:s:i:hpm" opt; do
     case $opt in
         a)
             app_service_plan_id=$OPTARG
@@ -198,6 +199,9 @@ while getopts "a:d:g:l:n:r:i:s:hp" opt; do
         ;;
         p)
             no_publish=1
+        ;;
+        m)
+            passthrough_mode_enabled="true"
         ;;
         j)
             no_rbac=1 # Ill-advised. Only here for backward compatibility with early versions of Mona.
@@ -447,7 +451,8 @@ az deployment group create \
         aadClientSecret="$mona_aad_app_secret" \
         language="$language" \
         appServicePlanId="$app_service_plan_id" \
-        eventVersion="$event_version"
+        eventVersion="$event_version" \
+        isPassthroughModeEnabled="$passthrough_mode_enabled"
 
 [[ $? -eq 0 ]] && echo "$lp ✔   Mona resources successfully deployed [$az_deployment_name] to resource group [$resource_group_name].";
 [[ $? -ne 0 ]] && echo "$lp ❌   Mona resource group [$resource_group_name] deployment [$az_deployment_name] has failed. Aborting setup..." && exit 1;
@@ -542,6 +547,7 @@ if [[ -z $no_publish ]]; then
     printf "$lp Webhook URL (Testing)               [$web_app_base_url/webhook/test]\n"
     printf "$lp Admin Center URL                    [$web_app_base_url/admin]\n"
     printf "$lp Subscription Staging Store Base URL [https://$storage_account_name.blob.core.windows.net]\n"
+    printf "$lp Passthrough Mode Enabled (-m)?      [$passthrough_mode_enabled]\n"
 fi
 
 echo

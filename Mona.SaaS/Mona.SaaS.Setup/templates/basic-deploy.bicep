@@ -25,6 +25,9 @@ param aadMpClientId string
 @secure()
 param aadMpClientSecret string
 
+@description('Flag indicates passthroughMode is enabled by default')
+param isPassthroughModeEnabled bool = false
+
 @description('The version of events that this Mona deployment will publish to Event Grid.')
 @allowed([
   '2021-05-01'
@@ -245,6 +248,7 @@ resource webAppName_appsettings 'Microsoft.Web/sites/config@2020-12-01' = {
     'Deployment:IsTestModeEnabled': 'true'
     'Deployment:MonaVersion': monaVersion
     'Deployment:Name': cleanDeploymentName
+    'Deployment:IsPassthroughModeEnabled' : string(isPassthroughModeEnabled)
     'Identity:AdminIdentity:AadTenantId': aadTenantId
     'Identity:AdminIdentity:RoleName': 'monaadmins'
     'Identity:AppIdentity:AadClientId': aadClientId

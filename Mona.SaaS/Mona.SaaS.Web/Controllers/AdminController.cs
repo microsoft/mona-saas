@@ -54,6 +54,7 @@ namespace Mona.SaaS.Web.Controllers
                 var adminModel = new AdminPageModel
                 {
                     IsTestModeEnabled = this.deploymentConfig.IsTestModeEnabled,
+                    IsPassthroughModeEnabled = this.deploymentConfig.IsPassthroughModeEnabled,
                     MonaVersion = this.deploymentConfig.MonaVersion,
                     AzureSubscriptionId = this.deploymentConfig.AzureSubscriptionId,
                     AzureResourceGroupName = this.deploymentConfig.AzureResourceGroupName,

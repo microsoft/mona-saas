@@ -100,6 +100,7 @@ The setup script supports additional optional parameters detailed in the table b
 | `-g` | Deployment Azure resource group name | No | `mona-[deployment name (-n)]` | The Azure resource group to deploy Mona SaaS into. If the resource group already exists, it must be empty. If the group doesn't exist, it will be automatically created during setup. |
 | `-s` | Deployment Azure subscription ID | No | The current subscription | The ID of the Azure subscription to deploy Mona SaaS into. |
 | `-e` | Subscription event version identifier | No | Current (`2021-10-01`) | When set, specifies the version of subscription events Mona should publish. [Learn more here.](docs/event-models/README.md) |
+| `-m` | __Flag__ - Enable [passthrough mode](https://github.com/microsoft/mona-saas/tree/main/docs#what-is-passthrough-mode). | No | N/A | When set, configures this Mona deployment to use [passthrough mode](https://github.com/microsoft/mona-saas/tree/main/docs#what-is-passthrough-mode). |
 | `-h` | __Flag__ - Don't show script splash screen. | No | N/A | When set, the setup script will not display the standard Mona setup splash screen. |
 | `-p` | __Flag__ - Don't publish the web app. | No | N/A | When set, the setup script will provision all Azure and Azure Active Directory reources as usual _but_ won't actually publish the Mona web app. |
 
@@ -118,6 +119,8 @@ https://mona-web-monaex01.azurewebsites.net/setup
 Click the URL (it's automatically linked within the cloud shell) to navigate to that site and complete the Mona SaaS setup wizard.
 
 > The setup wizard is hosted entirely within your own Mona SaaS deployment so you're aren't sharing any information with Microsoft (or anyone else) at this point.
+
+During your initial setup you may receive a warning indicating that your sign-in is unverified and needs admin approval.  If you'd like to resolve this warning please see [this section](https://github.com/microsoft/mona-saas/tree/jomarvel--aad--app-publisher-verficiation/docs#what-if-my-aad-app-is-multi-tenant) of the FAQ for more info.  
 
 ### 5. Finish setting up your offer(s) in Partner Center
 

@@ -28,7 +28,6 @@ namespace Mona.SaaS.Core.Models.Configuration
         /// <summary>
         /// Gets/sets whether or not this Mona deployment is currently configured for passthrough mode.
         /// </summary>
-        [Required]
         public bool IsPassthroughModeEnabled { get; set; }
 
         /// <summary>
