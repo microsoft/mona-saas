@@ -17,11 +17,17 @@ namespace Mona.SaaS.Web.Authorization
 {
     public class AdminRoleAuthorizationHandler : AuthorizationHandler<AdminRoleAuthorizationRequirement>
     {
+        private readonly bool areForeignAdminsEnabled = false;
+
+        public AdminRoleAuthorizationHandler(bool areForeignAdminsEnabled = false) =>
+            this.areForeignAdminsEnabled = areForeignAdminsEnabled;
+
         private const string tenantIdClaimType = "http://schemas.microsoft.com/identity/claims/tenantid";
 
         protected override Task HandleRequirementAsync(AuthorizationHandlerContext context, AdminRoleAuthorizationRequirement requirement)
         {
-            if (context.User.HasClaim(tenantIdClaimType, requirement.AdminAadTenantId) && context.User.IsInRole(requirement.AdminRoleName))
+            if ((areForeignAdminsEnabled || context.User.HasClaim(tenantIdClaimType, requirement.AdminAadTenantId)) 
+                && context.User.IsInRole(requirement.AdminRoleName))
             {
                 context.Succeed(requirement);
             }

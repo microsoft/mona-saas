@@ -17,6 +17,7 @@ using Mona.SaaS.Core.Interfaces;
 using Mona.SaaS.Core.Models.Configuration;
 using Mona.SaaS.Services.Default;
 using Mona.SaaS.Web.Authorization;
+using static System.Environment;
 
 namespace Mona.SaaS.Web
 {
@@ -90,6 +91,9 @@ namespace Mona.SaaS.Web
 
         private void ConfigureAuth(IServiceCollection services)
         {
+            var areForeignAdminsEnabled = 
+                GetEnvironmentVariable("Deployment:IsForeignAdminsEnabled")?.ToLower() == "true";
+
             services.AddAuthentication(OpenIdConnectDefaults.AuthenticationScheme)
                 .AddMicrosoftIdentityWebApp(o =>
                 {
@@ -113,10 +117,11 @@ namespace Mona.SaaS.Web
             services.Configure<CookieAuthenticationOptions>(CookieAuthenticationDefaults.AuthenticationScheme,
             options => options.AccessDeniedPath = "/Errors/ErrorAccessDenied");
 
-            
+
             // Configuring Mona admin access...
 
-            services.AddSingleton<IAuthorizationHandler, AdminRoleAuthorizationHandler>();
+            services.AddSingleton<IAuthorizationHandler, AdminRoleAuthorizationHandler>(
+                sp => new AdminRoleAuthorizationHandler(areForeignAdminsEnabled));
 
             services.AddAuthorization(o =>
             {
