@@ -38,6 +38,12 @@ resource workflow 'Microsoft.Logic/workflows@2019-05-01' = {
     'mona:description': description
     'mona:event-type': eventType
   }
+  identity: {
+    type: 'UserAssigned'
+    userAssignedIdentities: {
+      '${internalMidId}': {}
+    }
+  }
   properties: {
     state: 'Enabled'
     definition: {
