@@ -7,7 +7,7 @@ param internalMidId string
 
 // For subscribing to the event grid topic...
 
-param eventGridConnectionName string = 'mona-events-connection-${deploymentName}'
+param eventGridConnectionName string = 'azureeventgrid'
 param eventGridTopicName string = 'mona-events-${deploymentName}'
 
 var packName = 'default'
