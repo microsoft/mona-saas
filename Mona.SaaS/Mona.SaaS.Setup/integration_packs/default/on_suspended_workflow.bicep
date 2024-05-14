@@ -2,7 +2,8 @@ param deploymentName string
 
 param location string = resourceGroup().location
 
-// For subscribing to this Mona deployment's event grid topic...
+param externalMidId string
+param internalMidId string
 
 param eventGridConnectionName string = 'mona-events-connection-${deploymentName}'
 param eventGridTopicName string = 'mona-events-${deploymentName}'
@@ -200,6 +201,10 @@ resource workflow 'Microsoft.Logic/workflows@2019-05-01' = {
           eventGrid: {
             connectionId: eventGridConnection.id
             connectionName: eventGridConnection.name
+            connectionProperties: {
+              identity: internalMidId
+              type: 'ManagedServiceIdentity'
+            }
             id: '${subscription().id}/providers/Microsoft.Web/locations/${location}/managedApis/azureeventgrid'
           }
         }

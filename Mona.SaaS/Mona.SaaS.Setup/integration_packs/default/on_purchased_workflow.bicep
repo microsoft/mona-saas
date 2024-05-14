@@ -2,13 +2,8 @@ param deploymentName string
 
 param location string = resourceGroup().location
 
-// For authenticating to the Marketplace API...
-
-param aadClientId string
-param aadTenantId string
-
-@secure()
-param aadClientSecret string
+param externalMidId string
+param internalMidId string
 
 // For subscribing to this Mona deployment's event grid topic...
 
@@ -210,10 +205,8 @@ resource workflow 'Microsoft.Logic/workflows@2019-05-01' = {
               inputs: {
                 authentication: {
                   audience: marketplaceApiAuthAudience
-                  clientId: aadClientId
-                  secret: aadClientSecret
-                  tenant: aadTenantId
-                  type: 'ActiveDirectoryOAuth'
+                  identity: externalMidId
+                  type: 'ManagedServiceIdentity'
                 }
                 body: {
                   planId: '@{body(\'${actionNames.parseSubscriptionInfo}\')?[\'Plan ID\']}'
@@ -260,6 +253,10 @@ resource workflow 'Microsoft.Logic/workflows@2019-05-01' = {
           eventGrid: {
             connectionId: eventGridConnection.id
             connectionName: eventGridConnection.name
+            connectionProperties: {
+              identity: internalMidId
+              type: 'ManagedServiceIdentity'
+            }
             id: '${subscription().id}/providers/Microsoft.Web/locations/${location}/managedApis/azureeventgrid'
           }
         }

@@ -7,6 +7,9 @@ param location string = resourceGroup().location
 param eventGridConnectionName string = 'mona-events-connection-${deploymentName}'
 param eventGridTopicName string = 'mona-events-${deploymentName}'
 
+param externalMidId string
+param internalMidId string
+
 var name = 'mona-on-subscription-canceled-${deploymentName}'
 var displayName = 'On subscription canceled'
 var description = 'This workflow is automatically triggered after Mona has been notified by the AppSource/Marketplace that a subscription has been canceled.'
@@ -200,6 +203,10 @@ resource workflow 'Microsoft.Logic/workflows@2019-05-01' = {
           eventGrid: {
             connectionId: eventGridConnection.id
             connectionName: eventGridConnection.name
+            connectionProperties: {
+              identity: internalMidId
+              type: 'ManagedServiceIdentity'
+            }
             id: '${subscription().id}/providers/Microsoft.Web/locations/${location}/managedApis/azureeventgrid'
           }
         }

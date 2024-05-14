@@ -8,22 +8,8 @@ param aadTenantId string
 @description('This Mona deployment\'s Azure Active Directory (AAD) client ID.')
 param aadClientId string
 
-@description('This Mona deployment\'s Azure Active Directory (AAD) enterprise application/principal object ID.')
-param aadPrincipalId string
-
-@description('This Mona deployment\'s Azure Active Directory (AAD) client secret.')
-@secure()
-param aadClientSecret string
-
 @description('If provided, specifies the ID of an existing app service plan that the Mona web app should be deployed to.')
 param appServicePlanId string = ''
-
-@description('This Mona deployment\'s Marketplace client Azure Active Directory (AAD) client ID.')
-param aadMpClientId string
-
-@description('This Mona deployment\'s Marketplace client Azure Active Directory (AAD) client secret.')
-@secure()
-param aadMpClientSecret string
 
 @description('Flag indicates passthroughMode is enabled by default')
 param isPassthroughModeEnabled bool = false
@@ -56,6 +42,10 @@ var logAnalyticsName = 'mona-logs-${cleanDeploymentName}'
 var appInsightsName = 'mona-app-insights-${cleanDeploymentName}'
 var appPlanName = 'mona-plan-${cleanDeploymentName}'
 var webAppName = 'mona-web-${cleanDeploymentName}'
+
+var externalMidName = 'mona-external-id-${cleanDeploymentName}'
+var internalMidName = 'mona-internal-id-${cleanDeploymentName}'
+
 var logicApps_ui = {
   en: {
     eventGridConnectionDisplayName: 'Mona Subscription Events'
@@ -63,6 +53,16 @@ var logicApps_ui = {
 }
 var logicApps = {
   eventGridConnectionName: 'mona-events-connection-${cleanDeploymentName}'
+}
+
+resource externalMid 'Microsoft.ManagedIdentity/userAssignedIdentities@2023-07-31-preview' = {
+  name: externalMidName
+  location: location
+}
+
+resource internalMid 'Microsoft.ManagedIdentity/userAssignedIdentities@2023-07-31-preview' = {
+  name: internalMidName
+  location: location
 }
 
 resource logAnalytics 'Microsoft.OperationalInsights/workspaces@2022-10-01' = {
@@ -196,8 +196,7 @@ resource storageAccountName_blobServiceName_configContainer 'Microsoft.Storage/s
   name: configContainerName
   properties: {
     publicAccess: 'None'
-  }
-  
+  } 
 }
 
 resource eventGridTopic 'Microsoft.EventGrid/topics@2020-06-01' = {
@@ -228,11 +227,17 @@ resource webApp 'Microsoft.Web/sites@2018-11-01' = {
   name: webAppName
   location: location
   kind: 'app'
+  identity: {
+    type: 'UserAssigned'
+    userAssignedIdentities: {
+      '${externalMid.id}': {}
+      '${internalMid.id}': {}
+    }
+  }
   properties: {
     serverFarmId: (empty(appServicePlanId) ? appPlan.id : appServicePlanId)
   }
   dependsOn: [
-
     appInsights
   ]
 }
@@ -252,19 +257,12 @@ resource webAppName_appsettings 'Microsoft.Web/sites/config@2020-12-01' = {
     'Identity:AdminIdentity:AadTenantId': aadTenantId
     'Identity:AdminIdentity:RoleName': 'monaadmins'
     'Identity:AppIdentity:AadClientId': aadClientId
-    'Identity:AppIdentity:AadClientSecret': aadClientSecret
-    'Identity:AppIdentity:AadPrincipalId': aadPrincipalId
     'Identity:AppIdentity:AadTenantId': aadTenantId
-    'Identity:MarketplaceIdentity:AadClientId': aadMpClientId
-    'Identity:MarketplaceIdentity:AadClientSecret': aadMpClientSecret
-    'Identity:MarketplaceIdentity:AadTenantId': aadTenantId
+    'Identity:Resources:ExternalManagedId': externalMid.id
+    'Identity:Resources:InternalManagedId': internalMid.id
     'Subscriptions:Events:EventGrid:TopicEndpoint': eventGridTopic.properties.endpoint
-    'Subscriptions:Events:EventGrid:TopicKey': listKeys(eventGridTopic.id, '2020-04-01-preview').key1
-    'Subscriptions:Staging:Cache:BlobStorage:ConnectionString': 'DefaultEndpointsProtocol=https;AccountName=${storageAccountName};AccountKey=${storageAccount.listKeys().keys[0].value};EndpointSuffix=core.windows.net'
-    'Subscriptions:Testing:Cache:BlobStorage:ConnectionString': 'DefaultEndpointsProtocol=https;AccountName=${storageAccountName};AccountKey=${storageAccount.listKeys().keys[0].value};EndpointSuffix=core.windows.net'
     'Subscriptions:Staging:Cache:BlobStorage:ContainerName': stageSubContainerName
     'Subscriptions:Testing:Cache:BlobStorage:ContainerName': testSubContainerName
-    'PublisherConfig:Store:BlobStorage:ConnectionString': 'DefaultEndpointsProtocol=https;AccountName=${storageAccountName};AccountKey=${storageAccount.listKeys().keys[0].value};EndpointSuffix=core.windows.net'
     'PublisherConfig:Store:BlobStorage:ContainerName': configContainerName
   }
 }
@@ -276,10 +274,6 @@ resource logicApps_eventGridConnection 'Microsoft.Web/connections@2016-06-01' = 
   properties: {
     displayName: logicApps_ui[language].eventGridConnectionDisplayName
     parameterValues: {
-      'token:clientId': aadClientId
-      'token:clientSecret': aadClientSecret
-      'token:TenantId': aadTenantId
-      'token:grantType': 'client_credentials'
     }
     api: {
       id: subscriptionResourceId('Microsoft.Web/locations/managedApis', location, 'azureeventgrid')
@@ -291,8 +285,12 @@ resource logicApps_eventGridConnection 'Microsoft.Web/connections@2016-06-01' = 
 }
 
 output deploymentName string = cleanDeploymentName
+output storageAccountId string = storageAccount.id
 output storageAccountName string = storageAccountName
 output webAppBaseUrl string = 'https://${webAppName}.azurewebsites.net'
 output webAppName string = webAppName
+output eventGridTopicId string = eventGridTopic.id
 output eventGridTopicName string = eventGridTopicName
 output eventGridConnectionName string = logicApps.eventGridConnectionName
+output externalMidId string = externalMid.id
+output internalMidId string = internalMid.id

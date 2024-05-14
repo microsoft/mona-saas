@@ -352,85 +352,6 @@ for i1 in {1..5}; do
     fi
 done
 
-# Create the Mona client secret...
-
-echo "$lp 🛡️   Creating Mona Azure Active Directory (AAD) client credentials..."
-
-add_mona_password_json=$(cat ./aad/add_password.json)
-
-for i2 in {1..5}; do
-    add_mona_password_response=$(curl \
-        -X POST \
-        -H "Content-Type: application/json" \
-        -H "Authorization: Bearer $graph_token" \
-        -d "$add_mona_password_json" \
-        "https://graph.microsoft.com/v1.0/applications/$mona_aad_object_id/addPassword")
-
-    mona_aad_app_secret=$(echo "$add_mona_password_response" | jq -r ".secretText")
-
-    if [[ -z $mona_aad_app_secret || $mona_aad_app_secret == null ]]; then
-        if [[ $i2 == 5 ]]; then
-            echo "$lp ❌   Failed to create Mona AAD app client credentials. Setup failed."
-            exit 1
-        else
-            sleep_for=$((2**i2))
-            echo "$lp ⚠️   Trying to create client credentials again in [$sleep_for] seconds."
-            sleep $sleep_for
-        fi
-    else
-        break
-    fi
-done
-
-echo "$lp 🛡️   Creating Mona AAD app [$mona_aad_app_name] service principal..."
-
-for i3 in {1..5}; do
-    mona_aad_sp_id=$(az ad sp create --id "$mona_aad_app_id" --query id --output tsv);
-
-    if [[ -z $mona_aad_sp_id || $mona_aad_sp_id == null ]]; then
-        if [[ $i3 == 5 ]]; then
-            echo "$lp ❌   Failed to create Mona AAD app service principal. Setup failed."
-            exit 1
-        else
-            sleep_for=$((2**i3))
-            echo "$lp ⚠️   Trying to create service principal again in [$sleep_for] seconds."
-            sleep $sleep_for
-        fi
-    else
-        break
-    fi
-done
-
-echo "$lp 🔐   Granting Mona service principal contributor access to [$resource_group_name]..."
-
-for i4 in {1..5}; do
-    az role assignment create \
-        --role "Contributor" \
-        --scope "/subscriptions/$subscription_id/resourceGroups/$resource_group_name" \
-        --assignee "$mona_aad_sp_id"
-
-    if [[ $? -ne 0 ]]; then
-        if [[ $i4 == 5 ]]; then
-            echo "$lp ❌   Failed to grant Mona service principal contributor access. Setup failed."
-            exit 1
-        else
-            sleep_for=$((2**i4))
-            echo "$lp ⚠️   Trying to grant service principal contributor access again in [$sleep_for] seconds."
-            sleep $sleep_for
-        fi
-    else
-        break
-    fi
-done
-
-mp_client_sp_name="$deployment_name-market-sp"
-
-echo "$lp 🛡️   Creating Marketplace client AAD service principal [$mp_client_sp_name]..."
-
-mp_client_sp_create_response=$(az ad sp create-for-rbac -n "$mp_client_sp_name")
-mp_client_sp_client_id=$(echo "$mp_client_sp_create_response" | jq -r ".appId")
-mp_client_sp_client_secret=$(echo "$mp_client_sp_create_response" | jq -r ".password")
-
 # Deploy the Bicep template.
 
 echo "$lp 🦾   Deploying Mona to subscription [$subscription_id] resource group [$resource_group_name]. This might take a while...";
@@ -443,25 +364,105 @@ az deployment group create \
     --template-file "./templates/basic-deploy.bicep" \
     --parameters \
         deploymentName="$deployment_name" \
-        aadMpClientId="$mp_client_sp_client_id" \
-        aadMpClientSecret="$mp_client_sp_client_secret" \
         aadTenantId="$current_user_tid" \
-        aadPrincipalId="$mona_aad_sp_id" \
         aadClientId="$mona_aad_app_id" \
-        aadClientSecret="$mona_aad_app_secret" \
         language="$language" \
         appServicePlanId="$app_service_plan_id" \
         eventVersion="$event_version" \
         isPassthroughModeEnabled="$passthrough_mode_enabled"
 
-[[ $? -eq 0 ]] && echo "$lp ✔   Mona resources successfully deployed [$az_deployment_name] to resource group [$resource_group_name].";
+[[ $? -eq 0 ]] && echo "$lp 🦾   Completing Mona deployment...";
 [[ $? -ne 0 ]] && echo "$lp ❌   Mona resource group [$resource_group_name] deployment [$az_deployment_name] has failed. Aborting setup..." && exit 1;
 
 # Get ARM deployment output variables.
 
-storage_account_name=$(az deployment group show --resource-group "$resource_group_name" --name "$az_deployment_name" --query properties.outputs.storageAccountName.value --output tsv);
-web_app_base_url=$(az deployment group show --resource-group "$resource_group_name" --name "$az_deployment_name" --query properties.outputs.webAppBaseUrl.value --output tsv);
-web_app_name=$(az deployment group show --resource-group "$resource_group_name" --name "$az_deployment_name" --query properties.outputs.webAppName.value --output tsv);
+storage_account_id=$(
+    az deployment group show \
+    --resource-group "$resource_group_name" \
+    --name "$az_deployment_name" \
+    --query properties.outputs.storageAccountId.value \
+    --output tsv);
+
+storage_account_name=$(
+    az deployment group show \
+    --resource-group "$resource_group_name" \
+    --name "$az_deployment_name" \
+    --query properties.outputs.storageAccountName.value \
+    --output tsv);
+
+event_grid_topic_id=$(
+    az deployment group show \
+    --resource-group "$resource_group_name" \
+    --name "$az_deployment_name" \
+    --query properties.outputs.eventGridTopicId.value \
+    --output tsv);
+
+web_app_base_url=$(
+    az deployment group show \
+    --resource-group "$resource_group_name" \
+    --name "$az_deployment_name" \
+    --query properties.outputs.webAppBaseUrl.value \
+    --output tsv);
+
+web_app_name=$(
+    az deployment group show \
+    --resource-group "$resource_group_name" \
+    --name "$az_deployment_name" \
+    --query properties.outputs.webAppName.value \
+    --output tsv);
+
+external_mid_id=$(
+    az deployment group show \
+    --resource-group "$resource_group_name" \
+    --name "$az_deployment_name" \
+    --query properties.outputs.externalMidId.value \
+    --output tsv);
+
+external_mid_client_id=$(
+    az identity show \
+    --ids "$external_mid_id" \
+    --query clientId \
+    --output tsv);
+
+external_mid_principal_id=$(
+    az identity show \
+    --ids "$external_mid_id" \
+    --query principalId \
+    --output tsv);
+
+internal_mid_id=$(
+    az deployment group show \
+    --resource-group "$resource_group_name" \
+    --name "$az_deployment_name" \
+    --query properties.outputs.internalMidId.value \
+    --output tsv);
+
+internal_mid_principal_id=$(
+    az identity show \
+    --ids "$internal_mid_id" \
+    --query principalId \
+    --output tsv);
+
+echo "$lp ✔   Mona resources successfully deployed [$az_deployment_name] to resource group [$resource_group_name].";
+echo "$lp 🔏   Configuring internal identity resource role assignments..."
+
+az role assignment create \
+    --role "Storage Blob Data Contributor" \
+    --assignee-object-id "$internal_mid_principal_id" \
+    --scope "$storage_account_id"
+
+az role assignment create \
+    --role "EventGrid Data Contributor" \
+    --assignee-object-id "$internal_mid_principal_id" \
+    --scope "$event_grid_topic_id"
+
+az webapp config appsettings set \
+    -g "$resource_group_name" \
+    -n "$web_app_name" \
+    --settings \
+        "Identity:Resources:ExternalClientId=$external_mid_client_id" \
+        "Identity:Resources:ExternalPrincipalId=$external_mid_principal_id" \
+        "Identity:Resources:InternalPrincipalId=$internal_mid_principal_id"
 
 # Deploy integration pack.
 
@@ -488,9 +489,8 @@ else
         --template-file "$pack_path" \
         --parameters \
             deploymentName="$deployment_name" \
-            aadClientId="$mp_client_sp_client_id" \
-            aadClientSecret="$mp_client_sp_client_secret" \
-            aadTenantId="$current_user_tid"
+            externalMidId="$external_mid_id" \
+            internalMidId="$internal_mid_id"
 
     [[ $? -eq 0 ]] && echo "$lp ✔   Integration pack [$integration_pack ($pack_path)] deployed.";
     [[ $? -ne 0 ]] && echo "$lp ⚠️   Integration pack [$integration_pack ($pack_path)] deployment failed."
