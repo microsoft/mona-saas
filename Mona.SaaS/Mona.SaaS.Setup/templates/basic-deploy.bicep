@@ -52,7 +52,7 @@ var logicApps_ui = {
   }
 }
 var logicApps = {
-  eventGridConnectionName: 'mona-events-connection-${cleanDeploymentName}'
+  eventGridConnectionName: 'azureeventgrid'
 }
 
 resource externalMid 'Microsoft.ManagedIdentity/userAssignedIdentities@2023-07-31-preview' = {
@@ -277,6 +277,7 @@ resource logicApps_eventGridConnection 'Microsoft.Web/connections@2016-06-01' = 
     api: {
       name: logicApps.eventGridConnectionName
       id: subscriptionResourceId('Microsoft.Web/locations/managedApis', location, logicApps.eventGridConnectionName)
+      type: 'Microsoft.Web/location/managedApis'
     }
   }
   dependsOn: [
