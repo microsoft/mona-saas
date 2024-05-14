@@ -558,9 +558,6 @@ echo
 echo "$lp By default, Mona will not automatically activate subscriptions with the Marketplace. See this doc... "
 echo "$lp [ https://github.com/microsoft/mona-saas/tree/main/docs#how-do-i-notify-the-marketplace-that-a-subscription-has-been-activated ]"
 echo
-echo "$lp Check to make sure your logic apps are connected to Mona. See this doc... "
-echo "$lp [ https://github.com/microsoft/mona-saas/tree/main/docs#why-arent-my-mona-events-triggering-my-logic-apps ]"
-echo
 echo "$lp For additional information, review our frequently asked questions (FAQs) at... "
 echo "$lp [ https://github.com/microsoft/mona-saas/tree/main/docs ]"
 

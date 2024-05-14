@@ -270,13 +270,13 @@ resource webAppName_appsettings 'Microsoft.Web/sites/config@2020-12-01' = {
 resource logicApps_eventGridConnection 'Microsoft.Web/connections@2016-06-01' = {
   name: logicApps.eventGridConnectionName
   location: location
-
   properties: {
     displayName: logicApps_ui[language].eventGridConnectionDisplayName
     parameterValues: {
     }
     api: {
-      id: subscriptionResourceId('Microsoft.Web/locations/managedApis', location, 'azureeventgrid')
+      name: logicApps.eventGridConnectionName
+      id: subscriptionResourceId('Microsoft.Web/locations/managedApis', location, logicApps.eventGridConnectionName)
     }
   }
   dependsOn: [
