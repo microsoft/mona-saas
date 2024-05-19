@@ -208,8 +208,10 @@ resource workflow 'Microsoft.Logic/workflows@2019-05-01' = {
             connectionId: eventGridConnection.id
             connectionName: eventGridConnection.name
             connectionProperties: {
-              identity: managedIdId
-              type: 'ManagedServiceIdentity'
+              authentication: {
+                identity: managedIdId
+                type: 'ManagedServiceIdentity'
+              }
             }
             id: '${subscription().id}/providers/Microsoft.Web/locations/${location}/managedApis/azureeventgrid'
           }
