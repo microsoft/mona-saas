@@ -20,8 +20,6 @@ var actionNames = {
   notifyMarketplace: 'Notify_the_marketplace'
 }
 
-var marketplaceApiAuthAudience = '20e940b3-4c77-4b0b-9a53-9e16a1b010a7'
-
 resource eventGridConnection 'Microsoft.Web/connections@2016-06-01' existing = {
   name: eventGridConnectionName
 }
@@ -37,6 +35,12 @@ resource workflow 'Microsoft.Logic/workflows@2019-05-01' = {
     'mona:name': displayName
     'mona:description': description
     'mona:event-type': eventType
+  }
+  identity: {
+    type: 'UserAssigned'
+    userAssignedIdentities: {
+      '${managedIdId}': {}
+    }
   }
   properties: {
     state: 'Enabled'
