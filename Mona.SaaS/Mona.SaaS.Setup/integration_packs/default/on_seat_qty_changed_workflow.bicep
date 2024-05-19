@@ -2,13 +2,9 @@ param deploymentName string
 
 param location string = resourceGroup().location
 
-param externalMidId string
-param internalMidId string
-
-// For subscribing to this Mona deployment's event grid topic...
-
-param eventGridConnectionName string = 'mona-events-connection-${deploymentName}'
-param eventGridTopicName string = 'mona-events-${deploymentName}'
+param eventGridConnectionName string
+param eventGridTopicName string
+param managedIdId string
 
 var name = 'mona-on-subscription-seat-qty-changed-${deploymentName}'
 var displayName = 'On subscription seat quantity changed'
@@ -202,51 +198,6 @@ resource workflow 'Microsoft.Logic/workflows@2019-05-01' = {
           }
           type: 'Scope'
         }
-        '${actionNames.notifyMarketplaceCondition}': {
-          actions: {
-            '${actionNames.notifyMarketplace}': {
-              inputs: {
-                authentication: {
-                  audience: marketplaceApiAuthAudience
-                  identity: externalMidId
-                  type: 'ManagedServiceIdentity'
-                }
-                body: {
-                  status: 'Success'
-                }
-                headers: {
-                  'content-type': 'application/json'
-                }
-                method: 'PATCH'
-                uri: 'https://marketplaceapi.microsoft.com/api/saas/subscriptions/@{body(\'${actionNames.parseSubscriptionInfo}\')?[\'Subscription ID\']}/operations/@{body(\'${actionNames.parseEventInfo}\')?[\'Operation ID\']}?api-version=2018-08-31'
-              }
-              runAfter: {}
-              type: 'Http'
-            }
-          }
-          expression: {
-            and: [
-              {
-                equals: [
-                  true
-                  true
-                ]
-              }
-              {
-                equals: [
-                  '@body(\'${actionNames.parseSubscriptionInfo}\')?[\'Is Test Subscription?\']'
-                  false
-                ]
-              }
-            ]
-          }
-          runAfter: {
-            '${actionNames.yourIntegrationLogic}': [
-              'Succeeded'
-            ]
-          }
-          type: 'If'
-        }
       }
     }
     parameters: {
@@ -256,7 +207,7 @@ resource workflow 'Microsoft.Logic/workflows@2019-05-01' = {
             connectionId: eventGridConnection.id
             connectionName: eventGridConnection.name
             connectionProperties: {
-              identity: internalMidId
+              identity: managedIdId
               type: 'ManagedServiceIdentity'
             }
             id: '${subscription().id}/providers/Microsoft.Web/locations/${location}/managedApis/azureeventgrid'

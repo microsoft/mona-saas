@@ -2,11 +2,9 @@ param deploymentName string
 
 param location string = resourceGroup().location
 
-param externalMidId string
-param internalMidId string
-
-param eventGridConnectionName string = 'mona-events-connection-${deploymentName}'
-param eventGridTopicName string = 'mona-events-${deploymentName}'
+param eventGridConnectionName string
+param eventGridTopicName string
+param managedIdId string
 
 var name = 'mona-on-subscription-suspended-${deploymentName}'
 var displayName = 'On subscription suspended'
@@ -202,7 +200,7 @@ resource workflow 'Microsoft.Logic/workflows@2019-05-01' = {
             connectionId: eventGridConnection.id
             connectionName: eventGridConnection.name
             connectionProperties: {
-              identity: internalMidId
+              identity: managedIdId
               type: 'ManagedServiceIdentity'
             }
             id: '${subscription().id}/providers/Microsoft.Web/locations/${location}/managedApis/azureeventgrid'

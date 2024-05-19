@@ -397,6 +397,20 @@ event_grid_topic_id=$(
     --query properties.outputs.eventGridTopicId.value \
     --output tsv);
 
+event_grid_topic_name=$(
+    az deployment group show \
+    --resource-group "$resource_group_name" \
+    --name "$az_deployment_name" \
+    --query properties.outputs.eventGridTopicName.value \
+    --output tsv);
+
+event_grid_connection_name=$(
+    az deployment group show \
+    --resource-group "$resource_group_name" \
+    --name "$az_deployment_name" \
+    --query properties.outputs.eventGridConnectionName.value \
+    --output tsv);
+
 web_app_base_url=$(
     az deployment group show \
     --resource-group "$resource_group_name" \
@@ -437,6 +451,13 @@ internal_mid_id=$(
     --query properties.outputs.internalMidId.value \
     --output tsv);
 
+internal_mid_name=$(
+    az deployment group show \
+    --resource-group "$resource_group_name" \
+    --name "$az_deployment_name" \
+    --query properties.outputs.internalMidName.value \
+    --output tsv);
+
 internal_mid_principal_id=$(
     az identity show \
     --ids "$internal_mid_id" \
@@ -444,7 +465,7 @@ internal_mid_principal_id=$(
     --output tsv);
 
 echo "$lp ✔   Mona resources successfully deployed [$az_deployment_name] to resource group [$resource_group_name].";
-echo "$lp 🔏   Configuring internal identity resource role assignments..."
+echo "$lp 🔏   Configuring internal identity [$internal_mid_name] resource role assignments..."
 
 az role assignment create \
     --role "Storage Blob Data Contributor" \
@@ -489,8 +510,9 @@ else
         --template-file "$pack_path" \
         --parameters \
             deploymentName="$deployment_name" \
-            externalMidId="$external_mid_id" \
-            internalMidId="$internal_mid_id"
+            eventGridConnectionName="$event_grid_connection_name" \
+            eventGridTopicName="$event_grid_topic_name" \
+            managedIdId="$internal_mid_id"
 
     [[ $? -eq 0 ]] && echo "$lp ✔   Integration pack [$integration_pack ($pack_path)] deployed.";
     [[ $? -ne 0 ]] && echo "$lp ⚠️   Integration pack [$integration_pack ($pack_path)] deployment failed."

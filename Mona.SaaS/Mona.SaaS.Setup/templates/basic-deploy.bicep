@@ -46,14 +46,8 @@ var webAppName = 'mona-web-${cleanDeploymentName}'
 var externalMidName = 'mona-external-id-${cleanDeploymentName}'
 var internalMidName = 'mona-internal-id-${cleanDeploymentName}'
 
-var logicApps_ui = {
-  en: {
-    eventGridConnectionDisplayName: 'Mona Subscription Events'
-  }
-}
-var logicApps = {
-  eventGridConnectionName: 'azureeventgrid'
-}
+var eventGridConnectionName = 'mona-eventgrid-connection-${cleanDeploymentName}'
+var eventGridConnectionDisplayName = 'Mona SaaS Subscription Events'
 
 resource externalMid 'Microsoft.ManagedIdentity/userAssignedIdentities@2023-07-31-preview' = {
   name: externalMidName
@@ -267,31 +261,34 @@ resource webAppName_appsettings 'Microsoft.Web/sites/config@2020-12-01' = {
   }
 }
 
-resource logicApps_eventGridConnection 'Microsoft.Web/connections@2016-06-01' = {
-  name: logicApps.eventGridConnectionName
+resource eventGridConnection 'Microsoft.Web/connections@2016-06-01' = {
+  name: eventGridConnectionName
   location: location
+  kind: 'V1'
   properties: {
-    displayName: logicApps_ui[language].eventGridConnectionDisplayName
-    parameterValues: {
-    }
+    customParameterValues: {}
+    displayName: eventGridConnectionDisplayName
+    parameterValueType: 'Alternative'
     api: {
-      name: logicApps.eventGridConnectionName
-      id: subscriptionResourceId('Microsoft.Web/locations/managedApis', location, logicApps.eventGridConnectionName)
-      type: 'Microsoft.Web/location/managedApis'
+      id: '${subscription().id}/providers/Microsoft.Web/locations/${eventGridTopic.location}/managedApis/azureeventgrid'
     }
   }
-  dependsOn: [
-    eventGridTopic
-  ]
 }
 
 output deploymentName string = cleanDeploymentName
+
 output storageAccountId string = storageAccount.id
 output storageAccountName string = storageAccountName
+
 output webAppBaseUrl string = 'https://${webAppName}.azurewebsites.net'
 output webAppName string = webAppName
+
 output eventGridTopicId string = eventGridTopic.id
 output eventGridTopicName string = eventGridTopicName
-output eventGridConnectionName string = logicApps.eventGridConnectionName
+output eventGridConnectionId string = eventGridConnection.id
+output eventGridConnectionName string = eventGridConnectionName
+
 output externalMidId string = externalMid.id
 output internalMidId string = internalMid.id
+output externalMidName string = externalMidName
+output internalMidName string = internalMidName
