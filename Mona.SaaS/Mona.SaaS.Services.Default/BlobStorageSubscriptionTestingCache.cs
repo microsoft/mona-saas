@@ -1,12 +1,15 @@
 ﻿// Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
+using Azure.Core;
+using Azure.Identity;
 using Azure.Storage.Blobs;
 using Azure.Storage.Blobs.Models;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Mona.SaaS.Core.Interfaces;
 using Mona.SaaS.Core.Models;
+using Mona.SaaS.Core.Models.Configuration;
 using Newtonsoft.Json;
 using System;
 using System.ComponentModel.DataAnnotations;
@@ -23,12 +26,20 @@ namespace Mona.SaaS.Services.Default
 
         public BlobStorageSubscriptionTestingCache(
             IOptionsSnapshot<Configuration> configSnapshot,
+            IOptionsSnapshot<IdentityConfiguration> identityConfigSnapshot,
             ILogger<BlobStorageSubscriptionTestingCache> logger)
         {
             var config = configSnapshot.Value;
-            var serviceClient = new BlobServiceClient(config.ConnectionString);
+
+            var identityConfig = identityConfigSnapshot.Value;
+            var internalManagedId = new ResourceIdentifier(identityConfig.ManagedIdentities.InternalManagedId);
+
+            var serviceClient = new BlobServiceClient(
+                new Uri($"https://{config.StorageAccountName}.blob.core.windows.net"),
+                new DefaultAzureCredential(new DefaultAzureCredentialOptions { ManagedIdentityResourceId = internalManagedId }));
 
             containerClient = serviceClient.GetBlobContainerClient(config.ContainerName);
+
             this.logger = logger;
         }
 
@@ -109,7 +120,7 @@ namespace Mona.SaaS.Services.Default
         public class Configuration
         {
             [Required]
-            public string ConnectionString { get; set; }
+            public string StorageAccountName { get; set; }
 
             public string ContainerName { get; set; } = "test-subscriptions";
         }

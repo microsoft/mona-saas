@@ -7,61 +7,6 @@
 
 @{
     Layout = null;
-
-    string GetLogicAppStatusIconPath(Mona.AutoIntegration.PluginStatus pluginStatus)
-    {
-        switch (pluginStatus)
-        {
-            case Mona.AutoIntegration.PluginStatus.Enabled: return "/img/check-circle-fill.svg";
-            case Mona.AutoIntegration.PluginStatus.Disabled: return "/img/x-circle-fill.svg";
-            default: return "/img/question-circle-fill.svg";
-        }
-    }
-
-    LocalizedHtmlString GetLogicAppStatusName(Mona.AutoIntegration.PluginStatus pluginStatus)
-    {
-        switch (pluginStatus)
-        {
-            case Mona.AutoIntegration.PluginStatus.Enabled: return Localizer["Enabled"];
-            case Mona.AutoIntegration.PluginStatus.Disabled: return Localizer["Disabled"];
-            default: return Localizer["Not Found"];
-        }
-    }
-
-    LocalizedHtmlString GetLogicAppStatusIconAltText(Mona.AutoIntegration.PluginStatus pluginStatus)
-    {
-        switch (pluginStatus)
-        {
-            case Mona.AutoIntegration.PluginStatus.Enabled: return Localizer["Checkmark Enabled"];
-            case Mona.AutoIntegration.PluginStatus.Disabled: return Localizer["X mark Disabled"];
-            default: return Localizer["question mark Not Found"];
-        }
-    }
-
-    LocalizedHtmlString GetSubscriptionEventTitle(Mona.SaaS.Web.Models.Admin.PluginModel pluginModel)
-    {
-        switch (pluginModel.TriggerEventType)
-        {
-            case EventTypes.SubscriptionCanceled: return Localizer["On subscription canceled"];
-            case EventTypes.SubscriptionPlanChanged: return Localizer["On subscription plan changed"];
-            case EventTypes.SubscriptionPurchased: return Localizer["On subscription purchased"];
-            case EventTypes.SubscriptionReinstated: return Localizer["On subscription reinstated"];
-            case EventTypes.SubscriptionSeatQuantityChanged: return Localizer["On subscription seat quantity changed"];
-            case EventTypes.SubscriptionSuspended: return Localizer["On subscription suspended"];
-            case EventTypes.SubscriptionRenewed: return Localizer["On subscription renewed"];
-
-            default: return null;
-        }
-    }
-
-    LocalizedHtmlString GetPluginTypeName(Mona.SaaS.Web.Models.Admin.PluginModel pluginModel)
-    {
-        switch (pluginModel.PluginType)
-        {
-            case "Microsoft.Logic/workflows": return Localizer["Logic App"];
-            default: return Localizer["Unknown"];
-        }
-    }
 }
 
 <html lang="@Localizer["en"]">
@@ -122,9 +67,6 @@
                             </li>
                             <li class="ms-Pivot-link" data-content="passthrough" title="PassThrough" tabindex="1">
                             @Localizer["Passthrough mode"]
-                            </li>
-                            <li class="ms-Pivot-link" data-content="subscription" title="Subscription" tabindex="1">
-                            @Localizer["Subscription event handlers"]
                             </li>
                             <li class="ms-Pivot-link" data-content="configuration" title="Configuration" tabindex="1">
                             @Localizer["Mona SaaS configuration settings"]
@@ -221,66 +163,7 @@
 
                     </div>
 
-                    <!--Subscription event handlers-->
-                    <div class="ms-Pivot-content" data-content="subscription">
-                        <p class="ms-font-m">
-                            @Localizer[
-                            "These logic apps are automatically provisioned during the Mona SaaS setup process. Each logic app handles a " +
-                            "specific kind of subscription event (subscription purchased, cancelled, reinstated, etc.) From here, you can " +
-                            "see the state of each logic app, edit workflows, and manage other app resources."]
-                        </p>
-                         <div class="ms-MessageBar">
-                            <div class="ms-MessageBar-content">
-                                <div class="ms-MessageBar-icon"><i class="ms-Icon ms-Icon--Info"></i></div>
-                                <div class="ms-MessageBar-text">
-                                        @Localizer[  "New to logic apps? No problem! Check out <a class=\"alert-link\" target=\"_blank\" href=\"{0}\">these docs</a> for more information on authoring your first workflows.",
-                                        "https://docs.microsoft.com/en-us/azure/logic-apps/quickstart-create-first-logic-app-workflow"]
-                                </div>
-                            </div>
-                        </div><br />
-                        
-                         <div class="ms-MessageBar">
-                            <div class="ms-MessageBar-content">
-                                <div class="ms-MessageBar-icon"><i class="ms-Icon ms-Icon--Info"></i></div>
-                                <div class="ms-MessageBar-text">
-                                    @Localizer[
-                                    "Want to handle these events somewhere other than logic apps? Subscribe to <a class=\"alert-link\" href=\"{0}\" target=\"_blank\">this event grid topic</a> from anywhere — " +
-                                    "<a class=\"alert-link\" target=\"_blank\" href=\"{1}\">Azure Functions</a>, <a class=\"alert-link\" target=\"_blank\" href=\"{2}\">Power Automate</a>, or even " +
-                                    "<a class=\"alert-link\" target=\"_blank\" href=\"{3}\">your own code</a>.",
-                                    Model.EventGridTopicOverviewUrl,
-                                    "https://docs.microsoft.com/azure/azure-functions/functions-bindings-event-grid-trigger",
-                                    "https://flow.microsoft.com/connectors/shared_azureeventgrid/azure-event-grid/",
-                                    "https://docs.microsoft.com/azure/event-grid/webhook-event-delivery"]
-                                </div>
-                            </div>
-                        </div><br />
-                        <table class="table">
-                            <tbody>
-                                @foreach (var plugin in Model.IntegrationPlugins.OrderBy(p => p.Status).ThenBy(p => p.DisplayName))
-                                {
-                                    <tr>
-                                        <td class="align-middle text-center">
-                                            <img src="@GetLogicAppStatusIconPath(plugin.Status)" alt="@GetLogicAppStatusIconAltText(plugin.Status)" width="32" height="32" class="mx-auto d-block" style="margin-bottom: 5px" />
-                                            <span class="badge bg-dark text-light">@GetPluginTypeName(plugin)</span><br/><p class="ms-font-s">@GetLogicAppStatusName(plugin.Status)</p>
-                                        </td>
-                                        <td class="align-middle">
-                                            <label class="ms-Label is-disabled">@GetSubscriptionEventTitle(plugin)</label>
-                                            <p class="ms-font-l">@plugin.DisplayName</p>
-                                            <p class="ms-font-m">@plugin.Description</p>
-                                            <a role="button" class="ms-Button  ms-Button--primary" href="@plugin.EditorUrl" target="_blank" style="color: transparent;">
-                                                <span class="ms-Button-label">@Localizer["Edit workflow"]</span>
-                                                <i class="ms-Icon ms-Icon--DoubleChevronRight" style="font-size: 10px;padding-left: 5px;color:white;"></i>
-                                            </a>
-                                            <a role="button" class="ms-Button" href="@plugin.ManagementUrl" target="_blank" style="color: transparent;">
-                                                <span class="ms-Button-label">@Localizer["Manage"]</span>
-                                                <i class="ms-Icon ms-Icon--DoubleChevronRight" style="font-size: 10px;padding-left: 5px;color:black;"></i>
-                                            </a>
-                                        </td>
-                                    </tr>
-                                }
-                            </tbody>
-                        </table>
-                    </div>
+                   <!-- Azure configuration -->
                     <div class="ms-Pivot-content" data-content="configuration">
                         <p class="ms-font-m">
                             @Localizer[

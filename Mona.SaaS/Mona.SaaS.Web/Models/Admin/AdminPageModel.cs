@@ -21,8 +21,6 @@ namespace Mona.SaaS.Web.Models
         public string AzureResourceGroupName { get; set; }
         public string AzureSubscriptionId { get; set; }
 
-        public List<PluginModel> IntegrationPlugins { get; set; } = new List<PluginModel>();
-
         public PartnerCenterTechnicalDetails PartnerCenterTechnicalDetails { get; set; }
     }
 }

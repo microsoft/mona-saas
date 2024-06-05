@@ -208,7 +208,7 @@ namespace Mona.SaaS.Services.Default
             }
             catch (Exception ex)
             {
-                logger.LogError($"An error occurred while attempting to resolve a subscription.", ex);
+                logger.LogError("An error occurred while attempting to resolve a subscription.", ex);
 
                 throw;
             }
@@ -359,11 +359,8 @@ namespace Mona.SaaS.Services.Default
             var tokenRequestContext = new TokenRequestContext(
                 new string[] { "20e940b3-4c77-4b0b-9a53-9e16a1b010a7/.default" });
 
-            var credential = new ClientSecretCredential(
-                identityConfig.MarketplaceIdentity.AadTenantId,
-                identityConfig.MarketplaceIdentity.AadClientId,
-                identityConfig.MarketplaceIdentity.AadClientSecret
-            );
+            var credential = new DefaultAzureCredential(new DefaultAzureCredentialOptions
+                { ManagedIdentityClientId = identityConfig.ManagedIdentities.ExternalClientId });
 
             var tokenResponse = await credential.GetTokenAsync(tokenRequestContext);
 

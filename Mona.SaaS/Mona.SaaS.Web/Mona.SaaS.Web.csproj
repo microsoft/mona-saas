@@ -8,7 +8,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Azure.Core" Version="1.36.0" />
+    <PackageReference Include="Azure.Core" Version="1.38.0" />
     <PackageReference Include="Azure.Identity" Version="1.10.4" />
     <Compile Remove="Resources\**" />
     <Content Remove="Resources\**" />
@@ -34,7 +34,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Mona.AutoIntegration\Mona.AutoIntegration.csproj" />
     <ProjectReference Include="..\Mona.SaaS.Core\Mona.SaaS.Core.csproj" />
     <ProjectReference Include="..\Mona.SaaS.Services.Default\Mona.SaaS.Services.Default.csproj" />
   </ItemGroup>

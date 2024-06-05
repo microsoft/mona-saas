@@ -1,13 +1,14 @@
 ﻿// Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-using Microsoft.Azure.EventGrid;
-using Microsoft.Azure.EventGrid.Models;
+using Azure.Core;
+using Azure.Identity;
+using Azure.Messaging.EventGrid;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Mona.SaaS.Core.Interfaces;
+using Mona.SaaS.Core.Models.Configuration;
 using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Threading.Tasks;
 
@@ -16,19 +17,23 @@ namespace Mona.SaaS.Services.Default
     public class EventGridSubscriptionEventPublisher : ISubscriptionEventPublisher
     {
         private readonly ILogger logger;
-        private readonly EventGridClient eventGridClient;
+        private readonly EventGridPublisherClient eventGridClient;
         private readonly string topicHostName;
 
         public EventGridSubscriptionEventPublisher(
+            IOptionsSnapshot<IdentityConfiguration> identityConfigSnapshot,
             ILogger<EventGridSubscriptionEventPublisher> logger,
             IOptions<Configuration> optionsAccessor)
         {
             this.logger = logger;
 
             var options = optionsAccessor.Value;
+            var identityConfig = identityConfigSnapshot.Value;
+            var internalManagedId = new ResourceIdentifier(identityConfig.ManagedIdentities.InternalManagedId);
 
-            eventGridClient = new EventGridClient(new TopicCredentials(options.TopicKey));
-            topicHostName = new Uri(options.TopicEndpoint).Host;
+            eventGridClient = new EventGridPublisherClient(
+                new Uri(options.TopicEndpoint),
+                new DefaultAzureCredential(new DefaultAzureCredentialOptions { ManagedIdentityResourceId = internalManagedId }));
         }
 
         public async Task<bool> IsHealthyAsync()
@@ -36,14 +41,12 @@ namespace Mona.SaaS.Services.Default
             try
             {
                 var healthEvent = new EventGridEvent(
-                    Guid.NewGuid().ToString(),
                     "mona/saas/health",
-                    new { Message = "Please ignore. This is an automated health check event." },
                     Core.Constants.EventTypes.CheckingHealth,
-                    DateTime.UtcNow,
-                    Core.Constants.EventTypes.CheckingHealth);
+                    Core.Constants.EventTypes.CheckingHealth,
+                    new { Message = "Please ignore. This is an automated health check event." });
 
-                await eventGridClient.PublishEventsAsync(topicHostName, new List<EventGridEvent> { healthEvent });
+                await eventGridClient.SendEventAsync(healthEvent);
 
                 return true;
             }
@@ -72,15 +75,13 @@ namespace Mona.SaaS.Services.Default
 
             try
             {
-                var eventGridEvent = new EventGridEvent(
-                    subscriptionEvent.EventId,
+                var subEvent = new EventGridEvent(
                     $"mona/saas/subscriptions/{subscriptionEvent.SubscriptionId}",
-                    subscriptionEvent,
                     subscriptionEvent.EventType,
-                    DateTime.UtcNow,
-                    subscriptionEvent.EventVersion);
+                    subscriptionEvent.EventVersion,
+                    subscriptionEvent);
 
-                await eventGridClient.PublishEventsAsync(topicHostName, new List<EventGridEvent> { eventGridEvent });
+                await eventGridClient.SendEventAsync(subEvent);
             }
             catch (Exception ex)
             {
@@ -94,9 +95,6 @@ namespace Mona.SaaS.Services.Default
         {
             [Required]
             public string TopicEndpoint { get; set; }
-
-            [Required]
-            public string TopicKey { get; set; }
         }
     }
 }

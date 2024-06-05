@@ -3,18 +3,13 @@
 
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Azure.Management.ResourceManager.Fluent;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using Mona.AutoIntegration.Interrogators;
 using Mona.SaaS.Core.Interfaces;
 using Mona.SaaS.Core.Models.Configuration;
 using Mona.SaaS.Web.Models;
 using Mona.SaaS.Web.Models.Admin;
 using System;
-using System.Collections.Generic;
-using System.Globalization;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace Mona.SaaS.Web.Controllers
@@ -59,7 +54,6 @@ namespace Mona.SaaS.Web.Controllers
                     AzureSubscriptionId = this.deploymentConfig.AzureSubscriptionId,
                     AzureResourceGroupName = this.deploymentConfig.AzureResourceGroupName,
                     EventGridTopicOverviewUrl = GetEventGridTopicUrl(),
-                    IntegrationPlugins = (await GetAvailableIntegrationPluginModels()).ToList(),
                     ConfigurationSettingsUrl = GetConfigurationSettingsEditorUrl(),
                     PartnerCenterTechnicalDetails = GetPartnerCenterTechnicalDetails(),
                     ResourceGroupOverviewUrl = GetResourceGroupUrl(),
@@ -100,44 +94,10 @@ namespace Mona.SaaS.Web.Controllers
         private PartnerCenterTechnicalDetails GetPartnerCenterTechnicalDetails() =>
             new PartnerCenterTechnicalDetails
             {
-                AadApplicationId = this.identityConfig.MarketplaceIdentity.AadClientId,
-                AadTenantId = this.identityConfig.MarketplaceIdentity.AadTenantId,
+                AadApplicationId = this.identityConfig.ManagedIdentities.ExternalClientId,
+                AadTenantId = this.identityConfig.AdminIdentity.AadTenantId,
                 LandingPageUrl = Url.RouteUrl("landing", null, Request.Scheme),
                 WebhookUrl = Url.RouteUrl("webhook", null, Request.Scheme)
             };
-
-        private async Task<IEnumerable<PluginModel>> GetAvailableIntegrationPluginModels()
-        {
-            var locale = CultureInfo.CurrentUICulture.Name;
-
-            var azCredentials = SdkContext.AzureCredentialsFactory.FromServicePrincipal(
-                identityConfig.AppIdentity.AadClientId,
-                identityConfig.AppIdentity.AadClientSecret,
-                identityConfig.AppIdentity.AadTenantId,
-                AzureEnvironment.AzureGlobalCloud);
-
-            var logicAppInterrogator = new LogicAppPluginInterrogator();
-
-            var plugins = await logicAppInterrogator.InterrogateResourceGroupAsync(
-                azCredentials, this.deploymentConfig.AzureSubscriptionId, this.deploymentConfig.AzureResourceGroupName);
-
-            var pluginModels = plugins
-                .Select(p => new PluginModel
-                {
-                    Description = p.Description.GetLocalPropertyValue(locale),
-                    DisplayName = p.DisplayName.GetLocalPropertyValue(locale),
-                    EditorUrl = p.EditorUrl,
-                    Id = p.Id,
-                    ManagementUrl = p.ManagementUrl,
-                    PluginType = p.PluginType,
-                    Status = p.Status,
-                    TriggerEventType = p.TriggerEventType,
-                    TriggerEventVersion = p.TriggerEventVersion,
-                    Version = p.Version
-                })
-                .ToList();
-
-            return pluginModels;
-        }
     }
 }
