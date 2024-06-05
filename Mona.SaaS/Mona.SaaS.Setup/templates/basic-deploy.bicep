@@ -260,8 +260,11 @@ resource webAppName_appsettings 'Microsoft.Web/sites/config@2020-12-01' = {
     'Identity:Resources:InternalManagedId': internalMid.id
     'Subscriptions:Events:EventGrid:TopicEndpoint': eventGridTopic.properties.endpoint
     'Subscriptions:Staging:Cache:BlobStorage:ContainerName': stageSubContainerName
+    'Subscriptions:Staging:Cache:BlobStorage:StorageAccountName': storageAccountName
     'Subscriptions:Testing:Cache:BlobStorage:ContainerName': testSubContainerName
+    'Subscriptions:Testing:Cache:BlobStorage:StorageAccountName': storageAccountName
     'PublisherConfig:Store:BlobStorage:ContainerName': configContainerName
+    'PublisherConfig:Store:BlobStorage:StorageAccountName': storageAccountName
   }
 }
 
