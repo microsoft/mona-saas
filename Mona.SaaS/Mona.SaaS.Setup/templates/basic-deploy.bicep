@@ -92,7 +92,7 @@ resource appInsights 'Microsoft.Insights/components@2020-02-02' = {
   }
 }
 
-resource storageAccount 'Microsoft.Storage/storageAccounts@2021-01-01' = {
+resource storageAccount 'Microsoft.Storage/storageAccounts@2023-05-01' = {
   name: storageAccountName
   location: location
   sku: {
@@ -101,6 +101,9 @@ resource storageAccount 'Microsoft.Storage/storageAccounts@2021-01-01' = {
   kind: 'StorageV2'
   properties: {
     accessTier: 'Hot'
+    supportsHttpsTrafficOnly: true
+    allowBlobPublicAccess: false
+    allowSharedKeyAccess: false
   }
 }
 
@@ -193,12 +196,13 @@ resource storageAccountName_blobServiceName_configContainer 'Microsoft.Storage/s
   } 
 }
 
-resource eventGridTopic 'Microsoft.EventGrid/topics@2020-06-01' = {
+resource eventGridTopic 'Microsoft.EventGrid/topics@2024-06-01-preview' = {
   name: eventGridTopicName
   location: location
   properties: {
     inputSchema: 'EventGridSchema'
     publicNetworkAccess: 'Enabled'
+    disableLocalAuth: true
   }
 }
 
