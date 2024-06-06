@@ -175,18 +175,7 @@ namespace Mona.SaaS.Web.Controllers
             var redirectUrl = publisherConfig.SubscriptionPurchaseConfirmationUrl
                 .WithSubscriptionId(subscription.SubscriptionId);
 
-            if (this.deploymentConfig.SendSubscriptionDetailsToPurchaseConfirmationPage)
-            {
-                // Stage the subscription so we can pass the details along to the purchase confirmation page...
-
-                var subToken = await this.subscriptionStagingCache.PutSubscriptionAsync(subscription);
-
-                // The web app being redirected to must know the name of the storage account (https://*.blob.core.windows.net) to be
-                // able to use the SAS fragment that we provide. This prevents bad actors from either reading the subscription details
-                // from blob storage or injecting their own false subscription info.
-
-                redirectUrl = AppendSubscriptionAccessTokenToUrl(redirectUrl, subToken);
-            }
+            await subscriptionStagingCache.PutSubscriptionAsync(subscription);
 
             this.logger.LogInformation($"Subscription [{subscription.SubscriptionId}] purchase confirmed. Redirecting user to [{redirectUrl}]...");
 
@@ -307,18 +296,7 @@ namespace Mona.SaaS.Web.Controllers
 
                             var redirectUrl = publisherConfig.SubscriptionConfigurationUrl.WithSubscriptionId(subscription.SubscriptionId);
 
-                            if (this.deploymentConfig.SendSubscriptionDetailsToSubscriptionConfigurationPage)
-                            {
-                                // Stage the subscription so we can pass the details along to the configuration page...
-
-                                var subToken = await this.subscriptionStagingCache.PutSubscriptionAsync(subscription);
-
-                                // The web app being redirected to must know the name of the storage account (https://*.blob.core.windows.net) to be
-                                // able to use the SAS fragment that we provide. This prevents bad actors from either reading the subscription details
-                                // from blob storage or injecting their own false subscription info.
-
-                                redirectUrl = AppendSubscriptionAccessTokenToUrl(redirectUrl, subToken);
-                            }
+                            await this.subscriptionStagingCache.PutSubscriptionAsync(subscription);
 
                             this.logger.LogInformation(
                                 $"Subscription [{subscription.SubscriptionId}] is known to Mona. " +

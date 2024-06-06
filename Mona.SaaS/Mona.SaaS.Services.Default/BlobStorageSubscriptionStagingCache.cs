@@ -6,7 +6,6 @@ namespace Mona.SaaS.Services.Default
     using Azure.Core;
     using Azure.Identity;
     using Azure.Storage.Blobs;
-    using Azure.Storage.Sas;
     using Microsoft.Extensions.Logging;
     using Microsoft.Extensions.Options;
     using Mona.SaaS.Core.Interfaces;
@@ -59,7 +58,7 @@ namespace Mona.SaaS.Services.Default
             }
         }
 
-        public async Task<string> PutSubscriptionAsync(Subscription subscription)
+        public async Task PutSubscriptionAsync(Subscription subscription)
         {
             if (subscription == null)
             {
@@ -72,17 +71,6 @@ namespace Mona.SaaS.Services.Default
                 var expiryTime = DateTime.UtcNow.AddSeconds(this.config.TokenExpirationInSeconds);
 
                 await blobClient.UploadAsync(new MemoryStream(Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(subscription))), overwrite: true);
-
-                var sasBuilder = new BlobSasBuilder(BlobContainerSasPermissions.Read, expiryTime)
-                {
-                    BlobContainerName = this.config.ContainerName,
-                    BlobName = blobClient.Name,
-                    Resource = "b"
-                };
-
-                var sasToken = blobClient.GenerateSasUri(sasBuilder).ToString();
-
-                return sasToken.Substring(sasToken.IndexOf($"/{this.config.ContainerName.ToLower()}"));
             }
             catch (Exception ex)
             {
