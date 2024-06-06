@@ -378,7 +378,13 @@ namespace Mona.SaaS.Web.Controllers
 
                     if (inTestMode)
                     {
-                        await this.subscriptionTestingCache.PutSubscriptionAsync(subscription);
+                        await subscriptionTestingCache.PutSubscriptionAsync(subscription);
+                    }
+                    else
+                    {
+                        // Otherwise, notify the Marketplace that the webhook notification has been successfully processed.
+
+                        await mpOperationService.ConfirmOperationComplete(whNotification.SubscriptionId, whNotification.OperationId);
                     }
 
                     this.logger.LogInformation($"Subscription [{subscription.SubscriptionId}] webhook [{opType}] operation [{whNotification.OperationId}] processed successfully.");

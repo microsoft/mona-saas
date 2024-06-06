@@ -30,10 +30,9 @@ namespace Mona.SaaS.Services.Default
             var options = optionsAccessor.Value;
             var identityConfig = identityConfigSnapshot.Value;
             var internalManagedId = new ResourceIdentifier(identityConfig.ManagedIdentities.InternalManagedId);
+            var credential = new DefaultAzureCredential(new DefaultAzureCredentialOptions { ManagedIdentityResourceId = internalManagedId });
 
-            eventGridClient = new EventGridPublisherClient(
-                new Uri(options.TopicEndpoint),
-                new DefaultAzureCredential(new DefaultAzureCredentialOptions { ManagedIdentityResourceId = internalManagedId }));
+            eventGridClient = new EventGridPublisherClient(new Uri(options.TopicEndpoint), credential);        
         }
 
         public async Task<bool> IsHealthyAsync()

@@ -76,6 +76,51 @@ namespace Mona.SaaS.Services.Default
             }
         }
 
+        public async Task ConfirmOperationComplete(string subscriptionId, string operationId)
+        {
+            if (string.IsNullOrEmpty(subscriptionId))
+            {
+                throw new ArgumentNullException(nameof(subscriptionId));
+            }
+
+            if (string.IsNullOrEmpty(operationId))
+            {
+                throw new ArgumentNullException(nameof(operationId));
+            }
+
+            try
+            {
+                var retryPolicy = CreateAsyncHttpRetryPolicy();
+                var relativeUrl = $"api/saas/subscriptions/{subscriptionId}/operations/{operationId}?api-version=2018-08-31";
+
+                var pollyResult = await retryPolicy.ExecuteAndCaptureAsync(async () =>
+                {
+                    using (var request = new HttpRequestMessage(HttpMethod.Patch, relativeUrl))
+                    {
+                        var bearerToken = await GetMarketplaceApiBearerToken();
+
+                        request.Content = new StringContent(JsonConvert.SerializeObject(new { status = "Success" }));
+                        request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", bearerToken);
+
+                        return await httpClient.SendAsync(request);
+                    }
+                });
+
+                var response = GetResult(pollyResult);
+
+                response.EnsureSuccessStatusCode();
+            }
+            catch (Exception ex)
+            {
+                logger.LogError(
+                    $"An error occurred while trying to confirm subscription [{subscriptionId}] " +
+                    $"operation [{operationId}] complete.", ex);
+
+                throw;
+            }
+
+        }
+
         public async Task<SubscriptionOperation> GetSubscriptionOperationAsync(string subscriptionId, string operationId)
         {
             // This method calls the Marketplace APIs directly using HttpClient since the .NET Marketplace SDK
@@ -356,12 +401,9 @@ namespace Mona.SaaS.Services.Default
 
         private async Task<string> GetMarketplaceApiBearerToken()
         {
-            var tokenRequestContext = new TokenRequestContext(
-                new string[] { "20e940b3-4c77-4b0b-9a53-9e16a1b010a7/.default" });
-
-            var credential = new DefaultAzureCredential(new DefaultAzureCredentialOptions
-                { ManagedIdentityClientId = identityConfig.ManagedIdentities.ExternalClientId });
-
+            var tokenRequestContext = new TokenRequestContext(new string[] { "20e940b3-4c77-4b0b-9a53-9e16a1b010a7/.default" });
+            var externalManagedId = new ResourceIdentifier(identityConfig.ManagedIdentities.ExternalManagedId);
+            var credential = new DefaultAzureCredential(new DefaultAzureCredentialOptions { ManagedIdentityResourceId = externalManagedId });
             var tokenResponse = await credential.GetTokenAsync(tokenRequestContext);
 
             return tokenResponse.Token;
