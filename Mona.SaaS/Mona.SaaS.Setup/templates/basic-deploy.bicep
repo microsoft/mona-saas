@@ -253,7 +253,6 @@ resource webAppName_appsettings 'Microsoft.Web/sites/config@2020-12-01' = {
     'Deployment:Name': cleanDeploymentName
     'Deployment:IsPassthroughModeEnabled' : string(isPassthroughModeEnabled)
     'Identity:AdminIdentity:AadTenantId': aadTenantId
-    'Identity:AdminIdentity:RoleName': 'monaadmins'
     'Identity:AppIdentity:AadClientId': aadClientId
     'Identity:AppIdentity:AadTenantId': aadTenantId
     'Identity:Resources:ExternalManagedId': externalMid.id

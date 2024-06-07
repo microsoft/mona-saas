@@ -307,7 +307,7 @@ current_user_tid=$(az account show --query tenantId --output tsv);
 
 # Create the Mona app registration in AAD...
 
-echo "$lp 🛡️   Creating Mona Azure Active Directory (AAD) app registration..."
+echo "$lp 🛡️   Creating Mona Azure Active Directory app registration..."
 
 mona_aad_app_name="$display_name"
 
@@ -337,7 +337,7 @@ for i1 in {1..5}; do
     mona_aad_object_id=$(echo "$create_mona_app_response" | jq -r ".id")
     mona_aad_app_id=$(echo "$create_mona_app_response" | jq -r ".appId")
 
-    if [[ -z $mona_aad_object_id || -z $mona_aad_app_id || $mona_aad_object_id == null || $mona_aad_sp_id == null ]]; then
+    if [[ -z $mona_aad_object_id || -z $mona_aad_app_id || $mona_aad_object_id == null || $mona_aad_app_id == null ]]; then
         if [[ $i1 == 5 ]]; then
             # We tried and we failed. Such is life.
             echo "$lp ❌   Failed to create Mona AAD app. Setup failed."
@@ -518,18 +518,6 @@ else
     [[ $? -ne 0 ]] && echo "$lp ⚠️   Integration pack [$integration_pack ($pack_path)] deployment failed."
 fi
 
-# Configure Mona.
-
-echo "$lp 🔐   Adding you to the Mona administrators role...";
-
-# Regardless of whether or not -j was set, add the current user to the admin role...
-
-curl -X POST \
-    -H "Content-Type: application/json" \
-    -H "Authorization: Bearer $graph_token" \
-    -d "{ \"principalId\": \"$current_user_oid\", \"resourceId\": \"$mona_aad_sp_id\", \"appRoleId\": \"$mona_admin_role_id\" }" \
-    "https://graph.microsoft.com/v1.0/users/$current_user_oid/appRoleAssignments"
-
 if [[ -z $no_publish ]]; then
     # Deploy Mona web application...
 
@@ -568,7 +556,6 @@ if [[ -z $no_publish ]]; then
     printf "$lp Webhook URL                         [$web_app_base_url/webhook]\n"
     printf "$lp Webhook URL (Testing)               [$web_app_base_url/webhook/test]\n"
     printf "$lp Admin Center URL                    [$web_app_base_url/admin]\n"
-    printf "$lp Subscription Staging Store Base URL [https://$storage_account_name.blob.core.windows.net]\n"
     printf "$lp Passthrough Mode Enabled (-m)?      [$passthrough_mode_enabled]\n"
 fi
 

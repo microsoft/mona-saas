@@ -21,14 +21,5 @@ namespace Mona.SaaS.Core.Models.Configuration
         /// </remarks>
         [Required]
         public string AadTenantId { get; set; }
-
-        /// <summary>
-        /// Gets/sets this Mona application's administrator role name.
-        /// </summary>
-        /// <remarks>
-        /// By default, the role name is simply "monaadmins".
-        /// </remarks>
-        [Required]
-        public string RoleName { get; set; }
     }
 }

@@ -17,20 +17,14 @@ namespace Mona.SaaS.Web.Authorization
 {
     public class AdminRoleAuthorizationRequirement : IAuthorizationRequirement
     {
-        public AdminRoleAuthorizationRequirement(string adminAadTenantId, string adminRoleName)
+        public AdminRoleAuthorizationRequirement(string adminAadTenantId)
         {
             if (string.IsNullOrEmpty(adminAadTenantId))
             {
                 throw new ArgumentNullException(nameof(adminAadTenantId));
             }
 
-            if (string.IsNullOrEmpty(adminRoleName))
-            {
-                throw new ArgumentNullException(nameof(adminRoleName));
-            }
-
             AdminAadTenantId = adminAadTenantId;
-            AdminRoleName = adminRoleName;
         }
 
         /// <summary>
@@ -40,10 +34,5 @@ namespace Mona.SaaS.Web.Authorization
         /// AAD claim is [tid].
         /// </remarks>
         public string AdminAadTenantId { get; set; }
-
-        /// <summary>
-        /// Gets/sets this deployment's administrative role name.
-        /// </summary>
-        public string AdminRoleName { get; set; }
     }
 }

@@ -1,18 +1,6 @@
 {
     "displayName": "__aad_app_name__",
     "signInAudience": "AzureADandPersonalMicrosoftAccount",
-    "appRoles": [
-        {
-            "allowedMemberTypes": [
-                "User"
-            ],
-            "description": "Mona administrators can access the Mona admin center and use the various test endpoints.",
-            "displayName": "Mona Administrators",
-            "id": "__admin_role_id__",
-            "isEnabled": "true",
-            "value": "monaadmins"
-        }
-    ],
     "optionalClaims": {
         "idToken": [
             {

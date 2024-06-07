@@ -91,9 +91,6 @@ namespace Mona.SaaS.Web
 
         private void ConfigureAuth(IServiceCollection services)
         {
-            var areForeignAdminsEnabled = 
-                GetEnvironmentVariable("Deployment:IsForeignAdminsEnabled")?.ToLower() == "true";
-
             services.AddAuthentication(OpenIdConnectDefaults.AuthenticationScheme)
                 .AddMicrosoftIdentityWebApp(o =>
                 {
@@ -121,7 +118,7 @@ namespace Mona.SaaS.Web
             // Configuring Mona admin access...
 
             services.AddSingleton<IAuthorizationHandler, AdminRoleAuthorizationHandler>(
-                sp => new AdminRoleAuthorizationHandler(areForeignAdminsEnabled));
+                sp => new AdminRoleAuthorizationHandler());
 
             services.AddAuthorization(o =>
             {
@@ -129,10 +126,8 @@ namespace Mona.SaaS.Web
 
                 o.AddPolicy("admin",
                     p => p.Requirements.Add(new AdminRoleAuthorizationRequirement(
-                    Configuration["Identity:AdminIdentity:AadTenantId"],
-                    Configuration["Identity:AdminIdentity:RoleName"])));
+                    Configuration["Identity:AdminIdentity:AadTenantId"])));
             });
-
         }
 
         private void ConfigureDefaultMonaServices(IServiceCollection services)
