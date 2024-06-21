@@ -327,6 +327,7 @@ create_mona_app_json="${create_mona_app_json/__admin_role_id__/${mona_admin_role
 # https://docs.microsoft.com/en-us/azure/architecture/patterns/retry
 
 for i1 in {1..5}; do
+
     create_mona_app_response=$(curl \
         -X POST \
         -H "Content-Type: application/json" \
