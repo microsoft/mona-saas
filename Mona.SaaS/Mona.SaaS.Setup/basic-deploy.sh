@@ -259,7 +259,7 @@ create_aad_app_response=$(az ad app create \
     --display-name "$mona_aad_app_name" \
     --enable-id-token-issuance true \
     --sign-in-audience "AzureADMyOrg" \
-    --reply-urls "https://mona-admin-$deployment_name.azurewebsites.net/signin-oidc")
+    --web-redirect-uris "https://mona-admin-$deployment_name.azurewebsites.net/signin-oidc")
 
 mona_aad_object_id=$(echo "$create_aad_app_response" | jq -r ".id")
 mona_aad_app_id=$(echo "$create_aad_app_response" | jq -r ".appId")
