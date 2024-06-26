@@ -257,7 +257,7 @@ resource customerWebApp_appsettings 'Microsoft.Web/sites/config@2020-12-01' = {
   parent: customerWebApp
   name: 'appsettings'
   properties: {
-    'Deployment:AppInsightsConnectionString': reference(appInsights.id, '2015-15-01').ConnectionString
+    'Deployment:AppInsightsConnectionString': reference(appInsights.id, '2014-04-01').ConnectionString
     'Deployment:AzureResourceGroupName': resourceGroup().name
     'Deployment:AzureSubscriptionId': subscription().subscriptionId
     'Deployment:EventVersion': eventVersion
@@ -279,7 +279,7 @@ resource adminWebApp_appsettings 'Microsoft.Web/sites/config@2020-12-01' = {
   parent: adminWebApp
   name: 'appsettings'
   properties: {
-    'Deployment:AppInsightsConnectionString': reference(appInsights.id, '2015-15-01').ConnectionString
+    'Deployment:AppInsightsConnectionString': reference(appInsights.id, '2014-04-01').ConnectionString
     'Deployment:AzureResourceGroupName': resourceGroup().name
     'Deployment:AzureSubscriptionId': subscription().subscriptionId
     'Deployment:EventVersion': eventVersion

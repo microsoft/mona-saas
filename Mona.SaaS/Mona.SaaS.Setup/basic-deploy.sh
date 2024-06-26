@@ -52,7 +52,7 @@ check_cloud_shell_env() {
 
 check_prereqs() {
 
-    echo "$lp Checking Mona setup prerequisites...";
+    echo "$lp 🔍   Checking Mona setup prerequisites...";
 
     check_az "$lp";               if [[ $? -ne 0 ]]; then prereq_check_failed=1; fi;
     check_dotnet "$lp";           if [[ $? -ne 0 ]]; then prereq_check_failed=1; fi;
