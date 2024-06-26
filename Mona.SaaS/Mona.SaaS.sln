@@ -18,6 +18,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Mona.SaaS.Web.Tests", "Mona
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Mona.SaaS.TurnstileRelay", "Mona.SaaS.TurnstileRelay\Mona.SaaS.TurnstileRelay.csproj", "{170BB895-49A2-4E91-85A5-116EBF6F1EBA}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mona.SaaS.Admin.Web", "Mona.SaaS.Admin.Web\Mona.SaaS.Admin.Web.csproj", "{4E75652A-F1BE-4ABB-9787-78B872EDE1E7}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -44,6 +46,10 @@ Global
 		{170BB895-49A2-4E91-85A5-116EBF6F1EBA}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{170BB895-49A2-4E91-85A5-116EBF6F1EBA}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{170BB895-49A2-4E91-85A5-116EBF6F1EBA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4E75652A-F1BE-4ABB-9787-78B872EDE1E7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4E75652A-F1BE-4ABB-9787-78B872EDE1E7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4E75652A-F1BE-4ABB-9787-78B872EDE1E7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4E75652A-F1BE-4ABB-9787-78B872EDE1E7}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

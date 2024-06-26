@@ -2,17 +2,14 @@
 @maxLength(13)
 param deploymentName string = ''
 
-@description('This Mona deployment\'s Azure Active Directory (AAD) tenant ID.')
+@description('This Mona deployment\'s admin web app Entra tenant ID.')
 param aadTenantId string
 
-@description('This Mona deployment\'s Azure Active Directory (AAD) client ID.')
+@description('This Mona deployment\'s admin web app Entra client ID.')
 param aadClientId string
 
 @description('If provided, specifies the ID of an existing app service plan that the Mona web app should be deployed to.')
 param appServicePlanId string = ''
-
-@description('Flag indicates passthroughMode is enabled by default')
-param isPassthroughModeEnabled bool = false
 
 @description('The version of events that this Mona deployment will publish to Event Grid.')
 @allowed([
@@ -21,12 +18,7 @@ param isPassthroughModeEnabled bool = false
 ])
 param eventVersion string = '2021-10-01'
 
-@description('The preferred UI language for this Mona deployment.')
-@allowed([
-  'en'
-  'es'
-])
-param language string = 'en'
+@description('The location where the resources in this Mona deployment should be created.')
 param location string = resourceGroup().location
 
 var monaVersion = '0.1-prerelease'
@@ -41,7 +33,9 @@ var eventGridTopicName = 'mona-events-${cleanDeploymentName}'
 var logAnalyticsName = 'mona-logs-${cleanDeploymentName}'
 var appInsightsName = 'mona-app-insights-${cleanDeploymentName}'
 var appPlanName = 'mona-plan-${cleanDeploymentName}'
-var webAppName = 'mona-web-${cleanDeploymentName}'
+
+var adminWebAppName = 'mona-admin-${cleanDeploymentName}'
+var customerWebAppName = 'mona-customer-${cleanDeploymentName}'
 
 var externalMidName = 'mona-external-id-${cleanDeploymentName}'
 var internalMidName = 'mona-internal-id-${cleanDeploymentName}'
@@ -210,10 +204,10 @@ resource appPlan 'Microsoft.Web/serverfarms@2018-02-01' = if (empty(appServicePl
   name: appPlanName
   location: location
   sku: {
-    name: 'S1'
-    tier: 'Standard'
-    size: 'S1'
-    family: 'S'
+    name: 'B1'
+    tier: 'Basic'
+    size: 'B1'
+    family: 'B'
     capacity: 1
   }
   properties: {
@@ -221,8 +215,8 @@ resource appPlan 'Microsoft.Web/serverfarms@2018-02-01' = if (empty(appServicePl
   kind: 'app'
 }
 
-resource webApp 'Microsoft.Web/sites@2018-11-01' = {
-  name: webAppName
+resource adminWebApp 'Microsoft.Web/sites@2018-11-01' = {
+  name: adminWebAppName
   location: location
   kind: 'app'
   identity: {
@@ -240,19 +234,57 @@ resource webApp 'Microsoft.Web/sites@2018-11-01' = {
   ]
 }
 
-resource webAppName_appsettings 'Microsoft.Web/sites/config@2020-12-01' = {
-  parent: webApp
+resource customerWebApp 'Microsoft.Web/sites@2018-11-01' = {
+  name: customerWebAppName
+  location: location
+  kind: 'app'
+  identity: {
+    type: 'UserAssigned'
+    userAssignedIdentities: {
+      '${externalMid.id}': {}
+      '${internalMid.id}': {}
+    }
+  }
+  properties: {
+    serverFarmId: (empty(appServicePlanId) ? appPlan.id : appServicePlanId)
+  }
+  dependsOn: [
+    appInsights
+  ]
+}
+
+resource customerWebApp_appsettings 'Microsoft.Web/sites/config@2020-12-01' = {
+  parent: customerWebApp
   name: 'appsettings'
   properties: {
-    'Deployment:AppInsightsInstrumentationKey': reference(appInsights.id, '2014-04-01').InstrumentationKey
+    'Deployment:AppInsightsConnectionString': reference(appInsights.id, '2015-15-01').ConnectionString
     'Deployment:AzureResourceGroupName': resourceGroup().name
     'Deployment:AzureSubscriptionId': subscription().subscriptionId
     'Deployment:EventVersion': eventVersion
-    'Deployment:IsTestModeEnabled': 'true'
     'Deployment:MonaVersion': monaVersion
     'Deployment:Name': cleanDeploymentName
-    'Deployment:IsPassthroughModeEnabled' : string(isPassthroughModeEnabled)
-    'Identity:AdminIdentity:AadTenantId': aadTenantId
+    'Identity:Resources:ExternalManagedId': externalMid.id
+    'Identity:Resources:InternalManagedId': internalMid.id
+    'Subscriptions:Events:EventGrid:TopicEndpoint': eventGridTopic.properties.endpoint
+    'Subscriptions:Staging:Cache:BlobStorage:ContainerName': stageSubContainerName
+    'Subscriptions:Staging:Cache:BlobStorage:StorageAccountName': storageAccountName
+    'Subscriptions:Testing:Cache:BlobStorage:ContainerName': testSubContainerName
+    'Subscriptions:Testing:Cache:BlobStorage:StorageAccountName': storageAccountName
+    'PublisherConfig:Store:BlobStorage:ContainerName': configContainerName
+    'PublisherConfig:Store:BlobStorage:StorageAccountName': storageAccountName
+  }
+}
+
+resource adminWebApp_appsettings 'Microsoft.Web/sites/config@2020-12-01' = {
+  parent: adminWebApp
+  name: 'appsettings'
+  properties: {
+    'Deployment:AppInsightsConnectionString': reference(appInsights.id, '2015-15-01').ConnectionString
+    'Deployment:AzureResourceGroupName': resourceGroup().name
+    'Deployment:AzureSubscriptionId': subscription().subscriptionId
+    'Deployment:EventVersion': eventVersion
+    'Deployment:MonaVersion': monaVersion
+    'Deployment:Name': cleanDeploymentName
     'Identity:AppIdentity:AadClientId': aadClientId
     'Identity:AppIdentity:AadTenantId': aadTenantId
     'Identity:Resources:ExternalManagedId': externalMid.id
@@ -286,8 +318,11 @@ output deploymentName string = cleanDeploymentName
 output storageAccountId string = storageAccount.id
 output storageAccountName string = storageAccountName
 
-output webAppBaseUrl string = 'https://${webAppName}.azurewebsites.net'
-output webAppName string = webAppName
+output adminWebAppUrl string = 'https://${adminWebAppName}.azurewebsites.net'
+output adminWebAppName string = adminWebAppName
+
+output customerWebAppUrl string = 'https://${customerWebAppName}.azurewebsites.net'
+output customerWebAppName string = customerWebAppName
 
 output eventGridTopicId string = eventGridTopic.id
 output eventGridTopicName string = eventGridTopicName
