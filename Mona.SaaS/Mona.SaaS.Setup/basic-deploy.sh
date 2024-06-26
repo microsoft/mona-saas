@@ -118,7 +118,6 @@ check_deployment_name() {
 }
 
 event_version="2021-10-01" # Default event version is always the latest one. Can be overridden using [-e] flag below for backward compatibility.
-language="en" # Default UI language is English ("en"). Can be overridden using [-l] flag below.
 integration_pack="default"
 passthrough_mode_enabled="false"
 
@@ -132,9 +131,6 @@ while getopts "a:d:g:l:n:r:s:i:hpm" opt; do
         ;;
         g)
             resource_group_name=$OPTARG
-        ;;
-        l)
-            language=$OPTARG
         ;;
         n)
             deployment_name=$OPTARG
@@ -156,9 +152,6 @@ while getopts "a:d:g:l:n:r:s:i:hpm" opt; do
         ;;
         p)
             no_publish=1
-        ;;
-        m)
-            passthrough_mode_enabled="true"
         ;;
         j)
             no_rbac=1 # Ill-advised. Only here for backward compatibility with early versions of Mona.
@@ -206,7 +199,6 @@ fi
 
 check_deployment_region "$lp" "$deployment_region"; if [[ $? -ne 0 ]]; then param_valid_failed=1; fi;
 check_event_version "$lp" "$event_version"; if [[ $? -ne 0 ]]; then param_valid_failed=1; fi;
-check_language "$lp" "$language"; if [[ $? -ne 0 ]]; then param_valid_failed=1; fi;
 
 if [[ -n $app_service_plan_id ]]; then
     check_app_service_plan "$lp" "$app_service_plan_id"
