@@ -44,7 +44,7 @@ check_cloud_shell_env() {
     
     if [ -n "$ACC_CLOUD"  ]
     then
-      echo "$lp ✔   In Cloud Shell."
+      echo "$lp ☁️   In Cloud Shell."
     else
       echo "$lp ⚠️   Not in Cloud Shell. See [https://github.com/microsoft/mona-saas#2-clone-the-mona-saas-github-repository] for more information."
     fi 
