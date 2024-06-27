@@ -7,26 +7,28 @@ namespace Mona.SaaS.Web.Controllers
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.Extensions.Options;
     using Mona.SaaS.Core.Models.Configuration;
-    using Mona.SaaS.Services.Default;
+    using Mona.SaaS.Services;
     using Newtonsoft.Json;
     using System.Text;
 
     [Authorize]
     public class AppSettingsController : Controller
     {
+        private readonly DeploymentConfiguration deploymentConfig;
+        private readonly IdentityConfiguration identityConfig;
+        private readonly MarketplaceConfiguration marketplaceConfig;
         private readonly BlobStorageSubscriptionStagingCache.Configuration blobStagingCacheConfig;
         private readonly BlobStorageSubscriptionTestingCache.Configuration blobTestingCacheConfig;
-        private readonly DeploymentConfiguration deploymentConfig;
         private readonly EventGridSubscriptionEventPublisher.Configuration eventGridConfig;
-        private readonly IdentityConfiguration identityConfig;
         private readonly BlobStoragePublisherConfigurationStore.Configuration pubConfigStoreConfig;
 
         public AppSettingsController(
+            IOptionsSnapshot<DeploymentConfiguration> deploymentConfig,
+            IOptionsSnapshot<IdentityConfiguration> identityConfig,
+            IOptionsSnapshot<MarketplaceConfiguration> marketplaceConfig,
             IOptionsSnapshot<BlobStorageSubscriptionStagingCache.Configuration> blobStagingCacheConfig,
             IOptionsSnapshot<BlobStorageSubscriptionTestingCache.Configuration> blobTestingCacheConfig,
-            IOptionsSnapshot<DeploymentConfiguration> deploymentConfig,
             IOptionsSnapshot<EventGridSubscriptionEventPublisher.Configuration> eventGridConfig,
-            IOptionsSnapshot<IdentityConfiguration> identityConfig,
             IOptionsSnapshot<BlobStoragePublisherConfigurationStore.Configuration> pubConfigStoreConfig)
         {
             this.blobStagingCacheConfig = blobStagingCacheConfig.Value;
@@ -34,6 +36,7 @@ namespace Mona.SaaS.Web.Controllers
             this.deploymentConfig = deploymentConfig.Value;
             this.eventGridConfig = eventGridConfig.Value;
             this.identityConfig = identityConfig.Value;
+            this.marketplaceConfig = marketplaceConfig.Value;
             this.pubConfigStoreConfig = pubConfigStoreConfig.Value;
         }
 
@@ -48,6 +51,7 @@ namespace Mona.SaaS.Web.Controllers
                 Logging = new { LogLevel = new { Default = "Information" } },
                 Deployment = deploymentConfig,
                 Identity = identityConfig,
+                Marketplace = marketplaceConfig,
                 PublisherConfig = new { Store = new { BlobStorage = pubConfigStoreConfig } },
                 Subscriptions = new
                 {

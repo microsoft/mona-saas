@@ -8,14 +8,11 @@ namespace Mona.SaaS.Web.Models
 {
     public class AdminPageModel
     {
-        public bool IsTestModeEnabled { get; set; }
-        public bool IsPassthroughModeEnabled { get; set; }
         public string ConfigurationSettingsUrl { get; set; }
         public string EventGridTopicOverviewUrl { get; set; }
         public string ResourceGroupOverviewUrl { get; set; }
         public string TestLandingPageUrl { get; set; }
         public string TestWebhookUrl { get; set; }
-        public string UserManagementUrl { get; set; }
 
         public string MonaVersion { get; set; }
         public string AzureResourceGroupName { get; set; }

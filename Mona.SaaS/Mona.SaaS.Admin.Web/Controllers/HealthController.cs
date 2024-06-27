@@ -15,28 +15,19 @@ namespace Mona.SaaS.Web.Controllers
 
     public class HealthController : Controller
     {
-        private readonly IMarketplaceOperationService mpOperationService;
-        private readonly IMarketplaceSubscriptionService mpSubscriptionService;
         private readonly IPublisherConfigurationStore publisherConfigStore;
         private readonly ISubscriptionEventPublisher subEventPublisher;
-        private readonly ISubscriptionStagingCache subStagingCache;
         private readonly ISubscriptionTestingCache subTestingCache;
         private readonly ILogger logger;
 
         public HealthController(
-            IMarketplaceOperationService mpOperationService,
-            IMarketplaceSubscriptionService mpSubscriptionService,
             IPublisherConfigurationStore publisherConfigStore,
             ISubscriptionEventPublisher subEventPublisher,
-            ISubscriptionStagingCache subStagingCache,
             ISubscriptionTestingCache subTestingCache,
             ILogger<HealthController> logger)
         {
-            this.mpOperationService = mpOperationService;
-            this.mpSubscriptionService = mpSubscriptionService;
             this.publisherConfigStore = publisherConfigStore;
             this.subEventPublisher = subEventPublisher;
-            this.subStagingCache = subStagingCache;
             this.subTestingCache = subTestingCache;
             this.logger = logger;
         }
@@ -53,11 +44,8 @@ namespace Mona.SaaS.Web.Controllers
             {
                 var checkTasks = new List<Task<bool>>
                 {
-                    mpOperationService.IsHealthyAsync(),    // Check connectivity to Marketplace Operations API
-                    mpSubscriptionService.IsHealthyAsync(), // Check connectivity to Marketplace Subscriptions API
                     publisherConfigStore.IsHealthyAsync(),  // Check connectivity to publisher configuration store (blob storage by default)
                     subEventPublisher.IsHealthyAsync(),     // Check connectivity to subscription events topic (event grid by default)
-                    subStagingCache.IsHealthyAsync(),       // Check connectivity to subscription staging cache (blob storage by default)
                     subTestingCache.IsHealthyAsync()        // Check connectivity to subscription testing cache (blob storage by default)
                 };   
 

@@ -3,12 +3,10 @@
 
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Mona.SaaS.Core.Interfaces;
 using Mona.SaaS.Core.Models.Configuration;
 using Mona.SaaS.Web.Models;
-using Microsoft.Extensions.Options;
-using System.Threading.Tasks;
 
 namespace Mona.SaaS.Web.Controllers
 {
