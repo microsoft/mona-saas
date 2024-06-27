@@ -226,7 +226,7 @@ fi
 # If it already exists confirm that it's empty.
 
 if [[ $(az group exists --resource-group "$resource_group_name" --output tsv) == false ]]; then
-    echo "$lp Creating resource group [$resource_group_name]..."
+    echo "$lp 🦾   Creating resource group [$resource_group_name]..."
 
     az group create \
         --location "$deployment_region" \
@@ -483,8 +483,8 @@ printf "$lp Deployed to Resource Group          [$resource_group_name]\n"
 
 if [[ -z $no_publish ]]; then
     printf "$lp Landing Page URL                    [$customer_web_app_url/]\n"
-    printf "$lp Landing Page URL (Testing)          [$admin_web_app_url/test]\n"
     printf "$lp Webhook URL                         [$customer_web_app_url/webhook]\n"
+    printf "$lp Landing Page URL (Testing)          [$admin_web_app_url/test]\n"
     printf "$lp Webhook URL (Testing)               [$admin_web_app_url/webhook/test]\n"
     printf "$lp Admin Center URL                    [$admin_web_app_url/admin]\n"
 fi

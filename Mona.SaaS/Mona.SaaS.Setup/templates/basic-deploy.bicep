@@ -263,8 +263,12 @@ resource customerWebApp_appsettings 'Microsoft.Web/sites/config@2020-12-01' = {
     'Deployment:EventVersion': eventVersion
     'Deployment:MonaVersion': monaVersion
     'Deployment:Name': cleanDeploymentName
+    'Identity:AdminApp:AadClientId': aadClientId
+    'Identity:AdminApp:AadTenantId': aadTenantId
     'Identity:Resources:ExternalManagedId': externalMid.id
     'Identity:Resources:InternalManagedId': internalMid.id
+    'Marketplace:LandingPageUrl': 'https://${customerWebAppName}.azurewebsites.net'
+    'Marketplace:WebhookUrl': 'https://${customerWebAppName}.azurewebsites.net/webhook'
     'Subscriptions:Events:EventGrid:TopicEndpoint': eventGridTopic.properties.endpoint
     'Subscriptions:Staging:Cache:BlobStorage:ContainerName': stageSubContainerName
     'Subscriptions:Staging:Cache:BlobStorage:StorageAccountName': storageAccountName
@@ -285,10 +289,12 @@ resource adminWebApp_appsettings 'Microsoft.Web/sites/config@2020-12-01' = {
     'Deployment:EventVersion': eventVersion
     'Deployment:MonaVersion': monaVersion
     'Deployment:Name': cleanDeploymentName
-    'Identity:AppIdentity:AadClientId': aadClientId
-    'Identity:AppIdentity:AadTenantId': aadTenantId
+    'Identity:AdminApp:AadClientId': aadClientId
+    'Identity:AdminApp:AadTenantId': aadTenantId
     'Identity:Resources:ExternalManagedId': externalMid.id
     'Identity:Resources:InternalManagedId': internalMid.id
+    'Marketplace:LandingPageUrl': 'https://${customerWebAppName}.azurewebsites.net'
+    'Marketplace:WebhookUrl': 'https://${customerWebAppName}.azurewebsites.net/webhook'
     'Subscriptions:Events:EventGrid:TopicEndpoint': eventGridTopic.properties.endpoint
     'Subscriptions:Staging:Cache:BlobStorage:ContainerName': stageSubContainerName
     'Subscriptions:Staging:Cache:BlobStorage:StorageAccountName': storageAccountName
