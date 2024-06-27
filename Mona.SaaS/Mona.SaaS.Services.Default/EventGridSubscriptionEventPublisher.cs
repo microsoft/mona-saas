@@ -12,7 +12,7 @@ using System;
 using System.ComponentModel.DataAnnotations;
 using System.Threading.Tasks;
 
-namespace Mona.SaaS.Services.Default
+namespace Mona.SaaS.Services
 {
     public class EventGridSubscriptionEventPublisher : ISubscriptionEventPublisher
     {
@@ -32,7 +32,7 @@ namespace Mona.SaaS.Services.Default
             var internalManagedId = new ResourceIdentifier(identityConfig.ManagedIdentities.InternalManagedId);
             var credential = new DefaultAzureCredential(new DefaultAzureCredentialOptions { ManagedIdentityResourceId = internalManagedId });
 
-            eventGridClient = new EventGridPublisherClient(new Uri(options.TopicEndpoint), credential);        
+            eventGridClient = new EventGridPublisherClient(new Uri(options.TopicEndpoint), credential);
         }
 
         public async Task<bool> IsHealthyAsync()

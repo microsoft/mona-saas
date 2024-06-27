@@ -10,15 +10,11 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		.editorconfig = .editorconfig
 	EndProjectSection
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Mona.SaaS.Web", "Mona.SaaS.Web\Mona.SaaS.Web.csproj", "{DCFE557E-6C1C-4782-9ECA-5B29348C70FF}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Mona.SaaS.Services", "Mona.SaaS.Services.Default\Mona.SaaS.Services.csproj", "{BB15E201-B247-4942-9B2F-8FE6FF872DFC}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Mona.SaaS.Services.Default", "Mona.SaaS.Services.Default\Mona.SaaS.Services.Default.csproj", "{BB15E201-B247-4942-9B2F-8FE6FF872DFC}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Mona.SaaS.Admin.Web", "Mona.SaaS.Admin.Web\Mona.SaaS.Admin.Web.csproj", "{4E75652A-F1BE-4ABB-9787-78B872EDE1E7}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Mona.SaaS.Web.Tests", "Mona.SaaS.Web.Tests\Mona.SaaS.Web.Tests.csproj", "{207DF0C6-32E4-49CF-8413-4F26D07FABF4}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Mona.SaaS.TurnstileRelay", "Mona.SaaS.TurnstileRelay\Mona.SaaS.TurnstileRelay.csproj", "{170BB895-49A2-4E91-85A5-116EBF6F1EBA}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mona.SaaS.Admin.Web", "Mona.SaaS.Admin.Web\Mona.SaaS.Admin.Web.csproj", "{4E75652A-F1BE-4ABB-9787-78B872EDE1E7}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mona.SaaS.Subscriber.Web", "Mona.SaaS.Subscriber.Web\Mona.SaaS.Subscriber.Web.csproj", "{91758406-7D50-43E8-B5F9-D4A59B408A36}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -30,26 +26,18 @@ Global
 		{03D0BAB8-0DD0-485E-BD03-AB822BF38895}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{03D0BAB8-0DD0-485E-BD03-AB822BF38895}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{03D0BAB8-0DD0-485E-BD03-AB822BF38895}.Release|Any CPU.Build.0 = Release|Any CPU
-		{DCFE557E-6C1C-4782-9ECA-5B29348C70FF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{DCFE557E-6C1C-4782-9ECA-5B29348C70FF}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{DCFE557E-6C1C-4782-9ECA-5B29348C70FF}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{DCFE557E-6C1C-4782-9ECA-5B29348C70FF}.Release|Any CPU.Build.0 = Release|Any CPU
 		{BB15E201-B247-4942-9B2F-8FE6FF872DFC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{BB15E201-B247-4942-9B2F-8FE6FF872DFC}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{BB15E201-B247-4942-9B2F-8FE6FF872DFC}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{BB15E201-B247-4942-9B2F-8FE6FF872DFC}.Release|Any CPU.Build.0 = Release|Any CPU
-		{207DF0C6-32E4-49CF-8413-4F26D07FABF4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{207DF0C6-32E4-49CF-8413-4F26D07FABF4}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{207DF0C6-32E4-49CF-8413-4F26D07FABF4}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{207DF0C6-32E4-49CF-8413-4F26D07FABF4}.Release|Any CPU.Build.0 = Release|Any CPU
-		{170BB895-49A2-4E91-85A5-116EBF6F1EBA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{170BB895-49A2-4E91-85A5-116EBF6F1EBA}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{170BB895-49A2-4E91-85A5-116EBF6F1EBA}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{170BB895-49A2-4E91-85A5-116EBF6F1EBA}.Release|Any CPU.Build.0 = Release|Any CPU
 		{4E75652A-F1BE-4ABB-9787-78B872EDE1E7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{4E75652A-F1BE-4ABB-9787-78B872EDE1E7}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4E75652A-F1BE-4ABB-9787-78B872EDE1E7}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4E75652A-F1BE-4ABB-9787-78B872EDE1E7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{91758406-7D50-43E8-B5F9-D4A59B408A36}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{91758406-7D50-43E8-B5F9-D4A59B408A36}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{91758406-7D50-43E8-B5F9-D4A59B408A36}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{91758406-7D50-43E8-B5F9-D4A59B408A36}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

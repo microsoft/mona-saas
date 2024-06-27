@@ -17,7 +17,7 @@ using System.IO;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Mona.SaaS.Services.Default
+namespace Mona.SaaS.Services
 {
     public class BlobStorageSubscriptionTestingCache : ISubscriptionTestingCache
     {

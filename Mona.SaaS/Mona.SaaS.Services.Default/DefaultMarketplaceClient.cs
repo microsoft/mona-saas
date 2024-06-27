@@ -18,7 +18,7 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Threading.Tasks;
 
-namespace Mona.SaaS.Services.Default
+namespace Mona.SaaS.Services
 {
     public class DefaultMarketplaceClient : IMarketplaceOperationService, IMarketplaceSubscriptionService
     {

@@ -1,7 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-namespace Mona.SaaS.Services.Default
+namespace Mona.SaaS.Services
 {
     using Azure.Core;
     using Azure.Identity;
@@ -29,7 +29,7 @@ namespace Mona.SaaS.Services.Default
             IOptionsSnapshot<IdentityConfiguration> identityConfigSnapshot,
             ILogger<BlobStorageSubscriptionTestingCache> logger)
         {
-            this.config = configSnapshot.Value;
+            config = configSnapshot.Value;
 
             var identityConfig = identityConfigSnapshot.Value;
             var internalManagedId = new ResourceIdentifier(identityConfig.ManagedIdentities.InternalManagedId);
@@ -38,7 +38,7 @@ namespace Mona.SaaS.Services.Default
                 new Uri($"https://{config.StorageAccountName}.blob.core.windows.net"),
                 new DefaultAzureCredential(new DefaultAzureCredentialOptions { ManagedIdentityResourceId = internalManagedId }));
 
-            this.containerClient = serviceClient.GetBlobContainerClient(config.ContainerName);
+            containerClient = serviceClient.GetBlobContainerClient(config.ContainerName);
             this.logger = logger;
         }
 
@@ -68,7 +68,7 @@ namespace Mona.SaaS.Services.Default
             try
             {
                 var blobClient = containerClient.GetBlobClient(subscription.SubscriptionId);
-                var expiryTime = DateTime.UtcNow.AddSeconds(this.config.TokenExpirationInSeconds);
+                var expiryTime = DateTime.UtcNow.AddSeconds(config.TokenExpirationInSeconds);
 
                 await blobClient.UploadAsync(new MemoryStream(Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(subscription))), overwrite: true);
             }
