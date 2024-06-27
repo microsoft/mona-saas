@@ -453,7 +453,7 @@ fi
 if [[ -z $no_publish ]]; then
     # Deploy Mona web application...
 
-    echo "$lp 🏗️   Building Mona web app for deployment to [$web_app_name]..."
+    echo "$lp 🛠️   Building Mona web app for deployment to [$web_app_name]..."
 
     dotnet publish -c Release -o ./topublish ../Mona.SaaS.Web/Mona.SaaS.Web.csproj
 
@@ -490,7 +490,7 @@ if [[ -z $no_publish ]]; then
 fi
 
 echo
-echo "$lp ✔   Mona deployment complete."
+echo "$lp ⭐   Mona deployment complete."
 echo
 echo "$lp ⚠️   PLEASE READ CAREFULLY"
 echo
