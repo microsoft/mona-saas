@@ -48,8 +48,6 @@ namespace Mona.SaaS.Web.Controllers
 
                 var adminModel = new AdminPageModel
                 {
-                    IsTestModeEnabled = this.deploymentConfig.IsTestModeEnabled,
-                    IsPassthroughModeEnabled = this.deploymentConfig.IsPassthroughModeEnabled,
                     MonaVersion = this.deploymentConfig.MonaVersion,
                     AzureSubscriptionId = this.deploymentConfig.AzureSubscriptionId,
                     AzureResourceGroupName = this.deploymentConfig.AzureResourceGroupName,
@@ -71,11 +69,6 @@ namespace Mona.SaaS.Web.Controllers
                 throw;
             }
         }
-
-        private string GetUserManagementUrl() =>
-            $"https://portal.azure.com/#blade/Microsoft_AAD_IAM/ManagedAppMenuBlade/Users" +
-            $"/objectId/{this.identityConfig.AppIdentity.AadPrincipalId}" +
-            $"/appId/{this.identityConfig.AppIdentity.AadClientId}";
 
         private string GetConfigurationSettingsEditorUrl() =>
             $"https://portal.azure.com/#@{this.identityConfig.AppIdentity.AadTenantId}/resource/subscriptions/{this.deploymentConfig.AzureSubscriptionId}" +

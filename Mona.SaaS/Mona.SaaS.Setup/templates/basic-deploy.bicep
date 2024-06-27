@@ -263,6 +263,7 @@ resource customerWebApp_appsettings 'Microsoft.Web/sites/config@2020-12-01' = {
     'Deployment:EventVersion': eventVersion
     'Deployment:MonaVersion': monaVersion
     'Deployment:Name': cleanDeploymentName
+    'Identity:EntraTenantId': aadTenantId
     'Identity:AdminAppIdentity:EntraAppId': aadClientId
     'Identity:AdminAppIdentity:EntraTenantId': aadTenantId
     'Identity:ManagedIdentities:ExternalManagedId': externalMid.id
@@ -289,6 +290,7 @@ resource adminWebApp_appsettings 'Microsoft.Web/sites/config@2020-12-01' = {
     'Deployment:EventVersion': eventVersion
     'Deployment:MonaVersion': monaVersion
     'Deployment:Name': cleanDeploymentName
+    'Identity:EntraTenantId': aadTenantId
     'Identity:AdminAppIdentity:EntraAppId': aadClientId
     'Identity:AdminAppIdentity:EntraTenantId': aadTenantId
     'Identity:ManagedIdentities:ExternalManagedId': externalMid.id

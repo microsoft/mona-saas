@@ -11,6 +11,11 @@ namespace Mona.SaaS.Core.Models.Configuration
     public class IdentityConfiguration
     {
         /// <summary>
+        /// Gets/sets Mona's admin/home/publisher Entra tenant ID
+        /// </summary>
+        public string EntraTenantId { get; set; }
+
+        /// <summary>
         /// Gets/sets information about Mona's admin app Entra identity
         /// </summary>
         [Required]
