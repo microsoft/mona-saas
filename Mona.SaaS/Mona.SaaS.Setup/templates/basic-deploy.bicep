@@ -263,10 +263,10 @@ resource customerWebApp_appsettings 'Microsoft.Web/sites/config@2020-12-01' = {
     'Deployment:EventVersion': eventVersion
     'Deployment:MonaVersion': monaVersion
     'Deployment:Name': cleanDeploymentName
-    'Identity:AdminApp:AadClientId': aadClientId
-    'Identity:AdminApp:AadTenantId': aadTenantId
-    'Identity:Resources:ExternalManagedId': externalMid.id
-    'Identity:Resources:InternalManagedId': internalMid.id
+    'Identity:AdminAppIdentity:EntraAppId': aadClientId
+    'Identity:AdminAppIdentity:EntraTenantId': aadTenantId
+    'Identity:ManagedIdentities:ExternalManagedId': externalMid.id
+    'Identity:ManagedIdentities:InternalManagedId': internalMid.id
     'Marketplace:LandingPageUrl': 'https://${customerWebAppName}.azurewebsites.net'
     'Marketplace:WebhookUrl': 'https://${customerWebAppName}.azurewebsites.net/webhook'
     'Subscriptions:Events:EventGrid:TopicEndpoint': eventGridTopic.properties.endpoint
@@ -289,10 +289,10 @@ resource adminWebApp_appsettings 'Microsoft.Web/sites/config@2020-12-01' = {
     'Deployment:EventVersion': eventVersion
     'Deployment:MonaVersion': monaVersion
     'Deployment:Name': cleanDeploymentName
-    'Identity:AdminApp:AadClientId': aadClientId
-    'Identity:AdminApp:AadTenantId': aadTenantId
-    'Identity:Resources:ExternalManagedId': externalMid.id
-    'Identity:Resources:InternalManagedId': internalMid.id
+    'Identity:AdminAppIdentity:EntraAppId': aadClientId
+    'Identity:AdminAppIdentity:EntraTenantId': aadTenantId
+    'Identity:ManagedIdentities:ExternalManagedId': externalMid.id
+    'Identity:ManagedIdentities:InternalManagedId': internalMid.id
     'Marketplace:LandingPageUrl': 'https://${customerWebAppName}.azurewebsites.net'
     'Marketplace:WebhookUrl': 'https://${customerWebAppName}.azurewebsites.net/webhook'
     'Subscriptions:Events:EventGrid:TopicEndpoint': eventGridTopic.properties.endpoint

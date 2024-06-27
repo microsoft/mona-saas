@@ -11,19 +11,13 @@ namespace Mona.SaaS.Core.Models.Configuration
     public class IdentityConfiguration
     {
         /// <summary>
-        /// Gets/sets information about this Mona deployment's administrative Azure AD identity
+        /// Gets/sets information about Mona's admin app Entra identity
         /// </summary>
         [Required]
-        public AppAdminIdentityConfiguration AdminIdentity { get; set; }
+        public AdminAppIdentityConfiguration AdminAppIdentity { get; set; }
 
         /// <summary>
-        /// Gets/sets information about this Mona deployment's Azure AD identity
-        /// </summary>
-        [Required]
-        public AppIdentityConfiguration AppIdentity { get; set; }
-
-        /// <summary>
-        /// Gets/sets information about this Mona deployment's Azure managed identities
+        /// Gets/sets information about Mona's Azure managed identities
         /// </summary>
         [Required]
         public ManagedIdentityConfiguration ManagedIdentities { get; set; }

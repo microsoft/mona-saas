@@ -32,6 +32,7 @@ builder.Services.AddTransient<ISubscriptionEventPublisher, EventGridSubscription
 // Wire up configuration...
 builder.Services.Configure<DeploymentConfiguration>(configuration.GetSection("Deployment"))
                 .Configure<IdentityConfiguration>(configuration.GetSection("Identity"))
+                .Configure<MarketplaceConfiguration>(configuration.GetSection("Marketplace"))
                 .Configure<EventGridSubscriptionEventPublisher.Configuration>(configuration.GetSection("Subscriptions:Events:EventGrid"))
                 .Configure<BlobStorageSubscriptionTestingCache.Configuration>(configuration.GetSection("Subscriptions:Testing:Cache:BlobStorage"))
                 .Configure<BlobStoragePublisherConfigurationStore.Configuration>(configuration.GetSection("PublisherConfig:Store:BlobStorage"));

@@ -18,6 +18,7 @@ builder.Services.AddTransient<IMarketplaceOperationService, DefaultMarketplaceCl
 // Wire up configuration...
 builder.Services.Configure<DeploymentConfiguration>(configuration.GetSection("Deployment"))
                 .Configure<IdentityConfiguration>(configuration.GetSection("Identity"))
+                .Configure<MarketplaceConfiguration>(configuration.GetSection("Marketplace"))
                 .Configure<EventGridSubscriptionEventPublisher.Configuration>(configuration.GetSection("Subscriptions:Events:EventGrid"))
                 .Configure<BlobStorageSubscriptionStagingCache.Configuration>(configuration.GetSection("Subscriptions:Staging:Cache:BlobStorage"))
                 .Configure<BlobStoragePublisherConfigurationStore.Configuration>(configuration.GetSection("PublisherConfig:Store:BlobStorage"));

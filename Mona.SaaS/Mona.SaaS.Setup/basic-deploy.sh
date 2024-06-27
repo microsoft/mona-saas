@@ -389,7 +389,7 @@ internal_mid_principal_id=$(
     --output tsv);
 
 echo "$lp ✔   Mona resources successfully deployed [$az_deployment_name] to resource group [$resource_group_name].";
-echo "$lp 🔏   Configuring internal identity [$internal_mid_name] resource role assignments..."
+echo "$lp 🔏   Configuring resource access..."
 
 az role assignment create \
     --role "Storage Blob Data Contributor" \
@@ -405,17 +405,17 @@ az webapp config appsettings set \
     -g "$resource_group_name" \
     -n "$admin_web_app_name" \
     --settings \
-        "Identity:Resources:ExternalClientId=$external_mid_client_id" \
-        "Identity:Resources:ExternalPrincipalId=$external_mid_principal_id" \
-        "Identity:Resources:InternalPrincipalId=$internal_mid_principal_id"
+        "Identity:ManagedIdentities:ExternalClientId=$external_mid_client_id" \
+        "Identity:ManagedIdentities:ExternalPrincipalId=$external_mid_principal_id" \
+        "Identity:ManagedIdentities:InternalPrincipalId=$internal_mid_principal_id"
 
 az webapp config appsettings set \
     -g "$resource_group_name" \
     -n "$customer_web_app_name" \
     --settings \
-        "Identity:Resources:ExternalClientId=$external_mid_client_id" \
-        "Identity:Resources:ExternalPrincipalId=$external_mid_principal_id" \
-        "Identity:Resources:InternalPrincipalId=$internal_mid_principal_id"
+        "Identity:ManagedIdentities:ExternalClientId=$external_mid_client_id" \
+        "Identity:ManagedIdentities:ExternalPrincipalId=$external_mid_principal_id" \
+        "Identity:ManagedIdentities:InternalPrincipalId=$internal_mid_principal_id"
 
 # Deploy integration pack.
 

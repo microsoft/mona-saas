@@ -95,7 +95,7 @@ namespace Mona.SaaS.Web.Controllers
             new PartnerCenterTechnicalDetails
             {
                 AadApplicationId = this.identityConfig.ManagedIdentities.ExternalClientId,
-                AadTenantId = this.identityConfig.AdminIdentity.AadTenantId,
+                AadTenantId = this.identityConfig.AdminAppIdentity.AadTenantId,
                 LandingPageUrl = Url.RouteUrl("landing", null, Request.Scheme),
                 WebhookUrl = Url.RouteUrl("webhook", null, Request.Scheme)
             };
