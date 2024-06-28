@@ -28,7 +28,10 @@ builder.Services.Configure<DeploymentConfiguration>(configuration.GetSection("De
 
 // Wire up App Insights...
 builder.Services.AddApplicationInsightsTelemetry(
-    new ApplicationInsightsServiceOptions { ConnectionString = configuration["Deployment:AppInsightsConnectionString"] });
+    new ApplicationInsightsServiceOptions
+    {
+        ConnectionString = configuration["Deployment:AppInsightsConnectionString"]
+    });
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();

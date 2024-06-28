@@ -1,5 +1,4 @@
 using Microsoft.ApplicationInsights.AspNetCore.Extensions;
-using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc.Authorization;
@@ -40,7 +39,10 @@ builder.Services.Configure<DeploymentConfiguration>(configuration.GetSection("De
 
 // Wire up App Insights...
 builder.Services.AddApplicationInsightsTelemetry(
-    new ApplicationInsightsServiceOptions { ConnectionString = configuration["Deployment:AppInsightsConnectionString"] });
+    new ApplicationInsightsServiceOptions 
+    { 
+        ConnectionString = configuration["Deployment:AppInsightsConnectionString"] 
+    });
 
 // Set up MVC and lock everything down...
 builder.Services.AddControllersWithViews(options =>
