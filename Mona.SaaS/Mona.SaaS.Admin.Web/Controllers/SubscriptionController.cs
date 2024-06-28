@@ -11,33 +11,21 @@ using Mona.SaaS.Core.Extensions;
 using Mona.SaaS.Core.Interfaces;
 using Mona.SaaS.Core.Models;
 using Mona.SaaS.Core.Models.Configuration;
-using Mona.SaaS.Web.Extensions;
-using Mona.SaaS.Web.Models;
+using Mona.SaaS.Core.Models.MarketplaceAPI.V_2018_08_31;
+using Mona.SaaS.Core.Models.Web;
 using System;
 using System.Net;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using Events = Mona.SaaS.Core.Models.Events;
 
-namespace Mona.SaaS.Web.Controllers
+namespace Mona.SaaS.Admin.Web.Controllers
 {
     public class SubscriptionController : Controller
     {
-        public const string SubscriptionDetailQueryParameter = "_sub";
-
-        private const string objectIdClaimType = "http://schemas.microsoft.com/identity/claims/objectidentifier";
-        private const string tenantIdClaimType = "http://schemas.microsoft.com/identity/claims/tenantid";
-
-        public static class ErrorCodes
-        {
-            public const string UnableToResolveMarketplaceToken = "UnableToResolveMarketplaceToken";
-            public const string SubscriptionNotFound = "SubscriptionNotFound";
-            public const string SubscriptionActivationFailed = "SubscriptionActivationFailed";
-        }
-
         private readonly DeploymentConfiguration deploymentConfig;
 
-        private readonly ILogger logger;
+        private readonly ILogger log;
         private readonly IMarketplaceOperationService mpOperationService;
         private readonly IMarketplaceSubscriptionService mpSubscriptionService;
         private readonly IPublisherConfigurationStore publisherConfigStore;
@@ -47,7 +35,7 @@ namespace Mona.SaaS.Web.Controllers
 
         public SubscriptionController(
             IOptionsSnapshot<DeploymentConfiguration> deploymentConfig,
-            ILogger<SubscriptionController> logger,
+            ILogger<SubscriptionController> log,
             IMarketplaceOperationService mpOperationService,
             IMarketplaceSubscriptionService mpSubscriptionService,
             IPublisherConfigurationStore publisherConfigStore,
@@ -57,7 +45,7 @@ namespace Mona.SaaS.Web.Controllers
         {
             this.mpOperationService = mpOperationService;
             this.deploymentConfig = deploymentConfig.Value;
-            this.logger = logger;
+            this.log = log;
             this.publisherConfigStore = publisherConfigStore;
             this.mpSubscriptionService = mpSubscriptionService;
             this.subscriptionEventPublisher = subscriptionEventPublisher;
@@ -65,19 +53,13 @@ namespace Mona.SaaS.Web.Controllers
             this.subscriptionTestingCache = subscriptionTestingCache;
         }
 
-        [Authorize]
-        [HttpPost]
-        [Route("/", Name = "landing")]
-        [ValidateAntiForgeryToken]
-        public Task<IActionResult> PostLiveLandingPageAsync(LandingPageModel landingPageModel) => PostLandingPageAsync(landingPageModel);
-
         [Authorize(Policy = "admin")]
         [HttpPost]
         [Route("/test", Name = "landing/test")]
         [ValidateAntiForgeryToken]
         public Task<IActionResult> PostTestLandingPageAsync(LandingPageModel landingPageModel)
         {
-            if (this.deploymentConfig.IsTestModeEnabled)
+            if (deploymentConfig.IsTestModeEnabled)
             {
                 return PostLandingPageAsync(landingPageModel, inTestMode: true);
             }
@@ -97,7 +79,7 @@ namespace Mona.SaaS.Web.Controllers
         [Route("/test", Name = "landing/test")]
         public Task<IActionResult> GetTestLandingPageAsync()
         {
-            if (this.deploymentConfig.IsTestModeEnabled)
+            if (deploymentConfig.IsTestModeEnabled)
             {
                 return GetLandingPageAsync(inTestMode: true);
             }
@@ -117,7 +99,7 @@ namespace Mona.SaaS.Web.Controllers
         [Route("/webhook/test", Name = "webhook/test")]
         public Task<IActionResult> ProcessTestWebhookNotificationAsync([FromBody] WebhookNotification whNotification)
         {
-            if (this.deploymentConfig.IsTestModeEnabled)
+            if (deploymentConfig.IsTestModeEnabled)
             {
                 return ProcessWebhookNotificationAsync(whNotification, inTestMode: true);
             }
@@ -129,7 +111,7 @@ namespace Mona.SaaS.Web.Controllers
 
         private async Task<IActionResult> PostLandingPageAsync(LandingPageModel landingPageModel, bool inTestMode = false)
         {
-            var publisherConfig = await this.publisherConfigStore.GetPublisherConfiguration();
+            var publisherConfig = await publisherConfigStore.GetPublisherConfiguration();
 
             try
             {
@@ -141,7 +123,7 @@ namespace Mona.SaaS.Web.Controllers
                     // were indeed able to resolve the subscription but, for some reason, we don't know about it. Let the user know
                     // and prompt them to return to the AppSource/Marketplace offer URL...
 
-                    this.logger.LogError($"Subscription [{landingPageModel.SubscriptionId}] not found.");
+                    logger.LogError($"Subscription [{landingPageModel.SubscriptionId}] not found.");
 
                     return View("Index", new LandingPageModel(inTestMode)
                         .WithCurrentUserInformation(User)
@@ -157,7 +139,7 @@ namespace Mona.SaaS.Web.Controllers
             {
                 // Uh oh. Something broke. Log it and let the user know...
 
-                this.logger.LogError(ex,
+                logger.LogError(ex,
                     $"An error occurred while try to complete subscription [{landingPageModel.SubscriptionId}] activation. " +
                     $"See inner exception for details.");
 
@@ -177,14 +159,14 @@ namespace Mona.SaaS.Web.Controllers
 
             await subscriptionStagingCache.PutSubscriptionAsync(subscription);
 
-            this.logger.LogInformation($"Subscription [{subscription.SubscriptionId}] purchase confirmed. Redirecting user to [{redirectUrl}]...");
+            logger.LogInformation($"Subscription [{subscription.SubscriptionId}] purchase confirmed. Redirecting user to [{redirectUrl}]...");
 
             return Redirect(redirectUrl);
         }
 
         private async Task<IActionResult> GetLandingPageAsync(string token = null, bool inTestMode = false)
         {
-            var publisherConfig = await this.publisherConfigStore.GetPublisherConfiguration();
+            var publisherConfig = await publisherConfigStore.GetPublisherConfiguration();
 
             if (publisherConfig == null)
             {
@@ -198,7 +180,7 @@ namespace Mona.SaaS.Web.Controllers
             {
                 // We don't have a token so we aren't coming from the AppSource/Marketplace. Try to redirect to service marketing page...
 
-                this.logger.LogWarning("Landing page reached but no subscription token was provided. Attempting to redirect to service marketing page...");
+                logger.LogWarning("Landing page reached but no subscription token was provided. Attempting to redirect to service marketing page...");
 
                 return TryToRedirectToServiceMarketingPageUrl(publisherConfig);
             }
@@ -226,7 +208,7 @@ namespace Mona.SaaS.Web.Controllers
                         // The Marketplace can't resolve the provided token so we need to kick back an error
                         // to the user and point them back to the original AppSource/Marketplace listing...
 
-                        this.logger.LogWarning($"Unable to resolve source subscription token [{token}].");
+                        logger.LogWarning($"Unable to resolve source subscription token [{token}].");
 
                         if (deploymentConfig.IsPassthroughModeEnabled)
                         {
@@ -261,7 +243,7 @@ namespace Mona.SaaS.Web.Controllers
 
                             if (inTestMode)
                             {
-                                await this.subscriptionTestingCache.PutSubscriptionAsync(subscription).ConfigureAwait(false);
+                                await subscriptionTestingCache.PutSubscriptionAsync(subscription).ConfigureAwait(false);
                             }
 
                             if (deploymentConfig.IsPassthroughModeEnabled)
@@ -269,18 +251,18 @@ namespace Mona.SaaS.Web.Controllers
                                 // In passthrough mode, customers never see any Mona UI. Get the subscription details and pass
                                 // them directly through to the purchase confirmation page through the _sub parameter.
 
-                                this.logger.LogInformation(
+                                logger.LogInformation(
                                     $"Subscription [{subscription.SubscriptionId}] is unknown to Mona. " +
                                     $"Passthrough mode is [enabled]; redirecting user to SaaS purchase confirmation page...");
 
                                 return await CompleteSubscriptionPurchase(subscription, publisherConfig, inTestMode);
                             }
                             else
-                            { 
+                            {
                                 // Let's get them over to the landing page so they can complete their purchase and
                                 // we can get their subscription spun up...
 
-                                this.logger.LogInformation(
+                                logger.LogInformation(
                                     $"Subscription [{subscription.SubscriptionId}] is unknown to Mona. " +
                                     $"Passthrough mode is [disabled]; redirecting user to Mona's landing page...");
 
@@ -288,7 +270,7 @@ namespace Mona.SaaS.Web.Controllers
                                     .WithCurrentUserInformation(User)
                                     .WithPublisherInformation(publisherConfig)
                                     .WithSubscriptionInformation(subscription));
-                            }    
+                            }
                         }
                         else
                         {
@@ -296,9 +278,9 @@ namespace Mona.SaaS.Web.Controllers
 
                             var redirectUrl = publisherConfig.SubscriptionConfigurationUrl.WithSubscriptionId(subscription.SubscriptionId);
 
-                            await this.subscriptionStagingCache.PutSubscriptionAsync(subscription);
+                            await subscriptionStagingCache.PutSubscriptionAsync(subscription);
 
-                            this.logger.LogInformation(
+                            logger.LogInformation(
                                 $"Subscription [{subscription.SubscriptionId}] is known to Mona. " +
                                 $"Redirecting user to subscription configuration page at [{redirectUrl}]...");
 
@@ -310,7 +292,7 @@ namespace Mona.SaaS.Web.Controllers
                 {
                     // User needs to authenticate first...
 
-                    this.logger.LogWarning($"User has provided a subscription token [{token}] but has not yet been authenticated. Challenging...");
+                    logger.LogWarning($"User has provided a subscription token [{token}] but has not yet been authenticated. Challenging...");
 
                     return Challenge();
                 }
@@ -330,7 +312,7 @@ namespace Mona.SaaS.Web.Controllers
                 {
                     // We don't even know about this subscription...
 
-                    this.logger.LogError(
+                    logger.LogError(
                         $"Unable to process Marketplace webhook notification [{whNotification.OperationId}]. " +
                         $"Subscription [{whNotification.SubscriptionId}] not found.");
 
@@ -342,7 +324,7 @@ namespace Mona.SaaS.Web.Controllers
 
                     var opType = ToCoreOperationType(whNotification.ActionType);
 
-                    this.logger.LogInformation($"Processing subscription [{subscription.SubscriptionId}] webhook [{opType}] operation [{whNotification.OperationId}]...");
+                    logger.LogInformation($"Processing subscription [{subscription.SubscriptionId}] webhook [{opType}] operation [{whNotification.OperationId}]...");
 
                     // Make sure that the Marketplace actually sent this notification...
 
@@ -365,7 +347,7 @@ namespace Mona.SaaS.Web.Controllers
                         await mpOperationService.ConfirmOperationComplete(whNotification.SubscriptionId, whNotification.OperationId);
                     }
 
-                    this.logger.LogInformation($"Subscription [{subscription.SubscriptionId}] webhook [{opType}] operation [{whNotification.OperationId}] processed successfully.");
+                    logger.LogInformation($"Subscription [{subscription.SubscriptionId}] webhook [{opType}] operation [{whNotification.OperationId}] processed successfully.");
 
                     return Ok();
                 }
@@ -374,28 +356,28 @@ namespace Mona.SaaS.Web.Controllers
             {
                 // Uh oh... something else broke. Log it and let the Marketplace know. If it's important, hopefully they'll call us back...
 
-                this.logger.LogError(ex,
+                logger.LogError(ex,
                     $"An error occurred while trying to process Marketplace webhook notification [{whNotification.OperationId}]. " +
                     $"See inner exception for details.");
 
-                return StatusCode((int)(HttpStatusCode.InternalServerError));
+                return StatusCode((int)HttpStatusCode.InternalServerError);
             }
         }
 
         private Task PublishSubscriptionPurchasedEvent(Subscription subscription) =>
-            this.deploymentConfig.EventVersion switch
+            deploymentConfig.EventVersion switch
             {
                 EventVersions.V_2021_05_01 =>
-                this.subscriptionEventPublisher.PublishEventAsync(new Events.V_2021_05_01.SubscriptionPurchased(subscription)),
+                subscriptionEventPublisher.PublishEventAsync(new Events.V_2021_05_01.SubscriptionPurchased(subscription)),
 
                 EventVersions.V_2021_10_01 =>
-                this.subscriptionEventPublisher.PublishEventAsync(new Events.V_2021_10_01.SubscriptionPurchased(subscription)),
+                subscriptionEventPublisher.PublishEventAsync(new Events.V_2021_10_01.SubscriptionPurchased(subscription)),
 
-                _ => throw new NotSupportedException($"Subscription event version [{this.deploymentConfig.EventVersion}] not supported.")
+                _ => throw new NotSupportedException($"Subscription event version [{deploymentConfig.EventVersion}] not supported.")
             };
 
         private Task PublishWebhookSubscriptionEvent(SubscriptionOperationType opType, Subscription subscription, WebhookNotification whNotification) =>
-            this.deploymentConfig.EventVersion switch
+            deploymentConfig.EventVersion switch
             {
                 EventVersions.V_2021_05_01 =>
                 PublishSubscriptionEvent_V_2021_05_01(opType, subscription, whNotification),
@@ -403,34 +385,34 @@ namespace Mona.SaaS.Web.Controllers
                 EventVersions.V_2021_10_01 =>
                 PublishSubscriptionEvent_V_2021_10_01(opType, subscription, whNotification),
 
-                _ => throw new NotSupportedException($"Subscription event version [{this.deploymentConfig.EventVersion}] not supported.")
+                _ => throw new NotSupportedException($"Subscription event version [{deploymentConfig.EventVersion}] not supported.")
             };
 
         private Task PublishSubscriptionEvent_V_2021_05_01(SubscriptionOperationType opType, Subscription subscription, WebhookNotification whNotification) =>
             opType switch
             {
                 SubscriptionOperationType.Cancel =>
-                this.subscriptionEventPublisher.PublishEventAsync(
+                subscriptionEventPublisher.PublishEventAsync(
                     new Events.V_2021_05_01.SubscriptionCanceled(subscription, whNotification.OperationId)),
 
                 SubscriptionOperationType.ChangePlan =>
-                this.subscriptionEventPublisher.PublishEventAsync(
+                subscriptionEventPublisher.PublishEventAsync(
                     new Events.V_2021_05_01.SubscriptionPlanChanged(subscription, whNotification.OperationId, whNotification.PlanId)),
 
                 SubscriptionOperationType.ChangeSeatQuantity =>
-                this.subscriptionEventPublisher.PublishEventAsync(
+                subscriptionEventPublisher.PublishEventAsync(
                     new Events.V_2021_05_01.SubscriptionSeatQuantityChanged(subscription, whNotification.OperationId, whNotification.SeatQuantity)),
 
                 SubscriptionOperationType.Reinstate =>
-                this.subscriptionEventPublisher.PublishEventAsync(
+                subscriptionEventPublisher.PublishEventAsync(
                     new Events.V_2021_05_01.SubscriptionReinstated(subscription, whNotification.OperationId)),
 
                 SubscriptionOperationType.Suspend =>
-                this.subscriptionEventPublisher.PublishEventAsync(
+                subscriptionEventPublisher.PublishEventAsync(
                     new Events.V_2021_05_01.SubscriptionSuspended(subscription, whNotification.OperationId)),
 
                 SubscriptionOperationType.Renew =>
-                this.subscriptionEventPublisher.PublishEventAsync(
+                subscriptionEventPublisher.PublishEventAsync(
                     new Events.V_2021_05_01.SubscriptionRenewed(subscription, whNotification.OperationId)),
 
                 _ => throw new NotSupportedException($"Subscription operation type [{opType}] is unknown.")
@@ -440,27 +422,27 @@ namespace Mona.SaaS.Web.Controllers
            opType switch
            {
                SubscriptionOperationType.Cancel =>
-               this.subscriptionEventPublisher.PublishEventAsync(
+               subscriptionEventPublisher.PublishEventAsync(
                    new Events.V_2021_10_01.SubscriptionCanceled(subscription, whNotification.OperationId)),
 
                SubscriptionOperationType.ChangePlan =>
-               this.subscriptionEventPublisher.PublishEventAsync(
+               subscriptionEventPublisher.PublishEventAsync(
                    new Events.V_2021_10_01.SubscriptionPlanChanged(subscription, whNotification.OperationId, whNotification.PlanId)),
 
                SubscriptionOperationType.ChangeSeatQuantity =>
-               this.subscriptionEventPublisher.PublishEventAsync(
+               subscriptionEventPublisher.PublishEventAsync(
                    new Events.V_2021_10_01.SubscriptionSeatQuantityChanged(subscription, whNotification.OperationId, whNotification.SeatQuantity)),
 
                SubscriptionOperationType.Reinstate =>
-               this.subscriptionEventPublisher.PublishEventAsync(
+               subscriptionEventPublisher.PublishEventAsync(
                    new Events.V_2021_10_01.SubscriptionReinstated(subscription, whNotification.OperationId)),
 
                SubscriptionOperationType.Suspend =>
-               this.subscriptionEventPublisher.PublishEventAsync(
+               subscriptionEventPublisher.PublishEventAsync(
                    new Events.V_2021_10_01.SubscriptionSuspended(subscription, whNotification.OperationId)),
 
                SubscriptionOperationType.Renew =>
-               this.subscriptionEventPublisher.PublishEventAsync(
+               subscriptionEventPublisher.PublishEventAsync(
                    new Events.V_2021_10_01.SubscriptionRenewed(subscription, whNotification.OperationId)),
 
                _ => throw new NotSupportedException($"Subscription operation type [{opType}] is unknown.")
@@ -478,20 +460,20 @@ namespace Mona.SaaS.Web.Controllers
                     // We're in test mode.
                     // Try to pull the "mock" subscription from local (blob storage by default) cache...
 
-                    this.logger.LogWarning($"[TEST MODE]: Trying to get test subscription [{subscriptionId}] from subscription cache...");
+                    logger.LogWarning($"[TEST MODE]: Trying to get test subscription [{subscriptionId}] from subscription cache...");
 
-                    return await this.subscriptionTestingCache.GetSubscriptionAsync(subscriptionId);
+                    return await subscriptionTestingCache.GetSubscriptionAsync(subscriptionId);
                 }
                 else
                 {
                     // Try to get the "record of truth" subscription information from the Marketplace...
 
-                    return await this.mpSubscriptionService.GetSubscriptionAsync(subscriptionId);
+                    return await mpSubscriptionService.GetSubscriptionAsync(subscriptionId);
                 }
             }
             catch (Exception ex)
             {
-                this.logger.LogError(ex, $"An error occurred while trying to get subscription [{subscriptionId}]. See inner exception for details.");
+                logger.LogError(ex, $"An error occurred while trying to get subscription [{subscriptionId}]. See inner exception for details.");
 
                 throw;
             }
@@ -512,12 +494,12 @@ namespace Mona.SaaS.Web.Controllers
                 {
                     // Try to get the subscription information from the Marketplace...
 
-                    return await this.mpSubscriptionService.ResolveSubscriptionTokenAsync(subscriptionToken);
+                    return await mpSubscriptionService.ResolveSubscriptionTokenAsync(subscriptionToken);
                 }
             }
             catch (Exception ex)
             {
-                this.logger.LogError(ex, $"An error occurred while attempting to resolve subscription token [{subscriptionToken}]. See exception for details.");
+                logger.LogError(ex, $"An error occurred while attempting to resolve subscription token [{subscriptionToken}]. See exception for details.");
 
                 return null;
             }
@@ -527,13 +509,13 @@ namespace Mona.SaaS.Web.Controllers
         {
             if (inTestMode)
             {
-                this.logger.LogWarning(
+                logger.LogWarning(
                     $"[TEST MODE]: Verifying subscription [{whNotification.SubscriptionId}] operation " +
                     $"[{whNotification.OperationId}] in test mode. Bypassing Marketplace API and continuing...");
             }
             else
             {
-                var operation = await this.mpOperationService.GetSubscriptionOperationAsync(
+                var operation = await mpOperationService.GetSubscriptionOperationAsync(
                     whNotification.SubscriptionId, whNotification.OperationId);
 
                 if (operation == null ||
@@ -609,16 +591,16 @@ namespace Mona.SaaS.Web.Controllers
         };
 
         private string TryGetQueryStringParameter(string key, string defaultValue = null) =>
-            (Request.Query.TryGetValue(key, out var value) ? value.ToString() : defaultValue);
+            Request.Query.TryGetValue(key, out var value) ? value.ToString() : defaultValue;
 
         private bool? TryParseBooleanQueryStringParameter(string key, bool? defaultValue = null) =>
-            (Request.Query.TryGetValue(key, out var value) ? bool.Parse(value.ToString()) : defaultValue);
+            Request.Query.TryGetValue(key, out var value) ? bool.Parse(value.ToString()) : defaultValue;
 
         private DateTime? TryParseDateTimeQueryStringParameter(string key, DateTime? defaultValue = null) =>
-            (Request.Query.TryGetValue(key, out var value) ? DateTime.Parse(value.ToString()) : defaultValue);
+            Request.Query.TryGetValue(key, out var value) ? DateTime.Parse(value.ToString()) : defaultValue;
 
         private int? TryParseIntQueryStringParameter(string key, int? defaultValue = null) =>
-            (Request.Query.TryGetValue(key, out var value) ? int.Parse(value.ToString()) : defaultValue);
+            Request.Query.TryGetValue(key, out var value) ? int.Parse(value.ToString()) : defaultValue;
 
         public static class TestSubscriptionParameterNames
         {

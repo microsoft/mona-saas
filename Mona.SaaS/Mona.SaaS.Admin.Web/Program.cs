@@ -1,3 +1,4 @@
+using Microsoft.ApplicationInsights.AspNetCore.Extensions;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.AspNetCore.Authorization;
@@ -36,6 +37,10 @@ builder.Services.Configure<DeploymentConfiguration>(configuration.GetSection("De
                 .Configure<EventGridSubscriptionEventPublisher.Configuration>(configuration.GetSection("Subscriptions:Events:EventGrid"))
                 .Configure<BlobStorageSubscriptionTestingCache.Configuration>(configuration.GetSection("Subscriptions:Testing:Cache:BlobStorage"))
                 .Configure<BlobStoragePublisherConfigurationStore.Configuration>(configuration.GetSection("PublisherConfig:Store:BlobStorage"));
+
+// Wire up App Insights...
+builder.Services.AddApplicationInsightsTelemetry(
+    new ApplicationInsightsServiceOptions { ConnectionString = configuration["Deployment:AppInsightsConnectionString"] });
 
 // Set up MVC and lock everything down...
 builder.Services.AddControllersWithViews(options =>

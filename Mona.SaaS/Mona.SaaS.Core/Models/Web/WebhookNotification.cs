@@ -4,7 +4,7 @@
 using Newtonsoft.Json;
 using System;
 
-namespace Mona.SaaS.Web.Models
+namespace Mona.SaaS.Core.Models.Web
 {
     public class WebhookNotification
     {

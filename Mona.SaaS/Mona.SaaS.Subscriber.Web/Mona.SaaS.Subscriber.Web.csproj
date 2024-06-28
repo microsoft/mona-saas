@@ -7,6 +7,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Microsoft.ApplicationInsights.AspNetCore" Version="2.22.0" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\Mona.SaaS.Core\Mona.SaaS.Core.csproj" />
     <ProjectReference Include="..\Mona.SaaS.Services.Default\Mona.SaaS.Services.csproj" />
   </ItemGroup>

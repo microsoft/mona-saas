@@ -1,6 +1,6 @@
 ﻿@model LandingPageModel
 
-@using Microsoft.AspNetCore.Mvc.Localization
+@    using Microsoft.AspNetCore.Mvc.Localization
 
 @inject IViewLocalizer Localizer
 
@@ -111,13 +111,13 @@
                             <h4 class="alert-heading">@Localizer["Something went wrong."]</h4>
                             @switch (Model.ErrorCode)
                             {
-                                case Mona.SaaS.Web.Controllers.SubscriptionController.ErrorCodes.SubscriptionNotFound:
+                                case SubscriptionController.ErrorCodes.SubscriptionNotFound:
                                     <p>@Localizer["We were unable to activate your subscription. Please return to the original AppSource/Marketplace listing and try again."]</p>
                                     break;
-                                case Mona.SaaS.Web.Controllers.SubscriptionController.ErrorCodes.SubscriptionActivationFailed:
+                                case SubscriptionController.ErrorCodes.SubscriptionActivationFailed:
                                     <p>@Localizer["We were unable to activate your subscription. Please return to the original AppSource/Marketplace listing and try again."]</p>
                                     break;
-                                case Mona.SaaS.Web.Controllers.SubscriptionController.ErrorCodes.UnableToResolveMarketplaceToken:
+                                case SubscriptionController.ErrorCodes.UnableToResolveMarketplaceToken:
                                     <p>@Localizer["We were unable to get your subscription information. Please return to the original AppSource/Marketplace listing and try again."]</p>
                                     break;
                             }
