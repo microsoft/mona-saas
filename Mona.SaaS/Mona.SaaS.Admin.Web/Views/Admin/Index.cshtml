@@ -4,59 +4,97 @@
 @using Mona.SaaS.Core.Constants
 @using Mona.SaaS.Web.Models
 
-@inject IViewLocalizer Localizer
-
 @{
     Layout = null;
 }
 
-<html lang="@Localizer["en"]">
+<html lang="en">
 <head>
     <link rel="stylesheet" href="https://static2.sharepointonline.com/files/fabric/office-ui-fabric-js/1.4.0/css/fabric.min.css" />
     <link rel="stylesheet" href="https://static2.sharepointonline.com/files/fabric/office-ui-fabric-js/1.4.0/css/fabric.components.min.css" />
     <script src="https://static2.sharepointonline.com/files/fabric/office-ui-fabric-js/1.4.0/js/fabric.min.js"></script>
     <link href="~/lib/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet" />
-    <title>@Localizer["Mona SaaS admin center"]</title>
+    <title>Mona SaaS admin center</title>
     <style>
-        .ms-TextField-field{display: block;}
-        .ms-MessageBar{width: -webkit-fill-available; padding: 15px;}
-        .ms-Icon.ms-Icon--Asterisk {font-size: 10px;font-weight: bolder;color:darkred;}
-        .ms-Label{font-size:14px;}
-        .ms-font-xl{font-weight:bold;}
-        .ms-MessageBar-icon{font-size: 15px;}
-        .ms-link{font-weight:600;}
-        a{color: #006cc1; }
-        .ms-Button.ms-Button--primary{color: #0072cc;background-color:0072cc;}
-        ms-Button.ms-Button--primary { color: 0072cc;}
-        .ms-Label.is-disabled{color: #717171;}
-        .ms-Pivot-link:before { transition: none !important;}
-        .admin-section{margin-top:25px;}
+        .ms-TextField-field {
+            display: block;
+        }
+
+        .ms-MessageBar {
+            width: -webkit-fill-available;
+            padding: 15px;
+        }
+
+        .ms-Icon.ms-Icon--Asterisk {
+            font-size: 10px;
+            font-weight: bolder;
+            color: darkred;
+        }
+
+        .ms-Label {
+            font-size: 14px;
+        }
+
+        .ms-font-xl {
+            font-weight: bold;
+        }
+
+        .ms-MessageBar-icon {
+            font-size: 15px;
+        }
+
+        .ms-link {
+            font-weight: 600;
+        }
+
+        a {
+            color: #006cc1;
+        }
+
+        .ms-Button.ms-Button--primary {
+            color: #0072cc;
+            background-color: 0072cc;
+        }
+
+        ms-Button.ms-Button--primary {
+            color: 0072cc;
+        }
+
+        .ms-Label.is-disabled {
+            color: #717171;
+        }
+
+        .ms-Pivot-link:before {
+            transition: none !important;
+        }
+
+        .admin-section {
+            margin-top: 25px;
+        }
     </style>
 </head>
 <body class="ms-Fabric" dir="ltr">
     <main>
-        <div class="ms-Grid" dir="ltr" >
+        <div class="ms-Grid" dir="ltr">
             <div class="ms-Grid-row" style="min-height: 87%;padding: 20px;">
                 <div class="ms-Grid-col ms-sm6" style="float: left;max-width: 55%;min-width: 55%">
-                    <span class="ms-font-su ms-fontColor-themePrimary">@Localizer["Mona SaaS admin center"]</span>
+                    <span class="ms-font-su ms-fontColor-themePrimary">Mona SaaS admin center</span>
                     <p class="ms-font-l">
-                        @Localizer[
-                        "You'll need these technical details when you <a target=\"_blank\" href=\"{0}\">publish your SaaS offer through the Partner Center</a>.",
-                        "https://docs.microsoft.com/azure/marketplace/create-new-saas-offer-technical"]
+                        You'll need these technical details when you <a target="_blank" href="https://docs.microsoft.com/azure/marketplace/create-new-saas-offer-technical">publish your SaaS offer through the Partner Center</a>.
                     </p>
                 </div>
 
                 <div class="ms-Grid-col ms-sm6" style="float: left;max-width: 55%;min-width: 55%">
-                     <div class="ms-Pivot">
+                    <div class="ms-Pivot">
                         <ul class="ms-Pivot-links">
                             <li class="ms-Pivot-link is-selected" data-content="partner" title="Partner" tabindex="1">
-                            @Localizer["Partner center technical details"]
+                                Partner center technical details"]
                             </li>
                             <li class="ms-Pivot-link" data-content="testing" title="Testing" tabindex="1">
-                            @Localizer["Testing"]
+                                Testing
                             </li>
                             <li class="ms-Pivot-link" data-content="configuration" title="Configuration" tabindex="1">
-                            @Localizer["Mona SaaS configuration settings"]
+                                Mona SaaS configuration settings
                             </li>
                         </ul>
 
@@ -65,91 +103,80 @@
                                 <div class="ms-MessageBar-content">
                                     <div class="ms-MessageBar-icon"><i class="ms-Icon ms-Icon--Info"></i></div>
                                     <div class="ms-MessageBar-text">
-                                        @Localizer["You'll need these technical details when you <a class=\"alert-link\" target=\"_blank\" href=\"{0}\">publish your SaaS offer through the Partner Center</a>.",
-                                            "https://docs.microsoft.com/azure/marketplace/create-new-saas-offer-technical"]
+                                        You'll need these technical details when you <a target="_blank" href="https://docs.microsoft.com/azure/marketplace/create-new-saas-offer-technical">publish your SaaS offer through the Partner Center</a>.
                                     </div>
                                 </div>
                             </div><br />
                             <table class="table table-bordered table-striped">
                                 <tbody>
                                     <tr>
-                                        <th>@Localizer["Landing Page URL"]</th>
+                                        <th>Landing Page URL</th>
                                         <td>@Model.PartnerCenterTechnicalDetails.LandingPageUrl</td>
                                     </tr>
                                     <tr>
-                                        <th>@Localizer["Connection Webhook URL"]</th>
+                                        <th>Connection Webhook URL</th>
                                         <td>@Model.PartnerCenterTechnicalDetails.WebhookUrl</td>
                                     </tr>
                                     <tr>
-                                        <th>@Localizer["Azure Active Directory Tenant ID"]</th>
+                                        <th>Azure Active Directory Tenant ID</th>
                                         <td>@Model.PartnerCenterTechnicalDetails.AadTenantId</td>
                                     </tr>
                                     <tr>
-                                        <th>@Localizer["Azure Active Directory Application ID"]</th>
+                                        <th>Azure Active Directory Application ID</th>
                                         <td>@Model.PartnerCenterTechnicalDetails.AadApplicationId</td>
                                     </tr>
                                 </tbody>
                             </table>
                         </div>
-                      
+
                         <div class="ms-Pivot-content" data-content="testing">
-                                <div class="ms-MessageBar">
-                                    <div class="ms-MessageBar-content">
-                                        <div class="ms-MessageBar-icon"><i class="ms-Icon ms-Icon--Info"></i></div>
-                                        <div class="ms-MessageBar-text">
-                                            @Localizer["Mona SaaS test endpoints are currently enabled. To disable them, see <a class=\"alert-link\" target=\"_blank\" href=\"https://github.com/microsoft/mona-saas/tree/main/docs\">the Mona SaaS docs</a>."]
-                                        </div>
-                                    </div>
-                                </div><br />
-                                <p class="ms-font-m">@Localizer["These endpoints make it easy to test your SaaS subscription workflows before going live."] </p>
-                                <p class="ms-font-m">@Localizer["The behavior of these endpoints is identical to that of the live endpoints (defined in the technical details section above) " +
-                                    "with the exception that subscriptions created/updated through these endpoints are only cached locally. AppSource/Azure Marketplace " +
-                                    "is not aware of subscriptions created through these test endpoints."]
-                                </p>
-                                <table class="table table-bordered table-striped">
-                                    <tbody>
-                                        <tr>
-                                            <th scope="row" style="width: 50%">@Localizer["Test Landing Page URL"]</th>
-                                            <td style="width: 50%"><a href="@Model.TestLandingPageUrl" target="_blank">@Model.TestLandingPageUrl</a></td>
-                                        </tr>
-                                        <tr>
-                                            <th scope="row" style="width: 50%">@Localizer["Test Connection Webhook URL"]</th>
-                                            <td style="width: 50%">@Model.TestWebhookUrl</td>
-                                        </tr>
-                                    </tbody>
-                                </table>
+                            <p class="ms-font-m">These endpoints make it easy to test your SaaS subscription workflows before going live.</p>
+                            <p class="ms-font-m">
+                                The behavior of these endpoints is identical to that of the live endpoints (defined in the technical details section above)
+                                with the exception that subscriptions created/updated through these endpoints are only cached locally. AppSource/Azure Marketplace
+                                is not aware of subscriptions created through these test endpoints.
+                            </p>
+                            <table class="table table-bordered table-striped">
+                                <tbody>
+                                    <tr>
+                                        <th scope="row" style="width: 50%">Test Landing Page URL</th>
+                                        <td style="width: 50%"><a href="@Model.TestLandingPageUrl" target="_blank">@Model.TestLandingPageUrl</a></td>
+                                    </tr>
+                                    <tr>
+                                        <th scope="row" style="width: 50%">Test Connection Webhook URL</th>
+                                        <td style="width: 50%">@Model.TestWebhookUrl</td>
+                                    </tr>
+                                </tbody>
+                            </table>
 
-                    </div>
+                        </div>
 
-                   <!-- Azure configuration -->
-                    <div class="ms-Pivot-content" data-content="configuration">
-                        <p class="ms-font-m">
-                            @Localizer[
-                            "These configuration settings control nearly every aspect of how this Mona SaaS deployment behaves. " +
-                            "Most of these settings are automatically configured during the initial Mona SaaS setup. " +
-                            "For more information on these settings, please <a target=\"_blank\" href=\"{0}\">visit the Mona SaaS docs</a>.",
-                            "https://github.com/azure"]
-                        </p>
-                        <a role="button" class="ms-Button  ms-Button--primary" href="@Model.ConfigurationSettingsUrl" target="_blank">
-                             <span class="ms-Button-label">@Localizer["Manage configuration settings"]</span>
-                             <i class="ms-Icon ms-Icon--DoubleChevronRight" style="font-size: 10px;padding-left: 5px;color:white;"></i>
-                        </a>&nbsp;
-                        <a role="button" class="ms-Button" href="@Url.RouteUrl("appsettings")" target="_blank">
-                             <span class="ms-Button-label">@Localizer["Download appsettings.json for local debugging"]</span>
-                        </a>
+                        <!-- Azure configuration -->
+                        <div class="ms-Pivot-content" data-content="configuration">
+                            <p class="ms-font-m">
+                                These configuration settings control nearly every aspect of how this Mona SaaS deployment behaves. 
+                                Most of these settings are automatically configured during the initial Mona SaaS setup.
+                            </p>
+                            <a role="button" class="ms-Button  ms-Button--primary" href="@Model.ConfigurationSettingsUrl" target="_blank">
+                                <span class="ms-Button-label">Manage configuration settings"]</span>
+                                <i class="ms-Icon ms-Icon--DoubleChevronRight" style="font-size: 10px;padding-left: 5px;color:white;"></i>
+                            </a>&nbsp;
+                            <a role="button" class="ms-Button" href="@Url.RouteUrl("appsettings")" target="_blank">
+                                <span class="ms-Button-label">Download appsettings.json for local debugging</span>
+                            </a>
+                        </div>
                     </div>
                 </div>
-             </div>
             </div>
-       </div>
+        </div>
     </main>
 
     <footer style="padding-top: 18px;text-align: left;background-color: #f4f4f4;padding-bottom: 18px;">
         <ul class="ms-List">
-            <li class="ms-ListItem ms-ListItem--image" tabindex="0" >
-                <span class="ms-ListItem-primaryText" style="padding-right:30px; color: #006ee5 ">Mona SaaS <small class="text-muted">@Model.MonaVersion</small></span> 
-                <span class="ms-ListItem-secondaryText">Copyright © Microsoft Corporation @DateTime.UtcNow.Year</span> 
-                <span class="ms-ListItem-tertiaryText">Licensed under the <a target="_blank" href="https://github.com/microsoft/mona-saas/LICENSE.txt">MIT license</a>.</span> 
+            <li class="ms-ListItem ms-ListItem--image" tabindex="0">
+                <span class="ms-ListItem-primaryText" style="padding-right:30px; color: #006ee5 ">Mona SaaS <small class="text-muted">@Model.MonaVersion</small></span>
+                <span class="ms-ListItem-secondaryText">Copyright © Microsoft Corporation @DateTime.UtcNow.Year</span>
+                <span class="ms-ListItem-tertiaryText">Licensed under the <a target="_blank" href="https://github.com/microsoft/mona-saas/LICENSE.txt">MIT license</a>.</span>
             </li>
         </ul>
     </footer>
@@ -159,6 +186,6 @@
 <script type="text/javascript">
     var PivotElements = document.querySelectorAll(".ms-Pivot");
     for (var i = 0; i < PivotElements.length; i++) {
-      new fabric['Pivot'](PivotElements[i]);
+        new fabric['Pivot'](PivotElements[i]);
     }
- </script>
+</script>

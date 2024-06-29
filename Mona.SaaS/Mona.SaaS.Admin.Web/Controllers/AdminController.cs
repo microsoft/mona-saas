@@ -11,7 +11,6 @@ using Mona.SaaS.Web.Models.Admin;
 
 namespace Mona.SaaS.Web.Controllers
 {
-    [Authorize]
     public class AdminController : Controller
     {
         private readonly DeploymentConfiguration deploymentConfig;

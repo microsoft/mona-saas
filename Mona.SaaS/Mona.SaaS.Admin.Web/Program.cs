@@ -20,8 +20,8 @@ builder.Services.AddAuthentication(OpenIdConnectDefaults.AuthenticationScheme)
                 .AddMicrosoftIdentityWebApp(o =>
                 {
                     o.Instance = "https://login.microsoftonline.com/";
-                    o.ClientId = configuration["Identity:AppIdentity:AadClientId"];
-                    o.TenantId = configuration["Identity:AppIdentity:AadTenantId"];
+                    o.ClientId = configuration["Identity:AdminAppIdentity:EntraAppId"];
+                    o.TenantId = configuration["Identity:AdminAppIdentity:EntraTenantId"];
                     o.CallbackPath = "/signin-oidc";
                 });
 

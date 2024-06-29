@@ -18,7 +18,6 @@
 
 	<ItemGroup>
 		<ProjectReference Include="..\Mona.SaaS.Core\Mona.SaaS.Core.csproj" />
-		<ProjectReference Include="..\Mona.SaaS.Services.Default\Mona.SaaS.Services.csproj" />
 		<ProjectReference Include="..\Mona.SaaS.Services\Mona.SaaS.Services.csproj" />
 	</ItemGroup>
 

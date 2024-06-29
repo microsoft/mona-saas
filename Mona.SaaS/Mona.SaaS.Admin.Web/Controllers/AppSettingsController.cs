@@ -11,7 +11,6 @@ namespace Mona.SaaS.Web.Controllers
     using Newtonsoft.Json;
     using System.Text;
 
-    [Authorize]
     public class AppSettingsController : Controller
     {
         private readonly DeploymentConfiguration deploymentConfig;

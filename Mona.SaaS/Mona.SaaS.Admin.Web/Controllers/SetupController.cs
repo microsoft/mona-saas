@@ -10,7 +10,6 @@ using Mona.SaaS.Web.Models;
 
 namespace Mona.SaaS.Web.Controllers
 {
-    [Authorize(Policy = "admin")]
     public class SetupController : Controller
     {
         private readonly ILogger logger;

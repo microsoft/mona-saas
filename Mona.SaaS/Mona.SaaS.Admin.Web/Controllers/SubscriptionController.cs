@@ -15,7 +15,7 @@ namespace Mona.SaaS.Admin.Web.Controllers
         public SubscriptionController(ISubscriptionWebService subscriptionService) =>
             this.subscriptionService = subscriptionService;
 
-        [Authorize, HttpGet, Route("/test", Name = "landing/test")]
+        [HttpGet, Route("/test", Name = "landing/test")]
         public Task<IActionResult> OnLanding() =>
             subscriptionService.OnLanding(HttpContext);
 
