@@ -8,14 +8,14 @@
     Layout = null;
 }
 
-<html lang="@Localizer["en"]">
+<html lang="en">
 <head>
     <link rel="stylesheet" href="https://static2.sharepointonline.com/files/fabric/office-ui-fabric-js/1.4.0/css/fabric.min.css" />
     <link rel="stylesheet" href="https://static2.sharepointonline.com/files/fabric/office-ui-fabric-js/1.4.0/css/fabric.components.min.css" />
     <script src="https://static2.sharepointonline.com/files/fabric/office-ui-fabric-js/1.4.0/js/fabric.min.js"></script>
     <script src="https://code.jquery.com/jquery-3.5.0.js"></script>
     <link href="~/lib/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet" />
-    <title>@Localizer["Mona SaaS setup"]</title>
+    <title>Mona SaaS setup</title>
 
     <style>
         .ms-TextField-field {
@@ -96,9 +96,6 @@
                                 <li class="ms-Pivot-link" data-content="configuration" title="Configuration" tabindex="1">
                                     Configuration
                                 </li>
-                                <li class="ms-Pivot-link" data-content="publisher" title="Publisher" tabindex="1">
-                                    Publisher
-                                </li>
                                 <li class="ms-Pivot-link" data-content="review" title="Review" tabindex="1">
                                     Review + Submit
                                 </li>
@@ -150,45 +147,9 @@
                                     <i class="ms-Icon ms-Icon--DoubleChevronLeft" style="font-size: 10px;padding-left: 5px;"></i>
                                     <span class="ms-Button-label">Purchase</span>
                                 </button>
-                                <button class="ms-Button" onclick="goToTab('publisher')" type="button">
-                                    <span class="ms-Button-label">Publisher</span>
-                                    <i class="ms-Icon ms-Icon--DoubleChevronRight" style="font-size: 10px;padding-left: 5px;"></i>
-                                </button>
-                            </div>
-
-                            <div class="ms-Pivot-content" data-content="publisher">
-                                <div class="ms-TextField">
-                                    @Html.LabelFor(m => m.Publisher.PublisherDisplayName, new { @class = "ms-Label is-required" })
-                                    @Html.TextBoxFor(m => m.Publisher.PublisherDisplayName, new { @id = "textFieldPublisherDisplayName", @class = "ms-TextField-field" })
-                                    <div class="ms-MessageBar-icon" style="padding-right: 1px;font-size: 11px;"><i class="ms-Icon ms-Icon ms-Icon--Info"></i></div>
-                                    <span class="ms-font-xs" style="display: table-cell;">@Localizer["The name of your company as it will appear on the landing page."]</span>
-                                    <br />
-                                    @Html.LabelFor(m => m.Publisher.PublisherHomePageUrl, new { @class = "ms-Label" })
-                                    @Html.TextBoxFor(m => m.Publisher.PublisherHomePageUrl, new { @id = "textFieldPublisherHomePageUrl", @class = "ms-TextField-field", placeholder = "https://yourdomain.com" })
-                                    <div class="ms-MessageBar-icon" style="padding-right: 1px;font-size: 11px;"><i class="ms-Icon ms-Icon ms-Icon--Info"></i></div>
-                                    <span class="ms-font-xs" style="display: table-cell;">@Localizer["Your company's home page."]</span>
-                                    <br />
-                                    @Html.LabelFor(m => m.Publisher.PublisherContactPageUrl, new { @class = "ms-Label" })
-                                    @Html.TextBoxFor(m => m.Publisher.PublisherContactPageUrl, new { @id = "textFielPublisherContactPageUrl", @class = "ms-TextField-field", placeholder = $"https://yourdomain.com/contact-us" })
-                                    <div class="ms-MessageBar-icon" style="padding-right: 1px;font-size: 11px;"><i class="ms-Icon ms-Icon ms-Icon--Info"></i></div>
-                                    <span class="ms-font-xs" style="display: table-cell;">@Localizer["Your company's contact page."]</span>
-                                    <br />
-                                    @Html.LabelFor(m => m.Publisher.PublisherPrivacyNoticePageUrl, new { @class = "ms-Label" })
-                                    @Html.TextBoxFor(m => m.Publisher.PublisherPrivacyNoticePageUrl, new { @id = "textFieldPublisherPrivacyNoticePageUrl", @class = "ms-TextField-field", placeholder = $"https://yourdomain.com/privacy" })
-                                    <div class="ms-MessageBar-icon" style="padding-right: 1px;font-size: 11px;"><i class="ms-Icon ms-Icon ms-Icon--Info"></i></div>
-                                    <span class="ms-font-xs" style="display: table-cell;">@Localizer["Your company's private notice page."]</span>
-                                    <br />
-                                    @Html.LabelFor(m => m.Publisher.PublisherCopyrightNotice, new { @class = "ms-Label" })
-                                    @Html.TextBoxFor(m => m.Publisher.PublisherCopyrightNotice, new { @id = "textFieldPublisherCopyrightNotice", @class = "ms-TextField-field", placeholder = $"© Awesome ISV {DateTime.UtcNow.Year}" })
-                                    <div class="ms-MessageBar-icon" style="padding-right: 1px;font-size: 11px;"><i class="ms-Icon ms-Icon ms-Icon--Info"></i></div>
-                                    <span class="ms-font-xs" style="display: table-cell;">@Localizer["Your copyright notice as it will appear on the landing page."]</span>
-                                </div><br /><br />
-                                <button class="ms-Button" onclick="goToTab('configuration')" type="button">
-                                    <i class="ms-Icon ms-Icon--DoubleChevronLeft" style="font-size: 10px;padding-left: 5px;"></i>
-                                    <span class="ms-Button-label">@Localizer["Configuration"]</span>
-                                </button>
                                 <button class="ms-Button" onclick="goToTab('review')" type="button">
-                                    <span class="ms-Button-label">@Localizer["Review + Submit"]</span><i class="ms-Icon ms-Icon--DoubleChevronRight" style="font-size: 10px;padding-left: 5px;"></i>
+                                    <span class="ms-Button-label">Review</span>
+                                    <i class="ms-Icon ms-Icon--DoubleChevronRight" style="font-size: 10px;padding-left: 5px;"></i>
                                 </button>
                             </div>
 
@@ -196,7 +157,7 @@
                                 <div class="ms-MessageBar ms-MessageBar--success">
                                     <div class="ms-MessageBar-content">
                                         <div class="ms-MessageBar-icon"><i class="ms-Icon ms-Icon--Completed"></i></div>
-                                        <div class="ms-MessageBar-text">@Localizer["Thank you for configuring Mona SaaS. Before complete review the information."]</div>
+                                        <div class="ms-MessageBar-text">Thank you for configuring Mona SaaS. Before complete review the information.</div>
                                     </div>
                                 </div>
                                 <br><br>
@@ -211,31 +172,10 @@
                                             <td>@Html.LabelFor(m => m.Publisher.SubscriptionConfigurationUrl, new { @class = "ms-Label is-required" })</td>
                                             <td id="showValueSubscriptionConfigurationUrl"></td>
                                         </tr>
-                                        <tr>
-                                            <td>@Html.LabelFor(m => m.Publisher.PublisherDisplayName, new { @class = "ms-Label is-required" })</td>
-                                            <td id="showValuePurchasePublisherDisplayName"></td>
-                                        </tr>
-                                        <tr>
-                                            <td>@Html.LabelFor(m => m.Publisher.PublisherHomePageUrl, new { @class = "ms-Label" })</td>
-                                            <td id="showValuePurchasePublisherHomePageUrl"></td>
-                                        </tr>
-                                        <tr>
-                                            <td>@Html.LabelFor(m => m.Publisher.PublisherContactPageUrl, new { @class = "ms-Label" })</td>
-                                            <td id="showValuePurchasePublisherContactPageUrl"></td>
-                                        </tr>
-                                        <tr>
-                                            <td>@Html.LabelFor(m => m.Publisher.PublisherPrivacyNoticePageUrl, new { @class = "ms-Label" })</td>
-                                            <td id="showValuePublisherPrivacyNoticePageUrl"></td>
-                                        </tr>
-                                        <tr>
-                                            <td>@Html.LabelFor(m => m.Publisher.PublisherCopyrightNotice, new { @class = "ms-Label" })</td>
-                                            <td id="showValuePublisherCopyrightNotice"></td>
-                                        </tr>
-                                        <tr>
                                 </table>
                                 <br />
                                 <button class="ms-Button ms-Button--primary" type="submit">
-                                    <span class="ms-Button-label">@Localizer["Complete setup"]</span>
+                                    <span class="ms-Button-label">Complete setup</span>
                                 </button>
                             </div>
                         </div>
@@ -285,32 +225,12 @@
     $('#showValuePurchaseConfirmationUrl').html(purchaseConfirmation);
     var subscriptionConfigurationUrl = $('#textFieldSubscriptionConfigurationUrl').val();
     $('#showValueSubscriptionConfigurationUrl').html(subscriptionConfigurationUrl);
-    var publisherDisplayName = $('#textFieldPublisherDisplayName').val();
-    $('#showValuePurchasePublisherDisplayName').html(publisherDisplayName);
-    var publisherHomePageUrl = $('#textFieldPublisherHomePageUrl').val();
-    $('#showValuePurchasePublisherHomePageUrl').html(publisherHomePageUrl);
-    var publisherContactPageUrl = $('#textFielPublisherContactPageUrl').val();
-    $('#showValuePurchasePublisherContactPageUrl').html(publisherContactPageUrl);
-    var publisherPrivacyNoticePageUrl = $('#textFieldPublisherPrivacyNoticePageUrl').val();
-    $('#showValuePublisherPrivacyNoticePageUrl').html(publisherPrivacyNoticePageUrl);
-    var publisherCopyrightNotice = $('#textFieldPublisherCopyrightNotice').val();
-    $('#showValuePublisherCopyrightNotice').html(publisherCopyrightNotice);
 
     $('.ms-TextField-field').blur(function () {
         var purchaseConfirmation = $('#textFieldPurchaseConfirmationUrl').val();
         $('#showValuePurchaseConfirmationUrl').html(purchaseConfirmation);
         var subscriptionConfigurationUrl = $('#textFieldSubscriptionConfigurationUrl').val();
         $('#showValueSubscriptionConfigurationUrl').html(subscriptionConfigurationUrl);
-        var publisherDisplayName = $('#textFieldPublisherDisplayName').val();
-        $('#showValuePurchasePublisherDisplayName').html(publisherDisplayName);
-        var publisherHomePageUrl = $('#textFieldPublisherHomePageUrl').val();
-        $('#showValuePurchasePublisherHomePageUrl').html(publisherHomePageUrl);
-        var publisherContactPageUrl = $('#textFielPublisherContactPageUrl').val();
-        $('#showValuePurchasePublisherContactPageUrl').html(publisherContactPageUrl);
-        var publisherPrivacyNoticePageUrl = $('#textFieldPublisherPrivacyNoticePageUrl').val();
-        $('#showValuePublisherPrivacyNoticePageUrl').html(publisherPrivacyNoticePageUrl);
-        var publisherCopyrightNotice = $('#textFieldPublisherCopyrightNotice').val();
-        $('#showValuePublisherCopyrightNotice').html(publisherCopyrightNotice);
     });
 
 </script>
