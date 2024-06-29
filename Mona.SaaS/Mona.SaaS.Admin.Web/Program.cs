@@ -7,6 +7,7 @@ using Microsoft.Identity.Web.UI;
 using Mona.SaaS.Core.Interfaces;
 using Mona.SaaS.Core.Models.Configuration;
 using Mona.SaaS.Services;
+using Mona.SaaS.Services.Web;
 
 // Let's build ourselves an admin app...
 var builder = WebApplication.CreateBuilder(args);
@@ -25,7 +26,8 @@ builder.Services.AddAuthentication(OpenIdConnectDefaults.AuthenticationScheme)
                 });
 
 // Wire up Mona services...
-builder.Services.AddTransient<ISubscriptionEventPublisher, EventGridSubscriptionEventPublisher>()
+builder.Services.AddTransient<ISubscriptionWebService, TestSubscriptionWebService>()
+                .AddTransient<ISubscriptionEventPublisher, EventGridSubscriptionEventPublisher>()
                 .AddTransient<ISubscriptionTestingCache, BlobStorageSubscriptionTestingCache>()
                 .AddTransient<IPublisherConfigurationStore, BlobStoragePublisherConfigurationStore>();
 

@@ -4,7 +4,7 @@ using Mona.SaaS.Core.Models.Configuration;
 using Mona.SaaS.Services;
 using Mona.SaaS.Services.Web;
 
-// Let's build ourselves an admin app...s
+// Let's build ourselves an admin app...
 var builder = WebApplication.CreateBuilder(args);
 
 // Get the configuration...

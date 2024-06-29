@@ -112,6 +112,9 @@ namespace Mona.SaaS.Services.Web
 
         public override async Task<IActionResult> OnWebhookNotification(HttpContext httpContext, WebhookNotification whNotification)
         {
+            ArgumentNullException.ThrowIfNull(httpContext, nameof(httpContext));
+            ArgumentNullException.ThrowIfNull(whNotification, nameof(whNotification));
+
             try
             {
                 var subscription = await mpSubscriptionService.GetSubscriptionAsync(whNotification.SubscriptionId);
