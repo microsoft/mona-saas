@@ -419,58 +419,76 @@ az webapp config appsettings set \
 
 # Deploy integration pack.
 
-integration_pack="${integration_pack#/}" # Trim leading...
-integration_pack="${integration_pack%/}" # and trailing slashes.
-
-pack_absolute_path="$integration_pack/deploy_pack.bicep" # Absolute...
-pack_relative_path="./integration_packs/$integration_pack/deploy_pack.bicep" # and relative pack paths.
-
-if [[ -f "$pack_absolute_path" ]]; then # Check the absolute path first...
-    pack_path="$pack_absolute_path"
-elif [[ -f "$pack_relative_path" ]]; then # then check the relative path.
-    pack_path="$pack_relative_path"
-fi
-
-if [[ -z "$pack_path" ]]; then
-    echo "$lp ⚠️   Integration pack [$integration_pack] not found at [$pack_absolute_path] or [$pack_relative_path]. No integration pack will be deployed."
+if [[ "$integration_pack" == "-" ]]; then
+    echo "$lp ℹ️   No integration pack will be deployed (-i -)."
 else
-    echo "$lp 🦾   Deploying [$integration_pack ($pack_path)] integration pack..."
+    integration_pack="${integration_pack#/}" # Trim leading...
+    integration_pack="${integration_pack%/}" # and trailing slashes.
 
-    az deployment group create \
-        --resource-group "$resource_group_name" \
-        --name "mona-pack-deploy-${deployment_name}" \
-        --template-file "$pack_path" \
-        --parameters \
-            deploymentName="$deployment_name" \
-            eventGridConnectionName="$event_grid_connection_name" \
-            eventGridTopicName="$event_grid_topic_name" \
-            managedIdId="$internal_mid_id"
+    pack_absolute_path="$integration_pack/deploy_pack.bicep" # Absolute...
+    pack_relative_path="./integration_packs/$integration_pack/deploy_pack.bicep" # and relative pack paths.
 
-    [[ $? -eq 0 ]] && echo "$lp ✔   Integration pack [$integration_pack ($pack_path)] deployed.";
-    [[ $? -ne 0 ]] && echo "$lp ⚠️   Integration pack [$integration_pack ($pack_path)] deployment failed."
+    if [[ -f "$pack_absolute_path" ]]; then # Check the absolute path first...
+        pack_path="$pack_absolute_path"
+    elif [[ -f "$pack_relative_path" ]]; then # then check the relative path.
+        pack_path="$pack_relative_path"
+    fi
+
+    if [[ -z "$pack_path" ]]; then
+        echo "$lp ⚠️   Integration pack [$integration_pack] not found at [$pack_absolute_path] or [$pack_relative_path]. No integration pack will be deployed."
+    else
+        echo "$lp 🦾   Deploying [$integration_pack ($pack_path)] integration pack..."
+
+        az deployment group create \
+            --resource-group "$resource_group_name" \
+            --name "mona-pack-deploy-${deployment_name}" \
+            --template-file "$pack_path" \
+            --parameters \
+                deploymentName="$deployment_name" \
+                eventGridConnectionName="$event_grid_connection_name" \
+                eventGridTopicName="$event_grid_topic_name" \
+                managedIdId="$internal_mid_id"
+
+        [[ $? -eq 0 ]] && echo "$lp ✔   Integration pack [$integration_pack ($pack_path)] deployed.";
+        [[ $? -ne 0 ]] && echo "$lp ⚠️   Integration pack [$integration_pack ($pack_path)] deployment failed."
+    fi
 fi
 
 if [[ -z $no_publish ]]; then
     # Deploy Mona web application...
 
-    echo "$lp 🛠️   Building Mona web app for deployment to [$web_app_name]..."
+    echo "$lp 🛠️   Building Mona admin web app for deployment to [$admin_web_app_name]..."
 
-    dotnet publish -c Release -o ./topublish ../Mona.SaaS.Web/Mona.SaaS.Web.csproj
+    dotnet publish -c Release -o ./admin_topublish ../Mona.SaaS.Admin.Web/Mona.SaaS.Admin.Web.csproj
 
-    cd ./topublish
-    zip -r ../topublish.zip . >/dev/null
+    cd ./admin_topublish
+    zip -r ../admin_topublish.zip . >/dev/null
     cd ..
 
-    echo "$lp ☁️   Publishing Mona web app to [$web_app_name]..."
+    echo "$lp 🛠️   Building SaaS customer web app for deployment to [$customer_web_app_name]..."
 
-    az webapp deployment source config-zip -g "$resource_group_name" -n "$web_app_name" --src ./topublish.zip
+    dotnet publish -c Release -o ./customer_topublish ../Mona.SaaS.Subscriber.Web/Mona.SaaS.Subscriber.Web.csproj
+
+    cd ./customer_topublish
+    zip -r ../customer_topublish.zip . >/dev/null
+    cd ..
+
+    echo "$lp ☁️   Publishing Mona admin web app to [$admin_web_app_name]..."
+
+    az webapp deployment source config-zip -g "$resource_group_name" -n "$admin_web_app_name" --src ./admin_topublish.zip
+
+    echo "$lp ☁️   Publishing SaaS customer web app to [$customer_web_app_name]..."
+
+    az webapp deployment source config-zip -g "$resource_group_name" -n "$customer_web_app_name" --src ./customer_topublish.zip
 
     # And scene...
 
     echo "$lp 🧹   Cleaning up..."
 
-    rm -rf ./topublish >/dev/null
-    rm -rf ./topublish.zip >/dev/null
+    rm -rf ./admin_topublish >/dev/null
+    rm -rf ./admin_topublish.zip >/dev/null
+    rm -rf ./customer_topublish >/dev/null
+    rm -rf ./customer_topublish.zip >/dev/null
 fi
 #>
 
