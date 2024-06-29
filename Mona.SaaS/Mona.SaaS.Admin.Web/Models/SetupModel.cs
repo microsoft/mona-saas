@@ -18,6 +18,6 @@ namespace Mona.SaaS.Web.Models
         /// </summary>
         public PublisherConfiguration Publisher { get; set; }
 
-        public string MonaVersion { get; set; }
+        public string? MonaVersion { get; set; }
     }
 }

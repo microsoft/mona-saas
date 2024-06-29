@@ -411,11 +411,13 @@ echo "$lp 🔏   Configuring resource access..."
 az role assignment create \
     --role "Storage Blob Data Contributor" \
     --assignee-object-id "$internal_mid_principal_id" \
+    --assignee-principal-type "ServicePrincipal" \
     --scope "$storage_account_id"
 
 az role assignment create \
     --role "EventGrid Data Contributor" \
     --assignee-object-id "$internal_mid_principal_id" \
+    --assignee-principal-type "ServicePrincipal" \
     --scope "$event_grid_topic_id"
 
 az webapp config appsettings set \
