@@ -2,6 +2,7 @@
 
 @using Microsoft.AspNetCore.Mvc.Localization
 @using Mona.SaaS.Core.Constants
+@using Mona.SaaS.Web.Models
 
 @inject IViewLocalizer Localizer
 
@@ -43,17 +44,6 @@
                         "You'll need these technical details when you <a target=\"_blank\" href=\"{0}\">publish your SaaS offer through the Partner Center</a>.",
                         "https://docs.microsoft.com/azure/marketplace/create-new-saas-offer-technical"]
                     </p>
-                    <!-- div class="ms-MessageBar ms-MessageBar--warning">
-                        <div class="ms-MessageBar-content">
-                            <div class="ms-MessageBar-icon">
-                            <i class="ms-Icon ms-Icon--Warning"></i>
-                            </div>
-                            <div class="ms-MessageBar-text">
-                            <b>Mona SaaS is Open Source. Please use at your discretion</b>
-                            <a class="ms-Link" href="#" title="More info about Example Link" style ="color:#006cc1">Learn more</a> 
-                            </div>
-                        </div>
-                    </div-->
                 </div>
 
                 <div class="ms-Grid-col ms-sm6" style="float: left;max-width: 55%;min-width: 55%">
@@ -64,9 +54,6 @@
                             </li>
                             <li class="ms-Pivot-link" data-content="testing" title="Testing" tabindex="1">
                             @Localizer["Testing"]
-                            </li>
-                            <li class="ms-Pivot-link" data-content="passthrough" title="PassThrough" tabindex="1">
-                            @Localizer["Passthrough mode"]
                             </li>
                             <li class="ms-Pivot-link" data-content="configuration" title="Configuration" tabindex="1">
                             @Localizer["Mona SaaS configuration settings"]
@@ -106,8 +93,6 @@
                         </div>
                       
                         <div class="ms-Pivot-content" data-content="testing">
-                            @if (Model.IsTestModeEnabled)
-                            {
                                 <div class="ms-MessageBar">
                                     <div class="ms-MessageBar-content">
                                         <div class="ms-MessageBar-icon"><i class="ms-Icon ms-Icon--Info"></i></div>
@@ -133,33 +118,6 @@
                                         </tr>
                                     </tbody>
                                 </table>
-                            }
-                            else
-                            {
-                                <div class="alert alert-secondary">@Localizer["Mona SaaS test endpoints are currently disabled. see <a class=\"alert-link\" target=\"_blank\" href=\"https://github.com/microsoft/mona-saas/tree/main/docs\">the Mona SaaS docs</a>."]</div>
-                            }
-
-                    </div>
-
-                    <!-- Passthrough Mode-->
-                    <div class="ms-Pivot-content" data-content="passthrough">
-                            @if (Model.IsPassthroughModeEnabled)
-                            {
-                                <div class="ms-MessageBar">
-                                    <div class="ms-MessageBar-content">
-                                        <div class="ms-MessageBar-icon"><i class="ms-Icon ms-Icon--Info"></i></div>
-                                        <div class="ms-MessageBar-text">
-                                            @Localizer["You currently have passthrough mode enabled."]
-                                        </div>
-                                    </div>
-                                </div><br />
-                                <p class="ms-font-m">@Localizer["If you would like to learn more about passthrough mode please see <a class=\"alert-link\" target=\"_blank\" href=\"https://github.com/microsoft/mona-saas/tree/main/docs#what-is-passthrough-mode\">this Mona SaaS FAQ section</a>."] </p>
-                            
-                            }
-                            else
-                            {
-                                <div class="alert alert-secondary">@Localizer["Mona SaaS passthrough mode is currently disabled. If you'd like to learn more about passthrough mode please see <a class=\"alert-link\" target=\"_blank\" href=\"https://github.com/microsoft/mona-saas/tree/main/docs#what-is-passthrough-mode\">this Mona SaaS FAQ section</a>."]</div>
-                            }
 
                     </div>
 
@@ -179,19 +137,6 @@
                         <a role="button" class="ms-Button" href="@Url.RouteUrl("appsettings")" target="_blank">
                              <span class="ms-Button-label">@Localizer["Download appsettings.json for local debugging"]</span>
                         </a>
-                        <div class="admin-section" id="user-management-section">
-                            <p class="ms-font-m">
-                                @Localizer[
-                                "Only users that belong to the <b>Mona Administrators</b> <a target=\"_blank\" href=\"{0}\">Azure Active Directory application role</a> " +
-                                "can access the admin center (this screen) and the various test endpoints. The user that originally " +
-                                "set up this Mona deployment is automatically added to this role.", 
-                                "https://docs.microsoft.com/azure/architecture/multitenant-identity/app-roles"]
-                            </p>
-                            <a role="button" class="ms-Button  ms-Button--primary" href="@Model.UserManagementUrl" target="_blank">
-                                <span class="ms-Button-label">@Localizer["Manage users configuration"]</span>
-                                <i class="ms-Icon ms-Icon--DoubleChevronRight" style="font-size: 10px;padding-left: 5px;color:white;"></i>
-                            </a>
-                        </div>
                     </div>
                 </div>
              </div>

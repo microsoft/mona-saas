@@ -2,7 +2,6 @@
 // Licensed under the MIT License.
 
 using Mona.SaaS.Web.Models.Admin;
-using System.Collections.Generic;
 
 namespace Mona.SaaS.Web.Models
 {

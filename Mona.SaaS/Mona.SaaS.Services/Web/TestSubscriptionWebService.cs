@@ -31,11 +31,18 @@ namespace Mona.SaaS.Services.Web
             
             try
             {
+                // Create a fake subscription for testing purposes.
+                // Use query string parameters to customize the test subscription.
+
                 var subscription = CreateTestSubscription(httpContext);
 
                 log.LogInformation($"Test subscription [{subscription.SubscriptionId}] created.");
 
+                // Cache the test subscription for later webhook testing.
+
                 await subscriptionTestingCache.PutSubscriptionAsync(subscription);
+
+                // Finish it up like it was a live subscription... that's the point! :)
 
                 return await CompleteSubscriptionPurchaseJourney(subscription);
             }
@@ -58,8 +65,8 @@ namespace Mona.SaaS.Services.Web
 
                 if (subscription == null)
                 {
-                    // The test webhook endpoint only works for subscriptions created
-                    // through the test landing endpoint.
+                    // The test webhook endpoint only works for subscriptions created through the test landing endpoint.
+                    // No test subscription; no test webhook. Get out of here.
 
                     log.LogWarning(
                         "Unable to process test Marketplace subscription webhook notification. " +
@@ -68,12 +75,14 @@ namespace Mona.SaaS.Services.Web
                     return new NotFoundResult();
                 }
                 else
-                {
+                { 
                     var opType = ToCoreOperationType(whNotification.ActionType);
 
                     log.LogInformation(
                         $"Processing subscription [{subscription.SubscriptionId}] webhook [{opType}] " +
                         $"operation [{whNotification.OperationId}]...");
+
+                    // Modify the test subscription per the test webhook notification.
 
                     switch (opType)
                     {
@@ -97,7 +106,12 @@ namespace Mona.SaaS.Services.Web
                             break;
                     }
 
+                    // Publish a subscription event based on the webhook notification.
+
                     await PublishWebhookSubscriptionEvent(opType, subscription, whNotification);
+
+                    // Save the updated subscription back to the testing cache.
+
                     await subscriptionTestingCache.PutSubscriptionAsync(subscription);
 
                     log.LogInformation(
