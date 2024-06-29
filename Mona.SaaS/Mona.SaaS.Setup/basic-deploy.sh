@@ -415,7 +415,7 @@ az role assignment create \
     --scope "$storage_account_id"
 
 az role assignment create \
-    --role "EventGrid Data Contributor" \
+    --role "Contributor" \
     --assignee-object-id "$internal_mid_principal_id" \
     --assignee-principal-type "ServicePrincipal" \
     --scope "$event_grid_topic_id"
