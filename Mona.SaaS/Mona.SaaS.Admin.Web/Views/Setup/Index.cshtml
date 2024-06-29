@@ -96,6 +96,9 @@
                                 <li class="ms-Pivot-link" data-content="configuration" title="Configuration" tabindex="1">
                                     Configuration
                                 </li>
+                                <li class="ms-Pivot-link" data-content="publisher" title="Publisher information" tabindex="1">
+                                    Publisher information
+                                </li>
                                 <li class="ms-Pivot-link" data-content="review" title="Review" tabindex="1">
                                     Review + Submit
                                 </li>
@@ -147,9 +150,25 @@
                                     <i class="ms-Icon ms-Icon--DoubleChevronLeft" style="font-size: 10px;padding-left: 5px;"></i>
                                     <span class="ms-Button-label">Purchase</span>
                                 </button>
-                                <button class="ms-Button" onclick="goToTab('review')" type="button">
-                                    <span class="ms-Button-label">Review</span>
+                                <button class="ms-Button" onclick="goToTab('publisher')" type="button">
+                                    <span class="ms-Button-label">Publisher information</span>
                                     <i class="ms-Icon ms-Icon--DoubleChevronRight" style="font-size: 10px;padding-left: 5px;"></i>
+                                </button>
+                            </div>
+
+                            <div class="ms-Pivot-content" data-content="publisher">
+                                <div class="ms-TextField">
+                                    @Html.LabelFor(m => m.Publisher.PublisherHomePageUrl, new { @class = "ms-Label" })
+                                    @Html.TextBoxFor(m => m.Publisher.PublisherHomePageUrl, new { @id = "textFieldPublisherHomePageUrl", @class = "ms-TextField-field", placeholder = "https://yourdomain.com" })
+                                    <div class="ms-MessageBar-icon" style="padding-right: 1px;font-size: 11px;"><i class="ms-Icon ms-Icon ms-Icon--Info"></i></div>
+                                    <span class="ms-font-xs" style="display: table-cell;">Your company's home page.</span>
+                                </div><br /><br />
+                                <button class="ms-Button" onclick="goToTab('configuration')" type="button">
+                                    <i class="ms-Icon ms-Icon--DoubleChevronLeft" style="font-size: 10px;padding-left: 5px;"></i>
+                                    <span class="ms-Button-label">Configuration</span>
+                                </button>
+                                <button class="ms-Button" onclick="goToTab('review')" type="button">
+                                    <span class="ms-Button-label">Review + Submit</span><i class="ms-Icon ms-Icon--DoubleChevronRight" style="font-size: 10px;padding-left: 5px;"></i>
                                 </button>
                             </div>
 
@@ -171,6 +190,10 @@
                                         <tr>
                                             <td>@Html.LabelFor(m => m.Publisher.SubscriptionConfigurationUrl, new { @class = "ms-Label is-required" })</td>
                                             <td id="showValueSubscriptionConfigurationUrl"></td>
+                                        </tr>
+                                        <tr>
+                                            <td>@Html.LabelFor(m => m.Publisher.PublisherHomePageUrl, new { @class = "ms-Label" })</td>
+                                            <td id="showValuePurchasePublisherHomePageUrl"></td>
                                         </tr>
                                 </table>
                                 <br />
@@ -225,12 +248,16 @@
     $('#showValuePurchaseConfirmationUrl').html(purchaseConfirmation);
     var subscriptionConfigurationUrl = $('#textFieldSubscriptionConfigurationUrl').val();
     $('#showValueSubscriptionConfigurationUrl').html(subscriptionConfigurationUrl);
+    var publisherHomePageUrl = $('#textFieldPublisherHomePageUrl').val();
+    $('#showValuePurchasePublisherHomePageUrl').html(publisherHomePageUrl);
 
     $('.ms-TextField-field').blur(function () {
         var purchaseConfirmation = $('#textFieldPurchaseConfirmationUrl').val();
         $('#showValuePurchaseConfirmationUrl').html(purchaseConfirmation);
         var subscriptionConfigurationUrl = $('#textFieldSubscriptionConfigurationUrl').val();
         $('#showValueSubscriptionConfigurationUrl').html(subscriptionConfigurationUrl);
+        var publisherHomePageUrl = $('#textFieldPublisherHomePageUrl').val();
+        $('#showValuePurchasePublisherHomePageUrl').html(publisherHomePageUrl);
     });
 
 </script>

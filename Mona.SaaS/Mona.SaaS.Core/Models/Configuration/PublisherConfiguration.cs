@@ -14,34 +14,10 @@ namespace Mona.SaaS.Core.Models.Configuration
         public bool IsSetupComplete { get; set; }
 
         /// <summary>
-        /// Gets/sets the publisher's friendly/display name.
-        /// </summary>
-        [Required, Display(Name = "Publisher name")]
-        public string PublisherDisplayName { get; set; }
-
-        /// <summary>
         /// Gets/sets the URL of the publisher's home page.
         /// </summary>
         [Display(Name = "Publisher home page URL")]
         public string PublisherHomePageUrl { get; set; }
-
-        /// <summary>
-        /// Gets/sets the URL of the publisher's privacy notice page.
-        /// </summary>
-        [Display(Name = "Publisher privacy notice URL")]
-        public string PublisherPrivacyNoticePageUrl { get; set; }
-
-        /// <summary>
-        /// Gets/sets the URL of the publisher's contact page.
-        /// </summary>
-        [Display(Name = "Publisher contact page URL")]
-        public string PublisherContactPageUrl { get; set; }
-
-        /// <summary>
-        /// Gets/sets the publisher's default copyright notice.
-        /// </summary>
-        [Display(Name = "Publisher copyright notice")]
-        public string PublisherCopyrightNotice { get; set; }
 
         /// <summary>
         /// Gets/sets the URL of the page that users should be redirected to to configure an existing subscription.
