@@ -25,17 +25,34 @@ check_az() {
 }
 
 check_dotnet() {
-    exec 3>&2
+    dotnet_version=$(dotnet --version)
 
-    dotnet --version >/dev/null 2>&1
-
-   # TODO: Should we be more specific about which version of dotnet is required?
-
-    if [[ $? -ne 0 ]]; then
-        echo "$lp ❌   Please install .NET before continuing. See [https://dotnet.microsoft.com/download] for more information."
-        return 1
+    if [[ $dotnet_version == 8.* ]]; then # Needs to be .NET 6
+        echo "✔   .NET [$dotnet_version] installed."
     else
-        echo "$lp ✔   .NET installed."
+        read -p "⚠️  .NET 8 is required to run this script but is not installed. Would you like to install it now? [Y/n]" install_dotnet
+
+        case "$install_dotnet" in
+            [yY1]   )
+                wget https://dotnet.microsoft.com/download/dotnet/scripts/v1/dotnet-install.sh
+                chmod +x ./dotnet-install.sh
+                ./dotnet-install.sh 
+
+                if [[ $? == 0 ]]; then
+                    export PATH="$HOME/.dotnet:$PATH"
+                    dotnet_version=$(dotnet --version)
+                    echo "✔   .NET [$dotnet_version] installed."
+                    return 0
+                else
+                    echo "❌   .NET 8 installation failed. See [https://learn.microsoft.com/dotnet/core/tools/dotnet-install-script] for more information."
+                    return 1
+                fi
+            ;;
+            *       )
+                echo "❌   Please install .NET 8 before continuing. See [https://learn.microsoft.com/dotnet/core/tools/dotnet-install-script] for more information."
+                return 1
+            ;;
+        esac
     fi
 }
 
