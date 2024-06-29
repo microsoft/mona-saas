@@ -44,6 +44,8 @@ namespace Mona.SaaS.Web.Controllers
                 return View(setupModel);
             }
 
+            setupModel.Publisher.IsSetupComplete = true;
+
             await this.publisherConfigStore.PutPublisherConfiguration(setupModel.Publisher);
 
             return RedirectToRoute("admin");

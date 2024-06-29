@@ -28,9 +28,9 @@ check_dotnet() {
     dotnet_version=$(dotnet --version)
 
     if [[ $dotnet_version == 8.* ]]; then # Needs to be .NET 6
-        echo "✔   .NET [$dotnet_version] installed."
+        echo "$lp ✔   .NET [$dotnet_version] installed."
     else
-        read -p "⚠️  .NET 8 is required to run this script but is not installed. Would you like to install it now? [Y/n]" install_dotnet
+        read -p "$lp ⚠️  .NET 8 is required to run this script but it is not installed. Would you like to install it now? [Y/n]" install_dotnet
 
         case "$install_dotnet" in
             [yY1]   )

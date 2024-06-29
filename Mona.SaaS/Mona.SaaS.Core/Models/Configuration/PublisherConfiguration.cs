@@ -16,7 +16,7 @@ namespace Mona.SaaS.Core.Models.Configuration
         /// <summary>
         /// Gets/sets the URL of the publisher's home page.
         /// </summary>
-        [Display(Name = "Publisher home page URL")]
+        [Required, Display(Name = "Publisher home page URL")]
         public string PublisherHomePageUrl { get; set; }
 
         /// <summary>
