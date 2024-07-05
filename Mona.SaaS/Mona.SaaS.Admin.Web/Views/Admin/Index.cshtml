@@ -66,7 +66,6 @@
 
         .ms-Pivot-link:before {
             transition: none !important;
-        }
 
         .admin-section {
             margin-top: 25px;
@@ -111,19 +110,19 @@
                                 <tbody>
                                     <tr>
                                         <th>Landing Page URL</th>
-                                        <td>@Model.PartnerCenterTechnicalDetails.LandingPageUrl</td>
+                                        <td>@Model.PartnerCenterTechnicalDetails!.LandingPageUrl</td>
                                     </tr>
                                     <tr>
                                         <th>Connection Webhook URL</th>
-                                        <td>@Model.PartnerCenterTechnicalDetails.WebhookUrl</td>
+                                        <td>@Model.PartnerCenterTechnicalDetails!.WebhookUrl</td>
                                     </tr>
                                     <tr>
                                         <th>Azure Active Directory Tenant ID</th>
-                                        <td>@Model.PartnerCenterTechnicalDetails.AadTenantId</td>
+                                        <td>@Model.PartnerCenterTechnicalDetails!.AadTenantId</td>
                                     </tr>
                                     <tr>
                                         <th>Azure Active Directory Application ID</th>
-                                        <td>@Model.PartnerCenterTechnicalDetails.AadApplicationId</td>
+                                        <td>@Model.PartnerCenterTechnicalDetails!.AadApplicationId</td>
                                     </tr>
                                 </tbody>
                             </table>

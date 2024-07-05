@@ -54,8 +54,8 @@ namespace Mona.SaaS.Web.Controllers
                     ConfigurationSettingsUrl = GetConfigurationSettingsEditorUrl(),
                     PartnerCenterTechnicalDetails = GetPartnerCenterTechnicalDetails(),
                     ResourceGroupOverviewUrl = GetResourceGroupUrl(),
-                    TestLandingPageUrl = Url.RouteUrl("landing/test", null, Request.Scheme),
-                    TestWebhookUrl = Url.RouteUrl("webhook/test", null, Request.Scheme)
+                    TestLandingPageUrl = Url.RouteUrl("landing/test", null, Request.Scheme)!,
+                    TestWebhookUrl = Url.RouteUrl("webhook/test", null, Request.Scheme)!
                 };
 
                 return View(adminModel);

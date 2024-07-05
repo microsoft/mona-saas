@@ -210,7 +210,7 @@ namespace Mona.SaaS.Services
             }
             catch (Exception ex)
             {
-                logger.LogError($"An error occurred while attempting to resolve a subscription.", ex);
+                logger.LogError(ex, "An error occurred while attempting to resolve a subscription. See exception for details.");
 
                 throw;
             }
@@ -253,7 +253,7 @@ namespace Mona.SaaS.Services
             }
             catch (Exception ex)
             {
-                logger.LogError("An error occurred while attempting to resolve a subscription.", ex);
+                logger.LogError(ex, "An error occurred while attempting to resolve a subscription. See exception for details.");
 
                 throw;
             }

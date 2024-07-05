@@ -33,6 +33,7 @@ namespace Mona.SaaS.Services
             var credential = new DefaultAzureCredential(new DefaultAzureCredentialOptions { ManagedIdentityResourceId = internalManagedId });
 
             eventGridClient = new EventGridPublisherClient(new Uri(options.TopicEndpoint), credential);
+            topicHostName = new Uri(options.TopicEndpoint).Host;
         }
 
         public async Task<bool> IsHealthyAsync()
