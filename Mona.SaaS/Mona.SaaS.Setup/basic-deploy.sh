@@ -420,6 +420,12 @@ az role assignment create \
     --assignee-principal-type "ServicePrincipal" \
     --scope "$event_grid_topic_id"
 
+az role assignment create \
+    --role "EventGrid Data Contributor" \
+    --assignee-object-id "$internal_mid_principal_id" \
+    --assignee-principal-type "ServicePrincipal" \
+    --scope "$event_grid_topic_id"
+
 az webapp config appsettings set \
     -g "$resource_group_name" \
     -n "$admin_web_app_name" \
