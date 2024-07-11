@@ -164,7 +164,7 @@ resource workflow 'Microsoft.Logic/workflows@2019-05-01' = {
                   type: 'string'
                 }
                 'Subscription End Date': {
-                  type: 'string'
+                  type: ['string', 'null'] 
                 }
                 'Subscription ID': {
                   type: 'string'
@@ -173,7 +173,7 @@ resource workflow 'Microsoft.Logic/workflows@2019-05-01' = {
                   type: 'string'
                 }
                 'Subscription Start Date': {
-                  type: 'string'
+                  type: ['string', 'null'] 
                 }
                 'Subscription Status': {
                   type: 'string'

@@ -290,7 +290,7 @@ az_deployment_name="mona-deploy-$deployment_name"
 az deployment group create \
     --resource-group "$resource_group_name" \
     --name "$az_deployment_name" \
-    --template-file "./templates/basic-deploy.bicep" \
+    --template-file "./templates/basic_deploy.bicep" \
     --parameters \
         deploymentName="$deployment_name" \
         aadTenantId="$current_user_tid" \
