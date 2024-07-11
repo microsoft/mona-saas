@@ -3,6 +3,7 @@
 
 using Newtonsoft.Json;
 using System;
+using System.Text.Json.Serialization;
 
 namespace Mona.SaaS.Core.Models.Events
 {
@@ -27,27 +28,35 @@ namespace Mona.SaaS.Core.Models.Events
         }
 
         [JsonProperty("Subscription ID")]
+        [JsonPropertyName("Subscription ID")]
         public string SubscriptionId { get; set; }
 
         [JsonProperty("Subscription Name")]
+        [JsonPropertyName("Subscription Name")]
         public string SubscriptionName { get; set; }
 
         [JsonProperty("Offer ID")]
+        [JsonPropertyName("Offer ID")]
         public string OfferId { get; set; }
 
         [JsonProperty("Plan ID")]
+        [JsonPropertyName("Plan ID")]
         public string PlanId { get; set; }
 
         [JsonProperty("Is Test Subscription?")]
+        [JsonPropertyName("Is Test Subscription?")]
         public bool IsTest { get; set; }
 
         [JsonProperty("Is Free Trial Subscription?")]
+        [JsonPropertyName("Is Free Trial Subscription?")]
         public bool IsFreeTrial { get; set; }
 
         [JsonProperty("Seat Quantity", NullValueHandling = NullValueHandling.Include)]
+        [JsonPropertyName("Seat Quantity")]
         public int? SeatQuantity { get; set; }
 
         [JsonProperty("Subscription Status")]
+        [JsonPropertyName("Subscription Status")]
         public string Status { get; set; }
 
         private void ApplyBasicInfo(Subscription subscription)

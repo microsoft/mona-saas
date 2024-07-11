@@ -5,6 +5,7 @@ using Mona.SaaS.Core.Constants;
 using Mona.SaaS.Core.Interfaces;
 using Newtonsoft.Json;
 using System;
+using System.Text.Json.Serialization;
 
 namespace Mona.SaaS.Core.Models.Events.V_2021_10_01
 {
@@ -38,24 +39,31 @@ namespace Mona.SaaS.Core.Models.Events.V_2021_10_01
         }
 
         [JsonProperty("Event ID")]
+        [JsonPropertyName("Event ID")]
         public string EventId { get; set; } = Guid.NewGuid().ToString();
 
         [JsonProperty("Event Type")]
+        [JsonPropertyName("Event Type")]
         public string EventType { get; set; }
 
         [JsonProperty("Event Version")]
+        [JsonPropertyName("Event Version")]
         public string EventVersion { get; set; } = EventVersions.V_2021_10_01;
 
         [JsonProperty("Operation ID")]
+        [JsonPropertyName("Operation ID")]
         public string OperationId { get; set; }
 
         [JsonProperty("Subscription ID")]
+        [JsonPropertyName("Subscription ID")]
         public string SubscriptionId { get; set; }
 
         [JsonProperty("Subscription")]
+        [JsonPropertyName("Subscription")]
         public FlatSubscription Subscription { get; set; }
 
         [JsonProperty("Operation Date/Time UTC")]
+        [JsonPropertyName("Operation Date/Time UTC")]
         public DateTime OperationDateTimeUtc { get; set; } = DateTime.UtcNow;
     }
 }

@@ -38,8 +38,8 @@ namespace Mona.SaaS.Core.Models.Configuration
         public string AzureSubscriptionId { get; set; }
 
         /// <summary>
-        /// Gets/sets the Azure resource group name that Mona has been deployed to.
         /// </summary>
+        /// Gets/sets the Azure resource group name that Mona has been deployed to.
         [Required]
         public string AzureResourceGroupName { get; set; }
     }

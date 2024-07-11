@@ -16,12 +16,14 @@ namespace Mona.SaaS.Subscriber.Web.Controllers
             this.subscriptionService = subscriptionService;
 
         [AllowAnonymous, HttpGet, Route("/", Name = "landing")]
-        public Task<IActionResult> OnLanding(string? subToken = null) =>
-            subscriptionService.OnLanding(HttpContext, subToken);
+        public Task<IActionResult> OnLanding(string? token = null) =>
+            subscriptionService.OnLanding(HttpContext, token);
 
         [AllowAnonymous, HttpPost, Route("/webhook", Name = "webhook")]
-        private Task<IActionResult> OnWehbookNotification([FromBody] WebhookNotification whNotification) =>
+        public Task<IActionResult> OnWehbookNotification([FromBody] WebhookNotification whNotification) =>
             subscriptionService.OnWebhookNotification(HttpContext, whNotification);
+
+        // You were a silly stupid dum dum and had this method private. Try it again and I bet it will work better adoiiii...
     }
 }
 

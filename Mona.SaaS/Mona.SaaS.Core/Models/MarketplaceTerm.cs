@@ -3,6 +3,7 @@
 
 using Newtonsoft.Json;
 using System;
+using System.Text.Json.Serialization;
 
 namespace Mona.SaaS.Core.Models
 {
@@ -12,12 +13,15 @@ namespace Mona.SaaS.Core.Models
     public class MarketplaceTerm
     {
         [JsonProperty("termUnit")]
+        [JsonPropertyName("termUnit")]
         public string TermUnit { get; set; }
 
         [JsonProperty("startDate")]
+        [JsonPropertyName("startDate")]
         public DateTime? StartDate { get; set; }
 
         [JsonProperty("endDate")]
+        [JsonPropertyName("endDate")]
         public DateTime? EndDate { get; set; }
     }
 }
