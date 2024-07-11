@@ -1,7 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-namespace Mona.SaaS.Admin.Web.Controllers
+namespace Mona.SaaS.Subscriber.Web.Controllers
 {
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Mvc;
@@ -15,20 +15,26 @@ namespace Mona.SaaS.Admin.Web.Controllers
 
     public class HealthController : Controller
     {
+        private readonly IMarketplaceOperationService mpOperationService;
+        private readonly IMarketplaceSubscriptionService mpSubscriptionService;
         private readonly IPublisherConfigurationStore publisherConfigStore;
         private readonly ISubscriptionEventPublisher subEventPublisher;
-        private readonly ISubscriptionTestingCache subTestingCache;
+        private readonly ISubscriptionStagingCache subStagingCache;
         private readonly ILogger logger;
 
         public HealthController(
+            IMarketplaceOperationService mpOperationService,
+            IMarketplaceSubscriptionService mpSubscriptionService,
             IPublisherConfigurationStore publisherConfigStore,
             ISubscriptionEventPublisher subEventPublisher,
-            ISubscriptionTestingCache subTestingCache,
+            ISubscriptionStagingCache subStagingCache,
             ILogger<HealthController> logger)
         {
+            this.mpOperationService = mpOperationService;
+            this.mpSubscriptionService = mpSubscriptionService;
             this.publisherConfigStore = publisherConfigStore;
             this.subEventPublisher = subEventPublisher;
-            this.subTestingCache = subTestingCache;
+            this.subStagingCache = subStagingCache;
             this.logger = logger;
         }
 
@@ -44,9 +50,11 @@ namespace Mona.SaaS.Admin.Web.Controllers
             {
                 var checkTasks = new List<Task<bool>>
                 {
+                    mpOperationService.IsHealthyAsync(),    // Check connectivity to marketplace operations API
+                    mpSubscriptionService.IsHealthyAsync(), // Check connectivity to marketplace subscription API
                     publisherConfigStore.IsHealthyAsync(),  // Check connectivity to publisher configuration store (blob storage by default)
                     subEventPublisher.IsHealthyAsync(),     // Check connectivity to subscription events topic (event grid by default)
-                    subTestingCache.IsHealthyAsync()        // Check connectivity to subscription testing cache (blob storage by default)
+                    subStagingCache.IsHealthyAsync()        // Check connectivity to subscription staging cache (blob storage by default)
                 };
 
                 Task.WaitAll(checkTasks.ToArray()); // Wait for all the checks to finish.

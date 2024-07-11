@@ -1,14 +1,13 @@
 ﻿// Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 using Mona.SaaS.Core.Interfaces;
 using Mona.SaaS.Core.Models.Configuration;
 using Mona.SaaS.Web.Models;
 
-namespace Mona.SaaS.Web.Controllers
+namespace Mona.SaaS.Admin.Web.Controllers
 {
     public class SetupController : Controller
     {
@@ -31,7 +30,7 @@ namespace Mona.SaaS.Web.Controllers
         {
             // TODO: When/where can the setup screen be accessed?
 
-            var publisherConfig = await this.publisherConfigStore.GetPublisherConfiguration();
+            var publisherConfig = await publisherConfigStore.GetPublisherConfiguration();
 
             return View(new SetupModel(publisherConfig) { MonaVersion = deploymentConfig.MonaVersion });
         }
@@ -46,7 +45,7 @@ namespace Mona.SaaS.Web.Controllers
 
             setupModel.Publisher.IsSetupComplete = true;
 
-            await this.publisherConfigStore.PutPublisherConfiguration(setupModel.Publisher);
+            await publisherConfigStore.PutPublisherConfiguration(setupModel.Publisher);
 
             return RedirectToRoute("admin");
         }

@@ -9,7 +9,7 @@ using Mona.SaaS.Core.Models.Configuration;
 using Mona.SaaS.Web.Models;
 using Mona.SaaS.Web.Models.Admin;
 
-namespace Mona.SaaS.Web.Controllers
+namespace Mona.SaaS.Admin.Web.Controllers
 {
     public class AdminController : Controller
     {
@@ -38,7 +38,7 @@ namespace Mona.SaaS.Web.Controllers
         {
             try
             {
-                var publisherConfig = await this.publisherConfigStore.GetPublisherConfiguration();
+                var publisherConfig = await publisherConfigStore.GetPublisherConfiguration();
 
                 if (publisherConfig == null) // No publisher config. Publisher needs to complete setup.
                 {
@@ -47,9 +47,9 @@ namespace Mona.SaaS.Web.Controllers
 
                 var adminModel = new AdminPageModel
                 {
-                    MonaVersion = this.deploymentConfig.MonaVersion,
-                    AzureSubscriptionId = this.deploymentConfig.AzureSubscriptionId,
-                    AzureResourceGroupName = this.deploymentConfig.AzureResourceGroupName,
+                    MonaVersion = deploymentConfig.MonaVersion,
+                    AzureSubscriptionId = deploymentConfig.AzureSubscriptionId,
+                    AzureResourceGroupName = deploymentConfig.AzureResourceGroupName,
                     EventGridTopicOverviewUrl = GetEventGridTopicUrl(),
                     ConfigurationSettingsUrl = GetConfigurationSettingsEditorUrl(),
                     PartnerCenterTechnicalDetails = GetPartnerCenterTechnicalDetails(),
@@ -62,33 +62,33 @@ namespace Mona.SaaS.Web.Controllers
             }
             catch (Exception ex)
             {
-                this.logger.LogError(ex, "An error occurred while attempting to load the Mona admin page. See exception for details.");
+                logger.LogError(ex, "An error occurred while attempting to load the Mona admin page. See exception for details.");
 
                 throw;
             }
         }
 
         private string GetConfigurationSettingsEditorUrl() =>
-            $"https://portal.azure.com/#@{this.identityConfig.EntraTenantId}/resource/subscriptions/{this.deploymentConfig.AzureSubscriptionId}" +
-            $"/resourceGroups/{this.deploymentConfig.AzureResourceGroupName}/providers/Microsoft.Web" +
-            $"/sites/mona-web-{this.deploymentConfig.Name.ToLower()}/configuration";
+            $"https://portal.azure.com/#@{identityConfig.EntraTenantId}/resource/subscriptions/{deploymentConfig.AzureSubscriptionId}" +
+            $"/resourceGroups/{deploymentConfig.AzureResourceGroupName}/providers/Microsoft.Web" +
+            $"/sites/mona-web-{deploymentConfig.Name.ToLower()}/configuration";
 
         private string GetEventGridTopicUrl() =>
-            $"https://portal.azure.com/#@{this.identityConfig.EntraTenantId}/resource/subscriptions/{this.deploymentConfig.AzureSubscriptionId}" +
-            $"/resourceGroups/{this.deploymentConfig.AzureResourceGroupName}/providers/Microsoft.EventGrid" +
-            $"/topics/mona-events-{this.deploymentConfig.Name.ToLower()}/overview";
+            $"https://portal.azure.com/#@{identityConfig.EntraTenantId}/resource/subscriptions/{deploymentConfig.AzureSubscriptionId}" +
+            $"/resourceGroups/{deploymentConfig.AzureResourceGroupName}/providers/Microsoft.EventGrid" +
+            $"/topics/mona-events-{deploymentConfig.Name.ToLower()}/overview";
 
         private string GetResourceGroupUrl() =>
-            $"https://portal.azure.com/#@{this.identityConfig.EntraTenantId}/resource/subscriptions/{this.deploymentConfig.AzureSubscriptionId}" +
-            $"/resourceGroups/{this.deploymentConfig.AzureResourceGroupName}/overview";
+            $"https://portal.azure.com/#@{identityConfig.EntraTenantId}/resource/subscriptions/{deploymentConfig.AzureSubscriptionId}" +
+            $"/resourceGroups/{deploymentConfig.AzureResourceGroupName}/overview";
 
         private PartnerCenterTechnicalDetails GetPartnerCenterTechnicalDetails() =>
             new PartnerCenterTechnicalDetails
             {
-                AadApplicationId = this.identityConfig.ManagedIdentities.ExternalClientId,
-                AadTenantId = this.identityConfig.EntraTenantId,
-                LandingPageUrl = this.marketplaceConfig.LandingPageUrl,
-                WebhookUrl = this.marketplaceConfig.WebhookUrl
+                AadApplicationId = identityConfig.ManagedIdentities.ExternalClientId,
+                AadTenantId = identityConfig.EntraTenantId,
+                LandingPageUrl = marketplaceConfig.LandingPageUrl,
+                WebhookUrl = marketplaceConfig.WebhookUrl
             };
     }
 }
