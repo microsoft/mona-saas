@@ -1,3 +1,5 @@
+> 📢 __Mona 2.0 is now in preview!__ Take a look and let us know what you think.
+
 # Mona SaaS
 
 ![CI Build](https://github.com/microsoft/mona-saas/actions/workflows/dotnet.yml/badge.svg)
