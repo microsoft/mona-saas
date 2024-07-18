@@ -1,4 +1,4 @@
-> 📢 __Mona 2.0 is now in preview!__ Take a look and let us know what you think.
+> [📢 __Mona 2.0 is now in preview!__ Take a look and let us know what you think.](https://github.com/microsoft/mona-saas/discussions/134)
 
 # Mona SaaS
 
