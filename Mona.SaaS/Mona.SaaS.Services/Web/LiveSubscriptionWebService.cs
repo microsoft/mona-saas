@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Mona.SaaS.Core.Constants;
 using Mona.SaaS.Core.Enumerations;
 using Mona.SaaS.Core.Interfaces;
 using Mona.SaaS.Core.Models;
@@ -139,7 +140,6 @@ namespace Mona.SaaS.Services.Web
 
                     await VerifyWebhookNotificationAsync(whNotification);
                     await PublishWebhookSubscriptionEvent(opType, subscription, whNotification);
-                    await mpOperationService.ConfirmOperationComplete(whNotification.SubscriptionId, whNotification.OperationId);
 
                     log.LogInformation(
                         $"Subscription [{subscription.SubscriptionId}] webhook [{opType}] " +

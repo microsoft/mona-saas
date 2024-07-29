@@ -22,8 +22,6 @@ namespace Mona.SaaS.Subscriber.Web.Controllers
         [AllowAnonymous, HttpPost, Route("/webhook", Name = "webhook")]
         public Task<IActionResult> OnWehbookNotification([FromBody] WebhookNotification whNotification) =>
             subscriptionService.OnWebhookNotification(HttpContext, whNotification);
-
-        // You were a silly stupid dum dum and had this method private. Try it again and I bet it will work better adoiiii...
     }
 }
 

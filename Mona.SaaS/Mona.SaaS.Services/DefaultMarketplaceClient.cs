@@ -16,6 +16,7 @@ using System;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
+using System.Net.Http.Json;
 using System.Threading.Tasks;
 
 namespace Mona.SaaS.Services
@@ -76,7 +77,13 @@ namespace Mona.SaaS.Services
             }
         }
 
-        public async Task ConfirmOperationComplete(string subscriptionId, string operationId)
+        public Task ConfirmOperationComplete(string subscriptionId, string operationId) =>
+            ConfirmOperation(subscriptionId, operationId, true);
+
+        public Task ConfirmOperationFailed(string subscriptionId, string operationId) =>
+            ConfirmOperation(subscriptionId, operationId, false);
+
+        public async Task ConfirmOperation(string subscriptionId, string operationId, bool didSucceed)
         {
             if (string.IsNullOrEmpty(subscriptionId))
             {
@@ -98,8 +105,17 @@ namespace Mona.SaaS.Services
                     using (var request = new HttpRequestMessage(HttpMethod.Patch, relativeUrl))
                     {
                         var bearerToken = await GetMarketplaceApiBearerToken();
+                        var status = (didSucceed ? "Success" : "Failure");
 
-                        request.Content = new StringContent(JsonConvert.SerializeObject(new { status = "Success" }));
+                        request.Content = new StringContent(
+                            JsonConvert.SerializeObject(new { status }), 
+                            System.Text.Encoding.UTF8, 
+                            "application/json");
+
+                        logger.LogWarning(JsonConvert.SerializeObject(new { status }));
+                        logger.LogWarning(status);
+                        logger.LogWarning(relativeUrl);
+
                         request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", bearerToken);
 
                         return await httpClient.SendAsync(request);
@@ -118,7 +134,6 @@ namespace Mona.SaaS.Services
 
                 throw;
             }
-
         }
 
         public async Task<SubscriptionOperation> GetSubscriptionOperationAsync(string subscriptionId, string operationId)
