@@ -112,10 +112,6 @@ namespace Mona.SaaS.Services
                             System.Text.Encoding.UTF8, 
                             "application/json");
 
-                        logger.LogWarning(JsonConvert.SerializeObject(new { status }));
-                        logger.LogWarning(status);
-                        logger.LogWarning(relativeUrl);
-
                         request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", bearerToken);
 
                         return await httpClient.SendAsync(request);
