@@ -8,7 +8,7 @@
 
  ## How does Mona SaaS work?
 
- Mona SaaS implements all of the various customer and publisher (you, the ISV) flows that are required by Microsoft's [SaaS fulfillment APIs](https://docs.microsoft.com/azure/marketplace/partner-center-portal/pc-saas-fulfillment-api-v2) including both [the landing page](https://docs.microsoft.com/azure/marketplace/partner-center-portal/pc-saas-fulfillment-api-v2#purchased-but-not-yet-activated-pendingfulfillmentstart) that customers will see when purchasing your SaaS offer and [the webhook](https://docs.microsoft.com/azure/marketplace/partner-center-portal/pc-saas-fulfillment-api-v2#implementing-a-webhook-on-the-saas-service) that Azure Marketplace uses to notify you of [subscription changes](https://docs.microsoft.com/azure/marketplace/partner-center-portal/pc-saas-fulfillment-api-v2#managing-the-saas-subscription-life-cycle) like [cancellations](https://docs.microsoft.com/azure/marketplace/partner-center-portal/pc-saas-fulfillment-api-v2#canceled-unsubscribed) and [suspensions](https://docs.microsoft.com/azure/marketplace/partner-center-portal/pc-saas-fulfillment-api-v2#suspended-suspended).
+ Mona SaaS implements all of the various customer and publisher (you, the ISV) flows that are required by Microsoft's [SaaS fulfillment APIs](https://docs.microsoft.com/azure/marketplace/partner-center-portal/pc-saas-fulfillment-api-v2) including both [a minimal landing page implementation](https://docs.microsoft.com/azure/marketplace/partner-center-portal/pc-saas-fulfillment-api-v2#purchased-but-not-yet-activated-pendingfulfillmentstart) that customers will transparently pass through when purchasing your SaaS offer and [a dedicated webhook endpoint](https://docs.microsoft.com/azure/marketplace/partner-center-portal/pc-saas-fulfillment-api-v2#implementing-a-webhook-on-the-saas-service) that Azure Marketplace uses to notify you of [subscription changes](https://docs.microsoft.com/azure/marketplace/partner-center-portal/pc-saas-fulfillment-api-v2#managing-the-saas-subscription-life-cycle) like [cancellations](https://docs.microsoft.com/azure/marketplace/partner-center-portal/pc-saas-fulfillment-api-v2#canceled-unsubscribed) and [suspensions](https://docs.microsoft.com/azure/marketplace/partner-center-portal/pc-saas-fulfillment-api-v2#suspended-suspended).
  
   ![Mona Architecture Overview](docs/images/mona_arch_overview.png)
  
@@ -100,7 +100,6 @@ The setup script supports additional optional parameters detailed in the table b
 | `-g` | Deployment Azure resource group name | No | `mona-[deployment name (-n)]` | The Azure resource group to deploy Mona SaaS into. If the resource group already exists, it must be empty. If the group doesn't exist, it will be automatically created during setup. |
 | `-s` | Deployment Azure subscription ID | No | The current subscription | The ID of the Azure subscription to deploy Mona SaaS into. |
 | `-e` | Subscription event version identifier | No | Current (`2021-10-01`) | When set, specifies the version of subscription events Mona should publish. [Learn more here.](docs/event-models/README.md) |
-| `-m` | __Flag__ - Enable [passthrough mode](https://github.com/microsoft/mona-saas/tree/main/docs#what-is-passthrough-mode). | No | N/A | When set, configures this Mona deployment to use [passthrough mode](https://github.com/microsoft/mona-saas/tree/main/docs#what-is-passthrough-mode). |
 | `-h` | __Flag__ - Don't show script splash screen. | No | N/A | When set, the setup script will not display the standard Mona setup splash screen. |
 | `-p` | __Flag__ - Don't publish the web app. | No | N/A | When set, the setup script will provision all Azure and Azure Active Directory reources as usual _but_ won't actually publish the Mona web app. |
 
@@ -153,8 +152,6 @@ Use the [Azure pricing calculator](https://azure.microsoft.com/pricing/calculato
 For help in forecasting your Mona SaaS costs [see this article](https://docs.microsoft.com/en-us/azure/cost-management-billing/costs/cost-analysis-common-uses#view-forecasted-costs).
 
 ## Dependencies
-
-Mona SaaS takes a dependency on the open source [Commercial Marketplace .NET Client (`commercial-marketplace-client-dotnet`)](https://github.com/microsoft/commercial-marketplace-client-dotnet). This library's DLL is conveniently included in the Mona SaaS repository.
 
 All other dependencies are automatically satisfied using [Nuget](https://docs.microsoft.com/nuget/what-is-nuget) during the Mona SaaS setup process. For more information on Mona SaaS' dependencies, [check out our dependency graph](https://github.com/microsoft/mona-saas/network/dependencies).
 
