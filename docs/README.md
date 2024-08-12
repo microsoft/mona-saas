@@ -29,6 +29,9 @@ You'll need to use Mona's external managed identity to notify the Marketplace th
 
 1. Locate the external managed identity within the Mona resource group. It will have a name like this: `mona-external-id-...`.
 2. Use this managed identity (e.g., with a [Logic App](https://learn.microsoft.com/azure/logic-apps/authenticate-with-managed-identity?tabs=consumption#authenticate-access-with-managed-identity), [Azure Function](https://learn.microsoft.com/azure/azure-functions/functions-identity-based-connections-tutorial), or [anywhere else you can use a managed identity](https://learn.microsoft.com/en-us/entra/identity/managed-identities-azure-resources/managed-identities-status)) to [notify the Marketplace directly that the subscription has been activated](https://learn.microsoft.com/partner-center/marketplace-offers/partner-center-portal/pc-saas-fulfillment-subscription-api#activate-a-subscription).
+3. 
+The Audience ID should be set to 20e940b3-4c77-4b0b-9a53-9e16a1b010a7
+https://learn.microsoft.com/en-au/partner-center/marketplace-offers/partner-center-portal/pc-saas-registration
 
 > Your customer not will be billed until you activate their subscription. You have 48 hours from the time the subscription was created to activate it.
 
