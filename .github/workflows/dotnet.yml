@@ -1,4 +1,4 @@
-name: Mona Build + Tests
+name: Mona Build
 
 on: [pull_request,workflow_dispatch]
 
