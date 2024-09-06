@@ -6,7 +6,7 @@ In the dynamic world of SaaS, every action—whether it's a new customer signing
 
 ### Clone this repo
 
-[Open an Azure Cloud Shell**, choose the Bash experience](https://learn.microsoft.com/azure/cloud-shell/get-started/ephemeral?tabs=azurecli#start-cloud-shell), and clone this repo. Navigate to the setup folder.
+[Open an Azure Cloud Shell, choose the Bash experience](https://learn.microsoft.com/azure/cloud-shell/get-started/ephemeral?tabs=azurecli#start-cloud-shell), and clone this repo. Navigate to the setup folder.
 
 ```bash
 git clone https://github.com/microsoft/mona-saas
@@ -18,7 +18,7 @@ cd mona-saas/Mona.SaaS/Mona.SaaS.Setup
 Run the `basic-deploy.sh` script to deploy Mona into your Azure environment. You'll need to provide two parameters:
 
 * **Azure Location `(-r)`**: [The Azure region](https://azure.microsoft.com/explore/global-infrastructure/geographies/) where Mona will be deployed (e.g., `eastus`, `southeastasia`).
-* **Deployment Name `(-n`)**: A unique name fo your Mona deployment. It must be 5-13 alphanumeric characters (e.g., `monatest01`).
+* **Deployment Name `(-n`)**: A unique name for your Mona deployment. It must be 5-13 alphanumeric characters (e.g., `monatest01`).
 
 > For a complete list of Azure regions to choose from, run `az account list-locations -o table`.
 
