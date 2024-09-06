@@ -1,3 +1,7 @@
 # Mona for SaaS
 
-In the world of SaaS, everything happens in real time—new customers sign up, existing ones renew, some upgrade, and a few may cancel. Each move is a pulse, an event that keeps your business alive. Mona is built to capture that rhythm, connecting these Marketplace events to an Azure Event Grid topic deployed in your cloud environment, making it easier than ever to automate the right workflows at the right time, so you can scale effortlessly and focus on delivering value to your customers.
+In the dynamic world of SaaS, every action—whether it's a new customer signing up, an existing one renewing, upgrading, or even canceling—creates a pulse that keeps your business thriving. Mona is designed to capture this rhythm seamlessly. By connecting these Marketplace events to an Azure Event Grid topic within your cloud environment, Mona simplifies the automation of essential workflows. This allows you to scale effortlessly and concentrate on delivering exceptional value to your customers.
+
+## Quickstart
+
+Getting started is a breeze. With Mona, you can have your SaaS offer up and running in just a few hours, rather than the days or months it typically takes. This streamlined setup process ensures that you can start transacting quickly and focus on growing your business without unnecessary delays.
