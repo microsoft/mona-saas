@@ -4,4 +4,4 @@ In the dynamic world of SaaS, every action—whether it's a new customer signing
 
 ## Quickstart
 
-Getting started is a breeze. With Mona, you can have your SaaS offer up and running in just a few hours.
+Getting started is straightforward. With Mona, you can have your SaaS offer up and running from planning to live Marketplace integration in just a few hours. This streamlined setup process ensures that you can start transacting quickly and focus on growing your business without unnecessary delays.
