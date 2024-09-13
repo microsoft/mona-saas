@@ -1,6 +1,6 @@
 # Mona for SaaS
 
-In the dynamic world of SaaS, every action—whether it's a new customer signing up, an existing one renewing, upgrading, or even canceling—creates a pulse that keeps your business moving. Mona is designed to capture this rhythm seamlessly. By connecting these Marketplace events to an Azure Event Grid topic within your cloud environment, Mona simplifies the automation of essential workflows. This allows you to scale effortlessly and concentrate on delivering exceptional value to your customers instead of building out Marketplace integrations.
+The Azure Marketplace is by nature an event-driven system. Customers purchase subscriptions to your SaaS app. Customers may change their subscriptions or purchase more seats. Sometimes customers will eventually cancel their subscriptions. Mona embraces this event-driven design by publishing all Marketplace-related events to an Event Grid topic deployed in your environment. By default, Mona deploys a set of Logic Apps that enable you to control how your SaaS app responds to these Marketplace events in a simple low/no-code environment.
 
 ## Quickstart
 
