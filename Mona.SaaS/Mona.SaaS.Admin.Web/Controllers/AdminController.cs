@@ -1,9 +1,9 @@
 ﻿// Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
+using Mona.SaaS.Admin.Web.Models.Admin;
 using Mona.SaaS.Core.Interfaces;
 using Mona.SaaS.Core.Models.Configuration;
 using Mona.SaaS.Web.Models;
@@ -47,15 +47,16 @@ namespace Mona.SaaS.Admin.Web.Controllers
 
                 var adminModel = new AdminPageModel
                 {
+                    IsSetupComplete = publisherConfig.IsSetupComplete,
                     MonaVersion = deploymentConfig.MonaVersion,
                     AzureSubscriptionId = deploymentConfig.AzureSubscriptionId,
                     AzureResourceGroupName = deploymentConfig.AzureResourceGroupName,
                     EventGridTopicOverviewUrl = GetEventGridTopicUrl(),
-                    ConfigurationSettingsUrl = GetConfigurationSettingsEditorUrl(),
                     PartnerCenterTechnicalDetails = GetPartnerCenterTechnicalDetails(),
                     ResourceGroupOverviewUrl = GetResourceGroupUrl(),
                     TestLandingPageUrl = Url.RouteUrl("landing/test", null, Request.Scheme)!,
-                    TestWebhookUrl = Url.RouteUrl("webhook/test", null, Request.Scheme)!
+                    TestWebhookUrl = Url.RouteUrl("webhook/test", null, Request.Scheme)!,
+                    UserRedirectionSettings = new UserRedirectionSettings(publisherConfig)
                 };
 
                 return View(adminModel);

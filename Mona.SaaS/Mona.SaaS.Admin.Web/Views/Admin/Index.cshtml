@@ -8,180 +8,115 @@
     Layout = null;
 }
 
+<!doctype html>
 <html lang="en">
 <head>
-    <link rel="stylesheet" href="https://static2.sharepointonline.com/files/fabric/office-ui-fabric-js/1.4.0/css/fabric.min.css" />
-    <link rel="stylesheet" href="https://static2.sharepointonline.com/files/fabric/office-ui-fabric-js/1.4.0/css/fabric.components.min.css" />
-    <script src="https://static2.sharepointonline.com/files/fabric/office-ui-fabric-js/1.4.0/js/fabric.min.js"></script>
-    <link href="~/lib/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet" />
-    <title>Mona SaaS admin center</title>
-    <style>
-        .ms-TextField-field {
-            display: block;
-        }
-
-        .ms-MessageBar {
-            width: -webkit-fill-available;
-            padding: 15px;
-        }
-
-        .ms-Icon.ms-Icon--Asterisk {
-            font-size: 10px;
-            font-weight: bolder;
-            color: darkred;
-        }
-
-        .ms-Label {
-            font-size: 14px;
-        }
-
-        .ms-font-xl {
-            font-weight: bold;
-        }
-
-        .ms-MessageBar-icon {
-            font-size: 15px;
-        }
-
-        .ms-link {
-            font-weight: 600;
-        }
-
-        a {
-            color: #006cc1;
-        }
-
-        .ms-Button.ms-Button--primary {
-            color: #0072cc;
-            background-color: 0072cc;
-        }
-
-        ms-Button.ms-Button--primary {
-            color: 0072cc;
-        }
-
-        .ms-Label.is-disabled {
-            color: #717171;
-        }
-
-        .ms-Pivot-link:before {
-            transition: none !important;
-        }
-
-        .admin-section {
-            margin-top: 25px;
-        }
-    </style>
+    <meta charset="utf-8">
+    <title>Mona admin center</title>
+    <meta name="description" content="Mona admin center">
+    <meta name="author" content="Microsoft">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Merriweather">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/default.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
 </head>
-<body class="ms-Fabric" dir="ltr">
-    <main>
-        <div class="ms-Grid" dir="ltr">
-            <div class="ms-Grid-row" style="min-height: 87%;padding: 20px;">
-                <div class="ms-Grid-col ms-sm6" style="float: left;max-width: 55%;min-width: 55%">
-                    <span class="ms-font-su ms-fontColor-themePrimary">Mona SaaS admin center</span>
-                    <p class="ms-font-l">
-                        You'll need these technical details when you <a target="_blank" href="https://docs.microsoft.com/azure/marketplace/create-new-saas-offer-technical">publish your SaaS offer through the Partner Center</a>.
-                    </p>
-                </div>
-
-                <div class="ms-Grid-col ms-sm6" style="float: left;max-width: 55%;min-width: 55%">
-                    <div class="ms-Pivot">
-                        <ul class="ms-Pivot-links">
-                            <li class="ms-Pivot-link is-selected" data-content="partner" title="Partner" tabindex="1">
-                                Partner center technical details
-                            </li>
-                            <li class="ms-Pivot-link" data-content="testing" title="Testing" tabindex="1">
-                                Testing
-                            </li>
-                            <li class="ms-Pivot-link" data-content="configuration" title="Configuration" tabindex="1">
-                                Mona SaaS configuration settings
-                            </li>
-                        </ul>
-
-                        <div class="ms-Pivot-content" data-content="partner">
-                            <div class="ms-MessageBar">
-                                <div class="ms-MessageBar-content">
-                                    <div class="ms-MessageBar-icon"><i class="ms-Icon ms-Icon--Info"></i></div>
-                                    <div class="ms-MessageBar-text">
-                                        You'll need these technical details when you <a target="_blank" href="https://docs.microsoft.com/azure/marketplace/create-new-saas-offer-technical">publish your SaaS offer through the Partner Center</a>.
-                                    </div>
-                                </div>
-                            </div><br />
-                            <table class="table table-bordered table-striped">
-                                <tbody>
-                                    <tr>
-                                        <th>Landing Page URL</th>
-                                        <td>@Model.PartnerCenterTechnicalDetails!.LandingPageUrl</td>
-                                    </tr>
-                                    <tr>
-                                        <th>Connection Webhook URL</th>
-                                        <td>@Model.PartnerCenterTechnicalDetails!.WebhookUrl</td>
-                                    </tr>
-                                    <tr>
-                                        <th>Azure Active Directory Tenant ID</th>
-                                        <td>@Model.PartnerCenterTechnicalDetails!.AadTenantId</td>
-                                    </tr>
-                                    <tr>
-                                        <th>Azure Active Directory Application ID</th>
-                                        <td>@Model.PartnerCenterTechnicalDetails!.AadApplicationId</td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
-
-                        <div class="ms-Pivot-content" data-content="testing">
-                            <p class="ms-font-m">These endpoints make it easy to test your SaaS subscription workflows before going live.</p>
-                            <p class="ms-font-m">
-                                The behavior of these endpoints is identical to that of the live endpoints (defined in the technical details section above)
-                                with the exception that subscriptions created/updated through these endpoints are only cached locally. AppSource/Azure Marketplace
-                                is not aware of subscriptions created through these test endpoints.
-                            </p>
-                            <table class="table table-bordered table-striped">
-                                <tbody>
-                                    <tr>
-                                        <th scope="row" style="width: 50%">Test Landing Page URL</th>
-                                        <td style="width: 50%"><a href="@Model.TestLandingPageUrl" target="_blank">@Model.TestLandingPageUrl</a></td>
-                                    </tr>
-                                    <tr>
-                                        <th scope="row" style="width: 50%">Test Connection Webhook URL</th>
-                                        <td style="width: 50%">@Model.TestWebhookUrl</td>
-                                    </tr>
-                                </tbody>
-                            </table>
-
-                        </div>
-
-                        <!-- Azure configuration -->
-                        <div class="ms-Pivot-content" data-content="configuration">
-                            <p class="ms-font-m">
-                                These configuration settings control nearly every aspect of how this Mona SaaS deployment behaves. 
-                                Most of these settings are automatically configured during the initial Mona SaaS setup.
-                            </p>
-                            <a role="button" class="ms-Button" href="@Url.RouteUrl("appsettings")" target="_blank">
-                                <span class="ms-Button-label">Download appsettings.json for local debugging</span>
-                            </a>
-                        </div>
+<body>
+    <h1>Mona admin center</h1>
+    <ul class="nav nav-tabs" id="adminTabs" role="tablist">
+        <li class="nav-item" role="presentation">
+            <a class="nav-link active" id="user-redirection-tab" aria-current="page" href="#">User redirection</a>
+        </li>
+        <li class="nav-item" role="presentation">
+            <a class="nav-link active" id="technical-details-tab" aria-current="page" href="#">Marketplace offer technical details</a>
+        </li>
+        <li class="nav-item" role="presentation">
+            <a class="nav-link active" id="integration-testing-tab" aria-content="page" href="#">Integration testing</a>"
+        </li>
+        <li class="nav-item" role="presentation">
+            <a class="nav-link active" id="deployment-tab" aria-current="page" href="#">This Mona deployment</a>
+        </li>
+    </ul>
+    <div class="tab-content" id="adminPanels">
+        <div class="tab-pane fade show active" id="user-redirection-panel" role="tabpanel" aria-labelledby="user-redirection-tab" tabindex="0">
+            <h2>User redirection</h2>
+            <p>Here you can configure the redirection of users to your SaaS app.</p>
+            @{
+                if (!Model.IsSetupComplete)
+                {
+                    <div class="alert alert-warning" role="alert">
+                        Configure these settings to activate your Mona deployment.
                     </div>
+                }
+                else
+                {
+                    <div class="alert alert-success" role="alert">
+                        This Mona deployment is active.
+                    </div>
+                }
+            }
+            <form method="post">
+                <div class="mb-3">
+                    @Html.LabelFor(m => m.UserRedirectionSettings!.SaaSHomePageUrl, new { @class = "form-label" })
+                    @Html.TextBoxFor(m => m.UserRedirectionSettings!.SaaSHomePageUrl, new { @type = "url", @class = "form-control" })
+                    <div id="saas-home-page-url-help" class="form-text">Users that reach the Mona landing page without a valid subscription token (not from the Azure Marketplace) will be redirected to this URL.</div>
                 </div>
-            </div>
+                <div class="mb-3">
+                    @Html.LabelFor(m => m.UserRedirectionSettings!.SubscriptionLandingUrl, new { @class = "form-label" })
+                    @Html.TextBoxFor(m => m.UserRedirectionSettings!.SubscriptionLandingUrl, new { @type = "url", @class = "form-control" })
+                    <div id="sub-landing-page-url" class="form-text">Users that have just completed their subscription purchase through the Azure Marketplace will be redirected to this URL. Inline <code>{subscription-id}</code> placeholders will be automatically replaced with the actual subscription ID.</div>
+                </div>
+                <div class="mb-3">
+                    @Html.LabelFor(m => m.UserRedirectionSettings!.SubscriptionConfigurationUrl, new { @class = "form-label" })
+                    @Html.TextBoxFor(m => m.UserRedirectionSettings!.SubscriptionConfigurationUrl, new { @type = "url", @class = "form-control" })
+                    <div id="sub-config-page-url" class="form-text">Users that click the "Manage my subscription" link within the Azure portal will be redirected to this URL. Inline <code>{subscription-id}</code> placeholders will be automatically replaced with the actual subscription ID.</div>
+                </div>
+                <button type="submit" class="btn btn-primary">Submit</button>
+            </form>
         </div>
-    </main>
-
-    <footer style="padding-top: 18px;text-align: left;background-color: #f4f4f4;padding-bottom: 18px;">
-        <ul class="ms-List">
-            <li class="ms-ListItem ms-ListItem--image" tabindex="0">
-                <span class="ms-ListItem-primaryText" style="padding-right:30px; color: #006ee5 ">Mona SaaS <small class="text-muted">@Model.MonaVersion</small></span>
-                <span class="ms-ListItem-secondaryText">Copyright © Microsoft Corporation @DateTime.UtcNow.Year</span>
-                <span class="ms-ListItem-tertiaryText">Licensed under the <a target="_blank" href="https://github.com/microsoft/mona-saas/LICENSE.txt">MIT license</a>.</span>
-            </li>
-        </ul>
-    </footer>
+        <div class="tab-pane fade" id="technical-details-panel" role="tabpanel" aria-labelledby="technical-details-tab" tabindex="0">
+            <h2>Marketplace offer technical details</h2>
+            <p>Here you can view <a href="https://learn.microsoft.com/partner-center/marketplace-offers/create-new-saas-offer-technical">the technical details of your marketplace offer</a>.</p>
+            <table class="table table-striped">
+                <tr>
+                    <th>Landing page URL</th>
+                    <td>@Model.PartnerCenterTechnicalDetails!.LandingPageUrl</td>
+                </tr>
+                <tr>
+                    <th>Connection webhook</th>
+                    <td>@Model.PartnerCenterTechnicalDetails!.WebhookUrl</td>
+                </tr>
+                <tr>
+                    <th>Microsoft Entra tenant ID</th>
+                    <td>@Model.PartnerCenterTechnicalDetails!.AadTenantId</td>
+                </tr>
+                <tr>
+                    <td>Microsoft Entra application ID</td>
+                    <td>@Model.PartnerCenterTechnicalDetails!.AadApplicationId</td>
+                </tr>
+            </table>
+        </div>
+        <div class="tab-pane fade" id="integration-testing-panel" role="tabpanel" aria-labelledby="integration-testing-tab" tabindex="0">
+            <h2>Integration testing</h2>
+            <p>Here you can test your Mona subscription event grid integrations.</p>
+            <div class="alert alert-success" role="alert">
+                See <a href="https://github.com/microsoft/mona-saas/blob/main/README.md">these docs</a> for more information on Mona integration testing.
+            </div>
+            <table class="table table-striped">
+                <tr>
+                    <th>Test landing page URL</th>
+                    <td>@Model.TestLandingPageUrl</td>
+                </tr>
+                <tr>
+                    <th>Test webhook URL</th>
+                    <td>@Model.TestWebhookUrl</td>
+                </tr>
+            </table>
+        </div>
+        <div class="tab-pane fade" id="deployment-panel" role="tabpanel" aria-labelledby="deployment-tab" tabindex="0">
+            <h2>This Mona deployment</h2>
+            <p>Here you can view the details of this Mona deployment.</p>
+        </div>
+    </div>
 </body>
 </html>
-
-<script type="text/javascript">
-    var PivotElements = document.querySelectorAll(".ms-Pivot");
-    for (var i = 0; i < PivotElements.length; i++) {
-        new fabric['Pivot'](PivotElements[i]);
-    }
-</script>
