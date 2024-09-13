@@ -8,7 +8,7 @@
 
 [Open an Azure Cloud Shell, choose the Bash experience](https://learn.microsoft.com/azure/cloud-shell/get-started/ephemeral?tabs=azurecli#start-cloud-shell), and clone this repo. Navigate to the setup folder.
 
-```bash
+```sh
 git clone https://github.com/microsoft/mona-saas
 cd mona-saas/Mona.SaaS/Mona.SaaS.Setup
 ```
