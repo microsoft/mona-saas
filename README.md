@@ -17,8 +17,10 @@ cd mona-saas/Mona.SaaS/Mona.SaaS.Setup
 
 Run the `basic-deploy.sh` script to deploy Mona into your Azure environment. You'll need to provide two parameters:
 
-* **Azure Location `(-r)`**: [The Azure region](https://azure.microsoft.com/explore/global-infrastructure/geographies/) where Mona will be deployed (e.g., `eastus`, `southeastasia`).
-* **Deployment Name `(-n`)**: A unique name for your Mona deployment. It must be 5-13 alphanumeric characters (e.g., `monatest01`).
+| Name | Description | Example |
+| --- | --- | --- |
+| **Azure location** `(-r)` | [The Azure region](https://azure.microsoft.com/explore/global-infrastructure/geographies/) where Mona will be deployed. | `eastus` |
+| **Deployment name** `(-n)` | A unique name for your Mona deployment. It must be 5-13 alphanumeric characters. | `monatest01` |
 
 > For a complete list of Azure regions to choose from, run `az account list-locations -o table`.
 
