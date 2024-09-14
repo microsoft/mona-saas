@@ -529,7 +529,7 @@ if [[ -z $no_publish ]]; then
     printf "$lp Webhook URL                         [$customer_web_app_url/webhook]\n"
     printf "$lp Landing Page URL (Testing)          [$admin_web_app_url/test]\n"
     printf "$lp Webhook URL (Testing)               [$admin_web_app_url/webhook/test]\n"
-    printf "$lp Admin Center URL                    [$admin_web_app_url/admin]\n"
+    printf "$lp Admin Center URL                    [$admin_web_app_url]\n"
 fi
 
 echo
@@ -539,11 +539,8 @@ echo "$lp ⚠️   PLEASE READ CAREFULLY"
 echo
 echo "$lp By default, Mona will not automatically activate subscriptions with the Marketplace. See this doc... "
 echo "$lp [ https://github.com/microsoft/mona-saas/tree/main/docs#how-do-i-notify-the-marketplace-that-a-subscription-has-been-activated ]"
-echo
-echo "$lp For additional information, review our frequently asked questions (FAQs) at... "
-echo "$lp [ https://github.com/microsoft/mona-saas/tree/main/docs ]"
 
 if [[ -z $no_publish ]]; then
     echo
-    echo "$lp ▶   Please visit [ $admin_web_app_url/setup ] to complete your setup and begin transacting with Microsoft!"
+    echo "$lp ▶   Please visit [ $admin_web_app_url ] to complete your setup and begin transacting with Microsoft!"
 fi
