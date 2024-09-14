@@ -41,7 +41,6 @@
         </div>
         <div class="tab-content" id="adminPanels" style="margin-top: 20px">
             <div class="tab-pane fade show active" id="user-redirection-panel" role="tabpanel" aria-labelledby="user-redirection-tab" tabindex="0">
-                <h2>User redirection</h2>
                 <p>Here you can configure the redirection of users to your SaaS app.</p>
                 <div style="margin-top: 20px">
 
@@ -82,8 +81,7 @@
                 </div>
             </div>
             <div class="tab-pane fade" id="technical-details-panel" role="tabpanel" aria-labelledby="technical-details-tab" tabindex="0">
-                <h2>Marketplace offer technical details</h2>
-                <p>Here you can view <a href="https://learn.microsoft.com/partner-center/marketplace-offers/create-new-saas-offer-technical">the technical details of your marketplace offer</a>.</p>
+                <p>Here you can view <a target="_blank" href="https://learn.microsoft.com/partner-center/marketplace-offers/create-new-saas-offer-technical">the technical details of your marketplace offer</a>.</p>
                 <div style="margin-top: 20px">
                     <table class="table table-striped">
                         <tr>
@@ -106,10 +104,9 @@
                 </div>
             </div>
             <div class="tab-pane fade" id="integration-testing-panel" role="tabpanel" aria-labelledby="integration-testing-tab" tabindex="0">
-                <h2>Integration testing</h2>
                 <p>Here you can test your Mona subscription event grid integrations.</p>
                 <div class="alert alert-primary" role="alert">
-                    See <a href="https://github.com/microsoft/mona-saas/blob/main/README.md">these docs</a> for more information on Mona integration testing.
+                    See <a target="_blank" href="https://github.com/microsoft/mona-saas/blob/main/README.md">these docs</a> for more information on Mona integration testing.
                 </div>
                 <div style="margin-top: 20px">
                     <table class="table table-striped">
@@ -125,17 +122,16 @@
                 </div>
             </div>
             <div class="tab-pane fade" id="deployment-panel" role="tabpanel" aria-labelledby="deployment-tab" tabindex="0">
-                <h2>This Mona deployment</h2>
                 <p>Here you can view the details of this Mona deployment.</p>
                 <div style="margin-top: 20px">
                     <table class="table table-striped">
                         <tr>
                             <th>Resource group</th>
-                            <td><a href="@adminViewData.ResourceGroupOverviewUrl">@adminViewData.AzureResourceGroupName</a></td>
+                            <td><a target="_blank" href="@adminViewData.ResourceGroupOverviewUrl">@adminViewData.AzureResourceGroupName</a></td>
                         </tr>
                         <tr>
                             <th>Custom event grid topic</th>
-                            <td><a href="@adminViewData.EventGridTopicOverviewUrl">@adminViewData.EventGridTopicName</a></td>
+                            <td><a target="_blank" href="@adminViewData.EventGridTopicOverviewUrl">@adminViewData.EventGridTopicName</a></td>
                         </tr>
                     </table>
                 </div>
