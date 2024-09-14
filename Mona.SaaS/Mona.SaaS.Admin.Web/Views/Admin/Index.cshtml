@@ -59,16 +59,19 @@
                 <div class="mb-3">
                     @Html.LabelFor(m => m.UserRedirectionSettings!.SaaSHomePageUrl, new { @class = "form-label" })
                     @Html.TextBoxFor(m => m.UserRedirectionSettings!.SaaSHomePageUrl, new { @type = "url", @class = "form-control" })
+                    @Html.ValidationMessageFor(m => m.UserRedirectionSettings!.SaaSHomePageUrl, null, new { @class = "form-control text-danger" })
                     <div id="saas-home-page-url-help" class="form-text">Users that reach the Mona landing page without a valid subscription token (not from the Azure Marketplace) will be redirected to this URL.</div>
                 </div>
                 <div class="mb-3">
                     @Html.LabelFor(m => m.UserRedirectionSettings!.SubscriptionLandingUrl, new { @class = "form-label" })
                     @Html.TextBoxFor(m => m.UserRedirectionSettings!.SubscriptionLandingUrl, new { @type = "url", @class = "form-control" })
+                    @Html.ValidationMessageFor(m => m.UserRedirectionSettings!.SubscriptionLandingUrl, null, new { @class = "form-control text-danger" })
                     <div id="sub-landing-page-url" class="form-text">Users that have just completed their subscription purchase through the Azure Marketplace will be redirected to this URL. Inline <code>{subscription-id}</code> placeholders will be automatically replaced with the actual subscription ID.</div>
                 </div>
                 <div class="mb-3">
                     @Html.LabelFor(m => m.UserRedirectionSettings!.SubscriptionConfigurationUrl, new { @class = "form-label" })
                     @Html.TextBoxFor(m => m.UserRedirectionSettings!.SubscriptionConfigurationUrl, new { @type = "url", @class = "form-control" })
+                    @Html.ValidationMessageFor(m => m.UserRedirectionSettings!.SubscriptionConfigurationUrl, null, new { @class = "form-control text-danger" })
                     <div id="sub-config-page-url" class="form-text">Users that click the "Manage my subscription" link within the Azure portal will be redirected to this URL. Inline <code>{subscription-id}</code> placeholders will be automatically replaced with the actual subscription ID.</div>
                 </div>
                 <button type="submit" class="btn btn-primary">Submit</button>
@@ -99,7 +102,7 @@
         <div class="tab-pane fade" id="integration-testing-panel" role="tabpanel" aria-labelledby="integration-testing-tab" tabindex="0">
             <h2>Integration testing</h2>
             <p>Here you can test your Mona subscription event grid integrations.</p>
-            <div class="alert alert-success" role="alert">
+            <div class="alert alert-primary" role="alert">
                 See <a href="https://github.com/microsoft/mona-saas/blob/main/README.md">these docs</a> for more information on Mona integration testing.
             </div>
             <table class="table table-striped">
@@ -117,6 +120,16 @@
             <h2>This Mona deployment</h2>
             <p>Here you can view the details of this Mona deployment.</p>
         </div>
+        <table class="table table-striped">
+            <tr>
+                <th>Resource group</th>
+                <td><a href="@Model.ResourceGroupOverviewUrl">@Model.AzureResourceGroupName</a></td>
+            </tr>
+            <tr>
+                <th>Custom event grid topic</th>
+                <td><a href="@Model.EventGridTopicOverviewUrl">@Model.EventGridTopicName</a></td>
+            </tr>
+        </table>
     </div>
 </body>
 </html>

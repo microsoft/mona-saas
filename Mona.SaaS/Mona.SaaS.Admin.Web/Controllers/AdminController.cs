@@ -33,17 +33,13 @@ namespace Mona.SaaS.Admin.Web.Controllers
             this.logger = logger;
         }
 
-        [HttpGet, Route("admin", Name = "admin")]
+        [HttpGet, Route("/", Name = "admin")]
         public async Task<IActionResult> Index()
         {
             try
             {
-                var publisherConfig = await publisherConfigStore.GetPublisherConfiguration();
-
-                if (publisherConfig == null) // No publisher config. Publisher needs to complete setup.
-                {
-                    return RedirectToRoute("setup");
-                }
+                var publisherConfig = await publisherConfigStore.GetPublisherConfiguration() 
+                    ?? new PublisherConfiguration();
 
                 var adminModel = new AdminPageModel
                 {
@@ -51,6 +47,7 @@ namespace Mona.SaaS.Admin.Web.Controllers
                     MonaVersion = deploymentConfig.MonaVersion,
                     AzureSubscriptionId = deploymentConfig.AzureSubscriptionId,
                     AzureResourceGroupName = deploymentConfig.AzureResourceGroupName,
+                    EventGridTopicName = $"mona-events-{deploymentConfig.Name.ToLower()}",
                     EventGridTopicOverviewUrl = GetEventGridTopicUrl(),
                     PartnerCenterTechnicalDetails = GetPartnerCenterTechnicalDetails(),
                     ResourceGroupOverviewUrl = GetResourceGroupUrl(),
@@ -64,6 +61,36 @@ namespace Mona.SaaS.Admin.Web.Controllers
             catch (Exception ex)
             {
                 logger.LogError(ex, "An error occurred while attempting to load the Mona admin page. See exception for details.");
+
+                throw;
+            }
+        }
+
+        [HttpPost, Route("/", Name = "admin"), ValidateAntiForgeryToken]
+        public async Task<IActionResult> Index(AdminPageModel adminModel)
+        {
+            try
+            {
+                if (ModelState.IsValid == false)
+                {
+                    return View(adminModel);
+                }
+
+                var publisherConfig = new PublisherConfiguration
+                {
+                    IsSetupComplete = true,
+                    PublisherHomePageUrl = adminModel.UserRedirectionSettings!.SaaSHomePageUrl,
+                    SubscriptionPurchaseConfirmationUrl = adminModel.UserRedirectionSettings!.SubscriptionLandingUrl,
+                    SubscriptionConfigurationUrl = adminModel.UserRedirectionSettings!.SubscriptionConfigurationUrl
+                };
+
+                await publisherConfigStore.PutPublisherConfiguration(publisherConfig);
+
+                return RedirectToRoute("admin");
+            }
+            catch (Exception ex)
+            {
+                logger.LogError(ex, "An error occurred while attemptign to save the Mona admin page settings. See exception for details.");
 
                 throw;
             }

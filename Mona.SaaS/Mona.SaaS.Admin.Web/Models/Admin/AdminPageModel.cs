@@ -10,6 +10,7 @@ namespace Mona.SaaS.Web.Models
     {
         public bool IsSetupComplete { get; set; }
 
+        public string? EventGridTopicName { get; set; }
         public string? EventGridTopicOverviewUrl { get; set; }
         public string? ResourceGroupOverviewUrl { get; set; }
         public string? TestLandingPageUrl { get; set; }
