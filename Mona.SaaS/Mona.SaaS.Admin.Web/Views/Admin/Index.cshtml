@@ -6,6 +6,8 @@
 
 @{
     Layout = null;
+
+    var adminViewData = ViewData["admin"] as AdminPageViewData;
 }
 
 <!doctype html>
@@ -16,120 +18,133 @@
     <meta name="description" content="Mona admin center">
     <meta name="author" content="Microsoft">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Merriweather">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/default.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
 </head>
 <body>
-    <h1>Mona admin center</h1>
-    <ul class="nav nav-tabs" id="adminTabs" role="tablist">
-        <li class="nav-item" role="presentation">
-            <a class="nav-link active" id="user-redirection-tab" aria-current="page" href="#">User redirection</a>
-        </li>
-        <li class="nav-item" role="presentation">
-            <a class="nav-link active" id="technical-details-tab" aria-current="page" href="#">Marketplace offer technical details</a>
-        </li>
-        <li class="nav-item" role="presentation">
-            <a class="nav-link active" id="integration-testing-tab" aria-content="page" href="#">Integration testing</a>"
-        </li>
-        <li class="nav-item" role="presentation">
-            <a class="nav-link active" id="deployment-tab" aria-current="page" href="#">This Mona deployment</a>
-        </li>
-    </ul>
-    <div class="tab-content" id="adminPanels">
-        <div class="tab-pane fade show active" id="user-redirection-panel" role="tabpanel" aria-labelledby="user-redirection-tab" tabindex="0">
-            <h2>User redirection</h2>
-            <p>Here you can configure the redirection of users to your SaaS app.</p>
-            @{
-                if (!Model.IsSetupComplete)
-                {
-                    <div class="alert alert-warning" role="alert">
-                        Configure these settings to activate your Mona deployment.
-                    </div>
-                }
-                else
-                {
-                    <div class="alert alert-success" role="alert">
-                        This Mona deployment is active.
-                    </div>
-                }
-            }
-            <form method="post">
-                <div class="mb-3">
-                    @Html.LabelFor(m => m.UserRedirectionSettings!.SaaSHomePageUrl, new { @class = "form-label" })
-                    @Html.TextBoxFor(m => m.UserRedirectionSettings!.SaaSHomePageUrl, new { @type = "url", @class = "form-control" })
-                    @Html.ValidationMessageFor(m => m.UserRedirectionSettings!.SaaSHomePageUrl, null, new { @class = "form-control text-danger" })
-                    <div id="saas-home-page-url-help" class="form-text">Users that reach the Mona landing page without a valid subscription token (not from the Azure Marketplace) will be redirected to this URL.</div>
-                </div>
-                <div class="mb-3">
-                    @Html.LabelFor(m => m.UserRedirectionSettings!.SubscriptionLandingUrl, new { @class = "form-label" })
-                    @Html.TextBoxFor(m => m.UserRedirectionSettings!.SubscriptionLandingUrl, new { @type = "url", @class = "form-control" })
-                    @Html.ValidationMessageFor(m => m.UserRedirectionSettings!.SubscriptionLandingUrl, null, new { @class = "form-control text-danger" })
-                    <div id="sub-landing-page-url" class="form-text">Users that have just completed their subscription purchase through the Azure Marketplace will be redirected to this URL. Inline <code>{subscription-id}</code> placeholders will be automatically replaced with the actual subscription ID.</div>
-                </div>
-                <div class="mb-3">
-                    @Html.LabelFor(m => m.UserRedirectionSettings!.SubscriptionConfigurationUrl, new { @class = "form-label" })
-                    @Html.TextBoxFor(m => m.UserRedirectionSettings!.SubscriptionConfigurationUrl, new { @type = "url", @class = "form-control" })
-                    @Html.ValidationMessageFor(m => m.UserRedirectionSettings!.SubscriptionConfigurationUrl, null, new { @class = "form-control text-danger" })
-                    <div id="sub-config-page-url" class="form-text">Users that click the "Manage my subscription" link within the Azure portal will be redirected to this URL. Inline <code>{subscription-id}</code> placeholders will be automatically replaced with the actual subscription ID.</div>
-                </div>
-                <button type="submit" class="btn btn-primary">Submit</button>
-            </form>
+    <div class="col-lg-8 mx-auto p-4 py-md-5">
+        <h1>Mona admin center</h1>
+        <div style="margin-top: 20px">
+            <ul class="nav nav-tabs" id="adminTabs" role="tablist">
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link active" id="user-redirection-tab" data-bs-toggle="tab" data-bs-target="#user-redirection-panel" type="button" role="tab" aria-controls="user-redirection-panel" aria-selected="true">User redirection</button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="technical-details-tab" data-bs-toggle="tab" data-bs-target="#technical-details-panel" type="button" role="tab" aria-controls="technical-details-panel" aria-selected="false">Marketplace offer technical details</button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="integration-testing-tab" data-bs-toggle="tab" data-bs-target="#integration-testing-panel" type="button" role="tab" aria-controls="integration-testing-panel" aria-selected="false">Integration testing</button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="deployment-tab" data-bs-toggle="tab" data-bs-target="#deployment-panel" type="button" role="tab" aria-controls="deployment-panel" aria-selected="false">This Mona deployment</button>
+                </li>
+            </ul>
         </div>
-        <div class="tab-pane fade" id="technical-details-panel" role="tabpanel" aria-labelledby="technical-details-tab" tabindex="0">
-            <h2>Marketplace offer technical details</h2>
-            <p>Here you can view <a href="https://learn.microsoft.com/partner-center/marketplace-offers/create-new-saas-offer-technical">the technical details of your marketplace offer</a>.</p>
-            <table class="table table-striped">
-                <tr>
-                    <th>Landing page URL</th>
-                    <td>@Model.PartnerCenterTechnicalDetails!.LandingPageUrl</td>
-                </tr>
-                <tr>
-                    <th>Connection webhook</th>
-                    <td>@Model.PartnerCenterTechnicalDetails!.WebhookUrl</td>
-                </tr>
-                <tr>
-                    <th>Microsoft Entra tenant ID</th>
-                    <td>@Model.PartnerCenterTechnicalDetails!.AadTenantId</td>
-                </tr>
-                <tr>
-                    <td>Microsoft Entra application ID</td>
-                    <td>@Model.PartnerCenterTechnicalDetails!.AadApplicationId</td>
-                </tr>
-            </table>
-        </div>
-        <div class="tab-pane fade" id="integration-testing-panel" role="tabpanel" aria-labelledby="integration-testing-tab" tabindex="0">
-            <h2>Integration testing</h2>
-            <p>Here you can test your Mona subscription event grid integrations.</p>
-            <div class="alert alert-primary" role="alert">
-                See <a href="https://github.com/microsoft/mona-saas/blob/main/README.md">these docs</a> for more information on Mona integration testing.
+        <div class="tab-content" id="adminPanels" style="margin-top: 20px">
+            <div class="tab-pane fade show active" id="user-redirection-panel" role="tabpanel" aria-labelledby="user-redirection-tab" tabindex="0">
+                <h2>User redirection</h2>
+                <p>Here you can configure the redirection of users to your SaaS app.</p>
+                <div style="margin-top: 20px">
+
+                    @if (adminViewData.IsSetupComplete)
+                    {
+                        <div class="alert alert-success" role="alert">
+                            This Mona deployment is active.
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="alert alert-primary" role="alert">
+                            Configure these settings to activate your Mona deployment.
+                        </div>
+                    }
+
+                   <form method="post">
+                        <div class="mb-3">
+                            <label asp-for="@Model.SaaSHomePageUrl" class="form-label"></label>
+                            <input asp-for="@Model.SaaSHomePageUrl" class="form-control" type="url" />
+                            <span asp-validation-for="@Model.SaaSHomePageUrl" class="form-text text-danger"></span>
+                            <div id="saas-home-page-url-help" class="form-text">Users that reach the Mona landing page without a valid subscription token (not from the Azure Marketplace) will be redirected to this URL.</div>
+                        </div>
+                        <div class="mb-3">
+                            <label asp-for="@Model.SubscriptionLandingUrl" class="form-label"></label>
+                            <input asp-for="@Model.SubscriptionLandingUrl" class="form-control" type="url" />
+                            <span asp-validation-for="@Model.SubscriptionLandingUrl" class="form-text text-danger"></span>
+                            <div id="sub-landing-page-url" class="form-text">Users that have just completed their subscription purchase through the Azure Marketplace will be redirected to this URL. Inline <code>{subscription-id}</code> placeholders will be automatically replaced with the actual subscription ID.</div>
+                        </div>
+                        <div class="mb-3">
+                            <label asp-for="@Model.SubscriptionConfigurationUrl" class="form-label"></label>
+                            <input asp-for="@Model.SubscriptionConfigurationUrl" class="form-control" type="url" />
+                            <span asp-validation-for="@Model.SubscriptionConfigurationUrl" class="form-text text-danger"></span>
+                            <div id="sub-config-page-url" class="form-text">Users that click the "Manage my subscription" link within the Azure portal will be redirected to this URL. Inline <code>{subscription-id}</code> placeholders will be automatically replaced with the actual subscription ID.</div>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Submit</button>
+                    </form>
+                </div>
             </div>
-            <table class="table table-striped">
-                <tr>
-                    <th>Test landing page URL</th>
-                    <td>@Model.TestLandingPageUrl</td>
-                </tr>
-                <tr>
-                    <th>Test webhook URL</th>
-                    <td>@Model.TestWebhookUrl</td>
-                </tr>
-            </table>
+            <div class="tab-pane fade" id="technical-details-panel" role="tabpanel" aria-labelledby="technical-details-tab" tabindex="0">
+                <h2>Marketplace offer technical details</h2>
+                <p>Here you can view <a href="https://learn.microsoft.com/partner-center/marketplace-offers/create-new-saas-offer-technical">the technical details of your marketplace offer</a>.</p>
+                <div style="margin-top: 20px">
+                    <table class="table table-striped">
+                        <tr>
+                            <th>Landing page URL</th>
+                            <td>@adminViewData.PartnerCenterTechnicalDetails!.LandingPageUrl</td>
+                        </tr>
+                        <tr>
+                            <th>Connection webhook</th>
+                            <td>@adminViewData.PartnerCenterTechnicalDetails!.WebhookUrl</td>
+                        </tr>
+                        <tr>
+                            <th>Microsoft Entra tenant ID</th>
+                            <td>@adminViewData.PartnerCenterTechnicalDetails!.AadTenantId</td>
+                        </tr>
+                        <tr>
+                            <th>Microsoft Entra application ID</th>
+                            <td>@adminViewData.PartnerCenterTechnicalDetails!.AadApplicationId</td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+            <div class="tab-pane fade" id="integration-testing-panel" role="tabpanel" aria-labelledby="integration-testing-tab" tabindex="0">
+                <h2>Integration testing</h2>
+                <p>Here you can test your Mona subscription event grid integrations.</p>
+                <div class="alert alert-primary" role="alert">
+                    See <a href="https://github.com/microsoft/mona-saas/blob/main/README.md">these docs</a> for more information on Mona integration testing.
+                </div>
+                <div style="margin-top: 20px">
+                    <table class="table table-striped">
+                        <tr>
+                            <th>Test landing page URL</th>
+                            <td>@adminViewData.TestLandingPageUrl</td>
+                        </tr>
+                        <tr>
+                            <th>Test webhook URL</th>
+                            <td>@adminViewData.TestWebhookUrl</td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+            <div class="tab-pane fade" id="deployment-panel" role="tabpanel" aria-labelledby="deployment-tab" tabindex="0">
+                <h2>This Mona deployment</h2>
+                <p>Here you can view the details of this Mona deployment.</p>
+                <div style="margin-top: 20px">
+                    <table class="table table-striped">
+                        <tr>
+                            <th>Resource group</th>
+                            <td><a href="@adminViewData.ResourceGroupOverviewUrl">@adminViewData.AzureResourceGroupName</a></td>
+                        </tr>
+                        <tr>
+                            <th>Custom event grid topic</th>
+                            <td><a href="@adminViewData.EventGridTopicOverviewUrl">@adminViewData.EventGridTopicName</a></td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
         </div>
-        <div class="tab-pane fade" id="deployment-panel" role="tabpanel" aria-labelledby="deployment-tab" tabindex="0">
-            <h2>This Mona deployment</h2>
-            <p>Here you can view the details of this Mona deployment.</p>
-        </div>
-        <table class="table table-striped">
-            <tr>
-                <th>Resource group</th>
-                <td><a href="@Model.ResourceGroupOverviewUrl">@Model.AzureResourceGroupName</a></td>
-            </tr>
-            <tr>
-                <th>Custom event grid topic</th>
-                <td><a href="@Model.EventGridTopicOverviewUrl">@Model.EventGridTopicName</a></td>
-            </tr>
-        </table>
     </div>
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ENjdO4Dr2bkBIFxQpeoTz1HIcje39Wm4jDKdf19U8gI4ddQ3GYNS7NTKfAdVQSZe" crossorigin="anonymous"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
 </body>
 </html>

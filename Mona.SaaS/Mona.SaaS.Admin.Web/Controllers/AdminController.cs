@@ -8,6 +8,7 @@ using Mona.SaaS.Core.Interfaces;
 using Mona.SaaS.Core.Models.Configuration;
 using Mona.SaaS.Web.Models;
 using Mona.SaaS.Web.Models.Admin;
+using System.Text.Json;
 
 namespace Mona.SaaS.Admin.Web.Controllers
 {
@@ -33,7 +34,22 @@ namespace Mona.SaaS.Admin.Web.Controllers
             this.logger = logger;
         }
 
-        [HttpGet, Route("/", Name = "admin")]
+        private AdminPageViewData CreateViewData(PublisherConfiguration publisherConfig) =>
+            new AdminPageViewData
+            {
+                IsSetupComplete = publisherConfig.IsSetupComplete,
+                MonaVersion = deploymentConfig.MonaVersion,
+                AzureSubscriptionId = deploymentConfig.AzureSubscriptionId,
+                AzureResourceGroupName = deploymentConfig.AzureResourceGroupName,
+                EventGridTopicName = $"mona-events-{deploymentConfig.Name.ToLower()}",
+                EventGridTopicOverviewUrl = GetEventGridTopicUrl(),
+                PartnerCenterTechnicalDetails = GetPartnerCenterTechnicalDetails(),
+                ResourceGroupOverviewUrl = GetResourceGroupUrl(),
+                TestLandingPageUrl = Url.RouteUrl("landing/test", null, Request.Scheme)!,
+                TestWebhookUrl = Url.RouteUrl("webhook/test", null, Request.Scheme)!
+            };
+
+        [HttpGet, Route("admin", Name = "admin")]
         public async Task<IActionResult> Index()
         {
             try
@@ -41,22 +57,9 @@ namespace Mona.SaaS.Admin.Web.Controllers
                 var publisherConfig = await publisherConfigStore.GetPublisherConfiguration() 
                     ?? new PublisherConfiguration();
 
-                var adminModel = new AdminPageModel
-                {
-                    IsSetupComplete = publisherConfig.IsSetupComplete,
-                    MonaVersion = deploymentConfig.MonaVersion,
-                    AzureSubscriptionId = deploymentConfig.AzureSubscriptionId,
-                    AzureResourceGroupName = deploymentConfig.AzureResourceGroupName,
-                    EventGridTopicName = $"mona-events-{deploymentConfig.Name.ToLower()}",
-                    EventGridTopicOverviewUrl = GetEventGridTopicUrl(),
-                    PartnerCenterTechnicalDetails = GetPartnerCenterTechnicalDetails(),
-                    ResourceGroupOverviewUrl = GetResourceGroupUrl(),
-                    TestLandingPageUrl = Url.RouteUrl("landing/test", null, Request.Scheme)!,
-                    TestWebhookUrl = Url.RouteUrl("webhook/test", null, Request.Scheme)!,
-                    UserRedirectionSettings = new UserRedirectionSettings(publisherConfig)
-                };
+                ViewData["admin"] = CreateViewData(publisherConfig);
 
-                return View(adminModel);
+                return View(new AdminPageModel(publisherConfig));
             }
             catch (Exception ex)
             {
@@ -66,31 +69,35 @@ namespace Mona.SaaS.Admin.Web.Controllers
             }
         }
 
-        [HttpPost, Route("/", Name = "admin"), ValidateAntiForgeryToken]
-        public async Task<IActionResult> Index(AdminPageModel adminModel)
+        [HttpPost, Route("admin", Name = "admin")]
+        public async Task<IActionResult> Index([FromForm] AdminPageModel adminModel)
         {
             try
             {
+                var publisherConfig = await publisherConfigStore.GetPublisherConfiguration()
+                    ?? new PublisherConfiguration();
+
                 if (ModelState.IsValid == false)
                 {
+                    ViewData["admin"] = CreateViewData(publisherConfig);
+
                     return View(adminModel);
                 }
 
-                var publisherConfig = new PublisherConfiguration
-                {
-                    IsSetupComplete = true,
-                    PublisherHomePageUrl = adminModel.UserRedirectionSettings!.SaaSHomePageUrl,
-                    SubscriptionPurchaseConfirmationUrl = adminModel.UserRedirectionSettings!.SubscriptionLandingUrl,
-                    SubscriptionConfigurationUrl = adminModel.UserRedirectionSettings!.SubscriptionConfigurationUrl
-                };
+                publisherConfig.IsSetupComplete = true;
+                publisherConfig.PublisherHomePageUrl = adminModel.SaaSHomePageUrl;
+                publisherConfig.SubscriptionConfigurationUrl = adminModel.SubscriptionConfigurationUrl;
+                publisherConfig.SubscriptionPurchaseConfirmationUrl = adminModel.SubscriptionLandingUrl;
 
                 await publisherConfigStore.PutPublisherConfiguration(publisherConfig);
 
-                return RedirectToRoute("admin");
+                ViewData["admin"] = CreateViewData(publisherConfig);
+
+                return View(adminModel);
             }
             catch (Exception ex)
             {
-                logger.LogError(ex, "An error occurred while attemptign to save the Mona admin page settings. See exception for details.");
+                logger.LogError(ex, "An error occurred while attempting to save the Mona admin page settings. See exception for details.");
 
                 throw;
             }
