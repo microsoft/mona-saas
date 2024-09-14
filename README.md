@@ -28,4 +28,14 @@ Run the `basic-deploy.sh` script to deploy Mona into your Azure environment. You
 ./basic-deploy.sh -r "eastus" -n "monatest01"
 ```
 
-Once the script is complete, click the link to finish setting up Mona.
+Once the script is complete, you will be prompted to click a link to continue setting up your Mona deployment. Click this link to continue to the Mona admin center.
+
+> Save the Mona admin center to your favorites.
+
+### Configure Marketplace event integrations
+
+Navigate to the Mona admin center and click the **"This Mona deployment"** tab. Click on the link to navigate to the resource group in the Azure portal. You will find Logic Apps in this preconfigured to handle various Marketplace subscription events. Open these Logic Apps to configure how your SaaS app should behave in response to subscription events.
+
+Of course, once you've customized the Logic Apps, you'll want to test them...
+
+### Test your Marketplace event integrations
