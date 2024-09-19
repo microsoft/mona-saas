@@ -32,7 +32,7 @@ Once the script is complete, you will be presented with a link to your Mona depl
 
 > Anyone in your Azure Entra tenant (including both guests and members) have access to the Mona admin center.
 
-### Configure Marketplace event integrations
+### Configure event integrations
 
 Take a moment to familiarize yourself with the Mona admin center by clicking through the tabs. 
 
@@ -42,4 +42,4 @@ Azure Logic Apps simplifies the way that you connect legacy, modern, and cutting
 
 > You don't have to use Azure Logic Apps. [Event Grid offers a wide range of built-in options for handling events.](https://learn.microsoft.com/azure/event-grid/event-handlers)
 
-### Test your Marketplace event integrations
+### Test your event integrations
