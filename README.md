@@ -19,7 +19,7 @@ Run the `basic-deploy.sh` script to deploy Mona into your Azure environment. You
 
 | Name | Description |
 | --- | --- |
-| **Region** (`r`) | [The Azure region](https://azure.microsoft.com/explore/global-infrastructure/geographies/) where Mona should be deployed. For a complete list of Azure regions to choose from, run `az account list-locations -o table` from the Bash Cloud Shell. |
+| **Region** (`r`) | [The Azure region](https://azure.microsoft.com/explore/global-infrastructure/geographies/) where Mona should be deployed. <p>For a complete list of Azure regions to choose from, run `az account list-locations -o table` from the Bash Cloud Shell.</p> |
 | **Name** (`n`) | A unique name for your Mona deployment. It must be 5-13 alphanumeric characters. |
 
 #### Example
