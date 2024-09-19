@@ -28,9 +28,9 @@ Run the `basic-deploy.sh` script to deploy Mona into your Azure environment. You
 ./basic-deploy.sh -r "eastus" -n "monatest01"
 ```
 
-Once the script is complete, you will be prompted to click a link to continue setting up your Mona deployment. Click this link to continue to the Mona admin center.
+Once the script is complete, you will be presented with a link to your Mona deployment's admin center. Click the link to finish setting up Mona. Be sure to bookmark the link so you can have quick and easy access to the Mona admin center later. 
 
-> Save the Mona admin center to your favorites.
+> Anyone in your Azure Entra tenant (including both guests and members) have access to the Mona admin center.
 
 ### Configure Marketplace event integrations
 
