@@ -34,7 +34,9 @@ Once the script is complete, you will be presented with a link to your Mona depl
 
 ### Configure Marketplace event integrations
 
-Navigate to the Mona admin center and click the **"This Mona deployment"** tab. Click on the link to navigate to the resource group in the Azure portal. You will find Logic Apps in this preconfigured to handle various Marketplace subscription events. Open these Logic Apps to configure how your SaaS app should behave in response to subscription events.
+Take a moment to familiarize yourself with the Mona admin center by clicking through the tabs. 
+
+Click on the **"This Mona deployment"** tab. This tab includes a deep link into the Azure portal and the resource group in which Mona was deployed. Click this link. Within this resource group you will find seven different Logic Apps—each preconfigured to handle a specific Marketplace event. These Logic Apps are already connected to Mona's custom event grid topic.
 
 Of course, once you've customized the Logic Apps, you'll want to test them...
 
