@@ -95,7 +95,7 @@ Properties not configured via query string parameters will automatically be assi
 
 #### Using the test webhook
 
-Once you've created a test subscription, you can try issuing webhook notifications against it. While you don't have to authenticate against the test webhook endpoint, it will only work for subscriptions previously created via the test landing page. Use your favorite API client (e.g., [Postman](https://www.postman.com/downloads/), [cURL](https://curl.se/docs/tutorial.html)) to POST JSON webhook notifications against the test webhook endpoint. These test webhook notifications don't actually change the state of the test subscription; they are for integration testing purposes only.
+Once you've created a test subscription, you can try issuing webhook notifications against it. While you don't have to authenticate against the test webhook endpoint, it will only work for subscriptions previously created via the test landing page. Use your favorite API client (e.g., [Postman](https://www.postman.com/downloads/), [cURL](https://curl.se/docs/tutorial.html)) to POST JSON webhook notifications to the test webhook endpoint. These test webhook notifications don't actually change the state of the test subscription; they are for integration testing purposes only.
 
 Refer to the table below for more information on issuing webhook notifications.
 
