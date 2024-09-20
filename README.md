@@ -107,7 +107,7 @@ Refer to the table below for more information on issuing webhook notifications.
 </td>
 </tr>
 <tr>
-<td><b>Seat quantity change</b><p>Occurs when the customer changes the number of purchased licenses (seats) for a subscription.</p></td>
+<td><p><b>Seat quantity change</b></p><p>Occurs when the customer changes the number of purchased licenses (seats) for a subscription.</p></td>
 <td>
 
 ```json
