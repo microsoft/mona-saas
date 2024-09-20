@@ -34,13 +34,13 @@ Run the `basic-deploy.sh` script to deploy Mona into your Azure environment. You
 
 Once the script is complete, you will be presented with a link to your Mona deployment's admin center. Click the link to finish setting up Mona. Be sure to bookmark the link so you can have quick and easy access to the Mona admin center later. 
 
-> Both guests and members of your Entra (formerly Azure Active Directory) tenant have access to the Mona admin center.
+> Both [guests and members](https://learn.microsoft.com/entra/external-id/user-properties) of your [Entra (formerly Azure Active Directory) tenant](https://techcommunity.microsoft.com/t5/startups-at-microsoft/demystifying-microsoft-entra-id-tenants-and-azure-subscriptions/ba-p/4155261) have access to the Mona admin center.
 
 ### Configure event integrations
 
 Take a moment to familiarize yourself with the Mona admin center by clicking through the tabs. 
 
-Click on the **This Mona deployment** tab. This tab includes a deep link into the Azure portal and the resource group in which Mona was deployed. Click the resource group link. Within this resource group you will find seven different Logic Apps—each preconfigured to handle a specific Marketplace event. These Logic Apps are already connected to Mona's custom event grid topic.
+Click on the **This Mona deployment** tab. This tab includes a deep link into the Azure portal and [the resource group](https://learn.microsoft.com/azure/azure-resource-manager/management/manage-resource-groups-portal) in which Mona was deployed. Click the resource group link. Within this resource group you will find seven different [Logic Apps](https://learn.microsoft.com/azure/logic-apps/logic-apps-overview)—each preconfigured to handle a specific Marketplace event. These Logic Apps are already connected to Mona's custom event grid topic.
 
 #### Why Azure Logic Apps?
 
