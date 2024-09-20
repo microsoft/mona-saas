@@ -85,9 +85,27 @@ https://mona-admin-yourdeployment.azurewebsites.net/test?subscriptionName=MySubs
 
 Properties not configured via query string parameters will automatically be assigned fake values. See [the Azure Marketplace docs](https://learn.microsoft.com/partner-center/marketplace-offers/partner-center-portal/pc-saas-fulfillment-subscription-api) for more information about these subscription properties.
 
-### Using the test webhook
+#### Using the test webhook
 
 Once you've created a test subscription, you can try issuing webhook notifications against it. While you don't have to authenticate against the test webhook endpoint, it will only work for subscriptions previously created via the test landing page. Use your favorite API client (e.g., [Postman](https://www.postman.com/downloads/), [cURL](https://curl.se/docs/tutorial.html)) to POST JSON webhook notifications against the test webhook endpoint.
 
 Refer to the table below for more information on issuing webhook notifications.
+
+<table>
+  <tr>
+    <td><b>Plan change</b></td>
+    <td>
+
+```json
+{
+  "action": "ChangePlan", 
+  "subscriptionId": "11111111-1111-1111-1111-111111111111",
+  "planId": "Casey's Plan"
+} 
+```
+      
+    </td>
+  </tr>
+</table>
+              
 
