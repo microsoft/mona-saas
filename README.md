@@ -121,7 +121,7 @@ Refer to the table below for more information on issuing webhook notifications.
 </td>
 </tr>
 <tr>
-<td><p></op><b>Suspension</b></p><p>Occurs when a customer's subscription payment is not received on time.</p></td>
+<td><p></op><b>Suspension</b></p><p>Occurs when a customer's subscription payment instrument has become invalid and payment is not received on time.</p></td>
 <td>
 
 ```json
