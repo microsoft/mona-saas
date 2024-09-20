@@ -63,7 +63,7 @@ From the Mona admin center, click on the **Integration testing** tab. On this ta
 
 #### Using the test landing page
 
-[The test landing page implements the same flow as the live landing page that the Azure Marketplace will redirect your subscribers to.](https://learn.microsoft.com/partner-center/marketplace-offers/azure-ad-saas#process-steps-for-purchase-management) Any guest or member of your Entra tenant can use the test landing page. By default, the test landing page endpoint creates a fake test subscription complete with a full set of fake properties. These notifications don't actually change the state of the test subscription. They are for integration testing purposes only.
+[The test landing page implements the same flow as the live landing page that the Azure Marketplace will redirect your subscribers to.](https://learn.microsoft.com/partner-center/marketplace-offers/azure-ad-saas#process-steps-for-purchase-management) Any guest or member of your Entra tenant can use the test landing page. By default, the test landing page endpoint creates a fake test subscription complete with a full set of fake properties.
 
 You can fully customize the test subscription that is created allowing you to test various subscription scenarios using the query string parameters listed below.
 
@@ -95,7 +95,7 @@ Properties not configured via query string parameters will automatically be assi
 
 #### Using the test webhook
 
-Once you've created a test subscription, you can try issuing webhook notifications against it. While you don't have to authenticate against the test webhook endpoint, it will only work for subscriptions previously created via the test landing page. Use your favorite API client (e.g., [Postman](https://www.postman.com/downloads/), [cURL](https://curl.se/docs/tutorial.html)) to POST JSON webhook notifications against the test webhook endpoint.
+Once you've created a test subscription, you can try issuing webhook notifications against it. While you don't have to authenticate against the test webhook endpoint, it will only work for subscriptions previously created via the test landing page. Use your favorite API client (e.g., [Postman](https://www.postman.com/downloads/), [cURL](https://curl.se/docs/tutorial.html)) to POST JSON webhook notifications against the test webhook endpoint. These test webhook notifications don't actually change the state of the test subscription; they are for integration testing purposes only.
 
 Refer to the table below for more information on issuing webhook notifications.
 
