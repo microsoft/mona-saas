@@ -50,4 +50,12 @@ Mona makes it easy to test your Marketplace integrations before going live with 
 
 From the Mona admin center, click on the **Integration testing** tab. On this tab, you'll find two URLs:
 
+* **"Test landing page URL"**: Guests and members of your Entra tenant can use this endpoint to test the end-to-end SaaS subscription purchasing workflow.
+* **"Test webhook URL"**: Anyone can use this endpoint to issue test subscription webhook notifications against subscriptions previously created via the **"Test landing page URL"**.
+
+#### Using the test landing page
+
+The test landing page implements precisely the same flow as the live landing page that the Azure Marketplace will redirect your subscribers to. By default, the test landing page endpoint creates a fake test subscription complete with a full set of fake properties. You can fully customize the test subscription that is created allowing you to test various subscription scenarios using the query string parameters described below. 
+
+
 
