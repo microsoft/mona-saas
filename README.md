@@ -93,7 +93,7 @@ Refer to the table below for more information on issuing webhook notifications.
 
 <table>
 <tr>
-<td><p><b>[Plan change](https://microsoft.com)</b></p><p>Occurs when a customer chooses a different plan for their subscription.</p></td>
+<td><p><b>Plan change</b></p><p>Occurs when a customer chooses a different plan for their subscription.</p></td>
 <td>
 
 ```json
