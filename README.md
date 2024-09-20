@@ -44,6 +44,8 @@ Azure Logic Apps simplifies the way that you connect legacy, modern, and cutting
 
 > You don't have to use Azure Logic Apps. [Event Grid offers a wide range of built-in options for handling events.](https://learn.microsoft.com/azure/event-grid/event-handlers)
 
+Of course, once you've configured your integrations, you'll want to test them...
+
 ### Test your event integrations
 
 Mona makes it easy to test your Marketplace integrations before going live with your SaaS offer.
