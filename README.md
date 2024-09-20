@@ -32,6 +32,8 @@ Run the `basic-deploy.sh` script to deploy Mona into your Azure environment. You
 ./basic-deploy.sh -r "eastus" -n "monatest01"
 ```
 
+This will take a few minutes. It's a great time to grab another cup of coffee. ☕
+
 Once the script is complete, you will be presented with a link to your Mona deployment's admin center. Click the link to finish setting up Mona. Be sure to bookmark the link so you can have quick and easy access to the Mona admin center later. 
 
 > Both [guests and members](https://learn.microsoft.com/entra/external-id/user-properties) of your [Entra (formerly Azure Active Directory) tenant](https://techcommunity.microsoft.com/t5/startups-at-microsoft/demystifying-microsoft-entra-id-tenants-and-azure-subscriptions/ba-p/4155261) have access to the Mona admin center.
@@ -186,9 +188,7 @@ Once you've configured and tested all of your event integrations, it's time to g
 
 #### Configuring your SaaS offer technical details
 
-During your SaaS offer setup, [you'll be prompted to provide some "technical details"](https://learn.microsoft.com/partner-center/marketplace-offers/create-new-saas-offer-technical) that essentially connect your SaaS offer to your Mona deployment. The Azure Marketplace uses these details to redirect new purchases to the Mona landing page and issue webhook notifications to the Mona webhook endpoint.
-
-To find these details, navigate to the Mona admin center (you should have it bookmarked by now! 😉) and click on the **Marketplace offer technical details** tab. Copy and paste these technical details into the Partner Center when setting up your SaaS offer.
+During your SaaS offer setup, [you'll be prompted to provide some "technical details"](https://learn.microsoft.com/partner-center/marketplace-offers/create-new-saas-offer-technical) that essentially connect your SaaS offer to your Mona deployment. The Azure Marketplace uses these details to redirect new purchases to the Mona landing page and issue webhook notifications to the Mona webhook endpoint. To find these details, navigate to the Mona admin center (you should have it bookmarked by now! 😉) and click on the **Marketplace offer technical details** tab. Copy and paste these technical details into the Partner Center when setting up your SaaS offer.
 
 ## Who supports Mona for SaaS?
 
