@@ -93,7 +93,7 @@ Refer to the table below for more information on issuing webhook notifications.
 
 <table>
 <tr>
-<td><b>Plan change</b><p>Occurs when a customer chooses a different plan for their subscription</p></td>
+<td><b>Plan change</b><p>Occurs when a customer chooses a different plan for their subscription.</p></td>
 <td>
 
 ```json
@@ -134,7 +134,7 @@ Refer to the table below for more information on issuing webhook notifications.
 </td>
 </tr>
 <tr>
-<td><b>Cancellation</b></td>
+<td><b>Cancellation</b><p>Occurs when a customer cancels their subscription.</p></td>
 <td>
 
 ```json
