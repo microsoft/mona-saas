@@ -77,5 +77,11 @@ You can fully customize the test subscription that is created allowing you to te
 * `purchaser_userEmail`
 * `purchaser_userId`
 
+For example, to customize the subscription name and offer ID, add query string parameters like this:
 
+```url
+https://mona-admin-yourdeployment.azurewebsites.net/test?subscriptionName=MySubscription&offerId=OfferA
+```
+
+See [the Azure Marketplace docs](https://learn.microsoft.com/partner-center/marketplace-offers/partner-center-portal/pc-saas-fulfillment-subscription-api) for more information about these subscription properties.
 
