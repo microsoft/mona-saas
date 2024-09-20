@@ -30,7 +30,7 @@ Run the `basic-deploy.sh` script to deploy Mona into your Azure environment. You
 
 Once the script is complete, you will be presented with a link to your Mona deployment's admin center. Click the link to finish setting up Mona. Be sure to bookmark the link so you can have quick and easy access to the Mona admin center later. 
 
-> Anyone in your Azure Entra tenant (including both guests and members) have access to the Mona admin center.
+> Both guests and members of your Entra (formerly Azure Active Directory) tenant have access to the Mona admin center.
 
 ### Configure event integrations
 
