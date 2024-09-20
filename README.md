@@ -93,7 +93,7 @@ Refer to the table below for more information on issuing webhook notifications.
 
 <table>
 <tr>
-<td><b>Plan change</b><p>Occurs when a customer chooses a different plan for their subscription.</p></td>
+<td><p><b>Plan change</b></p><p>Occurs when a customer chooses a different plan for their subscription.</p></td>
 <td>
 
 ```json
@@ -121,7 +121,7 @@ Refer to the table below for more information on issuing webhook notifications.
 </td>
 </tr>
 <tr>
-<td><b>Suspension</b><p>Occurs when a customer's subscription payment is not received on time.</p></td>
+<td><p></op><b>Suspension</b></p><p>Occurs when a customer's subscription payment is not received on time.</p></td>
 <td>
 
 ```json
@@ -134,7 +134,7 @@ Refer to the table below for more information on issuing webhook notifications.
 </td>
 </tr>
 <tr>
-<td><b>Cancellation</b><p>Occurs when a customer cancels their subscription.</p></td>
+<td><p><b>Cancellation</b></p><p>Occurs when a customer cancels their subscription.</p></td>
 <td>
 
 ```json
@@ -147,7 +147,7 @@ Refer to the table below for more information on issuing webhook notifications.
 </td>
 </tr>
 <tr>
-<td><b>Reinstatement</b><p>Occurs after a suspended subscription is reinstated. This notification indicates that the customer's payment instrument has become valid again, a payment has been made for the subscription, and the subscription is being reinstated.</p></td>
+<td><p><b>Reinstatement</b></p><p>Occurs after a suspended subscription is reinstated. This notification indicates that the customer's payment instrument has become valid again, a payment has been made for the subscription, and the subscription is being reinstated.</p></td>
 <td>
 
 ```json
@@ -160,7 +160,7 @@ Refer to the table below for more information on issuing webhook notifications.
 </td>
 </tr>
 <tr>
-<td><b>Renewal</b><p>Occurs when a subscription is automatically renewed at the end fo the subscription term of a month or a year.</p></td>
+<td><p><b>Renewal</b></p><p>Occurs when a subscription is automatically renewed at the end fo the subscription term of a month or a year.</p></td>
 <td>
 
 ```json
