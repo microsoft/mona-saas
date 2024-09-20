@@ -106,6 +106,72 @@ Refer to the table below for more information on issuing webhook notifications.
       
 </td>
 </tr>
+<tr>
+<td><b>Seat quantity change</b></td>
+<td>
+
+```json
+{
+  "action": "ChangeQuantity", 
+  "subscriptionId": "11111111-1111-1111-1111-111111111111",
+  "quantity": 15
+} 
+```
+      
+</td>
+</tr>
+<tr>
+<td><b>Suspension</b></td>
+<td>
+
+```json
+{
+  "action": "Suspend", 
+  "subscriptionId": "11111111-1111-1111-1111-111111111111"
+} 
+```
+      
+</td>
+</tr>
+<tr>
+<td><b>Cancellation</b></td>
+<td>
+
+```json
+{
+  "action": "Unsubscribe", 
+  "subscriptionId": "11111111-1111-1111-1111-111111111111"
+} 
+```
+      
+</td>
+</tr>
+<tr>
+<td><b>Reinstatement</b></td>
+<td>
+
+```json
+{
+  "action": "Reinstate", 
+  "subscriptionId": "11111111-1111-1111-1111-111111111111"
+} 
+```
+      
+</td>
+</tr>
+<tr>
+<td><b>Renewal</b></td>
+<td>
+
+```json
+{
+  "action": "Renew", 
+  "subscriptionId": "11111111-1111-1111-1111-111111111111"
+} 
+```
+      
+</td>
+</tr>
 </table>
               
 
