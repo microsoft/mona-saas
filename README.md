@@ -107,7 +107,7 @@ Refer to the table below for more information on issuing webhook notifications.
 </td>
 </tr>
 <tr>
-<td><b>Seat quantity change</b></td>
+<td><b>Seat quantity change</b><p>Occurs when the customer changes the number of purchased licenses (seats) for a subscription.</p></td>
 <td>
 
 ```json
@@ -121,7 +121,7 @@ Refer to the table below for more information on issuing webhook notifications.
 </td>
 </tr>
 <tr>
-<td><b>Suspension</b></td>
+<td><b>Suspension</b><p>Occurs when a customer's subscription payment is not received on time.</p></td>
 <td>
 
 ```json
@@ -147,7 +147,7 @@ Refer to the table below for more information on issuing webhook notifications.
 </td>
 </tr>
 <tr>
-<td><b>Reinstatement</b></td>
+<td><b>Reinstatement</b><p>Occurs after a suspended subscription is reinstated. This notification indicates that the customer's payment instrument has become valid again, a payment has been made for the subscription, and the subscription is being reinstated.</p></td>
 <td>
 
 ```json
@@ -160,7 +160,7 @@ Refer to the table below for more information on issuing webhook notifications.
 </td>
 </tr>
 <tr>
-<td><b>Renewal</b></td>
+<td><b>Renewal</b><p>Occurs when a subscription is automatically renewed at the end fo the subscription term of a month or a year.</p></td>
 <td>
 
 ```json
