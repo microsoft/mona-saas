@@ -85,3 +85,9 @@ https://mona-admin-yourdeployment.azurewebsites.net/test?subscriptionName=MySubs
 
 See [the Azure Marketplace docs](https://learn.microsoft.com/partner-center/marketplace-offers/partner-center-portal/pc-saas-fulfillment-subscription-api) for more information about these subscription properties.
 
+### Using the test webhook
+
+Once you've created a test subscription, you can try issuing webhook notifications against it. While you don't have to authenticate against the test webhook endpoint, it will only work for subscriptions previously created via the test landing page. Use your favorite API client (e.g., Postman, cURL) to POST JSON webhook notifications against the test webhook endpoint.
+
+Refer to the table below for more information on issuing webhook notifications.
+
