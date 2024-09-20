@@ -55,7 +55,7 @@ From the Mona admin center, click on the **Integration testing** tab. On this ta
 
 #### Using the test landing page
 
-The test landing page implements precisely the same flow as the live landing page that the Azure Marketplace will redirect your subscribers to. By default, the test landing page endpoint creates a fake test subscription complete with a full set of fake properties. You can fully customize the test subscription that is created allowing you to test various subscription scenarios using the query string parameters described below. 
+The test landing page implements the same flow as the live landing page that the Azure Marketplace will redirect your subscribers to. Any guest or member of your Entra tenant can use the test landing page. By default, the test landing page endpoint creates a fake test subscription complete with a full set of fake properties. You can fully customize the test subscription that is created allowing you to test various subscription scenarios using the query string parameters described below. 
 
 
 
