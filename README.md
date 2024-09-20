@@ -92,9 +92,9 @@ Once you've created a test subscription, you can try issuing webhook notificatio
 Refer to the table below for more information on issuing webhook notifications.
 
 <table>
-  <tr>
-    <td><b>Plan change</b></td>
-    <td>
+<tr>
+<td><b>Plan change</b></td>
+<td>
 
 ```json
 {
@@ -104,8 +104,8 @@ Refer to the table below for more information on issuing webhook notifications.
 } 
 ```
       
-    </td>
-  </tr>
+</td>
+</tr>
 </table>
               
 
