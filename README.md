@@ -1,5 +1,7 @@
 # Mona for SaaS
 
+> Version 2.0
+
 [The Azure Marketplace is an event-driven system.](https://learn.microsoft.com/partner-center/marketplace-offers/partner-center-portal/pc-saas-fulfillment-life-cycle) Customers purchase subscriptions to your SaaS app. They can change their subscriptions or purchase more seats. Some customers might cancel their subscriptions. These crucial events are the pulse of your SaaS app. Mona embraces this event-driven design by publishing all Marketplace-related events to [a custom Event Grid topic](https://learn.microsoft.com/azure/event-grid/custom-topics) deployed in your environment. [From there, you can handle the events however you want.](https://learn.microsoft.com/azure/event-grid/event-handlers) By default, Mona deploys a set of [Logic Apps](https://learn.microsoft.com/azure/logic-apps/logic-apps-overview) that enable you to control how your SaaS app responds to Marketplace events in a simple low/no-code environment.
 
 ## Quickstart
@@ -162,7 +164,7 @@ Refer to the table below for more information on issuing webhook notifications.
 </td>
 </tr>
 <tr>
-<td><p><b>Renewal</b></p><p>Occurs when a subscription is automatically renewed at the end fo the subscription term of a month or a year.</p></td>
+<td><p><b>Renewal</b></p><p>Occurs when a subscription is automatically renewed at the end of the subscription term of a month or a year.</p></td>
 <td>
 
 ```json
