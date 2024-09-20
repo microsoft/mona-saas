@@ -184,4 +184,24 @@ Once you've configured and tested all of your event integrations, it's time to g
 
 During your SaaS offer setup, [you'll be prompted to provide some "technical details"](https://learn.microsoft.com/partner-center/marketplace-offers/create-new-saas-offer-technical) that essentially connect your SaaS offer to your Mona deployment. The Azure Marketplace uses these details to redirect new purchases to the Mona landing page and issue webhook notifications to the Mona webhook endpoint.
 
-To find these details, navigate to the Mona admin center (you should have it bookmarked now! 😉) and click on the **Marketplace offer technical details** tab. Copy and paste these technical details into the Partner Center when setting up your SaaS offer.
+To find these details, navigate to the Mona admin center (you should have it bookmarked by now! 😉) and click on the **Marketplace offer technical details** tab. Copy and paste these technical details into the Partner Center when setting up your SaaS offer.
+
+## Who supports Mona for SaaS?
+
+Please see [our support docs](SUPPORT.md) for more information.
+
+## Security
+
+Please see [our security docs](SECURITY.md) for more information.
+
+## How can I contribute?
+
+Please refer to these docs for more information.
+
+* [__Start Here__: Contibuting Guide](./CONTRIBUTING.md)
+* [Microsoft Open Source Code of Conduct](./CODE_OF_CONDUCT.md)
+* [Security](./SECURITY.md)
+
+## Trademarks
+
+This project may contain trademarks or logos for projects, products, or services. Authorized use of Microsoft trademarks or logos is subject to and must follow [Microsoft's Trademark & Brand Guidelines](https://www.microsoft.com/en-us/legal/intellectualproperty/trademarks/usage/general). Use of Microsoft trademarks or logos in modified versions of this project must not cause confusion or imply Microsoft sponsorship. Any use of third-party trademarks or logos are subject to those third-party's policies.
