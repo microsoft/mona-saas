@@ -36,7 +36,7 @@ Once the script is complete, you will be presented with a link to your Mona depl
 
 Take a moment to familiarize yourself with the Mona admin center by clicking through the tabs. 
 
-Click on the **"This Mona deployment"** tab. This tab includes a deep link into the Azure portal and the resource group in which Mona was deployed. Click the resource group link. Within this resource group you will find seven different Logic Apps—each preconfigured to handle a specific Marketplace event. These Logic Apps are already connected to Mona's custom event grid topic.
+Click on the **This Mona deployment** tab. This tab includes a deep link into the Azure portal and the resource group in which Mona was deployed. Click the resource group link. Within this resource group you will find seven different Logic Apps—each preconfigured to handle a specific Marketplace event. These Logic Apps are already connected to Mona's custom event grid topic.
 
 #### Why Azure Logic Apps?
 
@@ -50,8 +50,8 @@ Mona makes it easy to test your Marketplace integrations before going live with 
 
 From the Mona admin center, click on the **Integration testing** tab. On this tab, you'll find two URLs:
 
-* **"Test landing page URL"**: Guests and members of your Entra tenant can use this endpoint to test the end-to-end SaaS subscription purchasing workflow.
-* **"Test webhook URL"**: Anyone can use this endpoint to issue test subscription webhook notifications against subscriptions previously created via the **"Test landing page URL"**.
+* **Test landing page URL**: Guests and members of your Entra tenant can use this endpoint to test the end-to-end SaaS subscription purchasing workflow.
+* **Test webhook URL**: Anyone can use this endpoint to issue test subscription webhook notifications against subscriptions previously created via the **"Test landing page URL"**.
 
 #### Using the test landing page
 
