@@ -51,7 +51,7 @@ Mona makes it easy to test your Marketplace integrations before going live with 
 From the Mona admin center, click on the **Integration testing** tab. On this tab, you'll find two URLs:
 
 * **Test landing page URL**: Allows you test the complete end-to-end subscription purchasing experience.
-* **Test webhook URL**: Allows you to publish webhook notifications against test subscriptions using the test landing page.
+* **Test webhook URL**: Allows you to publish webhook notifications against test subscriptions previously created using the test landing page.
 
 #### Using the test landing page
 
