@@ -546,7 +546,6 @@ fi
 
 echo
 echo "$lp ⭐   Mona deployment complete."
-echo
 
 if [[ -z $no_publish ]]; then
     echo
