@@ -283,9 +283,14 @@ mona_aad_app_id=$(echo "$create_aad_app_response" | jq -r ".appId")
 
 # Deploy the Bicep template.
 
-echo "$lp 🦾   Deploying Mona to subscription [$subscription_id] resource group [$resource_group_name]. This might take a while...";
-
 az_deployment_name="mona-deploy-$deployment_name"
+deployment_url="https://portal.azure.com/#view/HubsExtension/DeploymentDetailsBlade/~/overview/id/%2Fsubscriptions%2F$subscription_id%2FresourceGroups%2F$resource_group_name%2Fproviders%2FMicrosoft.Resources%2Fdeployments%2F$az_deployment_name"
+
+echo "$lp 🦾   Deploying Mona to subscription [$subscription_id] resource group [$resource_group_name]."
+echo
+echo "$lp ⌛   This may take a while. Right-click to monitor the deployment:"
+echo "$lp     [ $deployment_url ]"
+echo
 
 az deployment group create \
     --resource-group "$resource_group_name" \
@@ -462,11 +467,18 @@ else
     if [[ -z "$pack_path" ]]; then
         echo "$lp ⚠️   Integration pack [$integration_pack] not found at [$pack_absolute_path] or [$pack_relative_path]. No integration pack will be deployed."
     else
+        pack_deployment_name="mona-pack-deploy-$deployment_name"
+        pack_deployment_url="https://portal.azure.com/#view/HubsExtension/DeploymentDetailsBlade/~/overview/id/%2Fsubscriptions%2F$subscription_id%2FresourceGroups%2F$resource_group_name%2Fproviders%2FMicrosoft.Resources%2Fdeployments%2F$pack_deployment_name"
+
         echo "$lp 🦾   Deploying [$integration_pack ($pack_path)] integration pack..."
+        echo
+        echo "$lp ⌛   This may take a while. Right-click to monitor the deployment:"
+        echo "$lp     [ $pack_deployment_url ]"
+        echo
 
         az deployment group create \
             --resource-group "$resource_group_name" \
-            --name "mona-pack-deploy-${deployment_name}" \
+            --name "$pack_deployment_name" \
             --template-file "$pack_path" \
             --parameters \
                 deploymentName="$deployment_name" \
@@ -535,10 +547,6 @@ fi
 echo
 echo "$lp ⭐   Mona deployment complete."
 echo
-echo "$lp ⚠️   PLEASE READ CAREFULLY"
-echo
-echo "$lp By default, Mona will not automatically activate subscriptions with the Marketplace. See this doc... "
-echo "$lp [ https://github.com/microsoft/mona-saas/tree/main/docs#how-do-i-notify-the-marketplace-that-a-subscription-has-been-activated ]"
 
 if [[ -z $no_publish ]]; then
     echo
