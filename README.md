@@ -186,7 +186,9 @@ Refer to the table below for more information on issuing webhook notifications.
 
 After a customer purchases a subscription, you have 48 hours to activate it and notify the Marketplace. Billing starts when the subscription is activated.
 
-Calls to the Marketplace API must be authenticated using Mona’s external managed identity. To locate the managed identity:
+Calls to the Marketplace API must be authenticated using Mona’s external managed identity.
+
+To locate the managed identity:
 
 - Go to the Mona admin center.
 - Open the **This Mona deployment** tab.
@@ -198,7 +200,16 @@ This will direct you to the Azure portal, where you can manage the identity. You
               
 ### Set up your SaaS offer in Partner Center
 
-Refer to [these docs](https://learn.microsoft.com/en-us/partner-center/marketplace-offers/plan-saas-offer) for more information on setting up your SaaS offer via the Partner Center. During your SaaS offer setup, [you'll be prompted to provide some "technical details"](https://learn.microsoft.com/partner-center/marketplace-offers/create-new-saas-offer-technical) that are used to connect your SaaS offer to your Mona deployment. The Azure Marketplace uses these details to redirect new purchases to the Mona landing page and issue webhook notifications to the Mona webhook endpoint. To find these details, navigate to the Mona admin center and click on the **Marketplace offer technical details** tab. Copy and paste these technical details into the Partner Center when setting up your SaaS offer.
+Refer to [these docs](https://learn.microsoft.com/en-us/partner-center/marketplace-offers/plan-saas-offer) for more information on setting up your SaaS offer via the Partner Center.
+
+During your SaaS offer setup, [you'll be prompted to provide some "technical details"](https://learn.microsoft.com/partner-center/marketplace-offers/create-new-saas-offer-technical) that are used to connect your SaaS offer to your Mona deployment. The Azure Marketplace uses these details to redirect new purchases to the Mona landing page and issue webhook notifications to the Mona webhook endpoint.
+
+To find these settings:
+
+- Go to the Mona admin center.
+- Open the **Marketplace offer technical details** tab.
+
+Copy and paste these settings into the Partner Center when setting up your SaaS offer.
 
 ## Who supports Mona for SaaS?
 
