@@ -179,16 +179,28 @@ Refer to the table below for more information on issuing webhook notifications.
 </td>
 </tr>
 </table>
+
+### Notify the Marketplace when a subscription has been activated
+
+From the time a customer purchases a subscription to your SaaS app (Mona emits a purchase event), you have 48 hours to activate the subscription and notify the marketplace. This period gives you time to complete approval workflows and set up the necessary infrastructure before onboarding the customer to your SaaS app. Keep in mind that it’s your responsibility to notify the Marketplace when the subscription is activated, and billing begins at that point.
+
+Calls to the Marketplace API are authenticated using your Mona deployment's external managed identity. To locate this identity, follow these steps:
+
+- Go to the Mona admin center.
+- Open the **This Mona deployment** tab.
+- Click the **Managed external identity** link.
+
+This will take you to the Azure portal, where you can view the managed identity used to authenticate Marketplace API calls. Managed identities provide a secure way to authenticate calls to APIs [from various Azure resources](https://learn.microsoft.com/entra/identity/managed-identities-azure-resources/managed-identities-status).
+
+Use this managed identity (e.g., with a [Logic App](https://learn.microsoft.com/azure/logic-apps/authenticate-with-managed-identity?tabs=consumption#authenticate-access-with-managed-identity), [Azure Function](https://learn.microsoft.com/azure/azure-functions/functions-identity-based-connections-tutorial), or [anywhere else you can use a managed identity](https://learn.microsoft.com/en-us/entra/identity/managed-identities-azure-resources/managed-identities-status)) to [obtain a token for the Marketplace API](https://learn.microsoft.com/partner-center/marketplace-offers/partner-center-portal/pc-saas-registration#how-to-get-the-publishers-authorization-token) and [notify the Marketplace directly that the subscription has been activated](https://learn.microsoft.com/partner-center/marketplace-offers/partner-center-portal/pc-saas-fulfillment-subscription-api#activate-a-subscription).
+
+> When requesting a Marketplace API access token, be sure to set the `scope` to: `20e940b3-4c77-4b0b-9a53-9e16a1b010a7/.default`.
+
+For more information on using the activation API endpoint, [refer to the Marketplace API docs](https://learn.microsoft.com/partner-center/marketplace-offers/partner-center-portal/pc-saas-fulfillment-subscription-api#activate-a-subscription).
               
 ### Set up your SaaS offer in Partner Center
 
 Refer to [these docs](https://learn.microsoft.com/en-us/partner-center/marketplace-offers/plan-saas-offer) for more information on setting up your SaaS offer via the Partner Center. During your SaaS offer setup, [you'll be prompted to provide some "technical details"](https://learn.microsoft.com/partner-center/marketplace-offers/create-new-saas-offer-technical) that are used to connect your SaaS offer to your Mona deployment. The Azure Marketplace uses these details to redirect new purchases to the Mona landing page and issue webhook notifications to the Mona webhook endpoint. To find these details, navigate to the Mona admin center and click on the **Marketplace offer technical details** tab. Copy and paste these technical details into the Partner Center when setting up your SaaS offer.
-
-### Notify the Marketplace when a subscription has been activated
-
-From the time that a customer purchases a subscription to your SaaS app (Mona emits a purchase event), you have 48 hours to activate the subscription and notify the marketplace. This allows you time to work through approval workflows and configure infrastructure before onboarding the customer to your SaaS app. It is your responsibility to notify the Marketplace when you activate the subscription. Billing begins when the subscription is activated.
-
-Calls to the Marketplace API are authenticated using your Mona deployment's external managed identity. To find this identity, navigate to the Mona admin center, open the **This Mona deployment** tab, and click the **Managed external identity** link. This will bring you to the managed identity overview pane within the Azure portal. Make a note of it as you'll need this identity when you call the Marketplace API to activate the subscription.
 
 ## Who supports Mona for SaaS?
 
