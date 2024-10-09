@@ -186,9 +186,9 @@ Refer to [these docs](https://learn.microsoft.com/en-us/partner-center/marketpla
 
 ### Notify the Marketplace when a subscription has been activated
 
-From the time that a customer purchases a subscription to your SaaS app (Mona emits a purchase event), you have 48 hours to activate the subscription and notify the marketplace. This allows you time to work through approval workflows and configure your customer's subscription before activating the subscription.
+From the time that a customer purchases a subscription to your SaaS app (Mona emits a purchase event), you have 48 hours to activate the subscription and notify the marketplace. This allows you time to work through approval workflows and configure infrastructure before onboarding the customer to your SaaS app. It is your responsibility to notify the Marketplace when you activate the subscription. Billing begins when the subscription is activated.
 
-Calls to the Marketplace API are authenticated using your Mona deployment's external managed identity. To find this identity, navigate to the Mona admin center, open the **This Mona deployment** tab, and click the **Managed external identity** link. This will bring you to the managed identity overview pane within the Azure portal. 
+Calls to the Marketplace API are authenticated using your Mona deployment's external managed identity. To find this identity, navigate to the Mona admin center, open the **This Mona deployment** tab, and click the **Managed external identity** link. This will bring you to the managed identity overview pane within the Azure portal. Make a note of it as you'll need this identity when you call the Marketplace API to activate the subscription.
 
 ## Who supports Mona for SaaS?
 
