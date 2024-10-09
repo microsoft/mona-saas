@@ -95,148 +95,204 @@
                     <table class="table table-striped">
                         <tr>
                             <th>Landing page URL</th>
-                            <td>@adminViewData.PartnerCenterTechnicalDetails!.LandingPageUrl</td>
-                        </tr>
-                        <tr>
-                            <th>Connection webhook</th>
-                            <td>@adminViewData.PartnerCenterTechnicalDetails!.WebhookUrl</td>
-                        </tr>
-                        <tr>
-                            <th>Microsoft Entra tenant ID</th>
-                            <td>@adminViewData.PartnerCenterTechnicalDetails!.AadTenantId</td>
-                        </tr>
-                        <tr>
-                            <th>Microsoft Entra application ID</th>
-                            <td>@adminViewData.PartnerCenterTechnicalDetails!.AadApplicationId</td>
-                        </tr>
-                    </table>
-                </div>
-            </div>
-            <div class="tab-pane fade" id="integration-testing-panel" role="tabpanel" aria-labelledby="integration-testing-tab" tabindex="0">
-                <p>
-                    Here you can <a href="https://github.com/microsoft/mona-saas">
-                        test your Mona subscription event grid integrations
+                            <td>
+                                @adminViewData.PartnerCenterTechnicalDetails!.LandingPageUrl
+                            <a href="#">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-copy copy-icon" viewBox="0 0 16 16" text-to-copy="@adminViewData.PartnerCenterTechnicalDetails!.LandingPageUrl">
+                                    <path fill-rule="evenodd" d="M4 2a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2zm2-1a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1zM2 5a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1v-1h1v1a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h1v1z" />
+                                </svg>
+                            </a>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>Connection webhook</th>
+                        <td>
+                            @adminViewData.PartnerCenterTechnicalDetails!.WebhookUrl
+                        <a href="#">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-copy copy-icon" viewBox="0 0 16 16" text-to-copy="@adminViewData.PartnerCenterTechnicalDetails!.WebhookUrl">
+                                <path fill-rule="evenodd" d="M4 2a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2zm2-1a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1zM2 5a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1v-1h1v1a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h1v1z" />
+                            </svg>
+                        </a>
+                    </td>
+                </tr>
+                <tr>
+                    <th>Microsoft Entra tenant ID</th>
+                    <td>
+                        @adminViewData.PartnerCenterTechnicalDetails!.AadTenantId
+                    <a href="#">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-copy copy-icon" viewBox="0 0 16 16" text-to-copy="@adminViewData.PartnerCenterTechnicalDetails!.AadTenantId">
+                            <path fill-rule="evenodd" d="M4 2a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2zm2-1a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1zM2 5a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1v-1h1v1a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h1v1z" />
+                        </svg>
+                    </a>
+                </td>
+            </tr>
+            <tr>
+                <th>Microsoft Entra application ID</th>
+                <td>
+                    @adminViewData.PartnerCenterTechnicalDetails!.AadApplicationId
+                <a href="#">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-copy copy-icon" viewBox="0 0 16 16" text-to-copy="@adminViewData.PartnerCenterTechnicalDetails!.AadApplicationId">
+                        <path fill-rule="evenodd" d="M4 2a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2zm2-1a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1zM2 5a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1v-1h1v1a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h1v1z" />
+                    </svg>
+                </a>
+            </td>
+        </tr>
+    </table>
+</div>
+</div>
+<div class="tab-pane fade" id="integration-testing-panel" role="tabpanel" aria-labelledby="integration-testing-tab" tabindex="0">
+    <p>
+        Here you can <a href="https://github.com/microsoft/mona-saas">
+            test your Mona subscription event grid integrations
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-box-arrow-in-up-right" viewBox="0 0 16 16">
+                <path fill-rule="evenodd" d="M6.364 13.5a.5.5 0 0 0 .5.5H13.5a1.5 1.5 0 0 0 1.5-1.5v-10A1.5 1.5 0 0 0 13.5 1h-10A1.5 1.5 0 0 0 2 2.5v6.636a.5.5 0 1 0 1 0V2.5a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 .5.5v10a.5.5 0 0 1-.5.5H6.864a.5.5 0 0 0-.5.5" />
+                <path fill-rule="evenodd" d="M11 5.5a.5.5 0 0 0-.5-.5h-5a.5.5 0 0 0 0 1h3.793l-8.147 8.146a.5.5 0 0 0 .708.708L10 6.707V10.5a.5.5 0 0 0 1 0z" />
+            </svg>
+        </a>.
+    </p>
+    <hr />
+    <div style="margin-top: 20px">
+        <table class="table table-striped">
+            <tr>
+                <th>Test landing page URL</th>
+                <td>
+                    @adminViewData.TestLandingPageUrl
+                    <a href="#">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-copy copy-icon" viewBox="0 0 16 16" text-to-copy="@adminViewData.TestLandingPageUrl">
+                            <path fill-rule="evenodd" d="M4 2a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2zm2-1a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1zM2 5a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1v-1h1v1a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h1v1z" />
+                        </svg>
+                    </a>
+                </td>
+            </tr>
+            <tr>
+                <th>Test webhook URL</th>
+                <td>
+                    @adminViewData.TestWebhookUrl
+                <a href="#">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-copy copy-icon" viewBox="0 0 16 16" text-to-copy="@adminViewData.TestWebhookUrl">
+                        <path fill-rule="evenodd" d="M4 2a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2zm2-1a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1zM2 5a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1v-1h1v1a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h1v1z" />
+                    </svg>
+                </a>
+            </td>
+        </tr>
+    </table>
+</div>
+</div>
+<div class="tab-pane fade" id="deployment-panel" role="tabpanel" aria-labelledby="deployment-tab" tabindex="0">
+    <p>Here you can view the details of this Mona deployment.</p>
+    <hr />
+    <div style="margin-top: 20px">
+        <table class="table table-striped">
+            <tr>
+                <th>Deployment name</th>
+                <td>@adminViewData.DeploymentName</td>
+            </tr>
+            <tr>
+                <th>Mona version</th>
+                <td>
+                    <a target="_blank" href="https://github.com/microsoft/mona-saas">
+                        @adminViewData.MonaVersion
                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-box-arrow-in-up-right" viewBox="0 0 16 16">
                             <path fill-rule="evenodd" d="M6.364 13.5a.5.5 0 0 0 .5.5H13.5a1.5 1.5 0 0 0 1.5-1.5v-10A1.5 1.5 0 0 0 13.5 1h-10A1.5 1.5 0 0 0 2 2.5v6.636a.5.5 0 1 0 1 0V2.5a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 .5.5v10a.5.5 0 0 1-.5.5H6.864a.5.5 0 0 0-.5.5" />
                             <path fill-rule="evenodd" d="M11 5.5a.5.5 0 0 0-.5-.5h-5a.5.5 0 0 0 0 1h3.793l-8.147 8.146a.5.5 0 0 0 .708.708L10 6.707V10.5a.5.5 0 0 0 1 0z" />
                         </svg>
-                    </a>.
-                </p>
-                <hr />
-                <div style="margin-top: 20px">
-                    <table class="table table-striped">
-                        <tr>
-                            <th>Test landing page URL</th>
-                            <td>@adminViewData.TestLandingPageUrl</td>
-                        </tr>
-                        <tr>
-                            <th>Test webhook URL</th>
-                            <td>@adminViewData.TestWebhookUrl</td>
-                        </tr>
-                    </table>
-                </div>
-            </div>
-            <div class="tab-pane fade" id="deployment-panel" role="tabpanel" aria-labelledby="deployment-tab" tabindex="0">
-                <p>Here you can view the details of this Mona deployment.</p>
-                <hr />
-                <div style="margin-top: 20px">
-                    <table class="table table-striped">
-                        <tr>
-                            <th>Deployment name</th>
-                            <td>@adminViewData.DeploymentName</td>
-                        </tr>
-                        <tr>
-                            <th>Mona version</th>
-                            <td>
-                                <a target="_blank" href="https://github.com/microsoft/mona-saas">
-                                    @adminViewData.MonaVersion
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-box-arrow-in-up-right" viewBox="0 0 16 16">
-                                        <path fill-rule="evenodd" d="M6.364 13.5a.5.5 0 0 0 .5.5H13.5a1.5 1.5 0 0 0 1.5-1.5v-10A1.5 1.5 0 0 0 13.5 1h-10A1.5 1.5 0 0 0 2 2.5v6.636a.5.5 0 1 0 1 0V2.5a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 .5.5v10a.5.5 0 0 1-.5.5H6.864a.5.5 0 0 0-.5.5" />
-                                        <path fill-rule="evenodd" d="M11 5.5a.5.5 0 0 0-.5-.5h-5a.5.5 0 0 0 0 1h3.793l-8.147 8.146a.5.5 0 0 0 .708.708L10 6.707V10.5a.5.5 0 0 0 1 0z" />
-                                    </svg>
-                                </a>
-                            </td>
-                        </tr>
-                        <tr>
-                            <th>Resource group</th>
-                            <td>
-                                <a target="_blank" href="@adminViewData.ResourceGroupOverviewUrl">
-                                    @adminViewData.AzureResourceGroupName
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-box-arrow-in-up-right" viewBox="0 0 16 16">
-                                        <path fill-rule="evenodd" d="M6.364 13.5a.5.5 0 0 0 .5.5H13.5a1.5 1.5 0 0 0 1.5-1.5v-10A1.5 1.5 0 0 0 13.5 1h-10A1.5 1.5 0 0 0 2 2.5v6.636a.5.5 0 1 0 1 0V2.5a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 .5.5v10a.5.5 0 0 1-.5.5H6.864a.5.5 0 0 0-.5.5" />
-                                        <path fill-rule="evenodd" d="M11 5.5a.5.5 0 0 0-.5-.5h-5a.5.5 0 0 0 0 1h3.793l-8.147 8.146a.5.5 0 0 0 .708.708L10 6.707V10.5a.5.5 0 0 0 1 0z" />
-                                    </svg>
-                                </a>
-                            </td>
-                        </tr>
-                        <tr>
-                            <th>Custom event grid topic</th>
-                            <td>
-                                <a target="_blank" href="@adminViewData.EventGridTopicOverviewUrl">
-                                    @adminViewData.EventGridTopicName
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-box-arrow-in-up-right" viewBox="0 0 16 16">
-                                        <path fill-rule="evenodd" d="M6.364 13.5a.5.5 0 0 0 .5.5H13.5a1.5 1.5 0 0 0 1.5-1.5v-10A1.5 1.5 0 0 0 13.5 1h-10A1.5 1.5 0 0 0 2 2.5v6.636a.5.5 0 1 0 1 0V2.5a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 .5.5v10a.5.5 0 0 1-.5.5H6.864a.5.5 0 0 0-.5.5" />
-                                        <path fill-rule="evenodd" d="M11 5.5a.5.5 0 0 0-.5-.5h-5a.5.5 0 0 0 0 1h3.793l-8.147 8.146a.5.5 0 0 0 .708.708L10 6.707V10.5a.5.5 0 0 0 1 0z" />
-                                    </svg>
-                                </a>
-                            </td>
-                        </tr>
-                        <tr>
-                            <th>Admin web app configuration</th>
-                            <td>
-                                <a target="_blank" href="@adminViewData.AdminAppSettingsUrl">
-                                    @adminViewData.AdminAppName
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-box-arrow-in-up-right" viewBox="0 0 16 16">
-                                        <path fill-rule="evenodd" d="M6.364 13.5a.5.5 0 0 0 .5.5H13.5a1.5 1.5 0 0 0 1.5-1.5v-10A1.5 1.5 0 0 0 13.5 1h-10A1.5 1.5 0 0 0 2 2.5v6.636a.5.5 0 1 0 1 0V2.5a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 .5.5v10a.5.5 0 0 1-.5.5H6.864a.5.5 0 0 0-.5.5" />
-                                        <path fill-rule="evenodd" d="M11 5.5a.5.5 0 0 0-.5-.5h-5a.5.5 0 0 0 0 1h3.793l-8.147 8.146a.5.5 0 0 0 .708.708L10 6.707V10.5a.5.5 0 0 0 1 0z" />
-                                    </svg>
-                                </a>
-                            </td>
-                        </tr>
-                        <tr>
-                            <th>Customer web app configuration</th>
-                            <td>
-                                <a target="_blank" href="@adminViewData.CustomerAppSettingsUrl">
-                                    @adminViewData.CustomerAppName
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-box-arrow-in-up-right" viewBox="0 0 16 16">
-                                        <path fill-rule="evenodd" d="M6.364 13.5a.5.5 0 0 0 .5.5H13.5a1.5 1.5 0 0 0 1.5-1.5v-10A1.5 1.5 0 0 0 13.5 1h-10A1.5 1.5 0 0 0 2 2.5v6.636a.5.5 0 1 0 1 0V2.5a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 .5.5v10a.5.5 0 0 1-.5.5H6.864a.5.5 0 0 0-.5.5" />
-                                        <path fill-rule="evenodd" d="M11 5.5a.5.5 0 0 0-.5-.5h-5a.5.5 0 0 0 0 1h3.793l-8.147 8.146a.5.5 0 0 0 .708.708L10 6.707V10.5a.5.5 0 0 0 1 0z" />
-                                    </svg>
-                                </a>
-                            </td>
-                        </tr>
-                        <tr>
-                            <th>External managed identity</th>
-                            <td>
-                                <a target="_blank" href="@adminViewData.ExternalIdentityOverviewUrl">
-                                    @adminViewData.ExternalIdentityName
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-box-arrow-in-up-right" viewBox="0 0 16 16">
-                                        <path fill-rule="evenodd" d="M6.364 13.5a.5.5 0 0 0 .5.5H13.5a1.5 1.5 0 0 0 1.5-1.5v-10A1.5 1.5 0 0 0 13.5 1h-10A1.5 1.5 0 0 0 2 2.5v6.636a.5.5 0 1 0 1 0V2.5a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 .5.5v10a.5.5 0 0 1-.5.5H6.864a.5.5 0 0 0-.5.5" />
-                                        <path fill-rule="evenodd" d="M11 5.5a.5.5 0 0 0-.5-.5h-5a.5.5 0 0 0 0 1h3.793l-8.147 8.146a.5.5 0 0 0 .708.708L10 6.707V10.5a.5.5 0 0 0 1 0z" />
-                                    </svg>
-                                </a>
-                            </td>
-                        </tr>
-                        <tr>
-                            <th>Internal managed identity</th>
-                            <td>
-                                <a target="_blank" href="@adminViewData.InternalIdentityOverviewUrl">
-                                    @adminViewData.InternalIdentityName
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-box-arrow-in-up-right" viewBox="0 0 16 16">
-                                        <path fill-rule="evenodd" d="M6.364 13.5a.5.5 0 0 0 .5.5H13.5a1.5 1.5 0 0 0 1.5-1.5v-10A1.5 1.5 0 0 0 13.5 1h-10A1.5 1.5 0 0 0 2 2.5v6.636a.5.5 0 1 0 1 0V2.5a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 .5.5v10a.5.5 0 0 1-.5.5H6.864a.5.5 0 0 0-.5.5" />
-                                        <path fill-rule="evenodd" d="M11 5.5a.5.5 0 0 0-.5-.5h-5a.5.5 0 0 0 0 1h3.793l-8.147 8.146a.5.5 0 0 0 .708.708L10 6.707V10.5a.5.5 0 0 0 1 0z" />
-                                    </svg>
-                                </a>
-                            </td>
-                        </tr>
-                    </table>
-                </div>
-            </div>
-        </div>
+                    </a>
+                </td>
+            </tr>
+            <tr>
+                <th>Resource group</th>
+                <td>
+                    <a target="_blank" href="@adminViewData.ResourceGroupOverviewUrl">
+                        @adminViewData.AzureResourceGroupName
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-box-arrow-in-up-right" viewBox="0 0 16 16">
+                            <path fill-rule="evenodd" d="M6.364 13.5a.5.5 0 0 0 .5.5H13.5a1.5 1.5 0 0 0 1.5-1.5v-10A1.5 1.5 0 0 0 13.5 1h-10A1.5 1.5 0 0 0 2 2.5v6.636a.5.5 0 1 0 1 0V2.5a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 .5.5v10a.5.5 0 0 1-.5.5H6.864a.5.5 0 0 0-.5.5" />
+                            <path fill-rule="evenodd" d="M11 5.5a.5.5 0 0 0-.5-.5h-5a.5.5 0 0 0 0 1h3.793l-8.147 8.146a.5.5 0 0 0 .708.708L10 6.707V10.5a.5.5 0 0 0 1 0z" />
+                        </svg>
+                    </a>
+                </td>
+            </tr>
+            <tr>
+                <th>Custom event grid topic</th>
+                <td>
+                    <a target="_blank" href="@adminViewData.EventGridTopicOverviewUrl">
+                        @adminViewData.EventGridTopicName
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-box-arrow-in-up-right" viewBox="0 0 16 16">
+                            <path fill-rule="evenodd" d="M6.364 13.5a.5.5 0 0 0 .5.5H13.5a1.5 1.5 0 0 0 1.5-1.5v-10A1.5 1.5 0 0 0 13.5 1h-10A1.5 1.5 0 0 0 2 2.5v6.636a.5.5 0 1 0 1 0V2.5a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 .5.5v10a.5.5 0 0 1-.5.5H6.864a.5.5 0 0 0-.5.5" />
+                            <path fill-rule="evenodd" d="M11 5.5a.5.5 0 0 0-.5-.5h-5a.5.5 0 0 0 0 1h3.793l-8.147 8.146a.5.5 0 0 0 .708.708L10 6.707V10.5a.5.5 0 0 0 1 0z" />
+                        </svg>
+                    </a>
+                </td>
+            </tr>
+            <tr>
+                <th>Admin web app configuration</th>
+                <td>
+                    <a target="_blank" href="@adminViewData.AdminAppSettingsUrl">
+                        @adminViewData.AdminAppName
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-box-arrow-in-up-right" viewBox="0 0 16 16">
+                            <path fill-rule="evenodd" d="M6.364 13.5a.5.5 0 0 0 .5.5H13.5a1.5 1.5 0 0 0 1.5-1.5v-10A1.5 1.5 0 0 0 13.5 1h-10A1.5 1.5 0 0 0 2 2.5v6.636a.5.5 0 1 0 1 0V2.5a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 .5.5v10a.5.5 0 0 1-.5.5H6.864a.5.5 0 0 0-.5.5" />
+                            <path fill-rule="evenodd" d="M11 5.5a.5.5 0 0 0-.5-.5h-5a.5.5 0 0 0 0 1h3.793l-8.147 8.146a.5.5 0 0 0 .708.708L10 6.707V10.5a.5.5 0 0 0 1 0z" />
+                        </svg>
+                    </a>
+                </td>
+            </tr>
+            <tr>
+                <th>Customer web app configuration</th>
+                <td>
+                    <a target="_blank" href="@adminViewData.CustomerAppSettingsUrl">
+                        @adminViewData.CustomerAppName
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-box-arrow-in-up-right" viewBox="0 0 16 16">
+                            <path fill-rule="evenodd" d="M6.364 13.5a.5.5 0 0 0 .5.5H13.5a1.5 1.5 0 0 0 1.5-1.5v-10A1.5 1.5 0 0 0 13.5 1h-10A1.5 1.5 0 0 0 2 2.5v6.636a.5.5 0 1 0 1 0V2.5a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 .5.5v10a.5.5 0 0 1-.5.5H6.864a.5.5 0 0 0-.5.5" />
+                            <path fill-rule="evenodd" d="M11 5.5a.5.5 0 0 0-.5-.5h-5a.5.5 0 0 0 0 1h3.793l-8.147 8.146a.5.5 0 0 0 .708.708L10 6.707V10.5a.5.5 0 0 0 1 0z" />
+                        </svg>
+                    </a>
+                </td>
+            </tr>
+            <tr>
+                <th>External managed identity</th>
+                <td>
+                    <a target="_blank" href="@adminViewData.ExternalIdentityOverviewUrl">
+                        @adminViewData.ExternalIdentityName
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-box-arrow-in-up-right" viewBox="0 0 16 16">
+                            <path fill-rule="evenodd" d="M6.364 13.5a.5.5 0 0 0 .5.5H13.5a1.5 1.5 0 0 0 1.5-1.5v-10A1.5 1.5 0 0 0 13.5 1h-10A1.5 1.5 0 0 0 2 2.5v6.636a.5.5 0 1 0 1 0V2.5a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 .5.5v10a.5.5 0 0 1-.5.5H6.864a.5.5 0 0 0-.5.5" />
+                            <path fill-rule="evenodd" d="M11 5.5a.5.5 0 0 0-.5-.5h-5a.5.5 0 0 0 0 1h3.793l-8.147 8.146a.5.5 0 0 0 .708.708L10 6.707V10.5a.5.5 0 0 0 1 0z" />
+                        </svg>
+                    </a>
+                </td>
+            </tr>
+            <tr>
+                <th>Internal managed identity</th>
+                <td>
+                    <a target="_blank" href="@adminViewData.InternalIdentityOverviewUrl">
+                        @adminViewData.InternalIdentityName
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-box-arrow-in-up-right" viewBox="0 0 16 16">
+                            <path fill-rule="evenodd" d="M6.364 13.5a.5.5 0 0 0 .5.5H13.5a1.5 1.5 0 0 0 1.5-1.5v-10A1.5 1.5 0 0 0 13.5 1h-10A1.5 1.5 0 0 0 2 2.5v6.636a.5.5 0 1 0 1 0V2.5a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 .5.5v10a.5.5 0 0 1-.5.5H6.864a.5.5 0 0 0-.5.5" />
+                            <path fill-rule="evenodd" d="M11 5.5a.5.5 0 0 0-.5-.5h-5a.5.5 0 0 0 0 1h3.793l-8.147 8.146a.5.5 0 0 0 .708.708L10 6.707V10.5a.5.5 0 0 0 1 0z" />
+                        </svg>
+                    </a>
+                </td>
+            </tr>
+        </table>
     </div>
+</div>
+</div>
+</div>
 
-    <script src="~/lib/jquery/dist/jquery.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ENjdO4Dr2bkBIFxQpeoTz1HIcje39Wm4jDKdf19U8gI4ddQ3GYNS7NTKfAdVQSZe" crossorigin="anonymous"></script>
-    <script src="~/js/site.js" asp-append-version="true"></script>
+<script src="~/lib/jquery/dist/jquery.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ENjdO4Dr2bkBIFxQpeoTz1HIcje39Wm4jDKdf19U8gI4ddQ3GYNS7NTKfAdVQSZe" crossorigin="anonymous"></script>
+<script src="~/js/site.js" asp-append-version="true"></script>
+
+<script>
+    // Select all copy icons
+    const copyIcons = document.querySelectorAll('.copy-icon');
+
+    // Add click event listeners to each icon
+    copyIcons.forEach(icon => {
+        icon.addEventListener('click', function () {
+            const textToCopy = this.getAttribute('text-to-copy'); // Get text from text-to-copy attribute
+            navigator.clipboard.writeText(textToCopy)
+        });
+    });
+</script>
+
 </body>
 </html>
