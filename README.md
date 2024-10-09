@@ -32,8 +32,6 @@ Run the `basic-deploy.sh` script to deploy Mona into your Azure environment. You
 ./basic-deploy.sh -r "eastus" -n "monatest01"
 ```
 
-This will take a few minutes. It's a great time to grab another cup of coffee. ☕
-
 Once the script is complete, you will be presented with a link to your Mona deployment's admin center. Click the link to finish setting up Mona. Be sure to bookmark the link so you can have quick and easy access to the Mona admin center later. 
 
 > Both [guests and members](https://learn.microsoft.com/entra/external-id/user-properties) of your [Entra (formerly Azure Active Directory) tenant](https://techcommunity.microsoft.com/t5/startups-at-microsoft/demystifying-microsoft-entra-id-tenants-and-azure-subscriptions/ba-p/4155261) have access to the Mona admin center.
@@ -42,7 +40,7 @@ Once the script is complete, you will be presented with a link to your Mona depl
 
 Take a moment to familiarize yourself with the Mona admin center by clicking through the tabs. 
 
-Click on the **This Mona deployment** tab. This tab includes a deep link into the Azure portal and [the resource group](https://learn.microsoft.com/azure/azure-resource-manager/management/manage-resource-groups-portal) in which Mona was deployed. Click the resource group link. Within this resource group you will find seven different [Logic Apps](https://learn.microsoft.com/azure/logic-apps/logic-apps-overview)—each preconfigured to handle a specific Marketplace event. These Logic Apps are already connected to Mona's custom event grid topic.
+Click on the **This Mona deployment** tab. This tab includes a deep link into the Azure portal and [the resource group](https://learn.microsoft.com/azure/azure-resource-manager/management/manage-resource-groups-portal) in which Mona was deployed. Click the resource group link. Within this resource group you will find seven different [Logic Apps](https://learn.microsoft.com/azure/logic-apps/logic-apps-overview)—each preconfigured to handle a specific Marketplace event. These Logic Apps are already connected to Mona's custom event grid topic. Configure these logic apps as your business needs dictate.
 
 #### Why Azure Logic Apps?
 
@@ -184,7 +182,9 @@ Refer to the table below for more information on issuing webhook notifications.
               
 ### Go live with your Azure Marketplace SaaS offer
 
-Once you've configured and tested your event integrations, it's time to go live with your offer and start making money with the Azure Marketplace! Refer to [these docs](https://learn.microsoft.com/en-us/partner-center/marketplace-offers/plan-saas-offer) for more information on setting up your SaaS offer via the Partner Center. During your SaaS offer setup, [you'll be prompted to provide some "technical details"](https://learn.microsoft.com/partner-center/marketplace-offers/create-new-saas-offer-technical) that essentially connect your SaaS offer to your Mona deployment. The Azure Marketplace uses these details to redirect new purchases to the Mona landing page and issue webhook notifications to the Mona webhook endpoint. To find these details, navigate to the Mona admin center (you should have it bookmarked by now! 😉) and click on the **Marketplace offer technical details** tab. Copy and paste these technical details into the Partner Center when setting up your SaaS offer.
+Once you've configured and tested your event integrations, it's time to go live with your offer. Refer to [these docs](https://learn.microsoft.com/en-us/partner-center/marketplace-offers/plan-saas-offer) for more information on setting up your SaaS offer via the Partner Center. 
+
+During your SaaS offer setup, [you'll be prompted to provide some "technical details"](https://learn.microsoft.com/partner-center/marketplace-offers/create-new-saas-offer-technical) that are used to connect your SaaS offer to your Mona deployment. The Azure Marketplace uses these details to redirect new purchases to the Mona landing page and issue webhook notifications to the Mona webhook endpoint. To find these details, navigate to the Mona admin center and click on the **Marketplace offer technical details** tab. Copy and paste these technical details into the Partner Center when setting up your SaaS offer.
 
 ## Who supports Mona for SaaS?
 
