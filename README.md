@@ -182,19 +182,17 @@ Refer to the table below for more information on issuing webhook notifications.
 
 ### Notify the Marketplace when a subscription has been activated
 
-From the time a customer purchases a subscription to your SaaS app (Mona emits a purchase event), you have 48 hours to activate the subscription and notify the marketplace. This period gives you time to complete approval workflows and set up the necessary infrastructure before onboarding the customer to your SaaS app. Keep in mind that it’s your responsibility to notify the Marketplace when the subscription is activated, and billing begins at that point.
+After a customer purchases a subscription, you have 48 hours to activate it and notify the Marketplace. Billing starts when the subscription is activated.
 
-Calls to the Marketplace API are authenticated using your Mona deployment's external managed identity.
-
-To locate this identity, follow these steps:
+Calls to the Marketplace API must be authenticated using Mona’s external managed identity. To locate the managed identity:
 
 - Go to the Mona admin center.
 - Open the **This Mona deployment** tab.
-- Click the **Managed external identity** link.
+- Click **Managed external identity**.
 
-This will take you to the Azure portal, where you can view the managed identity used to authenticate Marketplace API calls. Managed identities provide a secure way to authenticate calls to APIs [from various Azure resources](https://learn.microsoft.com/entra/identity/managed-identities-azure-resources/managed-identities-status).
+This will direct you to the Azure portal, where you can manage the identity. You can use this identity in [Logic Apps](https://learn.microsoft.com/azure/logic-apps/authenticate-with-managed-identity?tabs=consumption#authenticate-access-with-managed-identity), [Azure Functions](https://learn.microsoft.com/azure/azure-functions/functions-identity-based-connections-tutorial), or [other managed identity options](https://learn.microsoft.com/entra/identity/managed-identities-azure-resources/managed-identities-status).
 
-Use this managed identity (e.g., with a [Logic App](https://learn.microsoft.com/azure/logic-apps/authenticate-with-managed-identity?tabs=consumption#authenticate-access-with-managed-identity), [Azure Function](https://learn.microsoft.com/azure/azure-functions/functions-identity-based-connections-tutorial), or [anywhere else you can use a managed identity](https://learn.microsoft.com/en-us/entra/identity/managed-identities-azure-resources/managed-identities-status)) to [obtain a token for the Marketplace API](https://learn.microsoft.com/partner-center/marketplace-offers/partner-center-portal/pc-saas-registration#how-to-get-the-publishers-authorization-token) and [notify the Marketplace directly that the subscription has been activated](https://learn.microsoft.com/partner-center/marketplace-offers/partner-center-portal/pc-saas-fulfillment-subscription-api#activate-a-subscription). When requesting a Marketplace API access token, be sure to set the `scope` to: `20e940b3-4c77-4b0b-9a53-9e16a1b010a7/.default`. For more information on using the activation API endpoint, [refer to the Marketplace API docs](https://learn.microsoft.com/partner-center/marketplace-offers/partner-center-portal/pc-saas-fulfillment-subscription-api#activate-a-subscription).
+Use the managed identity to [obtain a token for the Marketplace API](https://learn.microsoft.com/partner-center/marketplace-offers/partner-center-portal/pc-saas-registration#how-to-get-the-publishers-authorization-token) and [activate the subscription](https://learn.microsoft.com/partner-center/marketplace-offers/partner-center-portal/pc-saas-fulfillment-subscription-api#activate-a-subscription). Make sure the `scope` is set to `20e940b3-4c77-4b0b-9a53-9e16a1b010a7/.default`.
               
 ### Set up your SaaS offer in Partner Center
 
