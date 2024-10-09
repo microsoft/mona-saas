@@ -184,6 +184,12 @@ Refer to the table below for more information on issuing webhook notifications.
 
 Refer to [these docs](https://learn.microsoft.com/en-us/partner-center/marketplace-offers/plan-saas-offer) for more information on setting up your SaaS offer via the Partner Center. During your SaaS offer setup, [you'll be prompted to provide some "technical details"](https://learn.microsoft.com/partner-center/marketplace-offers/create-new-saas-offer-technical) that are used to connect your SaaS offer to your Mona deployment. The Azure Marketplace uses these details to redirect new purchases to the Mona landing page and issue webhook notifications to the Mona webhook endpoint. To find these details, navigate to the Mona admin center and click on the **Marketplace offer technical details** tab. Copy and paste these technical details into the Partner Center when setting up your SaaS offer.
 
+### Notify the Marketplace when a subscription has been activated
+
+From the time that a customer purchases a subscription to your SaaS app (Mona emits a purchase event), you have 48 hours to activate the subscription and notify the marketplace. This allows you time to work through approval workflows and configure your customer's subscription before activating the subscription.
+
+Calls to the Marketplace API are authenticated using your Mona deployment's external managed identity. To find this identity, navigate to the Mona admin center, open the **This Mona deployment** tab, and click the **Managed external identity** link. This will bring you to the managed identity overview pane within the Azure portal. 
+
 ## Who supports Mona for SaaS?
 
 Please see [our support docs](SUPPORT.md) for more information.
