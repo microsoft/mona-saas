@@ -302,6 +302,7 @@ az deployment group create \
         aadClientId="$mona_aad_app_id" \
         appServicePlanId="$app_service_plan_id" \
         eventVersion="$event_version" \
+        monaVersion="$mona_version"
 
 [[ $? -eq 0 ]] && echo "$lp 🦾   Completing Mona deployment...";
 [[ $? -ne 0 ]] && echo "$lp ❌   Mona resource group [$resource_group_name] deployment [$az_deployment_name] has failed. Aborting setup..." && exit 1;

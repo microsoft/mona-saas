@@ -18,10 +18,12 @@ param appServicePlanId string = ''
 ])
 param eventVersion string = '2021-10-01'
 
+@description('The version of Mona that this deployment is running.')
+param monaVersion string
+
 @description('The location where the resources in this Mona deployment should be created.')
 param location string = resourceGroup().location
 
-var monaVersion = '0.1-prerelease'
 var cleanDeploymentName = toLower((empty(deploymentName) ? uniqueString(resourceGroup().id) : deploymentName))
 var deploymentNameUnique = uniqueString(resourceGroup().id, deployment().name, cleanDeploymentName)
 var storageAccountName = 'monastorage${deploymentNameUnique}'
