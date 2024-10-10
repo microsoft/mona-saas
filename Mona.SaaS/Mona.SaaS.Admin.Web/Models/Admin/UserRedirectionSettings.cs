@@ -1,16 +1,13 @@
-﻿// Copyright (c) Microsoft Corporation.
-// Licensed under the MIT License.
-
-using Mona.SaaS.Core.Models.Configuration;
+﻿using Mona.SaaS.Core.Models.Configuration;
 using System.ComponentModel.DataAnnotations;
 
-namespace Mona.SaaS.Web.Models
+namespace Mona.SaaS.Admin.Web.Models.Admin
 {
-    public class AdminPageModel
+    public class UserRedirectionSettings
     {
-        public AdminPageModel() { }
+        public UserRedirectionSettings() { }
 
-        public AdminPageModel(PublisherConfiguration publisherConfig)
+        public UserRedirectionSettings(PublisherConfiguration publisherConfig)
         {
             ArgumentNullException.ThrowIfNull(publisherConfig, nameof(publisherConfig));
 

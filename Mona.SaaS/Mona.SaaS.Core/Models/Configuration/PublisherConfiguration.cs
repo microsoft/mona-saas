@@ -9,7 +9,7 @@ namespace Mona.SaaS.Core.Models.Configuration
     public class PublisherConfiguration
     {
         /// <summary>
-        /// Indicates whether or not the setup wizard has been copleted.
+        /// Indicates whether or not the setup wizard has been completed.
         /// </summary>
         public bool IsSetupComplete { get; set; }
 

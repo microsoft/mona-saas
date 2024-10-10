@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk.Web">
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
 	<PropertyGroup>
 		<TargetFramework>net8.0</TargetFramework>
@@ -14,11 +14,16 @@
 		<PackageReference Include="Microsoft.Identity.Web.UI" Version="2.16.0" />
 		<PackageReference Include="Microsoft.Identity.Web.DownstreamApi" Version="2.15.2" />
 		<PackageReference Include="Microsoft.ApplicationInsights.AspNetCore" Version="2.22.0" />
+		<PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="8.0.5" />
 	</ItemGroup>
 
 	<ItemGroup>
 		<ProjectReference Include="..\Mona.SaaS.Core\Mona.SaaS.Core.csproj" />
 		<ProjectReference Include="..\Mona.SaaS.Services\Mona.SaaS.Services.csproj" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <Folder Include="Properties\PublishProfiles\" />
 	</ItemGroup>
 
 </Project>
