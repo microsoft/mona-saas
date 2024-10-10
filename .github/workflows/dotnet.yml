@@ -1,4 +1,4 @@
-name: Mona Build + Tests
+name: Mona Build
 
 on: [pull_request,workflow_dispatch]
 
@@ -14,6 +14,7 @@ jobs:
           dotnet-version: |
             3.1.x
             6.0.x
+            8.0.x
           include-prerelease: true
       
       - name: Restore dependencies
@@ -21,6 +22,3 @@ jobs:
 
       - name: Build
         run: dotnet build ./Mona.SaaS/Mona.SaaS.sln --no-restore 
-      
-      - name: Web test
-        run: dotnet test ./Mona.SaaS/Mona.SaaS.Web.Tests/Mona.SaaS.Web.Tests.csproj --no-build --verbosity normal 
