@@ -4,6 +4,7 @@
 using Mona.SaaS.Core.Constants;
 using Newtonsoft.Json;
 using System;
+using System.Text.Json.Serialization;
 
 namespace Mona.SaaS.Core.Models.Events.V_2021_05_01
 {
@@ -21,6 +22,7 @@ namespace Mona.SaaS.Core.Models.Events.V_2021_05_01
         }
 
         [JsonProperty("newSeatQuantity")]
+        [JsonPropertyName("newSeatQuantity")]
         public int? NewSeatQuantity { get; set; }
     }
 }

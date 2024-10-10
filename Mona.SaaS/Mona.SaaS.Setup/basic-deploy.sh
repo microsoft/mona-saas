@@ -7,14 +7,12 @@ mona_version=$(cat ../../VERSION)
 
 exec 3>&2 # Grabbing a reliable stderr handle...
 
-usage() { printf "\nUsage: $0 <-n deployment-name> <-r deployment-region> [-i integration-pack] [-a app-service-plan-id] [-d display-name] [-g resource-group] [-l ui-language] [-s subscription-id] [-e event-version] [-h] [-p] [-m]\n"; }
+usage() { printf "\nUsage: $0 <-n deployment-name> <-r deployment-region> [-i integration-pack] [-a app-service-plan-id] [-d display-name] [-g resource-group] [-s subscription-id] [-e event-version] [-h] [-p]\n"; }
 
 check_az() {
     exec 3>&2
 
     az version >/dev/null 2>&1
-
-    # lp=$1 TODO: Need to check why this variable `lp` is used throughout the script. Maybe for formatting reasons?
 
     # TODO: Should we be more specific about which version of az is required?
 
@@ -27,19 +25,34 @@ check_az() {
 }
 
 check_dotnet() {
-    exec 3>&2
+    dotnet_version=$(dotnet --version)
 
-    dotnet --version >/dev/null 2>&1
-
-    # lp=$1 TODO: Need to check why this variable `lp` is used throughout the script. Maybe for formatting reasons?
-
-   # TODO: Should we be more specific about which version of dotnet is required?
-
-    if [[ $? -ne 0 ]]; then
-        echo "$lp ❌   Please install .NET before continuing. See [https://dotnet.microsoft.com/download] for more information."
-        return 1
+    if [[ $dotnet_version == 8.* ]]; then # Needs to be .NET 6
+        echo "$lp ✔   .NET [$dotnet_version] installed."
     else
-        echo "$lp ✔   .NET installed."
+        read -p "$lp ⚠️  .NET 8 is required to run this script but it is not installed. Would you like to install it now? [Y/n]" install_dotnet
+
+        case "$install_dotnet" in
+            [yY1]   )
+                wget https://dotnet.microsoft.com/download/dotnet/scripts/v1/dotnet-install.sh
+                chmod +x ./dotnet-install.sh
+                ./dotnet-install.sh 
+
+                if [[ $? == 0 ]]; then
+                    export PATH="$HOME/.dotnet:$PATH"
+                    dotnet_version=$(dotnet --version)
+                    echo "✔   .NET [$dotnet_version] installed."
+                    return 0
+                else
+                    echo "❌   .NET 8 installation failed. See [https://learn.microsoft.com/dotnet/core/tools/dotnet-install-script] for more information."
+                    return 1
+                fi
+            ;;
+            *       )
+                echo "❌   Please install .NET 8 before continuing. See [https://learn.microsoft.com/dotnet/core/tools/dotnet-install-script] for more information."
+                return 1
+            ;;
+        esac
     fi
 }
 
@@ -48,16 +61,15 @@ check_cloud_shell_env() {
     
     if [ -n "$ACC_CLOUD"  ]
     then
-      echo "$lp ✔   Running in a Cloud Shell environment"
+      echo "$lp ☁️   In Cloud Shell."
     else
-      echo "$lp ⚠️   Not in an Azure Cloud Shell environment. See [https://github.com/microsoft/mona-saas#2-clone-the-mona-saas-github-repository] for more details."
+      echo "$lp ⚠️   Not in Cloud Shell. See [https://github.com/microsoft/mona-saas#2-clone-the-mona-saas-github-repository] for more information."
     fi 
 }
 
 check_prereqs() {
-    lp=$1
 
-    echo "$lp Checking Mona setup prerequisites...";
+    echo "$lp 🔍   Checking Mona setup prerequisites...";
 
     check_az "$lp";               if [[ $? -ne 0 ]]; then prereq_check_failed=1; fi;
     check_dotnet "$lp";           if [[ $? -ne 0 ]]; then prereq_check_failed=1; fi;
@@ -69,31 +81,7 @@ check_prereqs() {
     fi
 }
 
-check_account_type() {
-  lp=$1
-  
-  graph_token=$(az account get-access-token \
-      --resource-type ms-graph \
-      --query accessToken \
-      --output tsv);
-  
-  user_type=$(curl --location --request GET 'https://graph.microsoft.com/v1.0/me?$select=userType' -H "Content-Type: application/json" -H "Authorization: Bearer $graph_token" --no-progress-meter | jq -r ".userType");
-
-  if [ "$user_type" = "Guest" ]; then
-      echo "$lp ❌   Mona cannot be installed using a Guest account. Please use Workplace or School account with type Member."
-      return 1
-  fi
-  
-  is_msa=$(curl --location --request GET 'https://graph.microsoft.com/v1.0/me?$select=identities' -H "Content-Type: application/json" -H "Authorization: Bearer $graph_token" --no-progress-meter | jq -r '.identities | map(. | select(.issuer=="MicrosoftAccount")) | . | length > 0');
-
-  if [ "$is_msa" = "true" ]; then
-    echo "$lp ❌   Mona cannot be installed using a personal Microsoft account. Please use Workplace or School account with type Member."
-    return 1
-  fi
-}
-
 check_app_service_plan() {
-    lp=$1
     plan_id=$2
 
     plan_name=$(az appservice plan show --ids "$plan_id" --output "tsv" --query "name");
@@ -107,7 +95,6 @@ check_app_service_plan() {
 }
 
 check_deployment_region() {
-    lp=$1
     region=$2
 
     region_display_name=$(az account list-locations -o tsv --query "[?name=='$region'].displayName")
@@ -136,19 +123,6 @@ check_event_version() {
     fi
 }
 
-check_language() {
-    lp=$1
-    language=$2
-    supported_languages=("en" "es")
-
-    if [[ " ${supported_languages[*]} " == *"$language"* ]]; then
-        echo "$lp ✔   [$language] language is supported."
-    else
-        echo "$lp ❌   [$language] language is not supported."
-        return 1
-    fi
-}
-
 check_deployment_name() {
     name=$1
 
@@ -161,7 +135,6 @@ check_deployment_name() {
 }
 
 event_version="2021-10-01" # Default event version is always the latest one. Can be overridden using [-e] flag below for backward compatibility.
-language="en" # Default UI language is English ("en"). Can be overridden using [-l] flag below.
 integration_pack="default"
 passthrough_mode_enabled="false"
 
@@ -175,9 +148,6 @@ while getopts "a:d:g:l:n:r:s:i:hpm" opt; do
         ;;
         g)
             resource_group_name=$OPTARG
-        ;;
-        l)
-            language=$OPTARG
         ;;
         n)
             deployment_name=$OPTARG
@@ -200,9 +170,6 @@ while getopts "a:d:g:l:n:r:s:i:hpm" opt; do
         p)
             no_publish=1
         ;;
-        m)
-            passthrough_mode_enabled="true"
-        ;;
         j)
             no_rbac=1 # Ill-advised. Only here for backward compatibility with early versions of Mona.
         ;;
@@ -212,11 +179,6 @@ while getopts "a:d:g:l:n:r:s:i:hpm" opt; do
         ;;
     esac
 done
-
-# Check that user account is of valid type
-check_account_type "$lp"
-
-[[ $? -ne 0 ]] && exit 1;
 
 # Check for missing parameters.
 # Set default resource group name and deployment display name.
@@ -254,7 +216,6 @@ fi
 
 check_deployment_region "$lp" "$deployment_region"; if [[ $? -ne 0 ]]; then param_valid_failed=1; fi;
 check_event_version "$lp" "$event_version"; if [[ $? -ne 0 ]]; then param_valid_failed=1; fi;
-check_language "$lp" "$language"; if [[ $? -ne 0 ]]; then param_valid_failed=1; fi;
 
 if [[ -n $app_service_plan_id ]]; then
     check_app_service_plan "$lp" "$app_service_plan_id"
@@ -282,7 +243,7 @@ fi
 # If it already exists confirm that it's empty.
 
 if [[ $(az group exists --resource-group "$resource_group_name" --output tsv) == false ]]; then
-    echo "$lp Creating resource group [$resource_group_name]..."
+    echo "$lp 🦾   Creating resource group [$resource_group_name]..."
 
     az group create \
         --location "$deployment_region" \
@@ -305,231 +266,269 @@ fi
 subscription_id=$(az account show --query id --output tsv);
 current_user_tid=$(az account show --query tenantId --output tsv);
 
-# Create the Mona app registration in AAD...
+# Create the Mona admin app registration in Entra...
 
-echo "$lp 🛡️   Creating Mona Azure Active Directory (AAD) app registration..."
+echo "$lp 🛡️   Creating Mona admin web app registration in your Entra tenant..."
 
 mona_aad_app_name="$display_name"
 
-graph_token=$(az account get-access-token \
-    --resource-type ms-graph \
-    --query accessToken \
-    --output tsv);
+create_aad_app_response=$(az ad app create \
+    --display-name "$mona_aad_app_name" \
+    --enable-id-token-issuance true \
+    --sign-in-audience "AzureADMyOrg" \
+    --web-redirect-uris "https://mona-admin-$deployment_name.azurewebsites.net/signin-oidc")
 
-mona_admin_role_id=$(cat /proc/sys/kernel/random/uuid)
-create_mona_app_json=$(cat ./aad/manifest.json)
-create_mona_app_json="${create_mona_app_json/__aad_app_name__/${mona_aad_app_name}}"
-create_mona_app_json="${create_mona_app_json/__deployment_name__/${deployment_name}}"
-create_mona_app_json="${create_mona_app_json/__admin_role_id__/${mona_admin_role_id}}"
-
-# Getting around some occasional consistency issues by implementing the retry pattern. This was fun.
-# If you're reading this code and you've never heard of the retry pattern, check this out --
-# https://docs.microsoft.com/en-us/azure/architecture/patterns/retry
-
-for i1 in {1..5}; do
-    create_mona_app_response=$(curl \
-        -X POST \
-        -H "Content-Type: application/json" \
-        -H "Authorization: Bearer $graph_token" \
-        -d "$create_mona_app_json" \
-        "https://graph.microsoft.com/v1.0/applications")
-
-    mona_aad_object_id=$(echo "$create_mona_app_response" | jq -r ".id")
-    mona_aad_app_id=$(echo "$create_mona_app_response" | jq -r ".appId")
-
-    if [[ -z $mona_aad_object_id || -z $mona_aad_app_id || $mona_aad_object_id == null || $mona_aad_sp_id == null ]]; then
-        if [[ $i1 == 5 ]]; then
-            # We tried and we failed. Such is life.
-            echo "$lp ❌   Failed to create Mona AAD app. Setup failed."
-            exit 1
-        else
-            sleep_for=$((2**i1)) # Exponential backoff. 2..4..8..16 seconds.
-            echo "$lp ⚠️   Trying to create app again in [$sleep_for] seconds."
-            sleep $sleep_for
-        fi
-    else
-        break
-    fi
-done
-
-# Create the Mona client secret...
-
-echo "$lp 🛡️   Creating Mona Azure Active Directory (AAD) client credentials..."
-
-add_mona_password_json=$(cat ./aad/add_password.json)
-
-for i2 in {1..5}; do
-    add_mona_password_response=$(curl \
-        -X POST \
-        -H "Content-Type: application/json" \
-        -H "Authorization: Bearer $graph_token" \
-        -d "$add_mona_password_json" \
-        "https://graph.microsoft.com/v1.0/applications/$mona_aad_object_id/addPassword")
-
-    mona_aad_app_secret=$(echo "$add_mona_password_response" | jq -r ".secretText")
-
-    if [[ -z $mona_aad_app_secret || $mona_aad_app_secret == null ]]; then
-        if [[ $i2 == 5 ]]; then
-            echo "$lp ❌   Failed to create Mona AAD app client credentials. Setup failed."
-            exit 1
-        else
-            sleep_for=$((2**i2))
-            echo "$lp ⚠️   Trying to create client credentials again in [$sleep_for] seconds."
-            sleep $sleep_for
-        fi
-    else
-        break
-    fi
-done
-
-echo "$lp 🛡️   Creating Mona AAD app [$mona_aad_app_name] service principal..."
-
-for i3 in {1..5}; do
-    mona_aad_sp_id=$(az ad sp create --id "$mona_aad_app_id" --query id --output tsv);
-
-    if [[ -z $mona_aad_sp_id || $mona_aad_sp_id == null ]]; then
-        if [[ $i3 == 5 ]]; then
-            echo "$lp ❌   Failed to create Mona AAD app service principal. Setup failed."
-            exit 1
-        else
-            sleep_for=$((2**i3))
-            echo "$lp ⚠️   Trying to create service principal again in [$sleep_for] seconds."
-            sleep $sleep_for
-        fi
-    else
-        break
-    fi
-done
-
-echo "$lp 🔐   Granting Mona service principal contributor access to [$resource_group_name]..."
-
-for i4 in {1..5}; do
-    az role assignment create \
-        --role "Contributor" \
-        --scope "/subscriptions/$subscription_id/resourceGroups/$resource_group_name" \
-        --assignee "$mona_aad_sp_id"
-
-    if [[ $? -ne 0 ]]; then
-        if [[ $i4 == 5 ]]; then
-            echo "$lp ❌   Failed to grant Mona service principal contributor access. Setup failed."
-            exit 1
-        else
-            sleep_for=$((2**i4))
-            echo "$lp ⚠️   Trying to grant service principal contributor access again in [$sleep_for] seconds."
-            sleep $sleep_for
-        fi
-    else
-        break
-    fi
-done
-
-mp_client_sp_name="$deployment_name-market-sp"
-
-echo "$lp 🛡️   Creating Marketplace client AAD service principal [$mp_client_sp_name]..."
-
-mp_client_sp_create_response=$(az ad sp create-for-rbac -n "$mp_client_sp_name")
-mp_client_sp_client_id=$(echo "$mp_client_sp_create_response" | jq -r ".appId")
-mp_client_sp_client_secret=$(echo "$mp_client_sp_create_response" | jq -r ".password")
+mona_aad_object_id=$(echo "$create_aad_app_response" | jq -r ".id")
+mona_aad_app_id=$(echo "$create_aad_app_response" | jq -r ".appId")
 
 # Deploy the Bicep template.
 
-echo "$lp 🦾   Deploying Mona to subscription [$subscription_id] resource group [$resource_group_name]. This might take a while...";
-
 az_deployment_name="mona-deploy-$deployment_name"
+deployment_url="https://portal.azure.com/#view/HubsExtension/DeploymentDetailsBlade/~/overview/id/%2Fsubscriptions%2F$subscription_id%2FresourceGroups%2F$resource_group_name%2Fproviders%2FMicrosoft.Resources%2Fdeployments%2F$az_deployment_name"
+
+echo "$lp 🦾   Deploying Mona to subscription [$subscription_id] resource group [$resource_group_name]."
+echo
+echo "$lp ⌛   This may take a while. Right-click to monitor the deployment:"
+echo "$lp     [ $deployment_url ]"
+echo
 
 az deployment group create \
     --resource-group "$resource_group_name" \
     --name "$az_deployment_name" \
-    --template-file "./templates/basic-deploy.bicep" \
+    --template-file "./templates/basic_deploy.bicep" \
     --parameters \
         deploymentName="$deployment_name" \
-        aadMpClientId="$mp_client_sp_client_id" \
-        aadMpClientSecret="$mp_client_sp_client_secret" \
         aadTenantId="$current_user_tid" \
-        aadPrincipalId="$mona_aad_sp_id" \
         aadClientId="$mona_aad_app_id" \
-        aadClientSecret="$mona_aad_app_secret" \
-        language="$language" \
         appServicePlanId="$app_service_plan_id" \
         eventVersion="$event_version" \
-        isPassthroughModeEnabled="$passthrough_mode_enabled"
+        monaVersion="$mona_version"
 
-[[ $? -eq 0 ]] && echo "$lp ✔   Mona resources successfully deployed [$az_deployment_name] to resource group [$resource_group_name].";
+[[ $? -eq 0 ]] && echo "$lp 🦾   Completing Mona deployment...";
 [[ $? -ne 0 ]] && echo "$lp ❌   Mona resource group [$resource_group_name] deployment [$az_deployment_name] has failed. Aborting setup..." && exit 1;
 
 # Get ARM deployment output variables.
 
-storage_account_name=$(az deployment group show --resource-group "$resource_group_name" --name "$az_deployment_name" --query properties.outputs.storageAccountName.value --output tsv);
-web_app_base_url=$(az deployment group show --resource-group "$resource_group_name" --name "$az_deployment_name" --query properties.outputs.webAppBaseUrl.value --output tsv);
-web_app_name=$(az deployment group show --resource-group "$resource_group_name" --name "$az_deployment_name" --query properties.outputs.webAppName.value --output tsv);
+storage_account_id=$(
+    az deployment group show \
+    --resource-group "$resource_group_name" \
+    --name "$az_deployment_name" \
+    --query properties.outputs.storageAccountId.value \
+    --output tsv);
+
+storage_account_name=$(
+    az deployment group show \
+    --resource-group "$resource_group_name" \
+    --name "$az_deployment_name" \
+    --query properties.outputs.storageAccountName.value \
+    --output tsv);
+
+event_grid_topic_id=$(
+    az deployment group show \
+    --resource-group "$resource_group_name" \
+    --name "$az_deployment_name" \
+    --query properties.outputs.eventGridTopicId.value \
+    --output tsv);
+
+event_grid_topic_name=$(
+    az deployment group show \
+    --resource-group "$resource_group_name" \
+    --name "$az_deployment_name" \
+    --query properties.outputs.eventGridTopicName.value \
+    --output tsv);
+
+event_grid_connection_name=$(
+    az deployment group show \
+    --resource-group "$resource_group_name" \
+    --name "$az_deployment_name" \
+    --query properties.outputs.eventGridConnectionName.value \
+    --output tsv);
+
+admin_web_app_url=$(
+    az deployment group show \
+    --resource-group "$resource_group_name" \
+    --name "$az_deployment_name" \
+    --query properties.outputs.adminWebAppUrl.value \
+    --output tsv);
+
+admin_web_app_name=$(
+    az deployment group show \
+    --resource-group "$resource_group_name" \
+    --name "$az_deployment_name" \
+    --query properties.outputs.adminWebAppName.value \
+    --output tsv);
+
+customer_web_app_url=$(
+    az deployment group show \
+    --resource-group "$resource_group_name" \
+    --name "$az_deployment_name" \
+    --query properties.outputs.customerWebAppUrl.value \
+    --output tsv);
+
+customer_web_app_name=$(
+    az deployment group show \
+    --resource-group "$resource_group_name" \
+    --name "$az_deployment_name" \
+    --query properties.outputs.customerWebAppName.value \
+    --output tsv);
+
+external_mid_id=$(
+    az deployment group show \
+    --resource-group "$resource_group_name" \
+    --name "$az_deployment_name" \
+    --query properties.outputs.externalMidId.value \
+    --output tsv);
+
+external_mid_client_id=$(
+    az identity show \
+    --ids "$external_mid_id" \
+    --query clientId \
+    --output tsv);
+
+external_mid_principal_id=$(
+    az identity show \
+    --ids "$external_mid_id" \
+    --query principalId \
+    --output tsv);
+
+internal_mid_id=$(
+    az deployment group show \
+    --resource-group "$resource_group_name" \
+    --name "$az_deployment_name" \
+    --query properties.outputs.internalMidId.value \
+    --output tsv);
+
+internal_mid_name=$(
+    az deployment group show \
+    --resource-group "$resource_group_name" \
+    --name "$az_deployment_name" \
+    --query properties.outputs.internalMidName.value \
+    --output tsv);
+
+internal_mid_principal_id=$(
+    az identity show \
+    --ids "$internal_mid_id" \
+    --query principalId \
+    --output tsv);
+
+echo "$lp ✔   Mona resources successfully deployed [$az_deployment_name] to resource group [$resource_group_name].";
+echo "$lp 🔏   Configuring resource access..."
+
+az role assignment create \
+    --role "Storage Blob Data Contributor" \
+    --assignee-object-id "$internal_mid_principal_id" \
+    --assignee-principal-type "ServicePrincipal" \
+    --scope "$storage_account_id"
+
+az role assignment create \
+    --role "Contributor" \
+    --assignee-object-id "$internal_mid_principal_id" \
+    --assignee-principal-type "ServicePrincipal" \
+    --scope "$event_grid_topic_id"
+
+az role assignment create \
+    --role "EventGrid Data Contributor" \
+    --assignee-object-id "$internal_mid_principal_id" \
+    --assignee-principal-type "ServicePrincipal" \
+    --scope "$event_grid_topic_id"
+
+az webapp config appsettings set \
+    -g "$resource_group_name" \
+    -n "$admin_web_app_name" \
+    --settings \
+        "Identity:ManagedIdentities:ExternalClientId=$external_mid_client_id" \
+        "Identity:ManagedIdentities:ExternalPrincipalId=$external_mid_principal_id" \
+        "Identity:ManagedIdentities:InternalPrincipalId=$internal_mid_principal_id"
+
+az webapp config appsettings set \
+    -g "$resource_group_name" \
+    -n "$customer_web_app_name" \
+    --settings \
+        "Identity:ManagedIdentities:ExternalClientId=$external_mid_client_id" \
+        "Identity:ManagedIdentities:ExternalPrincipalId=$external_mid_principal_id" \
+        "Identity:ManagedIdentities:InternalPrincipalId=$internal_mid_principal_id"
 
 # Deploy integration pack.
 
-integration_pack="${integration_pack#/}" # Trim leading...
-integration_pack="${integration_pack%/}" # and trailing slashes.
-
-pack_absolute_path="$integration_pack/deploy_pack.bicep" # Absolute...
-pack_relative_path="./integration_packs/$integration_pack/deploy_pack.bicep" # and relative pack paths.
-
-if [[ -f "$pack_absolute_path" ]]; then # Check the absolute path first...
-    pack_path="$pack_absolute_path"
-elif [[ -f "$pack_relative_path" ]]; then # then check the relative path.
-    pack_path="$pack_relative_path"
-fi
-
-if [[ -z "$pack_path" ]]; then
-    echo "$lp ⚠️   Integration pack [$integration_pack] not found at [$pack_absolute_path] or [$pack_relative_path]. No integration pack will be deployed."
+if [[ "$integration_pack" == "-" ]]; then
+    echo "$lp ℹ️   No integration pack will be deployed (-i -)."
 else
-    echo "$lp 🦾   Deploying [$integration_pack ($pack_path)] integration pack..."
+    integration_pack="${integration_pack#/}" # Trim leading...
+    integration_pack="${integration_pack%/}" # and trailing slashes.
 
-    az deployment group create \
-        --resource-group "$resource_group_name" \
-        --name "mona-pack-deploy-${deployment_name}" \
-        --template-file "$pack_path" \
-        --parameters \
-            deploymentName="$deployment_name" \
-            aadClientId="$mp_client_sp_client_id" \
-            aadClientSecret="$mp_client_sp_client_secret" \
-            aadTenantId="$current_user_tid"
+    pack_absolute_path="$integration_pack/deploy_pack.bicep" # Absolute...
+    pack_relative_path="./integration_packs/$integration_pack/deploy_pack.bicep" # and relative pack paths.
 
-    [[ $? -eq 0 ]] && echo "$lp ✔   Integration pack [$integration_pack ($pack_path)] deployed.";
-    [[ $? -ne 0 ]] && echo "$lp ⚠️   Integration pack [$integration_pack ($pack_path)] deployment failed."
+    if [[ -f "$pack_absolute_path" ]]; then # Check the absolute path first...
+        pack_path="$pack_absolute_path"
+    elif [[ -f "$pack_relative_path" ]]; then # then check the relative path.
+        pack_path="$pack_relative_path"
+    fi
+
+    if [[ -z "$pack_path" ]]; then
+        echo "$lp ⚠️   Integration pack [$integration_pack] not found at [$pack_absolute_path] or [$pack_relative_path]. No integration pack will be deployed."
+    else
+        pack_deployment_name="mona-pack-deploy-$deployment_name"
+        pack_deployment_url="https://portal.azure.com/#view/HubsExtension/DeploymentDetailsBlade/~/overview/id/%2Fsubscriptions%2F$subscription_id%2FresourceGroups%2F$resource_group_name%2Fproviders%2FMicrosoft.Resources%2Fdeployments%2F$pack_deployment_name"
+
+        echo "$lp 🦾   Deploying [$integration_pack ($pack_path)] integration pack..."
+        echo
+        echo "$lp ⌛   This may take a while. Right-click to monitor the deployment:"
+        echo "$lp     [ $pack_deployment_url ]"
+        echo
+
+        az deployment group create \
+            --resource-group "$resource_group_name" \
+            --name "$pack_deployment_name" \
+            --template-file "$pack_path" \
+            --parameters \
+                deploymentName="$deployment_name" \
+                eventGridConnectionName="$event_grid_connection_name" \
+                eventGridTopicName="$event_grid_topic_name" \
+                managedIdId="$internal_mid_id"
+
+        [[ $? -eq 0 ]] && echo "$lp ✔   Integration pack [$integration_pack ($pack_path)] deployed.";
+        [[ $? -ne 0 ]] && echo "$lp ⚠️   Integration pack [$integration_pack ($pack_path)] deployment failed."
+    fi
 fi
-
-# Configure Mona.
-
-echo "$lp 🔐   Adding you to the Mona administrators role...";
-
-# Regardless of whether or not -j was set, add the current user to the admin role...
-
-curl -X POST \
-    -H "Content-Type: application/json" \
-    -H "Authorization: Bearer $graph_token" \
-    -d "{ \"principalId\": \"$current_user_oid\", \"resourceId\": \"$mona_aad_sp_id\", \"appRoleId\": \"$mona_admin_role_id\" }" \
-    "https://graph.microsoft.com/v1.0/users/$current_user_oid/appRoleAssignments"
 
 if [[ -z $no_publish ]]; then
     # Deploy Mona web application...
 
-    echo "$lp 🏗️   Building Mona web app for deployment to [$web_app_name]..."
+    echo "$lp 🛠️   Building Mona admin web app for deployment to [$admin_web_app_name]..."
 
-    dotnet publish -c Release -o ./topublish ../Mona.SaaS.Web/Mona.SaaS.Web.csproj
+    dotnet publish -c Release -o ./admin_topublish ../Mona.SaaS.Admin.Web/Mona.SaaS.Admin.Web.csproj
 
-    cd ./topublish
-    zip -r ../topublish.zip . >/dev/null
+    cd ./admin_topublish
+    zip -r ../admin_topublish.zip . >/dev/null
     cd ..
 
-    echo "$lp ☁️   Publishing Mona web app to [$web_app_name]..."
+    echo "$lp 🛠️   Building SaaS customer web app for deployment to [$customer_web_app_name]..."
 
-    az webapp deployment source config-zip -g "$resource_group_name" -n "$web_app_name" --src ./topublish.zip
+    dotnet publish -c Release -o ./customer_topublish ../Mona.SaaS.Subscriber.Web/Mona.SaaS.Subscriber.Web.csproj
+
+    cd ./customer_topublish
+    zip -r ../customer_topublish.zip . >/dev/null
+    cd ..
+
+    echo "$lp ☁️   Publishing Mona admin web app to [$admin_web_app_name]..."
+
+    az webapp deployment source config-zip -g "$resource_group_name" -n "$admin_web_app_name" --src ./admin_topublish.zip
+
+    echo "$lp ☁️   Publishing SaaS customer web app to [$customer_web_app_name]..."
+
+    az webapp deployment source config-zip -g "$resource_group_name" -n "$customer_web_app_name" --src ./customer_topublish.zip
 
     # And scene...
 
     echo "$lp 🧹   Cleaning up..."
 
-    rm -rf ./topublish >/dev/null
-    rm -rf ./topublish.zip >/dev/null
+    rm -rf ./admin_topublish >/dev/null
+    rm -rf ./admin_topublish.zip >/dev/null
+    rm -rf ./customer_topublish >/dev/null
+    rm -rf ./customer_topublish.zip >/dev/null
 fi
+#>
 
 printf "\n$lp Mona Deployment Summary\n"
 echo
@@ -537,34 +536,19 @@ printf "$lp Deployment Name                     [$deployment_name]\n"
 printf "$lp Deployment Version                  [$mona_version]\n"
 printf "$lp Deployed to Azure Subscription      [$subscription_id]\n"
 printf "$lp Deployed to Resource Group          [$resource_group_name]\n"
-printf "$lp Deployment AAD Client ID            [$mona_aad_app_id]\n"
-printf "$lp Deployment AAD Tenant ID            [$current_user_tid]\n"
 
 if [[ -z $no_publish ]]; then
-    printf "$lp Landing Page URL                    [$web_app_base_url/]\n"
-    printf "$lp Landing Page URL (Testing)          [$web_app_base_url/test]\n"
-    printf "$lp Webhook URL                         [$web_app_base_url/webhook]\n"
-    printf "$lp Webhook URL (Testing)               [$web_app_base_url/webhook/test]\n"
-    printf "$lp Admin Center URL                    [$web_app_base_url/admin]\n"
-    printf "$lp Subscription Staging Store Base URL [https://$storage_account_name.blob.core.windows.net]\n"
-    printf "$lp Passthrough Mode Enabled (-m)?      [$passthrough_mode_enabled]\n"
+    printf "$lp Landing Page URL                    [$customer_web_app_url/]\n"
+    printf "$lp Webhook URL                         [$customer_web_app_url/webhook]\n"
+    printf "$lp Landing Page URL (Testing)          [$admin_web_app_url/test]\n"
+    printf "$lp Webhook URL (Testing)               [$admin_web_app_url/webhook/test]\n"
+    printf "$lp Admin Center URL                    [$admin_web_app_url]\n"
 fi
 
 echo
-echo "$lp ✔   Mona deployment complete."
-echo
-echo "$lp ⚠️   PLEASE READ CAREFULLY"
-echo
-echo "$lp By default, Mona will not automatically activate subscriptions with the Marketplace. See this doc... "
-echo "$lp [ https://github.com/microsoft/mona-saas/tree/main/docs#how-do-i-notify-the-marketplace-that-a-subscription-has-been-activated ]"
-echo
-echo "$lp Check to make sure your logic apps are connected to Mona. See this doc... "
-echo "$lp [ https://github.com/microsoft/mona-saas/tree/main/docs#why-arent-my-mona-events-triggering-my-logic-apps ]"
-echo
-echo "$lp For additional information, review our frequently asked questions (FAQs) at... "
-echo "$lp [ https://github.com/microsoft/mona-saas/tree/main/docs ]"
+echo "$lp ⭐   Mona deployment complete."
 
 if [[ -z $no_publish ]]; then
     echo
-    echo "$lp ▶   Please visit [ $web_app_base_url/setup ] to complete your setup and begin transacting with Microsoft!"
+    echo "$lp ▶   Please visit [ $admin_web_app_url ] to complete your setup and begin transacting with Microsoft!"
 fi

@@ -4,8 +4,9 @@ param location string = resourceGroup().location
 
 // For subscribing to this Mona deployment's event grid topic...
 
-param eventGridConnectionName string = 'mona-events-connection-${deploymentName}'
-param eventGridTopicName string = 'mona-events-${deploymentName}'
+param eventGridConnectionName string
+param eventGridTopicName string
+param managedIdId string
 
 var name = 'mona-on-subscription-canceled-${deploymentName}'
 var displayName = 'On subscription canceled'
@@ -35,6 +36,12 @@ resource workflow 'Microsoft.Logic/workflows@2019-05-01' = {
     'mona:description': description
     'mona:event-type': eventType
   }
+  identity: {
+    type: 'UserAssigned'
+    userAssignedIdentities: {
+      '${managedIdId}': {}
+    }
+  }
   properties: {
     state: 'Enabled'
     definition: {
@@ -54,7 +61,7 @@ resource workflow 'Microsoft.Logic/workflows@2019-05-01' = {
             body: {
               properties: {
                 destination: {
-                  endpointType: 'WebHook'
+                  endpointType: 'webhook'
                   properties: {
                     endpointUrl: '@{listCallbackUrl()}'
                   }
@@ -152,7 +159,7 @@ resource workflow 'Microsoft.Logic/workflows@2019-05-01' = {
                   type: 'string'
                 }
                 'Subscription End Date': {
-                  type: 'string'
+                  type: ['string', 'null'] 
                 }
                 'Subscription ID': {
                   type: 'string'
@@ -161,7 +168,7 @@ resource workflow 'Microsoft.Logic/workflows@2019-05-01' = {
                   type: 'string'
                 }
                 'Subscription Start Date': {
-                  type: 'string'
+                  type: ['string', 'null'] 
                 }
                 'Subscription Status': {
                   type: 'string'
@@ -200,6 +207,12 @@ resource workflow 'Microsoft.Logic/workflows@2019-05-01' = {
           eventGrid: {
             connectionId: eventGridConnection.id
             connectionName: eventGridConnection.name
+            connectionProperties: {
+              authentication: {
+                identity: managedIdId
+                type: 'ManagedServiceIdentity'
+              }
+            }
             id: '${subscription().id}/providers/Microsoft.Web/locations/${location}/managedApis/azureeventgrid'
           }
         }

@@ -4,6 +4,7 @@
 using Mona.SaaS.Core.Constants;
 using Newtonsoft.Json;
 using System;
+using System.Text.Json.Serialization;
 
 namespace Mona.SaaS.Core.Models.Events.V_2021_10_01
 {
@@ -21,6 +22,7 @@ namespace Mona.SaaS.Core.Models.Events.V_2021_10_01
         }
 
         [JsonProperty("New Plan ID")]
+        [JsonPropertyName("New Plan ID")]
         public string NewPlanId { get; set; }
     }
 }

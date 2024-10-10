@@ -2,18 +2,9 @@ param deploymentName string
 
 param location string = resourceGroup().location
 
-// Used to authenticate webhook callbacks to the Marketplace API
-
-param aadClientId string
-param aadTenantId string
-
-@secure()
-param aadClientSecret string
-
-// For subscribing to the event grid topic...
-
-param eventGridConnectionName string = 'mona-events-connection-${deploymentName}'
-param eventGridTopicName string = 'mona-events-${deploymentName}'
+param eventGridConnectionName string
+param eventGridTopicName string
+param managedIdId string
 
 var packName = 'default'
 
@@ -24,9 +15,7 @@ module onPurchased './on_purchased_workflow.bicep' = {
     location: location
     eventGridConnectionName: eventGridConnectionName
     eventGridTopicName: eventGridTopicName
-    aadClientId: aadClientId
-    aadClientSecret: aadClientSecret
-    aadTenantId: aadTenantId
+    managedIdId: managedIdId
   }
 }
 
@@ -37,6 +26,7 @@ module onCanceled './on_canceled_workflow.bicep' = {
     location: location
     eventGridConnectionName: eventGridConnectionName
     eventGridTopicName: eventGridTopicName
+    managedIdId: managedIdId
   }
 }
 
@@ -47,9 +37,7 @@ module onPlanChanged './on_plan_changed_workflow.bicep' = {
     location: location
     eventGridConnectionName: eventGridConnectionName
     eventGridTopicName: eventGridTopicName
-    aadClientId: aadClientId
-    aadClientSecret: aadClientSecret
-    aadTenantId: aadTenantId
+    managedIdId: managedIdId
   }
 }
 
@@ -60,9 +48,7 @@ module onSeatQtyChanged './on_seat_qty_changed_workflow.bicep' = {
     location: location
     eventGridConnectionName: eventGridConnectionName
     eventGridTopicName: eventGridTopicName
-    aadClientId: aadClientId
-    aadClientSecret: aadClientSecret
-    aadTenantId: aadTenantId
+    managedIdId: managedIdId
   }
 }
 
@@ -73,9 +59,7 @@ module onReinstated './on_reinstated_workflow.bicep' = {
     location: location
     eventGridConnectionName: eventGridConnectionName
     eventGridTopicName: eventGridTopicName
-    aadClientId: aadClientId
-    aadClientSecret: aadClientSecret
-    aadTenantId: aadTenantId
+    managedIdId: managedIdId
   }
 }
 
@@ -86,6 +70,7 @@ module onSuspended './on_suspended_workflow.bicep' = {
     location: location
     eventGridConnectionName: eventGridConnectionName
     eventGridTopicName: eventGridTopicName
+    managedIdId: managedIdId
   }
 }
 
@@ -96,5 +81,6 @@ module onRenewed './on_renewed_workflow.bicep' = {
     location: location
     eventGridConnectionName: eventGridConnectionName
     eventGridTopicName: eventGridTopicName
+    managedIdId: managedIdId
   }
 }

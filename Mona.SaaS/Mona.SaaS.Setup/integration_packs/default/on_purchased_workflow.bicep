@@ -2,18 +2,9 @@ param deploymentName string
 
 param location string = resourceGroup().location
 
-// For authenticating to the Marketplace API...
-
-param aadClientId string
-param aadTenantId string
-
-@secure()
-param aadClientSecret string
-
-// For subscribing to this Mona deployment's event grid topic...
-
-param eventGridConnectionName string = 'mona-events-connection-${deploymentName}'
-param eventGridTopicName string = 'mona-events-${deploymentName}'
+param eventGridConnectionName string
+param eventGridTopicName string
+param managedIdId string
 
 var name = 'mona-on-subscription-purchased-${deploymentName}'
 var displayName = 'On subscription purchased'
@@ -28,8 +19,6 @@ var actionNames = {
   notifyMarketplaceCondition: 'Conditional_|_Notify the Marketplace'
   notifyMarketplace: 'Notify_the_marketplace'
 }
-
-var marketplaceApiAuthAudience = '20e940b3-4c77-4b0b-9a53-9e16a1b010a7'
 
 resource eventGridConnection 'Microsoft.Web/connections@2016-06-01' existing = {
   name: eventGridConnectionName
@@ -46,6 +35,12 @@ resource workflow 'Microsoft.Logic/workflows@2019-05-01' = {
     'mona:name': displayName
     'mona:description': description
     'mona:event-type': eventType
+  }
+  identity: {
+    type: 'UserAssigned'
+    userAssignedIdentities: {
+      '${managedIdId}': {}
+    }
   }
   properties: {
     state: 'Enabled'
@@ -164,7 +159,7 @@ resource workflow 'Microsoft.Logic/workflows@2019-05-01' = {
                   type: 'string'
                 }
                 'Subscription End Date': {
-                  type: 'string'
+                  type: ['string', 'null'] 
                 }
                 'Subscription ID': {
                   type: 'string'
@@ -173,7 +168,7 @@ resource workflow 'Microsoft.Logic/workflows@2019-05-01' = {
                   type: 'string'
                 }
                 'Subscription Start Date': {
-                  type: 'string'
+                  type: ['string', 'null'] 
                 }
                 'Subscription Status': {
                   type: 'string'
@@ -204,54 +199,6 @@ resource workflow 'Microsoft.Logic/workflows@2019-05-01' = {
           }
           type: 'Scope'
         }
-        '${actionNames.notifyMarketplaceCondition}': {
-          actions: {
-            '${actionNames.notifyMarketplace}': {
-              inputs: {
-                authentication: {
-                  audience: marketplaceApiAuthAudience
-                  clientId: aadClientId
-                  secret: aadClientSecret
-                  tenant: aadTenantId
-                  type: 'ActiveDirectoryOAuth'
-                }
-                body: {
-                  planId: '@{body(\'${actionNames.parseSubscriptionInfo}\')?[\'Plan ID\']}'
-                  quantity: '@{body(\'${actionNames.parseSubscriptionInfo}\')?[\'Seat Quantity\']}'
-                }
-                headers: {
-                  'content-type': 'application/json'
-                }
-                method: 'POST'
-                uri: 'https://marketplaceapi.microsoft.com/api/saas/subscriptions/@{body(\'${actionNames.parseSubscriptionInfo}\')?[\'Subscription ID\']}/activate?api-version=2018-08-31'
-              }
-              runAfter: {}
-              type: 'Http'
-            }
-          }
-          expression: {
-            and: [
-              {
-                equals: [
-                  true
-                  false
-                ]
-              }
-              {
-                equals: [
-                  '@body(\'${actionNames.parseSubscriptionInfo}\')?[\'Is Test Subscription?\']'
-                  false
-                ]
-              }
-            ]
-          }
-          runAfter: {
-            '${actionNames.yourIntegrationLogic}': [
-              'Succeeded'
-            ]
-          }
-          type: 'If'
-        }
       }
     }
     parameters: {
@@ -260,6 +207,12 @@ resource workflow 'Microsoft.Logic/workflows@2019-05-01' = {
           eventGrid: {
             connectionId: eventGridConnection.id
             connectionName: eventGridConnection.name
+            connectionProperties: {
+              authentication: {
+                identity: managedIdId
+                type: 'ManagedServiceIdentity'
+              }
+            }
             id: '${subscription().id}/providers/Microsoft.Web/locations/${location}/managedApis/azureeventgrid'
           }
         }

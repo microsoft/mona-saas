@@ -26,15 +26,10 @@ namespace Mona.SaaS.Core.Models.Configuration
         public string MonaVersion { get; set; }
 
         /// <summary>
-        /// Gets/sets whether or not this Mona deployment is currently configured for passthrough mode.
-        /// </summary>
-        public bool IsPassthroughModeEnabled { get; set; }
-
-        /// <summary>
-        /// Gets/sets the instrumentation key needed to push events and metrics to App Insights.
+        /// Gets/sets the connection string needed to push events and metrics to App Insights.
         /// </summary>
         [Required]
-        public string AppInsightsInstrumentationKey { get; set; }
+        public string AppInsightsConnectionString { get; set; }
 
         /// <summary>
         /// Gets/sets the Azure subscription ID that Mona has been deployed to.
@@ -43,34 +38,9 @@ namespace Mona.SaaS.Core.Models.Configuration
         public string AzureSubscriptionId { get; set; }
 
         /// <summary>
-        /// Gets/sets the Azure resource group name that Mona has been deployed to.
         /// </summary>
+        /// Gets/sets the Azure resource group name that Mona has been deployed to.
         [Required]
         public string AzureResourceGroupName { get; set; }
-
-        /// <summary>
-        /// Gets/sets the Azure resource group name where Mona core components reside.
-        /// </summary>
-        public string MonaResourceGroupName { get; set; }
-
-        /// <summary>
-        /// Gets/sets the Azure resource group name where Mona integrations reside.
-        /// </summary>
-        public string IntegrationResourceGroupName { get; set; }
-
-        /// <summary>
-        /// Gets/sets whether or not this Mona deployment currently supports test mode.
-        /// </summary>
-        public bool IsTestModeEnabled { get; set; }
-
-        /// <summary>
-        /// Gets/sets whether or not to share subscription details with the purchase confirmation page upon purchase completion.
-        /// </summary>
-        public bool SendSubscriptionDetailsToPurchaseConfirmationPage { get; set; } = true;
-
-        /// <summary>
-        /// Gets/sets whether or not to share subscription details with the subscription configuration page.
-        /// </summary>
-        public bool SendSubscriptionDetailsToSubscriptionConfigurationPage { get; set; }
     }
 }

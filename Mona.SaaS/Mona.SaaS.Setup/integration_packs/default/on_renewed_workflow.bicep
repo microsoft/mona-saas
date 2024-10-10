@@ -2,10 +2,9 @@ param deploymentName string
 
 param location string = resourceGroup().location
 
-// For subscribing to this Mona deployment's event grid topic...
-
-param eventGridConnectionName string = 'mona-events-connection-${deploymentName}'
-param eventGridTopicName string = 'mona-events-${deploymentName}'
+param eventGridConnectionName string
+param eventGridTopicName string
+param managedIdId string
 
 var name = 'mona-on-subscription-renewed-${deploymentName}'
 var displayName = 'On subscription renewed'
@@ -34,6 +33,12 @@ resource workflow 'Microsoft.Logic/workflows@2019-05-01' = {
     'mona:name': displayName
     'mona:description': description
     'mona:event-type': eventType
+  }
+  identity: {
+    type: 'UserAssigned'
+    userAssignedIdentities: {
+      '${managedIdId}': {}
+    }
   }
   properties: {
     state: 'Enabled'
@@ -152,7 +157,7 @@ resource workflow 'Microsoft.Logic/workflows@2019-05-01' = {
                   type: 'string'
                 }
                 'Subscription End Date': {
-                  type: 'string'
+                  type: ['string', 'null'] 
                 }
                 'Subscription ID': {
                   type: 'string'
@@ -161,7 +166,7 @@ resource workflow 'Microsoft.Logic/workflows@2019-05-01' = {
                   type: 'string'
                 }
                 'Subscription Start Date': {
-                  type: 'string'
+                  type: ['string', 'null'] 
                 }
                 'Subscription Status': {
                   type: 'string'
@@ -200,6 +205,12 @@ resource workflow 'Microsoft.Logic/workflows@2019-05-01' = {
           eventGrid: {
             connectionId: eventGridConnection.id
             connectionName: eventGridConnection.name
+            connectionProperties: {
+              authentication: {
+                identity: managedIdId
+                type: 'ManagedServiceIdentity'
+              }
+            }
             id: '${subscription().id}/providers/Microsoft.Web/locations/${location}/managedApis/azureeventgrid'
           }
         }

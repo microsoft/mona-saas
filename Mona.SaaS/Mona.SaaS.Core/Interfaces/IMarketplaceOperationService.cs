@@ -21,5 +21,21 @@ namespace Mona.SaaS.Core.Interfaces
         /// <param name="operationId">The operation ID.</param>
         /// <returns>The requested [<see cref="SubscriptionOperation"/>] (if found).</returns>
         Task<SubscriptionOperation> GetSubscriptionOperationAsync(string subscriptionId, string operationId);
+
+        /// <summary>
+        /// Tries to notify the Marketplace that an operation has been completed.
+        /// </summary>
+        /// <param name="subscriptionId">The operation's subscription ID</param>
+        /// <param name="operationId">The operation ID</param>
+        /// <returns></returns>
+        Task ConfirmOperationComplete(string subscriptionId, string operationId);
+
+        /// <summary>
+        /// Tries to notify the Marketplace that an operation has failed.
+        /// </summary>
+        /// <param name="subscriptionId">The operation's subscription ID</param>
+        /// <param name="operationId">The operation ID</param>
+        /// <returns></returns>
+        Task ConfirmOperationFailed(string subscriptionId, string operationId);
     }
 }

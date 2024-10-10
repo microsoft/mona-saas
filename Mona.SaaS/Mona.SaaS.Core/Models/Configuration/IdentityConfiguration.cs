@@ -6,26 +6,25 @@ using System.ComponentModel.DataAnnotations;
 namespace Mona.SaaS.Core.Models.Configuration
 {
     /// <summary>
-    /// Provides Azure Active Directory (AAD) identity information about this Mona application.
+    /// Provides Azure Active Directory (Azure AD) identity information about this Mona application
     /// </summary>
     public class IdentityConfiguration
     {
         /// <summary>
-        /// Gets/sets information about this Mona application's administrative AAD identity.
+        /// Gets/sets Mona's admin/home/publisher Entra tenant ID
         /// </summary>
-        [Required]
-        public AppAdminIdentityConfiguration AdminIdentity { get; set; }
+        public string EntraTenantId { get; set; }
 
         /// <summary>
-        /// Gets/sets information about this Mona application's AAD identity.
+        /// Gets/sets information about Mona's admin app Entra identity
         /// </summary>
         [Required]
-        public AppIdentityConfiguration AppIdentity { get; set; }
+        public AdminAppIdentityConfiguration AdminAppIdentity { get; set; }
 
         /// <summary>
-        /// Gets/sets information about this Mona application's Marketplace AAD identity.
+        /// Gets/sets information about Mona's Azure managed identities
         /// </summary>
         [Required]
-        public MarketplaceIdentityConfiguration MarketplaceIdentity { get; set; }
+        public ManagedIdentityConfiguration ManagedIdentities { get; set; }
     }
 }

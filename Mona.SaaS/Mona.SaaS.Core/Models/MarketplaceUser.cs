@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 using Newtonsoft.Json;
+using System.Text.Json.Serialization;
 
 namespace Mona.SaaS.Core.Models
 {
@@ -11,15 +12,19 @@ namespace Mona.SaaS.Core.Models
     public class MarketplaceUser
     {
         [JsonProperty("userId")]
+        [JsonPropertyName("userId")]
         public string UserId { get; set; }
 
         [JsonProperty("userEmail")]
+        [JsonPropertyName("userEmail")]
         public string UserEmail { get; set; }
 
         [JsonProperty("aadObjectId")]
+        [JsonPropertyName("aadObjectId")]
         public string AadObjectId { get; set; }
 
         [JsonProperty("aadTenantId")]
+        [JsonPropertyName("aadTenantId")]
         public string AadTenantId { get; set; }
     }
 }

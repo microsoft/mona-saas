@@ -1,175 +1,223 @@
-> [📢 __Mona 2.0 is now in preview!__ Take a look and let us know what you think.](https://github.com/microsoft/mona-saas/discussions/134)
+# Mona for SaaS
 
-# Mona SaaS
+> [**Version 2.0**](https://github.com/microsoft/mona-saas/discussions/134)
 
-![CI Build](https://github.com/microsoft/mona-saas/actions/workflows/dotnet.yml/badge.svg)
+[The Azure Marketplace is an event-driven system.](https://learn.microsoft.com/partner-center/marketplace-offers/partner-center-portal/pc-saas-fulfillment-life-cycle) Customers purchase subscriptions to your SaaS app. They can change their subscriptions or purchase more seats. Some customers might cancel their subscriptions. These crucial events are the pulse of your SaaS app. Mona embraces this event-driven design by publishing all Marketplace-related events to [a custom Event Grid topic](https://learn.microsoft.com/azure/event-grid/custom-topics) deployed in your environment. [From there, you can handle the events however you want.](https://learn.microsoft.com/azure/event-grid/event-handlers) By default, Mona deploys a set of [Logic Apps](https://learn.microsoft.com/azure/logic-apps/logic-apps-overview) that enable you to control how your SaaS app responds to Marketplace events in a simple low/no-code environment.
 
-> Questions? [Check out our FAQ!](docs/README.md)
+![Mona Architecture Overview](docs/images/mona_arch_overview.png)
 
- Mona SaaS is a [__M__]arketplace [__On__]boarding [__A__]ccelerator designed to make it easier for Microsoft's [ISV partners](https://partner.microsoft.com/community/my-partner-hub/isv) to rapidly onboard transactable SaaS solutions to [Azure Marketplace](https://azure.microsoft.com/marketplace) and [AppSource](https://appsource.microsoft.com). It includes lightweight, reusable code modules that ISVs deploy in their own Azure subscription, and [low/no-code integration templates](https://azure.microsoft.com/en-us/solutions/low-code-application-development) featuring [Azure Logic Apps](https://azure.microsoft.com/services/logic-apps).
+## Quickstart
 
- ## How does Mona SaaS work?
+### Clone this repo
 
- Mona SaaS implements all of the various customer and publisher (you, the ISV) flows that are required by Microsoft's [SaaS fulfillment APIs](https://docs.microsoft.com/azure/marketplace/partner-center-portal/pc-saas-fulfillment-api-v2) including both [the landing page](https://docs.microsoft.com/azure/marketplace/partner-center-portal/pc-saas-fulfillment-api-v2#purchased-but-not-yet-activated-pendingfulfillmentstart) that customers will see when purchasing your SaaS offer and [the webhook](https://docs.microsoft.com/azure/marketplace/partner-center-portal/pc-saas-fulfillment-api-v2#implementing-a-webhook-on-the-saas-service) that Azure Marketplace uses to notify you of [subscription changes](https://docs.microsoft.com/azure/marketplace/partner-center-portal/pc-saas-fulfillment-api-v2#managing-the-saas-subscription-life-cycle) like [cancellations](https://docs.microsoft.com/azure/marketplace/partner-center-portal/pc-saas-fulfillment-api-v2#canceled-unsubscribed) and [suspensions](https://docs.microsoft.com/azure/marketplace/partner-center-portal/pc-saas-fulfillment-api-v2#suspended-suspended).
- 
-  ![Mona Architecture Overview](docs/images/mona_arch_overview.png)
- 
-Each of these operations is exposed to your SaaS application by Mona SaaS through events published to [a custom Event Grid topic](https://docs.microsoft.com/azure/event-grid/custom-topics) automatically provisioned during setup. By default, Mona SaaS deploys a set of "stub" Logic Apps into your Azure subscription that are enabled by default and configured to be triggered by these subscription events.
- 
- Since Mona SaaS exposes these subscription-related events to your SaaS application through an Event Grid topic, [you have lots of options for handling them](https://docs.microsoft.com/azure/event-grid/overview#event-handlers). Because Mona SaaS is using Event Grid, multiple event subscribers can handle the same events simultaneously. These flows can be easily modified in production with no downtime.
+[Open an Azure Cloud Shell, choose the Bash experience](https://learn.microsoft.com/azure/cloud-shell/get-started/ephemeral?tabs=azurecli#start-cloud-shell), and clone this repo. Navigate to the setup folder.
 
-## How do I get started with Mona SaaS?
-
-### 1. Prerequisites
-
-First, ensure that the following prerequisites are met.
-
- * You have an active Azure subscription. [If you don't already have one, get one free here](https://azure.microsoft.com/free).
- * You have the ability to create new app registrations within your Azure Active Directory (AAD) tenant. In order to create app registrations, you must be a directory administrator. For more information, see [this article](https://docs.microsoft.com/en-us/azure/active-directory/roles/permissions-reference).
- * You have the ability to create resources and resource groups within the target Azure subscription. Typically, this requires at least [contributor-level access](https://docs.microsoft.com/azure/role-based-access-control/built-in-roles#contributor) to the subscription.
- * You have a Workplace or School account. Guest account or personal accounts will not work.
-
- ### 2. Clone the Mona SaaS GitHub repository
-
- Navigate to [the Azure portal](https://portal.azure.com) and [launch the Bash cloud shell](https://docs.microsoft.com/azure/cloud-shell/quickstart#start-cloud-shell).
- 
- > If this is the first time that you've used the cloud shell, you will be prompted to [create or choose an existing an Azure Files share](https://docs.microsoft.com/azure/cloud-shell/overview#connect-your-microsoft-azure-files-storage).
-
-Run this command from the cloud shell to clone the Mona SaaS repository —
-
-```shell
+```sh
 git clone https://github.com/microsoft/mona-saas
+cd mona-saas/Mona.SaaS/Mona.SaaS.Setup
 ```
 
-By default, the Mona SaaS repository will be cloned to a local directory named `mona-saas`. Navigate to the setup folder by running the following command —
+### Run the setup script
 
-```shell
-cd ./mona-saas/Mona.SaaS/Mona.SaaS.Setup
+Run the `basic-deploy.sh` script to deploy Mona into your Azure environment. You'll need to provide only two parameters:
+
+| Name | `-` | Description |
+| --- | --- | --- |
+| **Region** | `r` | [The Azure region](https://azure.microsoft.com/explore/global-infrastructure/geographies/) where Mona should be deployed. For a complete list of Azure regions to choose from, run `az account list-locations -o table` from the Bash Cloud Shell. |
+| **Name** | `n` | A unique name for your Mona deployment. It must be 5-13 alphanumeric characters. |
+
+#### Example
+
+```bash
+./basic-deploy.sh -r "eastus" -n "monatest01"
 ```
 
-Finally, enable the setup script to be executed locally by running —
+Once the script is complete, you will be presented with a link to your Mona deployment's admin center. Click the link to finish setting up Mona. Be sure to bookmark the link so you can have quick and easy access to the Mona admin center later. 
 
-```shell
-chmod +x ./basic-deploy.sh
+> Both [guests and members](https://learn.microsoft.com/entra/external-id/user-properties) of your [Entra (formerly Azure Active Directory) tenant](https://techcommunity.microsoft.com/t5/startups-at-microsoft/demystifying-microsoft-entra-id-tenants-and-azure-subscriptions/ba-p/4155261) have access to the Mona admin center.
+
+### Configure event integrations
+
+Take a moment to familiarize yourself with the Mona admin center by clicking through the tabs. 
+
+Click on the **This Mona deployment** tab. This tab includes a deep link into the Azure portal and [the resource group](https://learn.microsoft.com/azure/azure-resource-manager/management/manage-resource-groups-portal) in which Mona was deployed. Click the resource group link. Within this resource group you will find seven different [Logic Apps](https://learn.microsoft.com/azure/logic-apps/logic-apps-overview)—each preconfigured to handle a specific Marketplace event. These Logic Apps are already connected to Mona's custom event grid topic. Configure these logic apps as your business needs dictate.
+
+#### Why Azure Logic Apps?
+
+Azure Logic Apps simplifies the way that you connect legacy, modern, and cutting-edge systems across cloud, on premises, and hybrid environments. You can use low-code-no-code tools to develop highly scalable integration solutions that support your enterprise and business-to-business (B2B) scenarios. The Azure Logic Apps integration platform provides [more than 1,000 prebuilt connectors](https://learn.microsoft.com/connectors/connector-reference/connector-reference-logicapps-connectors) so that you can connect and integrate apps, data, services, and systems more easily and quickly.
+
+> You don't have to use Azure Logic Apps. [Event Grid offers a wide range of built-in options for handling events.](https://learn.microsoft.com/azure/event-grid/event-handlers)
+
+Of course, once you've configured your integrations, you'll want to test them...
+
+### Test your event integrations
+
+Mona makes it easy to test your Marketplace integrations before going live with your SaaS offer.
+
+From the Mona admin center, click on the **Integration testing** tab. On this tab, you'll find two URLs:
+
+* **Test landing page URL**: Allows you test the complete end-to-end subscription purchasing experience.
+* **Test webhook URL**: Allows you to publish webhook notifications against test subscriptions previously created using the test landing page.
+
+#### Using the test landing page
+
+[The test landing page implements the same flow as the live landing page that the Azure Marketplace will redirect your subscribers to.](https://learn.microsoft.com/partner-center/marketplace-offers/azure-ad-saas#process-steps-for-purchase-management) Any guest or member of your Entra tenant can use the test landing page. By default, the test landing page endpoint creates a fake test subscription complete with a full set of fake properties.
+
+You can fully customize the test subscription that is created allowing you to test various subscription scenarios using the query string parameters listed below.
+
+* `subscriptionId`
+* `subscriptionName`
+* `offerId`
+* `planId`
+* `isFreeTrial`
+* `seatQuantity`
+* `term_startDate`
+* `term_endDate`
+* `term_termUnit`
+* `beneficiary_aadObjectId`
+* `beneficiary_aadTenantId`
+* `beneficiary_userEmail`
+* `beneficiary_userId`
+* `purchaser_aadObjectId`
+* `purchaser_aadTenantId`
+* `purchaser_userEmail`
+* `purchaser_userId`
+
+For example, to customize the subscription name and offer ID, add query string parameters like this:
+
+```url
+https://mona-admin-yourdeployment.azurewebsites.net/test?subscriptionName=MySubscription&offerId=OfferA
 ```
 
-### 3. Set up Mona SaaS
+Properties not configured via query string parameters will automatically be assigned fake values.
 
-At a minimum, you need this information before running the setup script —
+See [the Azure Marketplace docs](https://learn.microsoft.com/partner-center/marketplace-offers/partner-center-portal/pc-saas-fulfillment-subscription-api) for more information about these subscription properties.
 
-* [The Azure region](https://azure.microsoft.com/global-infrastructure/geographies/) in which you wish to deploy Mona SaaS.
-    * For a complete list of available regions, run `az account list-locations -o table` from the cloud shell. Be sure to use the region's `Name`, not `DisplayName` or `RegionalDisplayName`.
-* An arbitrary, globally-unique name for this Mona deployment.
-    * This identifier must consist of lowercase alphanumeric characters (a-z, 0-9) _only_.
-    * It must also be between 3 and 13 characters in length.
-* A friendly display name for your Mona deployment which your customers will see when authenticating to the landing page that Mona SaaS deploys. Although a display name isn't technically required, it's highly recommended.
+#### Using the test webhook
 
-#### Setup script examples
+Once you've created a test subscription, you can try issuing webhook notifications against it. While you don't have to authenticate against the test webhook endpoint, it will only work for subscriptions previously created via the test landing page. Use your favorite API client (e.g., [Postman](https://www.postman.com/downloads/), [cURL](https://curl.se/docs/tutorial.html)) to POST JSON webhook notifications to the test webhook endpoint. These test webhook notifications don't actually change the state of the test subscription; they are for integration testing purposes only.
 
-To deploy a Mona instance named `monaex01` to the West Europe (`westeurope`) Azure region, you would run the following command from the cloud shell. Note that, since you didn't explicitly provide a display name, Mona will default to using `monaex01` as the display name.
+Refer to the table below for more information on issuing webhook notifications.
 
-```shell
-./basic-deploy.sh -r "westeurope" -n "monaex01"
+<table>
+<tr>
+<td><p><b>Plan change</b></p><p>Occurs when a customer chooses a different plan for their subscription.</p></td>
+<td>
+
+```json
+{
+  "action": "ChangePlan", 
+  "subscriptionId": "11111111-1111-1111-1111-111111111111",
+  "planId": "Casey's Plan"
+} 
 ```
+      
+</td>
+</tr>
+<tr>
+<td><p><b>Seat quantity change</b></p><p>Occurs when the customer changes the number of purchased licenses (seats) for a subscription.</p></td>
+<td>
 
-To include the display name `Mona Example 01` explicitly, your would run —
-
-```shell
-./basic-deploy.sh -r "westeurope" -n "monaex01" -d "Mona Example 01"
+```json
+{
+  "action": "ChangeQuantity", 
+  "subscriptionId": "11111111-1111-1111-1111-111111111111",
+  "quantity": 15
+} 
 ```
+      
+</td>
+</tr>
+<tr>
+<td><p></op><b>Suspension</b></p><p>Occurs when a customer's subscription payment instrument has become invalid and payment is not received on time.</p></td>
+<td>
 
-The setup script supports additional optional parameters detailed in the table below. For example, if you wish to deploy Mona into a specific Azure subscription (`9897b07c-86fa-4779-92e3-6273664ec722`) and resource group (`monaex01group`), you can run —
-
-```shell
-# Broken down into multiple lines for readability...
-
-./basic-deploy.sh \
-   -r "westeurope" \
-   -n "monaex01" \
-   -d "Mona Example 01" \
-   -g "monaex01group" \
-   -s "9897b07c-86fa-4779-92e3-6273664ec722"
+```json
+{
+  "action": "Suspend", 
+  "subscriptionId": "11111111-1111-1111-1111-111111111111"
+} 
 ```
+      
+</td>
+</tr>
+<tr>
+<td><p><b>Cancellation</b></p><p>Occurs when a customer cancels their subscription.</p></td>
+<td>
 
-#### Setup script parameters
-
-| Switch | Name | Required | Default | Notes |
-| --- | --- | --- | --- | --- |
-| `-n` | Deployment name | __Yes__ | N/A | A user-defined, globally-unique name for this Mona SaaS deployment. The deployment name must contain _only_ alphanumeric characters and be 13 characters in length or less. |
-| `-r` | Deployment region | __Yes__ | N/A | [The Azure region](https://azure.microsoft.com/global-infrastructure/geographies/) to which Mona SaaS should be deployed. For a complete list of available regions, run `az account list-locations -o table` from the Azure CLI (Bash cloud shell). Be sure to use the region's `Name`, not `DisplayName` or `RegionalDisplayName`.
-| `-d` | Display name | No | Same as deployment name (`-n`) | A "friendly" display name for this Mona SaaS deployment. If provided, this is also the name of the Azure Active Directory (AAD) app created during setup. __While providing this parameter isn't required, it's highly recommended.__ |
-| `-a` | Existing App Service plan ID | No | N/A | The complete resource ID (i.e., `/subscriptions/{subscriptionId}/...`) of an existing [App Service plan](https://docs.microsoft.com/azure/app-service/overview-hosting-plans) to publish the Mona web app to. If provided, the App Service plan must exist in the same region (see `-l`) and Azure subscription (see `-s`) where Mona is being deployed. If not provided, the setup script will automatically provision a new App Service plan (S1) within the same resource group (see `-r`) where Mona is being deployed. It must also be a Windows-based App Service plan. |
-| `-g` | Deployment Azure resource group name | No | `mona-[deployment name (-n)]` | The Azure resource group to deploy Mona SaaS into. If the resource group already exists, it must be empty. If the group doesn't exist, it will be automatically created during setup. |
-| `-s` | Deployment Azure subscription ID | No | The current subscription | The ID of the Azure subscription to deploy Mona SaaS into. |
-| `-e` | Subscription event version identifier | No | Current (`2021-10-01`) | When set, specifies the version of subscription events Mona should publish. [Learn more here.](docs/event-models/README.md) |
-| `-m` | __Flag__ - Enable [passthrough mode](https://github.com/microsoft/mona-saas/tree/main/docs#what-is-passthrough-mode). | No | N/A | When set, configures this Mona deployment to use [passthrough mode](https://github.com/microsoft/mona-saas/tree/main/docs#what-is-passthrough-mode). |
-| `-h` | __Flag__ - Don't show script splash screen. | No | N/A | When set, the setup script will not display the standard Mona setup splash screen. |
-| `-p` | __Flag__ - Don't publish the web app. | No | N/A | When set, the setup script will provision all Azure and Azure Active Directory reources as usual _but_ won't actually publish the Mona web app. |
-
-### 4. Complete Mona SaaS setup
-
-Once the script is finished, note the information provided in the `Mona Deployment Summary`. It's strongly recommended to save these values somewhere safe and convenient as you will likely need to refer to them again later.
-
-Locate the setup URL at the _very bottom_ of the script output. It will look similiar to this —
-
-```shell
-https://mona-web-monaex01.azurewebsites.net/setup
-
-# Where "monaex01" is the Mona deployment name.
+```json
+{
+  "action": "Unsubscribe", 
+  "subscriptionId": "11111111-1111-1111-1111-111111111111"
+} 
 ```
+      
+</td>
+</tr>
+<tr>
+<td><p><b>Reinstatement</b></p><p>Occurs after a suspended subscription is reinstated. This notification indicates that the customer's payment instrument has become valid again, a payment has been made for the subscription, and the subscription is being reinstated.</p></td>
+<td>
 
-Click the URL (it's automatically linked within the cloud shell) to navigate to that site and complete the Mona SaaS setup wizard.
+```json
+{
+  "action": "Reinstate", 
+  "subscriptionId": "11111111-1111-1111-1111-111111111111"
+} 
+```
+      
+</td>
+</tr>
+<tr>
+<td><p><b>Renewal</b></p><p>Occurs when a subscription is automatically renewed at the end of the subscription term of a month or a year.</p></td>
+<td>
 
-> The setup wizard is hosted entirely within your own Mona SaaS deployment so you're aren't sharing any information with Microsoft (or anyone else) at this point.
+```json
+{
+  "action": "Renew", 
+  "subscriptionId": "11111111-1111-1111-1111-111111111111"
+} 
+```
+      
+</td>
+</tr>
+</table>
 
-During your initial setup you may receive a warning indicating that your sign-in is unverified and needs admin approval.  If you'd like to resolve this warning please see [this section](https://github.com/microsoft/mona-saas/tree/jomarvel--aad--app-publisher-verficiation/docs#what-if-my-aad-app-is-multi-tenant) of the FAQ for more info.  
+### Notify the Marketplace when a subscription has been activated
 
-### 5. Finish setting up your offer(s) in Partner Center
+After a customer purchases a subscription, you have 48 hours to activate it and notify the Marketplace. Billing starts when the subscription is activated.
 
-[Use the Partner Center to configure your offer(s) and begin transacting with Microsoft!](https://docs.microsoft.com/azure/marketplace/create-new-saas-offer)
+Calls to the Marketplace API must be authenticated using Mona’s external managed identity.
 
-## How much does Mona SaaS cost?
+To locate the managed identity:
 
-Mona SaaS is open source (see [our license](./LICENSE.txt)) and free to use.
+- Go to the Mona admin center.
+- Open the **This Mona deployment** tab.
+- Click **Managed external identity**.
 
-Since Mona SaaS is deployed into your Azure environment, the only costs that you're responsible for are those of hosting its supporting Azure resources. These resources include —
+This will direct you to the Azure portal, where you can manage the identity. You can use this identity in [Logic Apps](https://learn.microsoft.com/azure/logic-apps/authenticate-with-managed-identity?tabs=consumption#authenticate-access-with-managed-identity), [Azure Functions](https://learn.microsoft.com/azure/azure-functions/functions-identity-based-connections-tutorial), or [other managed identity options](https://learn.microsoft.com/entra/identity/managed-identities-azure-resources/managed-identities-status). Use the managed identity to [obtain a token for the Marketplace API](https://learn.microsoft.com/partner-center/marketplace-offers/partner-center-portal/pc-saas-registration#how-to-get-the-publishers-authorization-token) and [activate the subscription](https://learn.microsoft.com/partner-center/marketplace-offers/partner-center-portal/pc-saas-fulfillment-subscription-api#activate-a-subscription). 
 
-* An S1 (Standard) [App Service Plan](https://docs.microsoft.com/azure/app-service/overview-hosting-plans) ([Pricing](https://azure.microsoft.com/pricing/details/app-service/windows/))
-    * Note that you can deploy Mona SaaS to an existing Windows-based App Service Plan using the [`-a` setup script parameter](#setup-script-parameters).
-* An [Event Grid topic](https://docs.microsoft.com/azure/event-grid/custom-topics) ([Pricing](https://azure.microsoft.com/pricing/details/event-grid/))
-* Six (6) independent [Azure Logic Apps](https://docs.microsoft.com/azure/logic-apps/logic-apps-overview) preconfigured to handle different types of Marketplace events (Consumption Plan | [Pricing](https://azure.microsoft.com/pricing/details/logic-apps/))
-* A [locally-redundant (LRS)](https://docs.microsoft.com/azure/storage/common/storage-redundancy#locally-redundant-storage) standard (GPv2) [storage account](https://docs.microsoft.com/azure/storage/common/storage-account-overview) ([Pricing](https://azure.microsoft.com/pricing/details/storage/blobs/))
-* [Application Insights](https://docs.microsoft.com/en-us/azure/azure-monitor/app/app-insights-overview) ([Pricing](https://docs.microsoft.com/azure/azure-monitor/app/pricing))
+> When requesting a token to call the Marketplace API, be sure to set `scope` to `20e940b3-4c77-4b0b-9a53-9e16a1b010a7`.
+              
+### Set up your SaaS offer in Partner Center
 
-> Note that free services are not included in this list.
+Refer to [these docs](https://learn.microsoft.com/en-us/partner-center/marketplace-offers/plan-saas-offer) for more information on setting up your SaaS offer via the Partner Center.
 
-Your actual costs may vary based on the following —
+During your SaaS offer setup, [you'll be prompted to provide some "technical details"](https://learn.microsoft.com/partner-center/marketplace-offers/create-new-saas-offer-technical) that are used to connect your SaaS offer to your Mona deployment. The Azure Marketplace uses these details to redirect new purchases to the Mona landing page and issue webhook notifications to the Mona webhook endpoint.
 
- * __The integrations that you build.__ For example, Logic Apps offers [a growing list of Standard and Enterprise connectors](https://docs.microsoft.com/en-us/azure/connectors/apis-list) that allow you to easily access various cloud-based and on-premises services. [The connectors that you use have a direct impact on your overall Azure costs](https://azure.microsoft.com/en-us/pricing/details/logic-apps/) outside of the base Mona SaaS deployment.
- * __Where you deploy Mona SaaS.__ Be aware that costs for the same Azure services can vary across regions.
- * __Any special pricing arrangements you have with Microsoft.__ Many of the ISVs that Mona SaaS team works with have special pricing arrangements through their partnerships with Microsoft.
+To find these settings:
 
-Use the [Azure pricing calculator](https://azure.microsoft.com/pricing/calculator/) to better understand your unique costs.
+- Go to the Mona admin center.
+- Open the **Marketplace offer technical details** tab.
 
-For help in forecasting your Mona SaaS costs [see this article](https://docs.microsoft.com/en-us/azure/cost-management-billing/costs/cost-analysis-common-uses#view-forecasted-costs).
+Copy and paste these settings into the Partner Center when setting up your SaaS offer.
 
-## Dependencies
-
-Mona SaaS takes a dependency on the open source [Commercial Marketplace .NET Client (`commercial-marketplace-client-dotnet`)](https://github.com/microsoft/commercial-marketplace-client-dotnet). This library's DLL is conveniently included in the Mona SaaS repository.
-
-All other dependencies are automatically satisfied using [Nuget](https://docs.microsoft.com/nuget/what-is-nuget) during the Mona SaaS setup process. For more information on Mona SaaS' dependencies, [check out our dependency graph](https://github.com/microsoft/mona-saas/network/dependencies).
-
-## Who supports Mona SaaS?
+## Who supports Mona for SaaS?
 
 Please see [our support docs](SUPPORT.md) for more information.
 
 ## Security
 
 Please see [our security docs](SECURITY.md) for more information.
-
-## Considerations and limitations
-
-* The deployment name (`-n` setup script switch) mentioned in [this section](#setup-script-parameters) _must be_ globally unique.
 
 ## How can I contribute?
 
