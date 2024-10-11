@@ -184,7 +184,7 @@ Refer to the table below for more information on issuing webhook notifications.
 
 ### Notify the Marketplace when a subscription has been activated
 
-> 💬 We are actively soliciting feedback to make this experience better. [Please see this discussion for more information.](https://github.com/microsoft/mona-saas/discussions/140)
+> We are actively soliciting feedback to make this experience better. [Please see this discussion for more information.](https://github.com/microsoft/mona-saas/discussions/140)
 
 After a customer purchases a subscription, you have 48 hours to activate it and notify the Marketplace. Billing starts when the subscription is activated.
 
@@ -202,7 +202,7 @@ This will direct you to the Azure portal, where you can manage the identity. You
               
 ### Set up your SaaS offer in Partner Center
 
-> ⚠️ __Important upgrade note__: If you are upgrading from a previous version of Mona, your Partner Center technical configuration details will be different. Be sure to update your Partner Center technical configuration details after you upgrade.
+> __Important upgrade note__: If you are upgrading from a previous version of Mona, your Partner Center technical configuration details will be different. Be sure to update your Partner Center technical configuration details after you upgrade.
 
 Refer to [these docs](https://learn.microsoft.com/en-us/partner-center/marketplace-offers/plan-saas-offer) for more information on setting up your SaaS offer via the Partner Center.
 
