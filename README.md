@@ -202,6 +202,8 @@ This will direct you to the Azure portal, where you can manage the identity. You
               
 ### Set up your SaaS offer in Partner Center
 
+> ⚠️ __Important upgrade note__: If you are upgrading from a previous version of Mona, your Partner Center technical configuration details will be different. Be sure to update your Partner Center technical configuration details after you upgrade.
+
 Refer to [these docs](https://learn.microsoft.com/en-us/partner-center/marketplace-offers/plan-saas-offer) for more information on setting up your SaaS offer via the Partner Center.
 
 During your SaaS offer setup, [you'll be prompted to provide some "technical details"](https://learn.microsoft.com/partner-center/marketplace-offers/create-new-saas-offer-technical) that are used to connect your SaaS offer to your Mona deployment. The Azure Marketplace uses these details to redirect new purchases to the Mona landing page and issue webhook notifications to the Mona webhook endpoint.
