@@ -186,7 +186,7 @@ Refer to the table below for more information on issuing webhook notifications.
 
 > We are actively soliciting feedback to make this experience better. [Please see this discussion for more information.](https://github.com/microsoft/mona-saas/discussions/140)
 
-After a customer purchases a subscription, you have 48 hours to activate it and notify the Marketplace. Billing starts when the subscription is activated.
+After a customer purchases a subscription, you have 30 days to activate it and notify the Marketplace. Billing starts when the subscription is activated.
 
 Calls to the Marketplace API must be authenticated using Mona’s external managed identity.
 
