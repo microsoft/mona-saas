@@ -2,6 +2,8 @@
 
 > [**Version 2.0**](https://github.com/microsoft/mona-saas/discussions/134)
 
+> [**Looking for Mona 1.0?** It lives forever in perpetuity in the `1.0` branch.](https://github.com/microsoft/mona-saas/tree/1.0)
+
 [The Azure Marketplace is an event-driven system.](https://learn.microsoft.com/partner-center/marketplace-offers/partner-center-portal/pc-saas-fulfillment-life-cycle) Customers purchase subscriptions to your SaaS app. They can change their subscriptions or purchase more seats. Some customers might cancel their subscriptions. These crucial events are the pulse of your SaaS app. Mona embraces this event-driven design by publishing all Marketplace-related events to [a custom Event Grid topic](https://learn.microsoft.com/azure/event-grid/custom-topics) deployed in your environment. [From there, you can handle the events however you want.](https://learn.microsoft.com/azure/event-grid/event-handlers) By default, Mona deploys a set of [Logic Apps](https://learn.microsoft.com/azure/logic-apps/logic-apps-overview) that enable you to control how your SaaS app responds to Marketplace events in a simple low/no-code environment.
 
 ![Mona Architecture Overview](docs/images/mona_arch_overview.png)
