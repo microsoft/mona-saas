@@ -1,0 +1,22 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Azure.Identity" Version="1.11.4" />
+    <PackageReference Include="Azure.Messaging.EventGrid" Version="4.24.0" />
+    <PackageReference Include="Azure.Storage.Blobs" Version="12.20.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.Core" Version="2.2.5" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="7.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Options" Version="7.0.0" />
+    <PackageReference Include="Microsoft.Rest.ClientRuntime.Azure" Version="3.3.19" />
+    <PackageReference Include="Polly" Version="7.2.3" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Mona.SaaS.Core\Mona.SaaS.Core.csproj" />
+  </ItemGroup>
+
+</Project>

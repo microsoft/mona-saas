@@ -1,0 +1,8 @@
+{
+  "dependencies": {
+    "identityapp1": {
+      "connectionInfo": "App registration: myniceapp03, Tenant: Microsoft (microsoft.onmicrosoft.com - Microsoft Entra ID)",
+      "type": "identityapp.default"
+    }
+  }
+}
