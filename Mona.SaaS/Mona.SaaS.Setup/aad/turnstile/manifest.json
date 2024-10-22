@@ -1,0 +1,74 @@
+{
+    "displayName": "__aad_app_name__",
+    "signInAudience": "AzureADandPersonalMicrosoftAccount",
+    "appRoles": [
+        {
+            "allowedMemberTypes": [
+                "User"
+            ],
+            "displayName": "Tenant Administrators",
+            "description": "Users that can administer this Azure Active Directory tenant's turnstile subscriptions",
+            "id": "__tenant_admin_role_id__",
+            "isEnabled": true,
+            "value": "subscriber_tenant_admins"
+        },
+        {
+            "allowedMemberTypes": [
+                "User"
+            ],
+            "displayName": "Turnstile Administrators",
+            "description": "Users that can administer this turnstile",
+            "id": "__turnstile_admin_role_id__",
+            "isEnabled": true,
+            "value": "turnstile_admins"
+        }
+    ],
+    "optionalClaims": {
+        "accessToken": [],
+        "idToken": [
+            {
+                "additionalProperties": [],
+                "essential": false,
+                "name": "ctry",
+                "source": null
+            },
+            {
+                "additionalProperties": [],
+                "essential": false,
+                "name": "email",
+                "source": null
+            }
+        ],
+        "saml2Token": []
+    },
+    "requiredResourceAccess": [
+        {
+            "resourceAppId": "00000003-0000-0000-c000-000000000000",
+            "resourceAccess": [
+                {
+                    "id": "e1fe6dd8-ba31-4d61-89e7-88639da4683d",
+                    "type": "Scope"
+                },
+                {
+                    "id": "64a6cdd6-aab1-4aaf-94b8-3cc8405e90d0",
+                    "type": "Scope"
+                },
+                {
+                    "id": "14dad69e-099b-42c9-810b-d002981feec1",
+                    "type": "Scope"
+                }
+            ]
+        }
+    ],
+    "api": {
+        "requestedAccessTokenVersion": 2
+    },
+    "web": {
+        "redirectUris": [
+            "https://turn-web-__deployment_name__.azurewebsites.net/signin-oidc"
+        ],
+        "implicitGrantSettings": {
+            "enableIdTokenIssuance": true
+        }
+    }
+}

@@ -1,0 +1,267 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="Azure Active Directory Application ID" xml:space="preserve">
+    <value>Id. de aplicación de Azure Active Directory</value>
+  </data>
+  <data name="Azure Active Directory Tenant ID" xml:space="preserve">
+    <value>Id. de inquilino de Azure Active Directory</value>
+  </data>
+  <data name="Connection Webhook URL" xml:space="preserve">
+    <value>Webhook de conexión</value>
+  </data>
+  <data name="Disabled" xml:space="preserve">
+    <value>Deshabilitado</value>
+  </data>
+  <data name="Edit workflow »" xml:space="preserve">
+    <value>Editar el flujo de trabajo »</value>
+  </data>
+  <data name="en" xml:space="preserve">
+    <value>es</value>
+  </data>
+  <data name="Enabled" xml:space="preserve">
+    <value>Habilitado</value>
+  </data>
+  <data name="for more information on authoring your first workflows." xml:space="preserve">
+    <value>para obtener más información sobre la creación de tus primeros flujos de trabajo.</value>
+  </data>
+  <data name="For more information on these settings, please" xml:space="preserve">
+    <value>Para mas información sobre estas configuraciones, por favor</value>
+  </data>
+  <data name="from anywhere" xml:space="preserve">
+    <value>desde donde sea</value>
+  </data>
+  <data name="In test mode, Mona will never try to reach out to any of" xml:space="preserve">
+    <value>En modo de prueba, Mona nunca intentará comunicarse con ninguna de</value>
+  </data>
+  <data name="Landing Page URL" xml:space="preserve">
+    <value>Dirección URL de la página de aterrizaje</value>
+  </data>
+  <data name="Manage configuration settings »" xml:space="preserve">
+    <value>Administrar la configuración »</value>
+  </data>
+  <data name="Manage »" xml:space="preserve">
+    <value>Administrar »</value>
+  </data>
+  <data name="Mona admin center" xml:space="preserve">
+    <value>Mona - Centro de administración</value>
+  </data>
+  <data name="Mona configuration settings" xml:space="preserve">
+    <value>Mona - Ajustes de configuración</value>
+  </data>
+  <data name="Mona is currently running in test mode." xml:space="preserve">
+    <value>Mona actualmente esta en modo de prueba.</value>
+  </data>
+  <data name="New to logic apps? No problem! Check out" xml:space="preserve">
+    <value>¿Nuevo con Logic Apps? No hay problema! Revisa</value>
+  </data>
+  <data name="On subscription cancelled" xml:space="preserve">
+    <value>Con suscripción cancelada</value>
+  </data>
+  <data name="On subscription plan changed" xml:space="preserve">
+    <value>Con plan de suscripción cambiado</value>
+  </data>
+  <data name="On subscription purchased" xml:space="preserve">
+    <value>Con suscripción comprada</value>
+  </data>
+  <data name="On subscription reinstated" xml:space="preserve">
+    <value>Con suscripción restablecida</value>
+  </data>
+  <data name="On subscription seat quantity changed" xml:space="preserve">
+    <value>Con la cantidad de puestos de suscripción cambiados</value>
+  </data>
+  <data name="On subscription suspended" xml:space="preserve">
+    <value>Con suscripción suspendida</value>
+  </data>
+  <data name="or even" xml:space="preserve">
+    <value>o desde</value>
+  </data>
+  <data name="Partner center technical details" xml:space="preserve">
+    <value>Detalles tecnicos del Centro de partners</value>
+  </data>
+  <data name="publish your SaaS offer through the Partner Center" xml:space="preserve">
+    <value>publiques su oferta de SaaS  a través del Centro de partners</value>
+  </data>
+  <data name="Subscription event logic apps" xml:space="preserve">
+    <value>Subscripcion de eventos en logic apps</value>
+  </data>
+  <data name="the Mona admin center." xml:space="preserve">
+    <value>Centro de administración de Mona.</value>
+  </data>
+  <data name="the Mona docs." xml:space="preserve">
+    <value>los documentos de Mona.</value>
+  </data>
+  <data name="These configuration settings control nearly every aspect of how this Mona deployment behaves. Most of these settings are automatically configured during the initial Mona setup." xml:space="preserve">
+    <value>Estos ajustes de configuración controlan casi todos los aspectos de cómo se comporta la implementación de Mona. La mayoría de estos ajustes se configuran automáticamente durante la configuración inicial de Mona.</value>
+  </data>
+  <data name="these docs" xml:space="preserve">
+    <value>estos documentos</value>
+  </data>
+  <data name="These logic apps are automatically provisioned during the Mona setup process. Each logic app handles a specific kind of subscription event (subscription purchased, cancelled, reinstated, etc.) From here, you can see the state of each logic app, edit workflows, and manage other app resources." xml:space="preserve">
+    <value>Estas logic apps se aprovisionan automáticamente durante el proceso de configuración de Cada aplicación lógica maneja un tipo específico de evento de suscripción (suscripción comprada, cancelada, reinstalada, etc.) Desde aquí, puede ver el estado de cada aplicación lógica, editar flujos de trabajo y administrar otros recursos de la aplicación.</value>
+  </data>
+  <data name="this event grid topic" xml:space="preserve">
+    <value>este tema de Event Grid</value>
+  </data>
+  <data name="This workflow is automatically triggered after a customer has confirmed their AppSource/Marketplace purchase through the Mona landing page. For more information on the subscription purchase process, refer to" xml:space="preserve">
+    <value>Este flujo de trabajo se activa automáticamente después de que un cliente haya confirmado su compra en AppSource/Marketplace a través de la página de aterrizaje de Mona. Para obtener más información sobre el proceso de compra de la suscripción, consulte</value>
+  </data>
+  <data name="This workflow is automatically triggered after Mona has been notified by the AppSource/Marketplace that a subscription has been cancelled. For more information on subscription cancellation, refer to" xml:space="preserve">
+    <value>Este flujo de trabajo se activa automáticamente después de que AppSource/Marketplace notifique a Mona que se canceló una suscripción. Para obtener más información sobre la cancelación de la suscripción, consulte</value>
+  </data>
+  <data name="This workflow is automatically triggered after Mona has been notified by the AppSource/Marketplace that a subscription has been reinstated. For more information on subscription reinstatement, refer to" xml:space="preserve">
+    <value>Este flujo de trabajo se activa automáticamente después de que AppSource/Marketplace notifique a Mona que se restableció una suscripción. Para obtener más información sobre el restablecimiento de la suscripción, consulte</value>
+  </data>
+  <data name="This workflow is automatically triggered after Mona has been notified by the AppSource/Marketplace that a subscription has been suspended. For more information on subscription suspension, refer to" xml:space="preserve">
+    <value>Este flujo de trabajo se activa automáticamente después de que AppSource/Marketplace notifique a Mona que se ha suspendido una suscripción. Para obtener más información sobre la suspensión de la suscripción, consulte</value>
+  </data>
+  <data name="This workflow is automatically triggered after Mona has been notified by the AppSource/Marketplace that a subscription plan has been changed. For more information on subscription plan changes, refer to" xml:space="preserve">
+    <value>Este flujo de trabajo se activa automáticamente después de que AppSource/Marketplace notifique a Mona que se ha cambiado un plan de suscripción. Para obtener más información sobre los cambios en el plan de suscripción, consulte</value>
+  </data>
+  <data name="This workflow is automatically triggered after Mona has been notified by the AppSource/Marketplace that a subscription seat quantity has been changed. For more information on subscription seat quantity changes, refer to" xml:space="preserve">
+    <value>Este flujo de trabajo se activa automáticamente después de que AppSource/Marketplace notifique a Mona que se ha cambiado la cantidad de puestos de suscripción. Para obtener más información sobre los cambios en la cantidad de puestos de suscripción, consulte</value>
+  </data>
+  <data name="to" xml:space="preserve">
+    <value>a</value>
+  </data>
+  <data name="To disable test mode, set" xml:space="preserve">
+    <value>Para deshabilitar el modo de prueba, configure</value>
+  </data>
+  <data name="To enable test mode, set" xml:space="preserve">
+    <value>Para habilitar el modo de prueba, configure</value>
+  </data>
+  <data name="To learn more about test mode, please refer to" xml:space="preserve">
+    <value>Para obtener más información sobre el modo de prueba, consulte</value>
+  </data>
+  <data name="visit the Mona docs" xml:space="preserve">
+    <value>viste los documentos de Mona</value>
+  </data>
+  <data name="Want to handle these events somewhere other than logic apps? Subscribe to" xml:space="preserve">
+    <value>¿Quiere manejar estos eventos en otro lugar que no sean en Logic Apps? Suscribite a</value>
+  </data>
+  <data name="You can disable test mode through" xml:space="preserve">
+    <value>Puedes desactivar el modo de prueba a través del</value>
+  </data>
+  <data name="You'll need these technical details when you" xml:space="preserve">
+    <value>Necesitará estos detalles técnicos cuando</value>
+  </data>
+  <data name="your own code" xml:space="preserve">
+    <value>tu propio codigo</value>
+  </data>
+</root>

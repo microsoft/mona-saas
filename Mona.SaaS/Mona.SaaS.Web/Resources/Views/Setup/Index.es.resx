@@ -1,0 +1,168 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="After your customer has confirmed their purchase through the landing page, they will automatically be redirected to this URL. Note that you can include the customer's subscription ID in the URL by using the &lt;code&gt;{{subscription-id}}&lt;/code&gt; placeholder." xml:space="preserve">
+    <value>Una vez que su cliente haya confirmado su compra a través de la página de destino, será redirigido automáticamente a esta URL. Tenga en cuenta que puede incluir el ID de suscripción del cliente en la URL utilizando el marcador de posición &lt;code&gt; {{suscripción-id}} &lt;/code&gt;.</value>
+  </data>
+  <data name="Before we go any further, we need some additional information about your offer so we can better customize the purchasing experience for your customers. This shouldn't take long. Before you know it, you'll be up and running and transacting with Microsoft." xml:space="preserve">
+    <value>Antes de continuar, necesitamos información adicional sobre su oferta para que podamos personalizar mejor la experiencia de compra de sus clientes. Esto no debería llevar mucho tiempo, antes de que se dé cuenta, estará en funcionamiento y realizando transacciones utilizando Microsoft.</value>
+  </data>
+  <data name="Complete setup" xml:space="preserve">
+    <value>Configuración completa</value>
+  </data>
+  <data name="en" xml:space="preserve">
+    <value>es</value>
+  </data>
+  <data name="If your customer chooses to configure their subscription through AppSource/Marketplace, they will be automatically redirected to this URL. Note that you can include the customer's subscription ID in the URL by using the &lt;code&gt;{{subscription-id}}&lt;/code&gt; placeholder." xml:space="preserve">
+    <value>Si su cliente elige configurar su suscripción a través de AppSource/Marketplace, será redirigido automáticamente a esta URL. Tenga en cuenta que puede incluir el ID de suscripción del cliente en la URL utilizando el marcador de posición &lt;code&gt; {{suscripción-id}} &lt;/code&gt;.</value>
+  </data>
+  <data name="Mona setup" xml:space="preserve">
+    <value>Configuración de Mona</value>
+  </data>
+  <data name="Tell us a little about your offer" xml:space="preserve">
+    <value>Cuéntanos un poco sobre su oferta</value>
+  </data>
+  <data name="Thank you for installing Mona." xml:space="preserve">
+    <value>Gracias por instalar Mona.</value>
+  </data>
+  <data name="The name of your company as it will appear on the landing page." xml:space="preserve">
+    <value>Nombre de su empresa tal como aparecerá en la página de destino.</value>
+  </data>
+  <data name="This is the name of your offer (SaaS solution) as it will appear on the landing page." xml:space="preserve">
+    <value>Este es el nombre de su oferta (solución SaaS) tal como aparecerá en la página de destino.</value>
+  </data>
+  <data name="This is your offer's (SaaS solution) public AppSource/Marketplace listing page. If you don't have it yet, you can update this URL later." xml:space="preserve">
+    <value>Esta es la página pública de su oferta (solución SaaS) de listado de AppSource/Marketplace. Si aún no lo tiene, puede actualizar esta URL más tarde.</value>
+  </data>
+  <data name="This is your offer's (SaaS solution) public marketing page. If someone accesses the landing page without providing a subscription token, they will be automatically redirected to this page." xml:space="preserve">
+    <value>Esta es la página pública de su oferta (solución SaaS) de marketing. Si alguien accede a la página de destino sin proporcionar un token de suscripción, será redirigido automáticamente a esta página.</value>
+  </data>
+  <data name="Your company's contact page." xml:space="preserve">
+    <value>Página de contacto de su empresa.</value>
+  </data>
+  <data name="Your company's home page." xml:space="preserve">
+    <value>Página de inicio de su empresa.</value>
+  </data>
+  <data name="Your company's private notice page." xml:space="preserve">
+    <value>Página de avisos privados de su empresa.</value>
+  </data>
+  <data name="Your copyright notice as it will appear on the landing page." xml:space="preserve">
+    <value>Aviso de derechos de autor tal como aparecerá en la página de destino.</value>
+  </data>
+</root>
