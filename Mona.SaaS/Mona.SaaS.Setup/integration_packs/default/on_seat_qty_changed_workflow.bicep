@@ -135,7 +135,7 @@ resource workflow 'Microsoft.Logic/workflows@2019-05-01' = {
                   type: 'string'
                 }
                 'Beneficiary User ID': {
-                  type: 'string'
+                  type: ['string', 'null']
                 }
                 'Is Free Trial Subscription?': {
                   type: 'boolean'
@@ -159,7 +159,7 @@ resource workflow 'Microsoft.Logic/workflows@2019-05-01' = {
                   type: 'string'
                 }
                 'Purchaser User ID': {
-                  type: 'string'
+                  type: ['string', 'null']
                 }
                 'Subscription End Date': {
                   type: ['string', 'null'] 
