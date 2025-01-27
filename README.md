@@ -37,7 +37,7 @@ Run the `basic-deploy.sh` script to deploy Mona into your Azure environment. You
 Once the script is complete, you will be presented with a link to your Mona deployment's admin center. Click the link to finish setting up Mona. Be sure to bookmark the link so you can have quick and easy access to the Mona admin center later. 
 
 > [!NOTE]
-> Both [guests and members](https://learn.microsoft.com/entra/external-id/user-properties) of your [Entra (formerly Azure Active Directory) tenant](https://techcommunity.microsoft.com/t5/startups-at-microsoft/demystifying-microsoft-entra-id-tenants-and-azure-subscriptions/ba-p/4155261) have access to the Mona admin center.
+> Both [guests and members](https://learn.microsoft.com/entra/external-id/user-properties) of your [Entra tenant](https://techcommunity.microsoft.com/t5/startups-at-microsoft/demystifying-microsoft-entra-id-tenants-and-azure-subscriptions/ba-p/4155261) have access to the Mona admin center.
 
 ### Configure event integrations
 
@@ -189,7 +189,7 @@ Refer to the table below for more information on issuing webhook notifications.
 ### Notify the Marketplace when a subscription has been activated
 
 > [!NOTE]
-> We are actively soliciting feedback to make this experience better. [Please see this discussion for more information.](https://github.com/microsoft/mona-saas/discussions/140)
+> [We are actively soliciting feedback to make this experience better. How should this work?](https://github.com/microsoft/mona-saas/discussions/140)
 
 After a customer purchases a subscription, you have 30 days to activate it and notify the Marketplace. Billing starts when the subscription is activated.
 
@@ -204,7 +204,7 @@ To locate the managed identity:
 This will direct you to the Azure portal, where you can manage the identity. You can use this identity in [Logic Apps](https://learn.microsoft.com/azure/logic-apps/authenticate-with-managed-identity?tabs=consumption#authenticate-access-with-managed-identity), [Azure Functions](https://learn.microsoft.com/azure/azure-functions/functions-identity-based-connections-tutorial), or [other managed identity options](https://learn.microsoft.com/entra/identity/managed-identities-azure-resources/managed-identities-status). Use the managed identity to [obtain a token for the Marketplace API](https://learn.microsoft.com/partner-center/marketplace-offers/partner-center-portal/pc-saas-registration#how-to-get-the-publishers-authorization-token) and [activate the subscription](https://learn.microsoft.com/partner-center/marketplace-offers/partner-center-portal/pc-saas-fulfillment-subscription-api#activate-a-subscription). 
 
 > [!IMPORTANT]
-> When requesting a token to call the Marketplace API, be sure to set `scope` to `20e940b3-4c77-4b0b-9a53-9e16a1b010a7`.
+> When requesting a token to call the Marketplace API, set `scope` to `20e940b3-4c77-4b0b-9a53-9e16a1b010a7`.
               
 ### Set up your SaaS offer in Partner Center
 
